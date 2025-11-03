@@ -1,0 +1,79 @@
+# dashboard_app/tasks.py
+from __future__ import annotations
+import os
+from datetime import date, timedelta
+from calendar import monthrange
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from pytz import timezone
+
+from tracker_alert.services.attendance_monitor import AttendanceMonitor
+from .models import AttendanceRecord, db
+
+# --- процес-глобальні прапорці/синглтон ---
+_SCHEDULER_STARTED = False
+_SCHEDULER = None
+
+def _get_scheduler():
+    global _SCHEDULER
+    if _SCHEDULER is None:
+        tz = os.getenv("TZ", "Europe/Warsaw")
+        _SCHEDULER = BackgroundScheduler(timezone=timezone(tz))
+    return _SCHEDULER
+
+def register_tasks(app):
+    """
+    Викликається з create_app(). Гарантує, що job-и та scheduler стартують ОДИН раз на процес.
+    """
+    global _SCHEDULER_STARTED
+    if _SCHEDULER_STARTED:
+        return  # вже піднято в цьому процесі
+
+    sched = _get_scheduler()
+
+    # уникаємо дублю job-ів при повторному імпорті
+    def _add_unique_job(func, id_, **trigger_kwargs):
+        if not any(j.id == id_ for j in sched.get_jobs()):
+            sched.add_job(func, id=id_, **trigger_kwargs)
+
+    # === Твої задачі ===
+    _add_unique_job(sync_yesterday,   'sync_yesterday',   trigger='cron', hour=2, minute=0)
+    _add_unique_job(sync_prev_month,  'sync_prev_month',  trigger='cron', day=1, hour=2, minute=30)
+    _add_unique_job(cleanup_old_records, 'cleanup_old_records', trigger='cron', day='*/3', hour=3, minute=0)
+
+    if not sched.running:
+        sched.start()
+
+    _SCHEDULER_STARTED = True
+    print("[scheduler] jobs registered: sync_yesterday, sync_prev_month, cleanup_old_records")
+    print("[scheduler] started (timezone={})".format(os.getenv("TZ", "Europe/Warsaw")))
+
+# === Реалізація задач ===
+
+def sync_yesterday():
+    monitor = AttendanceMonitor()
+    target = date.today() - timedelta(days=1)
+    monitor.update_for_date(target, include_absent=True)
+
+def sync_prev_month():
+    today = date.today()
+    prev_month = today.replace(day=1) - timedelta(days=1)
+    year, month = prev_month.year, prev_month.month
+    start_day = date(year, month, 1)
+    days = monthrange(year, month)[1]
+    monitor = AttendanceMonitor()
+    for i in range(days):
+        d = start_day + timedelta(days=i)
+        monitor.update_for_date(d, include_absent=True)
+
+def cleanup_old_records():
+    cutoff = date.today().replace(day=1)
+    previous_month_cutoff = (cutoff - timedelta(days=1)).replace(day=1)
+    deleted = AttendanceRecord.query.filter(
+        AttendanceRecord.record_date < previous_month_cutoff,
+        AttendanceRecord.manual_notes.is_(False),
+        AttendanceRecord.manual_hours.is_(False),
+        AttendanceRecord.manual_status.is_(False),
+    ).delete(synchronize_session=False)
+    db.session.commit()
+    print(f"[cleanup_old_records] Deleted {deleted} outdated rows.")

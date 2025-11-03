@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from collections import defaultdict
+from functools import lru_cache
 from html import escape
 from datetime import datetime, date, timedelta
 from io import BytesIO
@@ -14,8 +15,6 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, PatternFill, Font, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.cell.cell import MergedCell
-from werkzeug.security import check_password_hash
-
 from .extensions import db
 from .models import AttendanceRecord, User, AdminAuditLog
 from .user_data import get_user_schedule, load_user_schedules, clear_user_schedule_cache
@@ -40,7 +39,24 @@ except ImportError:  # pragma: no cover
     pdfmetrics = TTFont = None
 
 api_bp = Blueprint('api', __name__)
-DEFAULT_SYNC_PASSWORD = 'ChangeMe123'
+
+@lru_cache(maxsize=1)
+def _schedule_identity_sets() -> tuple[set[str], set[str], set[str]]:
+    schedules = load_user_schedules()
+    names: set[str] = set()
+    emails: set[str] = set()
+    ids: set[str] = set()
+    for name, info in schedules.items():
+        if name:
+            names.add(name.strip().lower())
+        if isinstance(info, dict):
+            email = str(info.get('email') or '').strip().lower()
+            if email:
+                emails.add(email)
+            user_id = str(info.get('user_id') or '').strip().lower()
+            if user_id:
+                ids.add(user_id)
+    return names, emails, ids
 
 MANUAL_FLAG_MAP = {
     'scheduled_start': 'manual_scheduled_start',
@@ -151,12 +167,17 @@ def _parse_date(value: str) -> date | None:
 
 
 def _is_synced_employee(user: User) -> bool:
-    if not user or not user.password_hash:
+    if not user or user.is_admin:
         return False
-    try:
-        return not user.is_admin and check_password_hash(user.password_hash, DEFAULT_SYNC_PASSWORD)
-    except Exception:  # pragma: no cover
-        return False
+    names, emails, ids = _schedule_identity_sets()
+    if user.email and user.email.strip().lower() in emails:
+        return True
+    if user.name and user.name.strip().lower() in names:
+        return True
+    identifier = getattr(user, 'user_id', None)
+    if identifier and str(identifier).strip().lower() in ids:
+        return True
+    return False
 
 
 def _apply_hierarchy_defaults(project: str | None, department: str | None, team: str | None) -> tuple[str, str, str]:
@@ -1181,6 +1202,7 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
             users[desired_name] = info_payload
             schedule_user_manager.save_users(data)
             clear_user_schedule_cache()
+            _schedule_identity_sets.cache_clear()
             return {
                 'matched_entry': None,
                 'renamed_to': desired_name,
@@ -1229,6 +1251,7 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
     if changed:
         schedule_user_manager.save_users(data)
         clear_user_schedule_cache()
+        _schedule_identity_sets.cache_clear()
 
     return {
         'matched_entry': target_name,

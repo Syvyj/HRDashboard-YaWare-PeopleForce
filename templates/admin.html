@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Админ-панель</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">⬅ Назад</a>
+        <span class="navbar-text text-white">{{ user_name }}</span>
+      </div>
+    </nav>
+
+    <div class="container pb-5" id="admin-app">
+      <div id="admin-alerts"></div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+            <div>
+              <h4 class="card-title mb-1">Сотрудники</h4>
+              <small class="text-muted"
+                >Управление контроль-менеджерами для пользователей</small
+              >
+            </div>
+            <div class="ms-auto d-flex flex-wrap align-items-end gap-2">
+              <div>
+                <label class="form-label mb-1" for="employee-search"
+                  >Поиск</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="employee-search"
+                  placeholder="Имя или email"
+                />
+              </div>
+              <div class="d-flex gap-2 mb-1">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="employee-search-btn"
+                >
+                  Поиск
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  id="employee-reset-btn"
+                >
+                  Сбросить
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <label class="form-label mb-0" for="bulk-manager-select"
+                >Назначить менеджера:</label
+              >
+              <select
+                class="form-select"
+                id="bulk-manager-select"
+                style="width: 160px"
+              ></select>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                id="bulk-manager-apply"
+                disabled
+              >
+                Применить
+              </button>
+            </div>
+            <small class="text-muted"
+              >Выберите строки и сохраните изменения</small
+            >
+          </div>
+
+          <div class="table-responsive">
+            <table
+              class="table table-sm table-bordered align-middle"
+              id="employee-table"
+            >
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 36px">
+                    <input type="checkbox" id="employee-select-all" />
+                  </th>
+                  <th>Пользователь</th>
+                  <th>Контакты</th>
+                  <th class="align-top">
+                    <div class="d-flex flex-column">
+                      <span>Проект</span>
+                      <select
+                        class="form-select form-select-sm mt-1"
+                        id="employee-filter-project"
+                      >
+                        <option value="">Все</option>
+                      </select>
+                    </div>
+                  </th>
+                  <th class="align-top">
+                    <div class="d-flex flex-column">
+                      <span>Департамент</span>
+                      <select
+                        class="form-select form-select-sm mt-1"
+                        id="employee-filter-department"
+                      >
+                        <option value="">Все</option>
+                      </select>
+                    </div>
+                  </th>
+                  <th class="align-top">
+                    <div class="d-flex flex-column">
+                      <span>Команда</span>
+                      <select
+                        class="form-select form-select-sm mt-1"
+                        id="employee-filter-team"
+                      >
+                        <option value="">Все</option>
+                      </select>
+                    </div>
+                  </th>
+                  <th>Control manager</th>
+                  <th style="width: 80px"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="8" class="text-center text-muted py-4">
+                    Загружаю данные…
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            class="d-flex justify-content-between align-items-center"
+            id="employee-pagination"
+          >
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm"
+              id="employee-prev"
+              disabled
+            >
+              ← Назад
+            </button>
+            <span class="text-muted" id="employee-page-info"></span>
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm"
+              id="employee-next"
+              disabled
+            >
+              Вперед →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+            <div>
+              <h4 class="card-title mb-1">Пользователи панели</h4>
+              <small class="text-muted"
+                >Создание администраторов и контроль-менеджеров</small
+              >
+            </div>
+          </div>
+
+          <form class="row g-3 mb-4" id="app-user-form">
+            <div class="col-md-3">
+              <label class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="app-user-email"
+                required
+              />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Имя</label>
+              <input
+                type="text"
+                class="form-control"
+                id="app-user-name"
+                required
+              />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Пароль</label>
+              <input
+                type="password"
+                class="form-control"
+                id="app-user-password"
+                required
+              />
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Control managers</label>
+              <input
+                type="text"
+                class="form-control"
+                id="app-user-managers"
+                placeholder="1,2"
+              />
+            </div>
+            <div class="col-md-1 d-flex align-items-center">
+              <div class="form-check mt-4">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="app-user-admin"
+                />
+                <label class="form-check-label" for="app-user-admin"
+                  >Admin</label
+                >
+              </div>
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-primary">Создать</button>
+            </div>
+          </form>
+
+          <div class="table-responsive">
+            <table
+              class="table table-sm table-bordered align-middle"
+              id="app-users-table"
+            >
+              <thead class="table-light">
+                <tr>
+                  <th>Email</th>
+                  <th>Имя</th>
+                  <th>Роли</th>
+                  <th>Control managers</th>
+                  <th style="width: 80px"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">
+                    Загружаю данные…
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="employeeEditModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Редактировать сотрудника</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <form id="employee-edit-form">
+            <div class="modal-body">
+              <input type="hidden" id="employee-edit-key" />
+              <div class="mb-3">
+                <label class="form-label">Имя</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="employee-edit-name"
+                />
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="employee-edit-email"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">YaWare ID</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="employee-edit-user-id"
+                  />
+                </div>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                  <label class="form-label">Проект</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="employee-edit-project"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Департамент</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="employee-edit-department"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Команда</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="employee-edit-team"
+                  />
+                </div>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Локация</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="employee-edit-location"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Плановый старт</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="employee-edit-plan-start"
+                    placeholder="09:00"
+                  />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Control manager</label>
+                <select class="form-select" id="employee-edit-manager"></select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-bs-dismiss="modal"
+              >
+                Отменить
+              </button>
+              <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="appUserModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Редактирование пользователя панели</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <form id="app-user-edit-form">
+            <div class="modal-body">
+              <input type="hidden" id="app-user-edit-id" />
+              <div class="mb-3">
+                <label class="form-label">Имя</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="app-user-edit-name"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Control managers</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="app-user-edit-managers"
+                  placeholder="1,2"
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Новый пароль (опционально)</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="app-user-edit-password"
+                />
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="app-user-edit-admin"
+                />
+                <label class="form-check-label" for="app-user-edit-admin"
+                  >Администратор</label
+                >
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-bs-dismiss="modal"
+              >
+                Отменить
+              </button>
+              <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/admin.js"></script>
+  </body>
+</html>

@@ -1,0 +1,599 @@
+(() => {
+  const root = document.getElementById('admin-app');
+  if (!root) {
+    return;
+  }
+
+  const alertsEl = document.getElementById('admin-alerts');
+  const employeeTable = document.getElementById('employee-table');
+  const employeeTbody = employeeTable.querySelector('tbody');
+  const selectAllCheckbox = document.getElementById('employee-select-all');
+  const searchInput = document.getElementById('employee-search');
+  const searchBtn = document.getElementById('employee-search-btn');
+  const resetBtn = document.getElementById('employee-reset-btn');
+  const prevBtn = document.getElementById('employee-prev');
+  const nextBtn = document.getElementById('employee-next');
+  const pageInfo = document.getElementById('employee-page-info');
+  const bulkManagerSelect = document.getElementById('bulk-manager-select');
+  const bulkManagerApply = document.getElementById('bulk-manager-apply');
+  const projectFilterSelect = document.getElementById('employee-filter-project');
+  const departmentFilterSelect = document.getElementById('employee-filter-department');
+  const teamFilterSelect = document.getElementById('employee-filter-team');
+  const employeeEditModalEl = document.getElementById('employeeEditModal');
+  const employeeEditForm = document.getElementById('employee-edit-form');
+  const employeeEditKey = document.getElementById('employee-edit-key');
+  const employeeEditName = document.getElementById('employee-edit-name');
+  const employeeEditEmail = document.getElementById('employee-edit-email');
+  const employeeEditUserId = document.getElementById('employee-edit-user-id');
+  const employeeEditProject = document.getElementById('employee-edit-project');
+  const employeeEditDepartment = document.getElementById('employee-edit-department');
+  const employeeEditTeam = document.getElementById('employee-edit-team');
+  const employeeEditLocation = document.getElementById('employee-edit-location');
+  const employeeEditPlanStart = document.getElementById('employee-edit-plan-start');
+  const employeeEditManager = document.getElementById('employee-edit-manager');
+  const appUserForm = document.getElementById('app-user-form');
+  const appUsersTable = document.getElementById('app-users-table');
+  const appUserModalEl = document.getElementById('appUserModal');
+  const appUserEditForm = document.getElementById('app-user-edit-form');
+
+  const employeeEditModal = employeeEditModalEl ? new bootstrap.Modal(employeeEditModalEl) : null;
+  const appUserModal = appUserModalEl ? new bootstrap.Modal(appUserModalEl) : null;
+
+  let employeePage = 1;
+  const perPage = 25;
+  let employeeTotal = 0;
+  let employeeSearch = '';
+  let managerOptions = [];
+  const selectedKeys = new Set();
+  let employeeProjectFilter = '';
+  let employeeDepartmentFilter = '';
+  let employeeTeamFilter = '';
+
+  function showAlert(message, type = 'danger', timeout = 5000) {
+    if (!alertsEl) {
+      return;
+    }
+    const wrapper = document.createElement('div');
+    wrapper.className = `alert alert-${type} alert-dismissible fade show`;
+    wrapper.role = 'alert';
+    wrapper.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    alertsEl.appendChild(wrapper);
+    if (timeout > 0) {
+      setTimeout(() => {
+        const alert = bootstrap.Alert.getOrCreateInstance(wrapper);
+        alert.close();
+      }, timeout);
+    }
+  }
+
+  function renderManagerOptions(selectEl, currentValue) {
+    if (!selectEl) {
+      return;
+    }
+    selectEl.innerHTML = '<option value="">—</option>';
+    managerOptions.forEach((value) => {
+      const option = document.createElement('option');
+      option.value = String(value);
+      option.textContent = `Manager #${value}`;
+      selectEl.appendChild(option);
+    });
+    selectEl.value = currentValue != null && currentValue !== '' ? String(currentValue) : '';
+  }
+
+  function updateBulkButtonState() {
+    bulkManagerApply.disabled = selectedKeys.size === 0;
+  }
+
+  function populateFilterSelect(selectEl, values, currentValue) {
+    if (!selectEl) {
+      return;
+    }
+    const normalizedValues = Array.from(new Set(values || [])).filter(Boolean).sort((a, b) => a.localeCompare(b));
+    const selected = currentValue || '';
+    selectEl.innerHTML = '<option value="">Усі</option>';
+    normalizedValues.forEach((value) => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      selectEl.appendChild(option);
+    });
+    if (normalizedValues.includes(selected)) {
+      selectEl.value = selected;
+    } else if (selected) {
+      const option = document.createElement('option');
+      option.value = selected;
+      option.textContent = selected;
+      selectEl.appendChild(option);
+      selectEl.value = selected;
+    }
+  }
+
+  function renderEmployees(data) {
+    const items = data.items || [];
+    managerOptions = data.manager_options || [];
+    renderManagerOptions(bulkManagerSelect, bulkManagerSelect.value);
+    renderManagerOptions(employeeEditManager, employeeEditManager ? employeeEditManager.value : '');
+
+    if (data.filters) {
+      populateFilterSelect(projectFilterSelect, data.filters.project, employeeProjectFilter);
+      populateFilterSelect(departmentFilterSelect, data.filters.department, employeeDepartmentFilter);
+      populateFilterSelect(teamFilterSelect, data.filters.team, employeeTeamFilter);
+    }
+
+    employeeTotal = data.total || 0;
+    employeePage = data.page || 1;
+
+    selectedKeys.clear();
+    selectAllCheckbox.checked = false;
+
+    if (!items.length) {
+      employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Немає даних</td></tr>';
+      pageInfo.textContent = '0 записів';
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+      updateBulkButtonState();
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    items.forEach((item) => {
+      const row = document.createElement('tr');
+      row.dataset.userKey = item.user_key;
+
+      const checkboxCell = document.createElement('td');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'form-check-input employee-checkbox';
+      checkbox.dataset.userKey = item.user_key;
+      checkboxCell.appendChild(checkbox);
+      row.appendChild(checkboxCell);
+
+      const nameCell = document.createElement('td');
+      nameCell.innerHTML = `<strong>${item.name || '—'}</strong>`;
+      row.appendChild(nameCell);
+
+      const contactCell = document.createElement('td');
+      contactCell.innerHTML = [
+        item.email || '—',
+        item.user_id ? `YaWare ID: ${item.user_id}` : ''
+      ].filter(Boolean).map((value) => `<div>${value}</div>`).join('');
+      row.appendChild(contactCell);
+
+      const projectCell = document.createElement('td');
+      projectCell.textContent = item.project || '—';
+      row.appendChild(projectCell);
+
+      const departmentCell = document.createElement('td');
+      departmentCell.textContent = item.department || '—';
+      row.appendChild(departmentCell);
+
+      const teamCell = document.createElement('td');
+      teamCell.textContent = item.team || '—';
+      row.appendChild(teamCell);
+
+      const managerCell = document.createElement('td');
+      managerCell.innerHTML = item.control_manager != null ? `#${item.control_manager}` : '—';
+      row.appendChild(managerCell);
+
+      const actionsCell = document.createElement('td');
+      actionsCell.className = 'text-center';
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'btn btn-sm btn-outline-primary employee-edit-btn';
+      editBtn.dataset.userPayload = JSON.stringify(item);
+      editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+      actionsCell.appendChild(editBtn);
+      row.appendChild(actionsCell);
+
+      fragment.appendChild(row);
+    });
+
+    employeeTbody.innerHTML = '';
+    employeeTbody.appendChild(fragment);
+
+    const totalPages = Math.ceil(employeeTotal / perPage) || 1;
+    pageInfo.textContent = `${employeePage} / ${totalPages} (усього ${employeeTotal})`;
+    prevBtn.disabled = employeePage <= 1;
+    nextBtn.disabled = employeePage >= totalPages;
+    updateBulkButtonState();
+  }
+
+  function fetchEmployees() {
+    const params = new URLSearchParams({ page: employeePage, per_page: perPage });
+    if (employeeSearch) {
+      params.set('search', employeeSearch);
+    }
+    if (employeeProjectFilter) {
+      params.set('project', employeeProjectFilter);
+    }
+    if (employeeDepartmentFilter) {
+      params.set('department', employeeDepartmentFilter);
+    }
+    if (employeeTeamFilter) {
+      params.set('team', employeeTeamFilter);
+    }
+
+    employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Завантаження…</td></tr>';
+
+    fetch(`/api/admin/employees?${params.toString()}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Не вдалося отримати дані співробітників');
+        }
+        return response.json();
+      })
+      .then(renderEmployees)
+      .catch((error) => {
+        employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4">Помилка завантаження</td></tr>';
+        showAlert(error.message);
+      });
+  }
+
+  function getSelectedKeys() {
+    return Array.from(selectedKeys);
+  }
+
+  function toggleSelection(key, isChecked) {
+    if (!key) {
+      return;
+    }
+    if (isChecked) {
+      selectedKeys.add(key);
+    } else {
+      selectedKeys.delete(key);
+    }
+    updateBulkButtonState();
+  }
+
+  function applyManagerChange(keys, value) {
+    if (!keys.length) {
+      return Promise.resolve();
+    }
+    const payload = {
+      user_keys: keys,
+      control_manager: value === '' ? null : value,
+    };
+
+    return fetch('/api/admin/employees/manager', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          throw new Error(data.error || 'Не вдалося оновити менеджера');
+        }
+        showAlert(`Оновлено ${data.updated_records} записів`, 'success');
+        fetchEmployees();
+      })
+      .catch((error) => {
+        showAlert(error.message);
+      });
+  }
+
+  function handleTableChange(event) {
+    const target = event.target;
+    if (target.matches('.employee-checkbox')) {
+      toggleSelection(target.dataset.userKey, target.checked);
+      selectAllCheckbox.checked = selectedKeys.size > 0 && Array.from(employeeTbody.querySelectorAll('.employee-checkbox')).every((input) => input.checked);
+    } else if (target === selectAllCheckbox) {
+      const checked = target.checked;
+      employeeTbody.querySelectorAll('.employee-checkbox').forEach((checkbox) => {
+        checkbox.checked = checked;
+        toggleSelection(checkbox.dataset.userKey, checked);
+      });
+    }
+  }
+
+  function openEmployeeModal(target) {
+    if (!employeeEditModal || !target) {
+      return;
+    }
+    const raw = target.dataset.userPayload;
+    if (!raw) {
+      return;
+    }
+    let payload;
+    try {
+      payload = JSON.parse(raw);
+    } catch (error) {
+      console.error('Failed to parse payload', error);
+      return;
+    }
+    employeeEditKey.value = payload.user_key || '';
+    employeeEditName.value = payload.name || '';
+    employeeEditEmail.value = payload.email || '';
+    employeeEditUserId.value = payload.user_id || '';
+    employeeEditProject.value = payload.project || '';
+    employeeEditDepartment.value = payload.department || '';
+    employeeEditTeam.value = payload.team || '';
+    employeeEditLocation.value = payload.location || '';
+    employeeEditPlanStart.value = payload.plan_start || '';
+    renderManagerOptions(employeeEditManager, payload.control_manager != null ? payload.control_manager : '');
+    employeeEditModal.show();
+  }
+
+  function handleEmployeeTableClick(event) {
+    const editBtn = event.target.closest('.employee-edit-btn');
+    if (editBtn) {
+      openEmployeeModal(editBtn);
+    }
+  }
+
+  function fetchAppUsers() {
+    const tbody = appUsersTable.querySelector('tbody');
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Завантаження…</td></tr>';
+    fetch('/api/admin/app-users')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Не вдалося отримати користувачів панелі');
+        }
+        return response.json();
+      })
+      .then((payload) => {
+        const items = payload.items || [];
+        if (!items.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Немає користувачів</td></tr>';
+          return;
+        }
+       const fragment = document.createDocumentFragment();
+       items.forEach((user) => {
+         const row = document.createElement('tr');
+         row.dataset.userId = user.id;
+          row.innerHTML = `
+            <td>${user.email}</td>
+            <td>${user.name}</td>
+            <td>${user.is_admin ? '<span class="badge bg-primary">Admin</span>' : '<span class="badge bg-secondary">Manager</span>'}</td>
+            <td>${user.manager_filter || '—'}</td>
+            <td class="text-center"></td>
+          `;
+          const actionsCell = row.lastElementChild;
+          const editBtn = document.createElement('button');
+          editBtn.type = 'button';
+          editBtn.className = 'btn btn-sm btn-outline-primary app-user-edit';
+          editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+          editBtn.dataset.user = JSON.stringify(user);
+          actionsCell.appendChild(editBtn);
+          fragment.appendChild(row);
+        });
+        tbody.innerHTML = '';
+        tbody.appendChild(fragment);
+      })
+      .catch((error) => {
+        appUsersTable.querySelector('tbody').innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Помилка завантаження</td></tr>';
+        showAlert(error.message);
+      });
+  }
+
+  // Event bindings
+  employeeTable.addEventListener('change', handleTableChange);
+  employeeTable.addEventListener('click', handleEmployeeTableClick);
+
+  if (searchBtn) {
+    searchBtn.addEventListener('click', () => {
+      employeeSearch = (searchInput.value || '').trim();
+      employeePage = 1;
+      fetchEmployees();
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      employeeSearch = '';
+      if (projectFilterSelect) {
+        projectFilterSelect.value = '';
+      }
+      if (departmentFilterSelect) {
+        departmentFilterSelect.value = '';
+      }
+      if (teamFilterSelect) {
+        teamFilterSelect.value = '';
+      }
+      employeeProjectFilter = '';
+      employeeDepartmentFilter = '';
+      employeeTeamFilter = '';
+      employeePage = 1;
+      fetchEmployees();
+    });
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      if (employeePage > 1) {
+        employeePage -= 1;
+        fetchEmployees();
+      }
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const totalPages = Math.ceil(employeeTotal / perPage) || 1;
+      if (employeePage < totalPages) {
+        employeePage += 1;
+        fetchEmployees();
+      }
+    });
+  }
+
+  if (bulkManagerSelect) {
+    bulkManagerSelect.addEventListener('change', updateBulkButtonState);
+  }
+
+  if (projectFilterSelect) {
+    projectFilterSelect.addEventListener('change', () => {
+      employeeProjectFilter = projectFilterSelect.value || '';
+      employeePage = 1;
+      fetchEmployees();
+    });
+  }
+
+  if (departmentFilterSelect) {
+    departmentFilterSelect.addEventListener('change', () => {
+      employeeDepartmentFilter = departmentFilterSelect.value || '';
+      employeePage = 1;
+      fetchEmployees();
+    });
+  }
+
+  if (teamFilterSelect) {
+    teamFilterSelect.addEventListener('change', () => {
+      employeeTeamFilter = teamFilterSelect.value || '';
+      employeePage = 1;
+      fetchEmployees();
+    });
+  }
+
+  if (bulkManagerApply) {
+    bulkManagerApply.addEventListener('click', () => {
+      const keys = getSelectedKeys();
+      const value = bulkManagerSelect.value;
+      applyManagerChange(keys, value);
+    });
+  }
+
+  if (employeeEditForm) {
+    employeeEditForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const key = (employeeEditKey.value || '').trim();
+      if (!key) {
+        return;
+      }
+      const payload = {
+        name: (employeeEditName.value || '').trim(),
+        email: (employeeEditEmail.value || '').trim(),
+        user_id: (employeeEditUserId.value || '').trim(),
+        project: (employeeEditProject.value || '').trim(),
+        department: (employeeEditDepartment.value || '').trim(),
+        team: (employeeEditTeam.value || '').trim(),
+        location: (employeeEditLocation.value || '').trim(),
+        plan_start: (employeeEditPlanStart.value || '').trim(),
+        control_manager: employeeEditManager.value,
+      };
+
+      fetch(`/api/admin/employees/${encodeURIComponent(key)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.error || 'Не вдалося оновити дані співробітника');
+          }
+          showAlert('Дані співробітника оновлено', 'success');
+          if (employeeEditModal) {
+            employeeEditModal.hide();
+          }
+          fetchEmployees();
+        })
+        .catch((error) => showAlert(error.message));
+    });
+  }
+
+  if (appUserForm) {
+    appUserForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const email = document.getElementById('app-user-email').value.trim();
+      const name = document.getElementById('app-user-name').value.trim();
+      const password = document.getElementById('app-user-password').value;
+      const managerFilter = document.getElementById('app-user-managers').value.trim();
+      const isAdmin = document.getElementById('app-user-admin').checked;
+
+      const payload = {
+        email,
+        name,
+        password,
+        manager_filter: managerFilter,
+        is_admin: isAdmin,
+      };
+
+      fetch('/api/admin/app-users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.error || 'Не вдалося створити користувача');
+          }
+          showAlert('Користувача створено', 'success');
+          appUserForm.reset();
+          fetchAppUsers();
+        })
+        .catch((error) => showAlert(error.message));
+    });
+  }
+
+  if (appUsersTable) {
+    appUsersTable.addEventListener('click', (event) => {
+      const button = event.target.closest('.app-user-edit');
+      if (!button || !appUserModal) {
+        return;
+      }
+      const data = JSON.parse(button.dataset.user);
+      document.getElementById('app-user-edit-id').value = data.id;
+      document.getElementById('app-user-edit-name').value = data.name || '';
+      document.getElementById('app-user-edit-managers').value = data.manager_filter || '';
+      document.getElementById('app-user-edit-password').value = '';
+      document.getElementById('app-user-edit-admin').checked = Boolean(data.is_admin);
+      appUserModal.show();
+    });
+  }
+
+  if (appUserEditForm) {
+    appUserEditForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const userId = document.getElementById('app-user-edit-id').value;
+      const name = document.getElementById('app-user-edit-name').value.trim();
+      const managerFilter = document.getElementById('app-user-edit-managers').value.trim();
+      const password = document.getElementById('app-user-edit-password').value;
+      const isAdmin = document.getElementById('app-user-edit-admin').checked;
+
+      const payload = {
+        name,
+        manager_filter: managerFilter,
+        is_admin: isAdmin,
+      };
+      if (password) {
+        payload.password = password;
+      }
+
+      fetch(`/api/admin/app-users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.error || 'Не вдалося оновити користувача');
+          }
+          showAlert('Дані користувача оновлено', 'success');
+          if (appUserModal) {
+            appUserModal.hide();
+          }
+          fetchAppUsers();
+        })
+        .catch((error) => showAlert(error.message));
+    });
+  }
+
+  // Initial load
+  fetchEmployees();
+  fetchAppUsers();
+})();

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Карточка пользователя</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
+  <body class="bg-light" data-user-key="{{ user_key|e }}">
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">⬅ Назад</a>
+        <span class="navbar-text text-white">{{ user_name }}</span>
+      </div>
+    </nav>
+    <div class="container py-4">
+      <div id="alert-container"></div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div
+            class="d-flex justify-content-between align-items-start flex-wrap"
+          >
+            <div>
+              <h3 class="card-title mb-1" id="profile-name">
+                {{ display_name }}
+              </h3>
+              <p class="text-muted mb-0" id="profile-meta"></p>
+            </div>
+            <div
+              class="text-end small text-muted"
+              id="profile-identifier"
+            ></div>
+          </div>
+          <hr />
+          <div class="row" id="profile-details">
+            <div class="col-md-6">
+              <dl class="row mb-0">
+                <dt class="col-sm-5">Email</dt>
+                <dd class="col-sm-7" id="profile-email">—</dd>
+                <dt class="col-sm-5">Локация</dt>
+                <dd class="col-sm-7" id="profile-location">—</dd>
+              </dl>
+            </div>
+            <div class="col-md-6">
+              <dl class="row mb-0">
+                <dt class="col-sm-5">Плановый старт</dt>
+                <dd class="col-sm-7" id="profile-plan-start">—</dd>
+                <dt class="col-sm-5">Control manager</dt>
+                <dd
+                  class="col-sm-7 d-flex align-items-center gap-2"
+                  id="profile-manager"
+                >
+                  <span id="profile-manager-value">—</span>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary d-none"
+                    id="manager-edit-btn"
+                    title="Змінити"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                </dd>
+                <dt class="col-sm-5">YaWare ID</dt>
+                <dd class="col-sm-7" id="profile-yaware">—</dd>
+                <dt class="col-sm-5">PeopleForce ID</dt>
+                <dd class="col-sm-7" id="profile-peopleforce">—</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">Опоздания на этой неделе</h5>
+          </div>
+          <div id="lateness-grid" class="d-flex flex-wrap gap-3"></div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex flex-wrap align-items-end gap-2 mb-3">
+            <div>
+              <h5 class="card-title mb-1">Последние рабочие дни</h5>
+              <span class="badge bg-secondary" id="records-count"
+                >0 записей</span
+              >
+            </div>
+            <div class="d-flex flex-wrap align-items-end gap-2 ms-auto">
+              <div>
+                <label class="form-label mb-1" for="range-date-from">С</label>
+                <input type="date" class="form-control" id="range-date-from" />
+              </div>
+              <div>
+                <label class="form-label mb-1" for="range-date-to">По</label>
+                <input type="date" class="form-control" id="range-date-to" />
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary" id="range-apply">
+                  Показать
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  id="range-reset"
+                >
+                  Сбросить
+                </button>
+              </div>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                id="report-btn"
+              >
+                Сформировать отчет
+              </button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table
+              class="table table-sm table-bordered align-middle"
+              id="records-table"
+            >
+              <thead class="table-light">
+                <tr>
+                  <th>Дата</th>
+                  <th>План</th>
+                  <th>Факт</th>
+                  <th>Non Productive</th>
+                  <th>Not Categorized</th>
+                  <th>Productive</th>
+                  <th>Total</th>
+                  <th>Total corrected</th>
+                  <th>Notes</th>
+                  <th style="width: 40px"></th>
+                </tr>
+              </thead>
+              <tbody id="records-body">
+                <tr>
+                  <td colspan="10" class="text-center text-muted py-4">
+                    Данные загружаются…
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="recordModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Редактирование записи</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <form id="record-form">
+            <div class="modal-body">
+              <input type="hidden" id="record-id" />
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label">Плановый старт</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="form-scheduled-start"
+                    placeholder="10:00"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Фактический старт</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="form-actual-start"
+                    placeholder="09:55"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Статус</label>
+                  <select class="form-select" id="form-status"></select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Опоздание (год:хв)</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="form-minutes-late"
+                    placeholder="00:15"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Non productive</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="form-non-productive"
+                    placeholder="00:30"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Not categorized</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="form-not-categorized"
+                    placeholder="00:05"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Productive</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="form-productive"
+                    placeholder="07:30"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Total</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="form-total"
+                    placeholder="08:00"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Total corrected</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="form-total-corrected"
+                    placeholder="08:00"
+                  />
+                </div>
+                <div class="col-md-9">
+                  <label class="form-label">Notes</label>
+                  <textarea
+                    class="form-control"
+                    rows="2"
+                    id="form-notes"
+                  ></textarea>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Причина отсутствия</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="form-leave-reason"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-bs-dismiss="modal"
+              >
+                Отменить
+              </button>
+              <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="managerModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Изменить контроль-менеджера</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <form id="manager-modal-form">
+            <div class="modal-body">
+              <label class="form-label">Control manager</label>
+              <select class="form-select" id="manager-modal-select"></select>
+              <small class="text-muted"
+                >Применяется ко всем записям пользователя.</small
+              >
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-bs-dismiss="modal"
+              >
+                Отменить
+              </button>
+              <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Выберите формат</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body d-flex justify-content-center gap-3">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-report-format="pdf"
+            >
+              PDF
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-report-format="excel"
+            >
+              Excel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/static/js/user_detail.js"></script>
+  </body>
+</html>

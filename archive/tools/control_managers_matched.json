@@ -1,0 +1,832 @@
+{
+  "matched": {
+    "v.masiuk@evadav.com": {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": "Corporate Culture",
+      "name": "Masiuk Veranika",
+      "plan_start": "Mn-Wed 14 -18\nThursday-Friday from 9 -13 p.m.",
+      "location": "Country",
+      "matched_csv_name": "Masiuk Veranika",
+      "match_score": 1.0
+    },
+    "i.marcinkute@evadav.com": {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Marcinkute Ilona",
+      "plan_start": "09:00",
+      "location": "Hungary",
+      "matched_csv_name": "Marcikute Ilona",
+      "match_score": 0.967741935483871
+    },
+    "a.lebid@evadav.com": {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Lebid Anastasia",
+      "plan_start": "09:00",
+      "location": "Warszawa, Poland",
+      "matched_csv_name": "Lebid Anastasiia",
+      "match_score": 0.967741935483871
+    },
+    "k.polishchuk@evadav.com": {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": "L&D",
+      "name": "Polishuk Kateryna",
+      "plan_start": "09:00",
+      "location": "Warszawa, Poland",
+      "matched_csv_name": "Polishchuk Kateryna",
+      "match_score": 0.9444444444444444
+    },
+    "d.pitukh@evadav.com": {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Pitukh Daryna",
+      "plan_start": "09:00",
+      "location": "Czech Republic",
+      "matched_csv_name": "Pitukh Daryna",
+      "match_score": 1.0
+    },
+    "h.khan@evadav.com": {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Khan Hanna",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Khan Anna",
+      "match_score": 0.9473684210526315
+    },
+    "m.kutkovskyi@evadav.com": {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Kutkovskyi Mykhailo",
+      "plan_start": "09:00",
+      "location": "Czech Republic",
+      "matched_csv_name": "Kutkovskyi Mykhailo",
+      "match_score": 1.0
+    },
+    "v.marsheva@evadav.com": {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Marsheva Veronika",
+      "plan_start": "20 hours weekly",
+      "location": "RF, St. Petersburg",
+      "matched_csv_name": "Marsheva Veronika",
+      "match_score": 1.0
+    },
+    "i.melnyk@evrius.com": {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Melnyk Iryna",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Melnyk Iryna",
+      "match_score": 1.0
+    },
+    "t.maksymchuk@evrius.com": {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Maksymchuk Tetiana",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Maksymchuk Tatiana",
+      "match_score": 0.9444444444444444
+    },
+    "d.efimov@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": "Sales",
+      "name": "Efimov Dmitrii",
+      "plan_start": "10:00",
+      "location": "Russia",
+      "matched_csv_name": "Efimov Dmitrii",
+      "match_score": 1.0
+    },
+    "v.balyunov@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": "CPA ",
+      "name": "Balyunov Valentin",
+      "plan_start": "10:00",
+      "location": "Russia",
+      "matched_csv_name": "Balyunov Valentyn",
+      "match_score": 0.9411764705882353
+    },
+    "m.tuzman@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Tuzman Mykhailo",
+      "plan_start": "08:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Tuzman Mykhailo",
+      "match_score": 1.0
+    },
+    "y.prymak@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Prymak Yuliia",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Prymak Yuliia",
+      "match_score": 1.0
+    },
+    "n.kucherenko@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Kucherenko Nikita",
+      "plan_start": "11:00",
+      "location": "Armenia",
+      "matched_csv_name": "Kucherenko Nikita",
+      "match_score": 1.0
+    },
+    "m.lazarenko@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": "RTB",
+      "name": "Lazarenko Maksim",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Lazarenko  Maksim",
+      "match_score": 0.9696969696969697
+    },
+    "ddenys_pub@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Dubovytskyi Denys",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Dubovytskyi  Denys",
+      "match_score": 0.9714285714285714
+    },
+    "d.kostina@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": "R&D",
+      "name": "Kostina Dariia",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Kostina Dariia",
+      "match_score": 1.0
+    },
+    "v.sukhanov@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Sukhanov Vlad",
+      "plan_start": "08:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Sukhanov  Vlad",
+      "match_score": 0.9629629629629629
+    },
+    "yevhenii_sup@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": "Support",
+      "name": "Iliin Eugeniy",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Iliin Eugeniy",
+      "match_score": 1.0
+    },
+    "viktor_sup@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Demidov Viktor",
+      "plan_start": "09:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Demidov Viktor",
+      "match_score": 1.0
+    },
+    "p.kantemir@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Kantemir Pavlo",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Kantemir Pavlo",
+      "match_score": 1.0
+    },
+    "andrey_mod@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Pankov Andriy",
+      "plan_start": null,
+      "location": "Ukraine",
+      "matched_csv_name": "Pankov Andriy",
+      "match_score": 1.0
+    },
+    "evgeniy_mod@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Kiliovyi Evhen",
+      "plan_start": null,
+      "location": "Ukraine",
+      "matched_csv_name": "Kiliovyi  Evhen",
+      "match_score": 0.9655172413793104
+    },
+    "o.larina@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Larina Olena",
+      "plan_start": null,
+      "location": "Ukraine",
+      "matched_csv_name": "Larina Olena",
+      "match_score": 1.0
+    },
+    "o.pankov@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Pankov Alexandr",
+      "plan_start": null,
+      "location": "Ukraine",
+      "matched_csv_name": "Pankov Alexandr",
+      "match_score": 1.0
+    },
+    "n.stopochkin@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Stopochkin Nykyta",
+      "plan_start": null,
+      "location": "Ukraine",
+      "matched_csv_name": "Stopochkin Nykyta",
+      "match_score": 1.0
+    },
+    "i.zbutevych@evadav.com": {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Zbutevych Illia",
+      "plan_start": null,
+      "location": "Ukraine",
+      "matched_csv_name": "Zbutevich Illia",
+      "match_score": 0.9333333333333333
+    },
+    "a.kurylionak@evadav.com": {
+      "control_manager": 1,
+      "department": "APPs",
+      "team": "Project\n Manager",
+      "name": "Kurylionak Aliaksandr",
+      "plan_start": "09:00",
+      "location": "Poland",
+      "matched_csv_name": "Kurylionak Aliaksandr",
+      "match_score": 1.0
+    },
+    "i.gramovich@evadav.com": {
+      "control_manager": 1,
+      "department": "APPs",
+      "team": "IOS",
+      "name": "Gramovich Ivan",
+      "plan_start": "09:00",
+      "location": "Poland",
+      "matched_csv_name": "Gramovich Ivan",
+      "match_score": 1.0
+    },
+    "r.kazmirchuk@evadav.com": {
+      "control_manager": 1,
+      "department": "APPs",
+      "team": null,
+      "name": "Roman Kazmirchuk",
+      "plan_start": "09:00",
+      "location": "Belgium",
+      "matched_csv_name": "Roman Kazmirchuk",
+      "match_score": 1.0
+    },
+    "v.shustal@evadav.com": {
+      "control_manager": 1,
+      "department": "APPs",
+      "team": null,
+      "name": "Shustal Valeria",
+      "plan_start": "09:00",
+      "location": "Poland",
+      "matched_csv_name": "Shustal  Valeria",
+      "match_score": 0.967741935483871
+    },
+    "p.yushkov@evadav.com": {
+      "control_manager": 1,
+      "department": "APPs",
+      "team": null,
+      "name": "Yushkov Pavel",
+      "plan_start": "09:00",
+      "location": "Czech Republic",
+      "matched_csv_name": "Yushkov Pavel",
+      "match_score": 1.0
+    },
+    "a.shota@evadav.com": {
+      "control_manager": 1,
+      "department": "APPs",
+      "team": "MediaBuy",
+      "name": "Shota Artyom",
+      "plan_start": "10:00",
+      "location": "Belarus",
+      "matched_csv_name": "Shota Artyom",
+      "match_score": 1.0
+    },
+    "r.usenko@evrius.com": {
+      "control_manager": 1,
+      "department": "APPs",
+      "team": null,
+      "name": "Usenko Roman",
+      "plan_start": "10:00",
+      "location": "Montenegro",
+      "matched_csv_name": "Usenko Roman",
+      "match_score": 1.0
+    },
+    "d.sedysheva@evadav.com": {
+      "control_manager": 1,
+      "department": "APPs",
+      "team": null,
+      "name": "Sedysheva Dariia",
+      "plan_start": "09:00",
+      "location": "RF",
+      "matched_csv_name": "Sedysheva Daria",
+      "match_score": 0.967741935483871
+    },
+    "v.klimchenya@evadav.com": {
+      "control_manager": 2,
+      "department": "FB MB",
+      "team": "Head",
+      "name": "Klimchenya Valery",
+      "plan_start": "10:00",
+      "location": "Belarus",
+      "matched_csv_name": "Klimchenya Valery",
+      "match_score": 1.0
+    },
+    "v.bazdyrev@evadav.com": {
+      "control_manager": 2,
+      "department": "FB MB",
+      "team": null,
+      "name": "Bazdyrev Viktor",
+      "plan_start": "9:00:",
+      "location": "Poland",
+      "matched_csv_name": "Bazdyrev Viktor",
+      "match_score": 1.0
+    },
+    "j.demidchuk@evadav.com": {
+      "control_manager": 2,
+      "department": "FB MB",
+      "team": null,
+      "name": "Demidchuk Julia",
+      "plan_start": "9:00:",
+      "location": "Poland",
+      "matched_csv_name": "Demidchuk Julia",
+      "match_score": 1.0
+    },
+    "a.kastyrin@evadav.com": {
+      "control_manager": 2,
+      "department": "FB MB",
+      "team": null,
+      "name": "Kastyrin Artem",
+      "plan_start": "9:00:",
+      "location": "Poland",
+      "matched_csv_name": "Kastyrin Artem",
+      "match_score": 1.0
+    },
+    "a.bratchenko@evadav.com": {
+      "control_manager": 2,
+      "department": "FB MB",
+      "team": "FB Anna",
+      "name": "Bratchenko Anna",
+      "plan_start": "9:00:",
+      "location": "Poland",
+      "matched_csv_name": "Bratchenko Anna",
+      "match_score": 1.0
+    },
+    "v.taranov@evadav.com": {
+      "control_manager": 2,
+      "department": "FB MB",
+      "team": null,
+      "name": "Vladyslav Taranov",
+      "plan_start": "9:00:",
+      "location": "Poland",
+      "matched_csv_name": "Vladyslav Taranov",
+      "match_score": 1.0
+    },
+    "y.mushnin@evadav.com": {
+      "control_manager": 2,
+      "department": "FB MB",
+      "team": null,
+      "name": "Mushnin Yevhen",
+      "plan_start": "9:00:",
+      "location": "Poland",
+      "matched_csv_name": "Mushnin Yevhen",
+      "match_score": 1.0
+    },
+    "o.melnychenko@evadav.com": {
+      "control_manager": 2,
+      "department": "FB MB",
+      "team": null,
+      "name": "Melnychenko Oleh",
+      "plan_start": "9:00:",
+      "location": "Poland",
+      "matched_csv_name": "Melnychenko Oleh",
+      "match_score": 1.0
+    },
+    "i.balaban@evadav.com": {
+      "control_manager": 2,
+      "department": "TT",
+      "team": "TT Iryna",
+      "name": "Balaban Iryna",
+      "plan_start": "9:00:",
+      "location": "Czech Republic",
+      "matched_csv_name": "Balaban Iryna",
+      "match_score": 1.0
+    },
+    "y.hynkaliuk@evadav.com": {
+      "control_manager": 2,
+      "department": "TT",
+      "team": null,
+      "name": "Hynkaliuk Yana",
+      "plan_start": "9:00:",
+      "location": "Czech Republic",
+      "matched_csv_name": "Hynkaliuk Yana",
+      "match_score": 1.0
+    },
+    "k.shoshina@evadav.com": {
+      "control_manager": 2,
+      "department": "TT",
+      "team": null,
+      "name": "Shoshina Karina",
+      "plan_start": "12:00",
+      "location": "Bali",
+      "matched_csv_name": "Shoshina Karina",
+      "match_score": 1.0
+    },
+    "t.fomenko@evadav.com": {
+      "control_manager": 2,
+      "department": "TT",
+      "team": null,
+      "name": "Fomenko Taras",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Fomenko Taras",
+      "match_score": 1.0
+    },
+    "b.koba@evadav.com": {
+      "control_manager": 2,
+      "department": "TT",
+      "team": null,
+      "name": "Koba Bogdan",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Koba Bogdan",
+      "match_score": 1.0
+    },
+    "a.kasimov@evadav.com": {
+      "control_manager": 2,
+      "department": "TT",
+      "team": null,
+      "name": "Kasimov Amir",
+      "plan_start": "12:00",
+      "location": "Thailand",
+      "matched_csv_name": "Kasimov Amir",
+      "match_score": 1.0
+    },
+    "d.koshchei@evadav.com": {
+      "control_manager": 2,
+      "department": "TT",
+      "team": null,
+      "name": "Koshchei Dariia",
+      "plan_start": "9:00:",
+      "location": "Poland",
+      "matched_csv_name": "Koshchei Dariia",
+      "match_score": 1.0
+    },
+    "d.goloven@evrius.com": {
+      "control_manager": 2,
+      "department": "TT",
+      "team": null,
+      "name": "Goloven Dmytro",
+      "plan_start": "9:00:",
+      "location": "Ukraine",
+      "matched_csv_name": "Goloven Dmytro",
+      "match_score": 1.0
+    },
+    "d.novak@evadav.com": {
+      "control_manager": 2,
+      "department": "TT",
+      "team": null,
+      "name": "Novak Darya",
+      "plan_start": "9:00:",
+      "location": "Poland",
+      "matched_csv_name": "Novak Darya",
+      "match_score": 1.0
+    },
+    "a.gelman@evadav.com": {
+      "control_manager": 2,
+      "department": "TT",
+      "team": null,
+      "name": "Gelman Amin",
+      "plan_start": "9:00:",
+      "location": "Azerbaijan",
+      "matched_csv_name": "Gelman Amin",
+      "match_score": 1.0
+    },
+    "a.romanovich@evadav.com": {
+      "control_manager": 2,
+      "department": "CREATIVE",
+      "team": "MAINSTREAM",
+      "name": "Romanovich Alexey",
+      "plan_start": "10:00",
+      "location": "UK",
+      "matched_csv_name": "Romanovich Alexey",
+      "match_score": 1.0
+    },
+    "s.lysenko@evadav.com": {
+      "control_manager": 2,
+      "department": "CREATIVE",
+      "team": null,
+      "name": "Lysenko Serhii",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Lysenko Serhii",
+      "match_score": 1.0
+    },
+    "a.shilko@evadav.com": {
+      "control_manager": 2,
+      "department": "CREATIVE",
+      "team": null,
+      "name": "Shilko Alexandra",
+      "plan_start": "11:00",
+      "location": "Georgia",
+      "matched_csv_name": "Shilko Alexandra",
+      "match_score": 1.0
+    },
+    "v.bondarenko@evadav.com": {
+      "control_manager": 2,
+      "department": "CREATIVE",
+      "team": null,
+      "name": "Bondarenko Vladyslav",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "matched_csv_name": "Bondarenko Vladyslav",
+      "match_score": 1.0
+    },
+    "k.tereschenko@evadav.com": {
+      "control_manager": 2,
+      "department": "CREATIVE",
+      "team": "TECH",
+      "name": "Tereshenko Kirill",
+      "plan_start": "9:00:",
+      "location": "Czech Republic",
+      "matched_csv_name": "Tereshchenko Kirill",
+      "match_score": 0.9444444444444444
+    },
+    "a.chernyakov@evadav.com": {
+      "control_manager": 2,
+      "department": "CREATIVE",
+      "team": null,
+      "name": "Chernyakov Andrii",
+      "plan_start": null,
+      "location": null,
+      "matched_csv_name": "Chernyakov Andrii",
+      "match_score": 1.0
+    }
+  },
+  "unmatched": [
+    {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": "Recruit",
+      "name": "Zhara Lilia",
+      "plan_start": "09:00",
+      "location": "Czech Republic",
+      "best_match_email": "y.varnavska@evrius.com",
+      "best_match_name": "Varnavska Yuliia",
+      "best_match_score": 0.5925925925925926
+    },
+    {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Torianyk Haiana",
+      "plan_start": "09:00",
+      "location": "Czech Republic",
+      "best_match_email": "a.kotliarenko@evadav.com",
+      "best_match_name": "Kotliarenko Alina",
+      "best_match_score": 0.625
+    },
+    {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Antonova Yelyzaveta",
+      "plan_start": "09:00",
+      "location": "Poland",
+      "best_match_email": "t.dankova@evadav.com",
+      "best_match_name": "Dankova Tetiana",
+      "best_match_score": 0.5294117647058824
+    },
+    {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Dmytrenko Anna",
+      "plan_start": "09:00",
+      "location": "Wroclaw, Poland",
+      "best_match_email": "a.bratchenko@evadav.com",
+      "best_match_name": "Bratchenko Anna",
+      "best_match_score": 0.6896551724137931
+    },
+    {
+      "control_manager": 1,
+      "department": "Consulting",
+      "team": null,
+      "name": "Lukashov Vasyl",
+      "plan_start": "10:00",
+      "location": "Germany",
+      "best_match_email": "p.yushkov@evadav.com",
+      "best_match_name": "Yushkov Pavel",
+      "best_match_score": 0.5925925925925926
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "Kozinskii Maksim",
+      "plan_start": "17:00",
+      "location": "Russia",
+      "best_match_email": "m.kondras@evadav.com",
+      "best_match_name": "Kondras Maksym",
+      "best_match_score": 0.6666666666666666
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": "Demand:\n Account",
+      "name": "v.dupenko",
+      "plan_start": "09:00",
+      "location": "RF, MSC",
+      "best_match_email": "v.dupenko@evadav.com",
+      "best_match_name": "Dupenko Valeria",
+      "best_match_score": 0.5833333333333334
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "d.galeev",
+      "plan_start": "11:00",
+      "location": "Russia, Izhevsk",
+      "best_match_email": "d.galeev@evadav.com",
+      "best_match_name": "Galeev Daniel",
+      "best_match_score": 0.5714285714285714
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "n.murygin",
+      "plan_start": "09:00",
+      "location": "Russia",
+      "best_match_email": "nikolai_adv@evadav.com",
+      "best_match_name": "Murygin Nikolai",
+      "best_match_score": 0.5833333333333334
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": "Demand: Hunter",
+      "name": "r.tenditnik",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "best_match_email": "roman_adv@evadav.com",
+      "best_match_name": "Tenditnik Roman",
+      "best_match_score": 0.6923076923076923
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "m.vykhodtseva",
+      "plan_start": "09:00",
+      "location": "Ukraine",
+      "best_match_email": "m.vykhodtseva@evadav.com",
+      "best_match_name": "Vykhodtseva Mariia",
+      "best_match_score": 0.7096774193548387
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": "Traffic",
+      "name": "m.sarkisov",
+      "plan_start": "11:00",
+      "location": "Russia Moscow",
+      "best_match_email": "m.sarkisov@evadav.com",
+      "best_match_name": "Sarkisov Moses",
+      "best_match_score": 0.6666666666666666
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "d.likhobaba",
+      "plan_start": "10:00",
+      "location": "RF, Shebekino",
+      "best_match_email": "d.likhobaba@evadav.com",
+      "best_match_name": "Likhobaba Daniil",
+      "best_match_score": 0.6666666666666666
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "s.masalov",
+      "plan_start": "10:00",
+      "location": "RF, Vologda",
+      "best_match_email": "s.masalov@evadav.com",
+      "best_match_name": "Masalov Semyon",
+      "best_match_score": 0.6086956521739131
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "d.kolos",
+      "plan_start": "10:00",
+      "location": "Montenegro",
+      "best_match_email": "d.kolos@evadav.com",
+      "best_match_name": "Kolos Danyl",
+      "best_match_score": 0.5555555555555556
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "a.dobrorodnia",
+      "plan_start": "10:00",
+      "location": "Ukraine",
+      "best_match_email": "a.dobrorodnia@evadav.com",
+      "best_match_name": "Dobrorodnia alina",
+      "best_match_score": 0.7333333333333333
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "v.sapov",
+      "plan_start": "10:00",
+      "location": "Russia\nArkhangelsk",
+      "best_match_email": "v.sapov@evadav.com",
+      "best_match_name": "Sapov Viacheslav",
+      "best_match_score": 0.43478260869565216
+    },
+    {
+      "control_manager": 1,
+      "department": "AdNetwork",
+      "team": null,
+      "name": "a.pryimak",
+      "plan_start": "09:00",
+      "location": "Czech Republic",
+      "best_match_email": "y.prymak@evadav.com",
+      "best_match_name": "Prymak Yuliia",
+      "best_match_score": 0.5454545454545454
+    },
+    {
+      "control_manager": 1,
+      "department": "APPs",
+      "team": null,
+      "name": "Yekhlakov Viktor",
+      "plan_start": "09:00",
+      "location": "Poland",
+      "best_match_email": "viktor_sup@evadav.com",
+      "best_match_name": "Demidov Viktor",
+      "best_match_score": 0.6666666666666666
+    },
+    {
+      "control_manager": 2,
+      "department": "FB MB",
+      "team": null,
+      "name": "Maksym Kondras",
+      "plan_start": "9:00:",
+      "location": "Poland",
+      "best_match_email": "m.kozinskii@evadav.com",
+      "best_match_name": "Maksim Kozinskii",
+      "best_match_score": 0.6666666666666666
+    }
+  ],
+  "stats": {
+    "total_control_users": 80,
+    "matched": 60,
+    "unmatched": 20,
+    "user_schedules_updated": 59
+  }
+}

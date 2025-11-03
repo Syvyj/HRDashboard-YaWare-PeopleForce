@@ -1,0 +1,81 @@
+{
+  "_comment": "Графіки роботи на основі локацій PeopleForce",
+  
+  "schedules": {
+    "prague_warsaw": {
+      "name": "Прага/Варшава офіс",
+      "start_time": "09:00",
+      "end_time": "18:00",
+      "timezone": "Europe/Prague",
+      "lateness_threshold_minutes": 15,
+      "early_leave_threshold_minutes": 30
+    },
+    
+    "remote_ukraine": {
+      "name": "Remote Ukraine",
+      "start_time": "10:00",
+      "end_time": "19:00",
+      "timezone": "Europe/Kiev",
+      "lateness_threshold_minutes": 15,
+      "early_leave_threshold_minutes": 30
+    },
+    
+    "flexible": {
+      "name": "Гнучкий графік",
+      "start_time": "10:00",
+      "end_time": "19:00",
+      "timezone": "Europe/Kiev",
+      "lateness_threshold_minutes": 30,
+      "early_leave_threshold_minutes": 60
+    },
+    
+    "24/7": {
+      "name": "Цілодобовий графік",
+      "start_time": null,
+      "end_time": null,
+      "timezone": "Europe/Kiev",
+      "lateness_threshold_minutes": null,
+      "early_leave_threshold_minutes": null,
+      "note": "Без контролю запізнень"
+    }
+  },
+  
+  "location_mapping": {
+    "_comment": "Мапінг локацій PeopleForce на графіки роботи",
+    
+    "Prague": "prague_warsaw",
+    "Prague office": "prague_warsaw",
+    "Warsaw": "prague_warsaw",
+    "Warsaw office": "prague_warsaw",
+    "Warszawa": "prague_warsaw",
+    "Praha": "prague_warsaw",
+    "Office Prague": "prague_warsaw",
+    "Office Warsaw": "prague_warsaw",
+    
+    "Remote Ukraine": "remote_ukraine",
+    "Ukraine": "remote_ukraine",
+    "Kyiv": "remote_ukraine",
+    "Kiev": "remote_ukraine",
+    "Lviv": "remote_ukraine",
+    "Dnipro": "remote_ukraine",
+    "Kharkiv": "remote_ukraine",
+    "Odesa": "remote_ukraine",
+    
+    "Remote": "flexible",
+    "Remote other countries": "flexible",
+    "Remote Other": "flexible"
+  },
+  
+  "email_overrides": {
+    "_comment": "Індивідуальні налаштування для конкретних користувачів (мейл -> schedule_id)",
+    "_example": "user@example.com: '24/7'"
+  },
+  
+  "department_overrides": {
+    "_comment": "Налаштування для цілих відділів",
+    "Support": "24/7",
+    "DevOps": "flexible"
+  },
+  
+  "default_schedule": "remote_ukraine"
+}

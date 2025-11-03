@@ -1,0 +1,128 @@
+from __future__ import annotations
+
+import os
+import logging
+import inspect
+from datetime import date, timedelta
+from calendar import monthrange
+
+from .models import AttendanceRecord, db
+
+logger = logging.getLogger("ctrlbot.scheduler")
+if not logger.handlers:
+    logger.setLevel(logging.INFO)
+    _h = logging.StreamHandler()
+    _h.setFormatter(logging.Formatter("%(message)s"))
+    logger.addHandler(_h)
+    logger.propagate = False
+
+# --- універсальний виклик апдейта за дату з tasks/update_attendance.py ---
+def _call_update_for_date(d: date):
+    """Інтроспективно викликає апдейтер у tasks/update_attendance.py для дати d."""
+    try:
+        from tasks import update_attendance as ua
+    except Exception as e:
+        raise RuntimeError(f"Не знайшов tasks/update_attendance.py: {e}")
+
+    preferred = (
+        "update_for_date", "sync_date", "update_day",
+        "run_for_date", "process_date", "sync_attendance_for_date",
+    )
+    funcs = [(n, getattr(ua, n)) for n in preferred if callable(getattr(ua, n, None))]
+    if not funcs:
+        funcs = [(n, f) for n, f in inspect.getmembers(ua, inspect.isfunction)]
+
+    last_err = None
+    date_keys = ("date", "check_date", "target_date", "day", "d", "dt")
+
+    for name, fn in funcs:
+        # дивимось реальну сигнатуру
+        try:
+            sig = inspect.signature(fn)
+            params = sig.parameters
+        except Exception:
+            sig = None
+            params = {}
+
+        # 1) якщо є параметр дати за іменем — пробуємо як kwargs
+        for k in date_keys:
+            if k in params:
+                try:
+                    kwargs = {k: d}
+                    if "include_absent" in params:
+                        kwargs["include_absent"] = True
+                    return fn(**kwargs)
+                except TypeError as e:
+                    last_err = e
+
+        # 2) позиційні варіанти
+        try:
+            return fn(d)
+        except TypeError as e:
+            last_err = e
+        try:
+            return fn(d, True)
+        except TypeError as e:
+            last_err = e
+        try:
+            return fn(d, include_absent=True)
+        except TypeError as e:
+            last_err = e
+            continue
+
+    raise AttributeError(
+        "Не знайшов сумісну функцію в tasks/update_attendance.py. "
+        f"Остання помилка: {last_err!r}"
+    )
+
+# === ЗАВДАННЯ ===
+def sync_yesterday():
+    target = date.today() - timedelta(days=1)
+    _call_update_for_date(target)
+
+def sync_prev_month():
+    today = date.today()
+    prev_month_last_day = today.replace(day=1) - timedelta(days=1)
+    year, month = prev_month_last_day.year, prev_month_last_day.month
+    start_day = date(year, month, 1)
+    days = monthrange(year, month)[1]
+    for i in range(days):
+        _call_update_for_date(start_day + timedelta(days=i))
+
+def cleanup_old_records():
+    """Залишаємо лише «поточний + минулий» місяці (без manual_* правок)."""
+    cutoff = date.today().replace(day=1)
+    prev_month_cutoff = (cutoff - timedelta(days=1)).replace(day=1)
+    deleted = (
+        AttendanceRecord.query.filter(
+            AttendanceRecord.record_date < prev_month_cutoff,
+            AttendanceRecord.manual_notes.is_(False),
+            AttendanceRecord.manual_hours.is_(False),
+            AttendanceRecord.manual_status.is_(False),
+        ).delete(synchronize_session=False)
+    )
+    db.session.commit()
+    logger.info(f"[cleanup_old_records] Deleted {deleted} outdated rows.")
+
+# === РЕЄСТРАЦІЯ APScheduler ===
+def register_tasks(app):
+    # idempotent guard, щоб не множити джоби при повторному create_app()
+    if app.config.get("_APS_INIT_DONE"):
+        return
+    app.config["_APS_INIT_DONE"] = True
+
+    if not app.config.get("ENABLE_SCHEDULER", False):
+        logger.info("[scheduler] disabled (ENABLE_SCHEDULER!=1)")
+        return
+
+    from apscheduler.schedulers.background import BackgroundScheduler
+    tz = os.getenv("TZ", "Europe/Warsaw")
+
+    scheduler = BackgroundScheduler(timezone=tz)
+    scheduler.add_job(sync_yesterday,      'cron', hour=2,  minute=0)
+    scheduler.add_job(sync_prev_month,     'cron', day=1,   hour=2, minute=30)
+    scheduler.add_job(cleanup_old_records, 'cron', day='*/3', hour=3, minute=0)
+    scheduler.start()
+
+    logger.info("[scheduler] jobs registered: sync_yesterday, sync_prev_month, cleanup_old_records")
+    logger.info(f"[scheduler] started (timezone={tz})")

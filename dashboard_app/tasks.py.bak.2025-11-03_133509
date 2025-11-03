@@ -1,0 +1,113 @@
+from __future__ import annotations
+
+import os
+import logging
+from datetime import date, timedelta
+from calendar import monthrange
+
+from .models import AttendanceRecord, db
+from tracker_alert.services.attendance_monitor import AttendanceMonitor
+
+# ---- окремий логер без дублювання повідомлень ----
+logger = logging.getLogger("ctrlbot.scheduler")
+if not logger.handlers:
+    logger.setLevel(logging.INFO)
+    _h = logging.StreamHandler()
+    _h.setFormatter(logging.Formatter("%(message)s"))
+    logger.addHandler(_h)
+    logger.propagate = False  # головне: не пускати повідомлення вище
+
+# === ЗАВДАННЯ ===
+
+def sync_yesterday():
+    """Щоденна синхронізація за вчора."""
+    monitor = AttendanceMonitor()
+    target = date.today() - timedelta(days=1)
+    monitor.update_for_date(target, include_absent=True)
+
+def sync_prev_month():
+    """Повна пересинхронізація минулого місяця (всі дні)."""
+    today = date.today()
+    prev_month_last_day = today.replace(day=1) - timedelta(days=1)
+    year, month = prev_month_last_day.year, prev_month_last_day.month
+
+    start_day = date(year, month, 1)
+    days = monthrange(year, month)[1]
+    monitor = AttendanceMonitor()
+    for i in range(days):
+        d = start_day + timedelta(days=i)
+        monitor.update_for_date(d, include_absent=True)
+
+def cleanup_old_records():
+    """
+    Видалення записів старше двох місяців (без manual_* правок).
+    Залишаємо лише «поточний + минулий» місяці.
+    """
+    cutoff = date.today().replace(day=1)
+    previous_month_cutoff = (cutoff - timedelta(days=1)).replace(day=1)
+
+    deleted = AttendanceRecord.query.filter(
+        AttendanceRecord.record_date < previous_month_cutoff,
+        AttendanceRecord.manual_notes.is_(False),
+        AttendanceRecord.manual_hours.is_(False),
+        AttendanceRecord.manual_status.is_(False),
+    ).delete(synchronize_session=False)
+    db.session.commit()
+    logger.info(f"[cleanup_old_records] Deleted {deleted} outdated rows.")
+
+# === РЕЄСТРАЦІЯ ===
+
+def register_tasks(app):
+    """
+    Піднімаємо APScheduler рівно один раз у воркері Gunicorn.
+    """
+    # idempotent guard (щоб не реєструвати повторно)
+    if app.config.get("_APS_INIT_DONE"):
+        return
+    app.config["_APS_INIT_DONE"] = True
+
+    if not app.config.get("ENABLE_SCHEDULER", False):
+        logger.info("[scheduler] disabled (ENABLE_SCHEDULER!=1)")
+        return
+
+    tz = os.getenv("TZ", "Europe/Warsaw")
+
+    # Колбек, який створить воркерний scheduler, коли Gunicorn форкнеться
+    def _post_fork(server, worker):
+        from apscheduler.schedulers.background import BackgroundScheduler
+
+        scheduler = BackgroundScheduler(timezone=tz)
+
+        # продакшн-розклад:
+        scheduler.add_job(sync_yesterday,    'cron', hour=2,  minute=0)
+        scheduler.add_job(sync_prev_month,   'cron', day=1,   hour=2, minute=30)
+        scheduler.add_job(cleanup_old_records,'cron', day='*/3', hour=3, minute=0)
+
+        scheduler.start()
+        # акуратні логи без дублювань
+        logger.info("[scheduler] jobs registered: sync_yesterday, sync_prev_month, cleanup_old_records")
+        logger.info(f"[scheduler] started (timezone={tz})")
+
+    # Прив’язка до події форку Gunicorn — спрацює ОДИН раз на воркер
+    try:
+        import gunicorn.app.base as _g
+        _g.Worker.post_fork = _wrap_post_fork(_g.Worker.post_fork, _post_fork)
+    except Exception:
+        # Якщо Gunicorn не використовується (наприклад, debug run) — стартуємо відразу.
+        from apscheduler.schedulers.background import BackgroundScheduler
+        scheduler = BackgroundScheduler(timezone=tz)
+        scheduler.add_job(sync_yesterday,    'cron', hour=2,  minute=0)
+        scheduler.add_job(sync_prev_month,   'cron', day=1,   hour=2, minute=30)
+        scheduler.add_job(cleanup_old_records,'cron', day='*/3', hour=3, minute=0)
+        scheduler.start()
+        logger.info("[scheduler] jobs registered: sync_yesterday, sync_prev_month, cleanup_old_records")
+        logger.info(f"[scheduler] started (timezone={tz})")
+
+def _wrap_post_fork(orig, hook):
+    def _new_post_fork(server, worker):
+        try:
+            hook(server, worker)
+        finally:
+            if orig:
+                orig(server, worker)
+    return _new_post_fork

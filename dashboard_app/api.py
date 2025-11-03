@@ -7,7 +7,7 @@ from datetime import datetime, date, timedelta
 from io import BytesIO
 from urllib.parse import unquote
 
-from flask import Blueprint, request, jsonify, send_file, abort
+from flask import Blueprint, request, jsonify, send_file, abort, current_app
 from flask_login import login_required, current_user
 from sqlalchemy import or_
 from openpyxl import Workbook
@@ -20,6 +20,10 @@ from .extensions import db
 from .models import AttendanceRecord, User, AdminAuditLog
 from .user_data import get_user_schedule, load_user_schedules
 from tracker_alert.services import user_manager as schedule_user_manager
+from tracker_alert.services.attendance_monitor import AttendanceMonitor
+from tracker_alert.client.peopleforce_api import PeopleForceClient
+from tracker_alert.client.yaware_v2_api import YaWareV2Client
+from tasks.update_attendance import update_for_date
 
 try:
     from reportlab.lib import colors  # type: ignore[import]
@@ -254,6 +258,188 @@ def _parse_duration(value: str | None) -> int | None:
 
 def _normalize_user_key(user_key: str) -> str:
     return unquote(user_key).strip()
+
+
+def _diff_key_candidates(*values) -> set[str]:
+    keys: set[str] = set()
+    for value in values:
+        if value in (None, ''):
+            continue
+        text = str(value).strip().lower()
+        if text:
+            keys.add(text)
+    return keys
+
+
+def _humanize_entry(name: str, email: str, user_id: str) -> str:
+    if name and email:
+        return f"{name} ({email})"
+    if name:
+        return name
+    if email:
+        return email
+    return user_id or '—'
+
+
+def _load_schedule_entries() -> list[dict]:
+    data = schedule_user_manager.load_users()
+    users = data.get('users', {}) if isinstance(data, dict) else {}
+    entries: list[dict] = []
+    for name, raw in users.items():
+        if not isinstance(raw, dict):
+            continue
+        email = str(raw.get('email') or '').strip()
+        user_id = str(raw.get('user_id') or '').strip()
+        peopleforce_id = str(raw.get('peopleforce_id') or '').strip()
+        keys = _diff_key_candidates(name, email, user_id, peopleforce_id)
+        entries.append({
+            'name': name,
+            'email': email,
+            'user_id': user_id,
+            'peopleforce_id': peopleforce_id,
+            'keys': keys,
+            'in_yaware': False,
+            'in_peopleforce': False,
+        })
+    return entries
+
+
+def _extract_yaware_entries() -> tuple[list[dict], str | None]:
+    try:
+        client = YaWareV2Client()
+        raw_items = client.get_users(active_only=True) or []
+    except Exception as exc:  # pragma: no cover - network failure
+        return [], str(exc)
+
+    entries: list[dict] = []
+    for item in raw_items:
+        firstname = str(item.get('firstname') or '').strip()
+        lastname = str(item.get('lastname') or '').strip()
+        full_name = ' '.join(part for part in (firstname, lastname) if part).strip() or str(item.get('name') or '').strip()
+        if not full_name:
+            full_name = str(item.get('user') or '').split(',')[0].strip()
+        email = str(item.get('email') or item.get('user_email') or '').strip().lower()
+        user_id = str(item.get('id') or item.get('user_id') or '').strip()
+        keys = _diff_key_candidates(full_name, email, user_id)
+        entries.append({
+            'name': full_name,
+            'email': email,
+            'user_id': user_id,
+            'keys': keys,
+        })
+    return entries, None
+
+
+def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict], str | None]:
+    try:
+        client = PeopleForceClient()
+        raw_items = client.get_employees(force_refresh=force_refresh) or []
+    except Exception as exc:  # pragma: no cover - network failure
+        return [], str(exc)
+
+    entries: list[dict] = []
+    for item in raw_items:
+        full_name = str(item.get('full_name') or '').strip()
+        if not full_name:
+            first = str(item.get('first_name') or '').strip()
+            last = str(item.get('last_name') or '').strip()
+            full_name = ' '.join(part for part in (first, last) if part).strip()
+        email = str(item.get('email') or '').strip().lower()
+        employee_id = str(item.get('id') or item.get('employee_id') or '').strip()
+        keys = _diff_key_candidates(full_name, email, employee_id)
+        entries.append({
+            'name': full_name,
+            'email': email,
+            'user_id': employee_id,
+            'keys': keys,
+        })
+    return entries, None
+
+
+def _generate_user_diff(force_refresh: bool = False) -> dict:
+    schedule_entries = _load_schedule_entries()
+    schedule_by_key: dict[str, dict] = {}
+    for entry in schedule_entries:
+        for key in entry['keys']:
+            schedule_by_key[key] = entry
+
+    yaware_entries, yaware_error = _extract_yaware_entries()
+    peopleforce_entries, peopleforce_error = _extract_peopleforce_entries(force_refresh=force_refresh)
+
+    yaware_only: list[dict] = []
+    for entry in yaware_entries:
+        matched = False
+        for key in entry['keys']:
+            schedule_entry = schedule_by_key.get(key)
+            if schedule_entry:
+                schedule_entry['in_yaware'] = True
+                matched = True
+        if not matched:
+            yaware_only.append(entry)
+
+    peopleforce_only: list[dict] = []
+    for entry in peopleforce_entries:
+        matched = False
+        for key in entry['keys']:
+            schedule_entry = schedule_by_key.get(key)
+            if schedule_entry:
+                schedule_entry['in_peopleforce'] = True
+                matched = True
+        if not matched:
+            peopleforce_only.append(entry)
+
+    local_presence: dict[str, dict] = {}
+    missing_yaware: list[str] = []
+    missing_peopleforce: list[str] = []
+    for entry in schedule_entries:
+        payload = {
+            'name': entry['name'],
+            'email': entry['email'],
+            'user_id': entry['user_id'],
+            'in_yaware': entry['in_yaware'],
+            'in_peopleforce': entry['in_peopleforce'],
+        }
+        if yaware_error is None and not entry['in_yaware']:
+            missing_yaware.append(_humanize_entry(entry['name'], entry['email'], entry['user_id']))
+        if peopleforce_error is None and not entry['in_peopleforce']:
+            missing_peopleforce.append(_humanize_entry(entry['name'], entry['email'], entry['user_id']))
+        for key in entry['keys']:
+            local_presence[key] = payload
+
+    result = {
+        'generated_at': datetime.utcnow().isoformat() + 'Z',
+        'local_presence': local_presence,
+        'missing_yaware': sorted(set(missing_yaware)),
+        'missing_peopleforce': sorted(set(missing_peopleforce)),
+        'yaware_only': [] if yaware_error is not None else [
+            {
+                'display': _humanize_entry(item['name'], item['email'], item['user_id']),
+                'email': item['email'],
+                'user_id': item['user_id'],
+            }
+            for item in yaware_only
+        ],
+        'peopleforce_only': [] if peopleforce_error is not None else [
+            {
+                'display': _humanize_entry(item['name'], item['email'], item['user_id']),
+                'email': item['email'],
+                'user_id': item['user_id'],
+            }
+            for item in peopleforce_only
+        ],
+        'counts': {
+            'local_total': len(schedule_entries),
+            'local_missing_yaware': len(missing_yaware),
+            'local_missing_peopleforce': len(missing_peopleforce),
+            'yaware_only': len(yaware_only) if yaware_error is None else 0,
+            'peopleforce_only': len(peopleforce_only) if peopleforce_error is None else 0,
+        },
+        'errors': {
+            'yaware': yaware_error,
+            'peopleforce': peopleforce_error,
+        },
+    }
+    return result
 
 
 def _serialize_attendance_record(record: AttendanceRecord) -> dict:
@@ -758,6 +944,83 @@ def attendance_list():
     })
 
 
+@api_bp.route('/admin/users/diff')
+@login_required
+def admin_users_diff():
+    _ensure_admin()
+    force = (request.args.get('force') or '').strip().lower() in {'1', 'true', 'yes', 'force'}
+    diff_payload = _generate_user_diff(force_refresh=force)
+    return jsonify(diff_payload)
+
+
+@api_bp.route('/admin/sync/users', methods=['POST'])
+@login_required
+def admin_sync_users():
+    _ensure_admin()
+    payload = request.get_json(silent=True) or {}
+    force_refresh = bool(payload.get('force_refresh'))
+    sync_summary: dict[str, object] = {}
+
+    try:
+        from dashboard_app.tasks import _sync_peopleforce_metadata  # local import to avoid circular dependency
+        _sync_peopleforce_metadata(current_app)
+        sync_summary['peopleforce_metadata'] = 'updated'
+    except Exception as exc:  # pragma: no cover - filesystem/network failure
+        sync_summary['peopleforce_metadata'] = f'failed: {exc}'
+
+    diff_payload = _generate_user_diff(force_refresh=force_refresh)
+    _log_admin_action('manual_sync_users', {
+        'force_refresh': force_refresh,
+        'sync_summary': sync_summary,
+        'diff_counts': diff_payload.get('counts'),
+    })
+    db.session.commit()
+    return jsonify({'status': 'ok', 'sync': sync_summary, 'diff': diff_payload})
+
+
+@api_bp.route('/admin/sync/attendance', methods=['POST'])
+@login_required
+def admin_sync_attendance():
+    _ensure_admin()
+    payload = request.get_json(silent=True) or {}
+    target_str = (payload.get('date') or '').strip()
+    target_date = _parse_date(target_str)
+    if not target_date:
+        return jsonify({'error': 'Некоректна дата. Використовуйте формат YYYY-MM-DD'}), 400
+
+    skip_weekends = payload.get('skip_weekends', True)
+    include_absent = payload.get('include_absent', True)
+
+    if isinstance(skip_weekends, str):
+        skip_weekends = skip_weekends.lower() in {'1', 'true', 'yes'}
+    skip_weekends = bool(skip_weekends)
+    if isinstance(include_absent, str):
+        include_absent = include_absent.lower() in {'1', 'true', 'yes'}
+    include_absent = bool(include_absent)
+
+    if skip_weekends and target_date.weekday() >= 5:
+        return jsonify({
+            'skipped': True,
+            'reason': 'weekend',
+            'date': target_date.isoformat(),
+        })
+
+    monitor = AttendanceMonitor()
+    update_for_date(monitor, target_date, include_absent=include_absent)
+
+    _log_admin_action('manual_sync_attendance_date', {
+        'date': target_date.isoformat(),
+        'include_absent': include_absent,
+        'skip_weekends': skip_weekends,
+    })
+    db.session.commit()
+    return jsonify({
+        'status': 'ok',
+        'date': target_date.isoformat(),
+        'include_absent': include_absent,
+    })
+
+
 @api_bp.route('/admin/employees')
 @login_required
 def admin_employees():
@@ -1033,6 +1296,60 @@ def admin_update_employee(user_key: str):
 
     primary = records[0]
     return jsonify({'item': _serialize_employee_record(primary), 'schedule_updates': schedule_info})
+
+
+@api_bp.route('/admin/employees/<path:user_key>', methods=['DELETE'])
+@login_required
+def admin_delete_employee(user_key: str):
+    _ensure_admin()
+    normalized = _normalize_user_key(user_key).strip()
+    if not normalized:
+        return jsonify({'error': 'Некоректний ідентифікатор користувача'}), 400
+    lowered = normalized.lower()
+
+    filters = [
+        db.func.lower(AttendanceRecord.user_id) == lowered,
+        db.func.lower(AttendanceRecord.user_email) == lowered,
+        db.func.lower(AttendanceRecord.user_name) == lowered,
+    ]
+    deleted_records = AttendanceRecord.query.filter(or_(*filters)).delete(synchronize_session=False)
+
+    schedule_removed = False
+    schedule_name = None
+    schedule_message = None
+
+    data = schedule_user_manager.load_users()
+    users = data.get('users', {}) if isinstance(data, dict) else {}
+    for name, info in users.items():
+        if not isinstance(info, dict):
+            continue
+        variants = {
+            name.strip().lower(),
+            str(info.get('email', '')).strip().lower(),
+            str(info.get('user_id', '')).strip().lower(),
+        }
+        if lowered in variants:
+            schedule_name = name
+            success, message = schedule_user_manager.delete_user(name)
+            schedule_removed = success
+            schedule_message = message
+            break
+
+    _log_admin_action('delete_employee', {
+        'user_key': normalized,
+        'deleted_records': deleted_records,
+        'schedule_removed': schedule_removed,
+        'schedule_name': schedule_name,
+    })
+    db.session.commit()
+
+    return jsonify({
+        'status': 'ok',
+        'deleted_records': deleted_records,
+        'removed_schedule': schedule_removed,
+        'schedule_name': schedule_name,
+        'message': schedule_message,
+    })
 
 
 @api_bp.route('/admin/app-users')

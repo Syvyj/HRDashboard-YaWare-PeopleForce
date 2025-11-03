@@ -306,3 +306,16 @@
   font-weight: 700;
   background-color: #dedede !important;
 }
+
+/* Admin diff highlighting */
+#employee-table tbody tr.diff-missing-yaware {
+  background-color: #fff4d1;
+}
+
+#employee-table tbody tr.diff-missing-peopleforce {
+  background-color: #ffe3e4;
+}
+
+#employee-table tbody tr.diff-missing-yaware.diff-missing-peopleforce {
+  background-color: #fdebd6;
+}

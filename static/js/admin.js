@@ -35,6 +35,12 @@
   const appUsersTable = document.getElementById('app-users-table');
   const appUserModalEl = document.getElementById('appUserModal');
   const appUserEditForm = document.getElementById('app-user-edit-form');
+  const syncUsersBtn = document.getElementById('sync-users-btn');
+  const syncDateInput = document.getElementById('sync-date-input');
+  const syncDateBtn = document.getElementById('sync-date-btn');
+  const refreshDiffBtn = document.getElementById('refresh-diff-btn');
+  const diffSummaryEl = document.getElementById('diff-summary');
+  const employeeDeleteBtn = document.getElementById('employee-delete-btn');
 
   const employeeEditModal = employeeEditModalEl ? new bootstrap.Modal(employeeEditModalEl) : null;
   const appUserModal = appUserModalEl ? new bootstrap.Modal(appUserModalEl) : null;
@@ -48,6 +54,7 @@
   let employeeProjectFilter = '';
   let employeeDepartmentFilter = '';
   let employeeTeamFilter = '';
+  let diffState = null;
 
   function showAlert(message, type = 'danger', timeout = 5000) {
     if (!alertsEl) {
@@ -111,6 +118,140 @@
     }
   }
 
+  function normalizeDiffKey(value) {
+    if (value == null) {
+      return null;
+    }
+    const text = String(value).trim().toLowerCase();
+    return text || null;
+  }
+
+  function findDiffInfo(item) {
+    if (!diffState || !diffState.local_presence) {
+      return null;
+    }
+    const candidates = [];
+    if (item.user_id) {
+      const normalized = normalizeDiffKey(item.user_id);
+      if (normalized) {
+        candidates.push(normalized);
+      }
+    }
+    if (item.email) {
+      const normalized = normalizeDiffKey(item.email);
+      if (normalized) {
+        candidates.push(normalized);
+      }
+    }
+    if (item.name) {
+      const normalized = normalizeDiffKey(item.name);
+      if (normalized) {
+        candidates.push(normalized);
+      }
+    }
+    for (const key of candidates) {
+      const info = diffState.local_presence[key];
+      if (info) {
+        return info;
+      }
+    }
+    return null;
+  }
+
+  function applyDiffHighlight(row, item) {
+    if (!row) {
+      return;
+    }
+    row.classList.remove('diff-missing-yaware', 'diff-missing-peopleforce');
+    if (!item) {
+      return;
+    }
+    const info = findDiffInfo(item);
+    if (!info) {
+      return;
+    }
+    if (info.in_yaware === false) {
+      row.classList.add('diff-missing-yaware');
+    }
+    if (info.in_peopleforce === false) {
+      row.classList.add('diff-missing-peopleforce');
+    }
+  }
+
+  function applyDiffToExistingRows() {
+    if (!diffState || !employeeTbody) {
+      return;
+    }
+    employeeTbody.querySelectorAll('tr[data-employee]').forEach((row) => {
+      try {
+        const raw = row.dataset.employee;
+        if (!raw) {
+          return;
+        }
+        const item = JSON.parse(raw);
+        applyDiffHighlight(row, item);
+      } catch (error) {
+        console.error('Failed to parse employee payload for diff highlight', error);
+      }
+    });
+  }
+
+  function updateDiffSummary(data) {
+    if (!diffSummaryEl) {
+      return;
+    }
+    if (!data) {
+      diffSummaryEl.textContent = '';
+      return;
+    }
+    const parts = [];
+    const counts = data.counts || {};
+    if (counts.local_total != null) {
+      parts.push(`У базі: ${counts.local_total}`);
+    }
+    if (counts.local_missing_yaware) {
+      parts.push(`без YaWare: ${counts.local_missing_yaware}`);
+    }
+    if (counts.local_missing_peopleforce) {
+      parts.push(`без PeopleForce: ${counts.local_missing_peopleforce}`);
+    }
+    if (counts.yaware_only) {
+      parts.push(`тільки у YaWare: ${counts.yaware_only}`);
+    }
+    if (counts.peopleforce_only) {
+      parts.push(`тільки у PeopleForce: ${counts.peopleforce_only}`);
+    }
+    if (!parts.length && data.generated_at) {
+      parts.push(`Оновлено ${new Date(data.generated_at).toLocaleString()}`);
+    }
+    diffSummaryEl.textContent = parts.join(' • ');
+  }
+
+  function handleDiffErrors(errors) {
+    if (!errors) {
+      return;
+    }
+    if (errors.yaware) {
+      showAlert(`Не вдалося отримати дані YaWare: ${errors.yaware}`, 'warning', 8000);
+    }
+    if (errors.peopleforce) {
+      showAlert(`Не вдалося отримати дані PeopleForce: ${errors.peopleforce}`, 'warning', 8000);
+    }
+  }
+
+  function setDiffState(data) {
+    if (!data) {
+      diffState = null;
+      updateDiffSummary(null);
+      applyDiffToExistingRows();
+      return;
+    }
+    diffState = data;
+    updateDiffSummary(data);
+    handleDiffErrors(data.errors);
+    applyDiffToExistingRows();
+  }
+
   function renderEmployees(data) {
     const items = data.items || [];
     managerOptions = data.manager_options || [];
@@ -142,6 +283,7 @@
     items.forEach((item) => {
       const row = document.createElement('tr');
       row.dataset.userKey = item.user_key;
+      row.dataset.employee = JSON.stringify(item);
 
       const checkboxCell = document.createElement('td');
       const checkbox = document.createElement('input');
@@ -189,6 +331,7 @@
       row.appendChild(actionsCell);
 
       fragment.appendChild(row);
+      applyDiffHighlight(row, item);
     });
 
     employeeTbody.innerHTML = '';
@@ -199,6 +342,7 @@
     prevBtn.disabled = employeePage <= 1;
     nextBtn.disabled = employeePage >= totalPages;
     updateBulkButtonState();
+    applyDiffToExistingRows();
   }
 
   function fetchEmployees() {
@@ -229,6 +373,102 @@
       .catch((error) => {
         employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4">Помилка завантаження</td></tr>';
         showAlert(error.message);
+      });
+  }
+
+  function fetchDiffState(options = {}) {
+    const force = options.force ? '?force=1' : '';
+    return fetch(`/api/admin/users/diff${force}`)
+      .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          throw new Error(data.error || 'Не вдалося отримати порівняння користувачів');
+        }
+        setDiffState(data);
+        return data;
+      })
+      .catch((error) => {
+        showAlert(error.message);
+        throw error;
+      });
+  }
+
+  function performUserSync() {
+    if (!syncUsersBtn) {
+      return Promise.resolve();
+    }
+    syncUsersBtn.disabled = true;
+    syncUsersBtn.classList.add('disabled');
+    return fetch('/api/admin/sync/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ force_refresh: true }),
+    })
+      .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          throw new Error(data.error || 'Не вдалося виконати синхронізацію');
+        }
+        showAlert('Синхронізація користувачів завершена', 'success');
+        if (data && data.diff) {
+          setDiffState(data.diff);
+        }
+        fetchEmployees();
+        return data;
+      })
+      .catch((error) => {
+        showAlert(error.message);
+        throw error;
+      })
+      .finally(() => {
+        syncUsersBtn.disabled = false;
+        syncUsersBtn.classList.remove('disabled');
+      });
+  }
+
+  function performDateSync() {
+    if (!syncDateBtn) {
+      return;
+    }
+    const targetDate = (syncDateInput && syncDateInput.value ? syncDateInput.value : '').trim();
+    if (!targetDate) {
+      showAlert('Оберіть дату для синхронізації', 'warning');
+      return;
+    }
+    syncDateBtn.disabled = true;
+    syncDateBtn.classList.add('disabled');
+
+    const payload = {
+      date: targetDate,
+      skip_weekends: true,
+      include_absent: true,
+    };
+
+    fetch('/api/admin/sync/attendance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          throw new Error(data.error || 'Не вдалося синхронізувати дату');
+        }
+        if (data.skipped) {
+          showAlert('Дата припадає на вихідний. Синхронізацію пропущено.', 'warning');
+          return;
+        }
+        showAlert(`Дані за ${data.date} оновлено`, 'success');
+        fetchEmployees();
+      })
+      .catch((error) => showAlert(error.message))
+      .finally(() => {
+        syncDateBtn.disabled = false;
+        syncDateBtn.classList.remove('disabled');
       });
   }
 
@@ -375,6 +615,25 @@
   employeeTable.addEventListener('change', handleTableChange);
   employeeTable.addEventListener('click', handleEmployeeTableClick);
 
+  if (syncUsersBtn) {
+    syncUsersBtn.addEventListener('click', () => {
+      performUserSync().catch(() => {});
+    });
+  }
+
+  if (refreshDiffBtn) {
+    refreshDiffBtn.addEventListener('click', () => {
+      refreshDiffBtn.disabled = true;
+      fetchDiffState({ force: true }).catch(() => {}).finally(() => {
+        refreshDiffBtn.disabled = false;
+      });
+    });
+  }
+
+  if (syncDateBtn) {
+    syncDateBtn.addEventListener('click', performDateSync);
+  }
+
   if (searchBtn) {
     searchBtn.addEventListener('click', () => {
       employeeSearch = (searchInput.value || '').trim();
@@ -500,6 +759,38 @@
     });
   }
 
+  if (employeeDeleteBtn && employeeEditModal) {
+    employeeDeleteBtn.addEventListener('click', () => {
+      const key = (employeeEditKey.value || '').trim();
+      if (!key) {
+        return;
+      }
+      if (!window.confirm('Видалити користувача та всі записи attendance?')) {
+        return;
+      }
+      employeeDeleteBtn.disabled = true;
+      fetch(`/api/admin/employees/${encodeURIComponent(key)}`, {
+        method: 'DELETE',
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.error || 'Не вдалося видалити користувача');
+          }
+          showAlert('Користувача видалено', 'success');
+          if (employeeEditModal) {
+            employeeEditModal.hide();
+          }
+          fetchEmployees();
+          fetchDiffState().catch(() => {});
+        })
+        .catch((error) => showAlert(error.message))
+        .finally(() => {
+          employeeDeleteBtn.disabled = false;
+        });
+    });
+  }
+
   if (appUserForm) {
     appUserForm.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -596,4 +887,5 @@
   // Initial load
   fetchEmployees();
   fetchAppUsers();
+  fetchDiffState().catch(() => {});
 })();

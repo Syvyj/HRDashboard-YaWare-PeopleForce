@@ -309,13 +309,62 @@
 
 /* Admin diff highlighting */
 #employee-table tbody tr.diff-missing-yaware {
-  background-color: #fff4d1;
+  background-color: #fff0c4 !important;
 }
 
 #employee-table tbody tr.diff-missing-peopleforce {
-  background-color: #ffe3e4;
+  background-color: #ffd8da !important;
 }
 
 #employee-table tbody tr.diff-missing-yaware.diff-missing-peopleforce {
-  background-color: #fdebd6;
+  background-color: #ffdccc !important;
+}
+
+.diff-card {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.75rem;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0.25rem 0.75rem rgba(15, 23, 42, 0.08);
+}
+
+.diff-card-warning {
+  border-color: #f59f0b;
+  background-color: #fff7e6;
+}
+
+.diff-card-danger {
+  border-color: #e63946;
+  background-color: #ffe8ea;
+}
+
+.diff-card-outline {
+  background-color: #f8fafc;
+}
+
+.diff-card-header {
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  color: #1e293b;
+}
+
+.diff-card-body {
+  padding: 0.75rem 1rem;
+  overflow: auto;
+  max-height: 180px;
+}
+
+.diff-card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
 }

@@ -25,6 +25,7 @@
   const employeeEditName = document.getElementById('employee-edit-name');
   const employeeEditEmail = document.getElementById('employee-edit-email');
   const employeeEditUserId = document.getElementById('employee-edit-user-id');
+  const employeeEditPeopleforceId = document.getElementById('employee-edit-peopleforce-id');
   const employeeEditProject = document.getElementById('employee-edit-project');
   const employeeEditDepartment = document.getElementById('employee-edit-department');
   const employeeEditTeam = document.getElementById('employee-edit-team');
@@ -40,6 +41,11 @@
   const syncDateBtn = document.getElementById('sync-date-btn');
   const refreshDiffBtn = document.getElementById('refresh-diff-btn');
   const diffSummaryEl = document.getElementById('diff-summary');
+  const diffListsWrapper = document.getElementById('diff-lists');
+  const diffMissingYaWareList = document.getElementById('diff-missing-yaware-list');
+  const diffMissingPeopleforceList = document.getElementById('diff-missing-peopleforce-list');
+  const diffYaWareOnlyList = document.getElementById('diff-yaware-only-list');
+  const diffPeopleforceOnlyList = document.getElementById('diff-peopleforce-only-list');
   const employeeDeleteBtn = document.getElementById('employee-delete-btn');
 
   const employeeEditModal = employeeEditModalEl ? new bootstrap.Modal(employeeEditModalEl) : null;
@@ -143,6 +149,12 @@
         candidates.push(normalized);
       }
     }
+    if (item.peopleforce_id) {
+      const normalized = normalizeDiffKey(item.peopleforce_id);
+      if (normalized) {
+        candidates.push(normalized);
+      }
+    }
     if (item.name) {
       const normalized = normalizeDiffKey(item.name);
       if (normalized) {
@@ -227,6 +239,50 @@
     diffSummaryEl.textContent = parts.join(' • ');
   }
 
+  function renderDiffList(target, items) {
+    if (!target) {
+      return;
+    }
+    target.innerHTML = '';
+    if (!items || !items.length) {
+      const empty = document.createElement('li');
+      empty.className = 'text-muted';
+      empty.textContent = '—';
+      target.appendChild(empty);
+      return;
+    }
+    items.forEach((item) => {
+      const li = document.createElement('li');
+      li.textContent = item.display || item;
+      target.appendChild(li);
+    });
+  }
+
+  function updateDiffLists(data) {
+    if (!diffListsWrapper) {
+      return;
+    }
+    if (!data) {
+      diffListsWrapper.hidden = true;
+      return;
+    }
+    const missingYaWare = data.missing_yaware || [];
+    const missingPeopleforce = data.missing_peopleforce || [];
+    const yawareOnly = (data.yaware_only || []).map((item) => ({
+      display: item.display,
+    }));
+    const peopleforceOnly = (data.peopleforce_only || []).map((item) => ({
+      display: item.display,
+    }));
+
+    renderDiffList(diffMissingYaWareList, missingYaWare);
+    renderDiffList(diffMissingPeopleforceList, missingPeopleforce);
+    renderDiffList(diffYaWareOnlyList, yawareOnly);
+    renderDiffList(diffPeopleforceOnlyList, peopleforceOnly);
+
+    diffListsWrapper.hidden = false;
+  }
+
   function handleDiffErrors(errors) {
     if (!errors) {
       return;
@@ -243,11 +299,13 @@
     if (!data) {
       diffState = null;
       updateDiffSummary(null);
+      updateDiffLists(null);
       applyDiffToExistingRows();
       return;
     }
     diffState = data;
     updateDiffSummary(data);
+    updateDiffLists(data);
     handleDiffErrors(data.errors);
     applyDiffToExistingRows();
   }
@@ -300,7 +358,8 @@
       const contactCell = document.createElement('td');
       contactCell.innerHTML = [
         item.email || '—',
-        item.user_id ? `YaWare ID: ${item.user_id}` : ''
+        item.user_id ? `YaWare ID: ${item.user_id}` : '',
+        item.peopleforce_id ? `PeopleForce ID: ${item.peopleforce_id}` : ''
       ].filter(Boolean).map((value) => `<div>${value}</div>`).join('');
       row.appendChild(contactCell);
 
@@ -550,6 +609,9 @@
     employeeEditName.value = payload.name || '';
     employeeEditEmail.value = payload.email || '';
     employeeEditUserId.value = payload.user_id || '';
+    if (employeeEditPeopleforceId) {
+      employeeEditPeopleforceId.value = payload.peopleforce_id || '';
+    }
     employeeEditProject.value = payload.project || '';
     employeeEditDepartment.value = payload.department || '';
     employeeEditTeam.value = payload.team || '';
@@ -729,6 +791,7 @@
         name: (employeeEditName.value || '').trim(),
         email: (employeeEditEmail.value || '').trim(),
         user_id: (employeeEditUserId.value || '').trim(),
+        peopleforce_id: employeeEditPeopleforceId ? (employeeEditPeopleforceId.value || '').trim() : '',
         project: (employeeEditProject.value || '').trim(),
         department: (employeeEditDepartment.value || '').trim(),
         team: (employeeEditTeam.value || '').trim(),

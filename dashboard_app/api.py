@@ -18,7 +18,7 @@ from werkzeug.security import check_password_hash
 
 from .extensions import db
 from .models import AttendanceRecord, User, AdminAuditLog
-from .user_data import get_user_schedule, load_user_schedules
+from .user_data import get_user_schedule, load_user_schedules, clear_user_schedule_cache
 from tracker_alert.services import user_manager as schedule_user_manager
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.client.peopleforce_api import PeopleForceClient
@@ -291,6 +291,8 @@ def _load_schedule_entries() -> list[dict]:
         email = str(raw.get('email') or '').strip()
         user_id = str(raw.get('user_id') or '').strip()
         peopleforce_id = str(raw.get('peopleforce_id') or '').strip()
+        if _is_ignored_person(name, email):
+            continue
         keys = _diff_key_candidates(name, email, user_id, peopleforce_id)
         entries.append({
             'name': name,
@@ -320,6 +322,8 @@ def _extract_yaware_entries() -> tuple[list[dict], str | None]:
             full_name = str(item.get('user') or '').split(',')[0].strip()
         email = str(item.get('email') or item.get('user_email') or '').strip().lower()
         user_id = str(item.get('id') or item.get('user_id') or '').strip()
+        if _is_ignored_person(full_name, email):
+            continue
         keys = _diff_key_candidates(full_name, email, user_id)
         entries.append({
             'name': full_name,
@@ -338,6 +342,7 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
         return [], str(exc)
 
     entries: list[dict] = []
+    today = date.today()
     for item in raw_items:
         full_name = str(item.get('full_name') or '').strip()
         if not full_name:
@@ -346,6 +351,16 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
             full_name = ' '.join(part for part in (first, last) if part).strip()
         email = str(item.get('email') or '').strip().lower()
         employee_id = str(item.get('id') or item.get('employee_id') or '').strip()
+        if _is_ignored_person(full_name, email):
+            continue
+        hire_raw = item.get('hired_on') or item.get('hire_date')
+        if hire_raw:
+            try:
+                hire_date = datetime.strptime(str(hire_raw)[:10], '%Y-%m-%d').date()
+            except (TypeError, ValueError):
+                hire_date = None
+            if hire_date and hire_date > today:
+                continue
         keys = _diff_key_candidates(full_name, email, employee_id)
         entries.append({
             'name': full_name,
@@ -396,12 +411,13 @@ def _generate_user_diff(force_refresh: bool = False) -> dict:
             'name': entry['name'],
             'email': entry['email'],
             'user_id': entry['user_id'],
+            'peopleforce_id': entry.get('peopleforce_id'),
             'in_yaware': entry['in_yaware'],
             'in_peopleforce': entry['in_peopleforce'],
         }
-        if yaware_error is None and not entry['in_yaware']:
+        if yaware_error is None and not entry['in_yaware'] and not _is_ignored_person(entry['name'], entry['email']):
             missing_yaware.append(_humanize_entry(entry['name'], entry['email'], entry['user_id']))
-        if peopleforce_error is None and not entry['in_peopleforce']:
+        if peopleforce_error is None and not entry['in_peopleforce'] and not _is_ignored_person(entry['name'], entry['email']):
             missing_peopleforce.append(_humanize_entry(entry['name'], entry['email'], entry['user_id']))
         for key in entry['keys']:
             local_presence[key] = payload
@@ -582,12 +598,17 @@ def _filter_employee_records(records: list[AttendanceRecord], attr: str, value: 
     return filtered
 
 
-def _serialize_employee_record(record: AttendanceRecord) -> dict:
+def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None = None) -> dict:
     project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(
         record.project,
         record.department,
         record.team,
     )
+    peopleforce_id = None
+    if schedule and isinstance(schedule, dict):
+        candidate = schedule.get('peopleforce_id')
+        if candidate not in (None, ''):
+            peopleforce_id = str(candidate).strip()
     return {
         'user_key': record.user_id or record.user_email or record.user_name,
         'user_id': record.user_id,
@@ -599,6 +620,7 @@ def _serialize_employee_record(record: AttendanceRecord) -> dict:
         'location': record.location,
         'plan_start': record.scheduled_start,
         'control_manager': record.control_manager,
+        'peopleforce_id': peopleforce_id,
         'last_date': record.record_date.strftime('%Y-%m-%d'),
     }
 
@@ -1041,7 +1063,11 @@ def admin_employees():
     start = (page - 1) * per_page
     page_records = records[start:start + per_page]
 
-    items = [_serialize_employee_record(record) for record in page_records]
+    items: list[dict] = []
+    for record in page_records:
+        identifier = record.user_id or record.user_email or record.user_name or ''
+        schedule = _load_user_schedule_variants(identifier, [record]) if identifier else None
+        items.append(_serialize_employee_record(record, schedule))
 
     return jsonify({
         'items': items,
@@ -1125,9 +1151,6 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
             target_info = info
             break
 
-    if not target_name or target_info is None:
-        return {}
-
     mapping = {
         'email': 'email',
         'user_id': 'user_id',
@@ -1136,8 +1159,37 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
         'team': 'team',
         'location': 'location',
         'plan_start': 'start_time',
+        'peopleforce_id': 'peopleforce_id',
         'control_manager': 'control_manager',
     }
+
+    if not target_name or target_info is None:
+        desired_name = (updates.get('name') or '').strip()
+        if not desired_name:
+            return {}
+        info_payload: dict[str, object] = {}
+        for source, dest in mapping.items():
+            value = updates.get(source)
+            if source == 'name':
+                continue
+            if value in (None, ''):
+                continue
+            info_payload[dest] = value
+        if 'email' not in info_payload and updates.get('email') is not None:
+            info_payload['email'] = updates.get('email')
+        if desired_name not in users:
+            users[desired_name] = info_payload
+            schedule_user_manager.save_users(data)
+            clear_user_schedule_cache()
+            return {
+                'matched_entry': None,
+                'renamed_to': desired_name,
+                'changed': True,
+                'created': True,
+            }
+        target_name = desired_name
+        target_info = users[target_name]
+
     changed = False
 
     for source, dest in mapping.items():
@@ -1176,6 +1228,7 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
 
     if changed:
         schedule_user_manager.save_users(data)
+        clear_user_schedule_cache()
 
     return {
         'matched_entry': target_name,
@@ -1222,6 +1275,10 @@ def admin_update_employee(user_key: str):
         user_id = (payload.get('user_id') or '').strip() or None
         updates['user_id'] = user_id
         schedule_updates['user_id'] = user_id
+
+    if 'peopleforce_id' in payload:
+        pf_raw = (payload.get('peopleforce_id') or '').strip()
+        schedule_updates['peopleforce_id'] = pf_raw or None
 
     for field in ('project', 'department', 'team', 'location', 'plan_start'):
         if field in payload:
@@ -1284,6 +1341,15 @@ def admin_update_employee(user_key: str):
         if value and field not in schedule_updates:
             schedule_updates[field] = value
 
+    primary_record = records[0]
+    if primary_record:
+        if 'name' not in schedule_updates and primary_record.user_name:
+            schedule_updates['name'] = primary_record.user_name
+        if 'email' not in schedule_updates and primary_record.user_email:
+            schedule_updates['email'] = primary_record.user_email
+        if 'user_id' not in schedule_updates and primary_record.user_id:
+            schedule_updates['user_id'] = primary_record.user_id
+
     schedule_info = _update_schedule_entry(key_variants, schedule_updates)
 
     _log_admin_action('update_employee', {
@@ -1295,7 +1361,8 @@ def admin_update_employee(user_key: str):
     db.session.commit()
 
     primary = records[0]
-    return jsonify({'item': _serialize_employee_record(primary), 'schedule_updates': schedule_info})
+    refreshed_schedule = _load_user_schedule_variants(normalized_key, records)
+    return jsonify({'item': _serialize_employee_record(primary, refreshed_schedule), 'schedule_updates': schedule_info})
 
 
 @api_bp.route('/admin/employees/<path:user_key>', methods=['DELETE'])
@@ -2211,3 +2278,45 @@ def export_pdf():
         download_name=filename,
         mimetype='application/pdf'
     )
+IGNORED_DIFF_PERSONS: tuple[tuple[str, str], ...] = (
+    ('bilopolska valentyna', ''),
+    ('yerushchenko oksana', ''),
+    ('tkachenko oleksandra', 'a.tkachenko@evadav.com'),
+    ('sidorov boris', 'boris@evadav.com'),
+    ('sluchevskyi gleb', 'glebslu@gmail.com'),
+    ('marcinkute ilona', 'i.marcinkute@evadav.com'),
+    ('hr evrius', 'hr_cz@evrius.com'),
+    ('hreben katsiaryna', 'administration@evadav.com'),
+    ('bochkovskyi oleksandr', 'bochkovskiy@evadav.com'),
+    ('dolhov andrii', 'a.dolgov@evadav.com'),
+    ('dubinin egor', 'e.dubinin@evadav.com'),
+    ('hrechka oksana', 'o.hrechka@evadav.com'),
+    ('kliushyn anton', 'a.kliushyn@evadav.com'),
+    ('lyukshin boris', 'b.lyukshin@evadav.com'),
+    ('morkin serhii', 'ms@evadav.com'),
+    ('perchatochnikov maksim', ''),
+    ('poniatov anton', 'ponyatov.anton@gmail.com'),
+    ('postoi anton', ''),
+    ('raeva kateryna', 'kateadler17@gmail.com'),
+    ('test anna', 'alenakriv91@gmail.com'),
+    ('tkachenko ivan', 'i.tkachenko@evadav.com'),
+    ('volodin dmitriy', 'd.volodin@evadav.com'),
+    ('ovcharenko german', 'german@evadav.com'),
+    ('gorobinska tetiana', '')
+)
+
+IGNORED_DIFF_EMAILS = {email for _, email in IGNORED_DIFF_PERSONS if email}
+
+
+def _is_ignored_person(name: str | None, email: str | None) -> bool:
+    normalized_name = (name or '').strip().lower()
+    normalized_email = (email or '').strip().lower()
+    if not normalized_name and not normalized_email:
+        return False
+    if (normalized_name, normalized_email) in IGNORED_DIFF_PERSONS:
+        return True
+    if normalized_email and normalized_email in IGNORED_DIFF_EMAILS:
+        return True
+    if (normalized_name, '') in IGNORED_DIFF_PERSONS:
+        return True
+    return False

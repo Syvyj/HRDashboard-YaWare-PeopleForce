@@ -368,3 +368,18 @@
   gap: 0.35rem;
   font-size: 0.85rem;
 }
+
+.diff-card-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.diff-card-list li > span {
+  flex: 1 1 auto;
+}
+
+.diff-card-list .btn {
+  white-space: nowrap;
+}

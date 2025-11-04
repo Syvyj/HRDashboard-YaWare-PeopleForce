@@ -318,6 +318,87 @@
       </div>
     </div>
 
+    <div class="modal fade" id="diffAddModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Додати користувача з PeopleForce</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <form id="diff-add-form">
+            <div class="modal-body">
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Ім'я</label>
+                  <input type="text" class="form-control" id="diff-add-name" required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" id="diff-add-email" required />
+                </div>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">YaWare ID</label>
+                  <input type="text" class="form-control" id="diff-add-yaware" />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">PeopleForce ID</label>
+                  <input type="text" class="form-control" id="diff-add-peopleforce" />
+                </div>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                  <label class="form-label">Проект</label>
+                  <input type="text" class="form-control" id="diff-add-project" />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Департамент</label>
+                  <input type="text" class="form-control" id="diff-add-department" />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Команда</label>
+                  <input type="text" class="form-control" id="diff-add-team" />
+                </div>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Локація</label>
+                  <input type="text" class="form-control" id="diff-add-location" />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Плановий старт</label>
+                  <input type="text" class="form-control" id="diff-add-plan-start" placeholder="09:00" />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Control manager</label>
+                <select class="form-select" id="diff-add-manager"></select>
+              </div>
+              <div class="form-text" id="diff-add-hire-info"></div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-bs-dismiss="modal"
+              >
+                Скасувати
+              </button>
+              <button type="submit" class="btn btn-primary" id="diff-add-submit">
+                Додати
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <div
       class="modal fade"
       id="employeeEditModal"

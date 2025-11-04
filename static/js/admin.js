@@ -46,10 +46,25 @@
   const diffMissingPeopleforceList = document.getElementById('diff-missing-peopleforce-list');
   const diffYaWareOnlyList = document.getElementById('diff-yaware-only-list');
   const diffPeopleforceOnlyList = document.getElementById('diff-peopleforce-only-list');
+  const diffAddModalEl = document.getElementById('diffAddModal');
+  const diffAddForm = document.getElementById('diff-add-form');
+  const diffAddName = document.getElementById('diff-add-name');
+  const diffAddEmail = document.getElementById('diff-add-email');
+  const diffAddYaware = document.getElementById('diff-add-yaware');
+  const diffAddPeopleforce = document.getElementById('diff-add-peopleforce');
+  const diffAddProject = document.getElementById('diff-add-project');
+  const diffAddDepartment = document.getElementById('diff-add-department');
+  const diffAddTeam = document.getElementById('diff-add-team');
+  const diffAddLocation = document.getElementById('diff-add-location');
+  const diffAddPlanStart = document.getElementById('diff-add-plan-start');
+  const diffAddManager = document.getElementById('diff-add-manager');
+  const diffAddHireInfo = document.getElementById('diff-add-hire-info');
+  const diffAddSubmit = document.getElementById('diff-add-submit');
   const employeeDeleteBtn = document.getElementById('employee-delete-btn');
 
   const employeeEditModal = employeeEditModalEl ? new bootstrap.Modal(employeeEditModalEl) : null;
   const appUserModal = appUserModalEl ? new bootstrap.Modal(appUserModalEl) : null;
+  const diffAddModal = diffAddModalEl ? new bootstrap.Modal(diffAddModalEl) : null;
 
   let employeePage = 1;
   const perPage = 25;
@@ -61,6 +76,7 @@
   let employeeDepartmentFilter = '';
   let employeeTeamFilter = '';
   let diffState = null;
+  let diffAddContext = null;
 
   function showAlert(message, type = 'danger', timeout = 5000) {
     if (!alertsEl) {
@@ -239,7 +255,7 @@
     diffSummaryEl.textContent = parts.join(' • ');
   }
 
-  function renderDiffList(target, items) {
+  function renderDiffList(target, items, options = {}) {
     if (!target) {
       return;
     }
@@ -253,7 +269,24 @@
     }
     items.forEach((item) => {
       const li = document.createElement('li');
-      li.textContent = item.display || item;
+      li.className = 'diff-list-item';
+      const label = document.createElement('span');
+      if (typeof item === 'string') {
+        label.textContent = item;
+      } else if (item && typeof item === 'object') {
+        label.textContent = item.display || item.email || item.name || '';
+      } else {
+        label.textContent = String(item);
+      }
+      li.appendChild(label);
+      if (options.type === 'peopleforce' && item && typeof item === 'object') {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-sm btn-primary diff-add-btn';
+        btn.textContent = 'Додати';
+        btn.dataset.entry = JSON.stringify(item);
+        li.appendChild(btn);
+      }
       target.appendChild(li);
     });
   }
@@ -267,18 +300,14 @@
       return;
     }
     const missingYaWare = data.missing_yaware || [];
-    const missingPeopleforce = data.missing_peopleforce || [];
-    const yawareOnly = (data.yaware_only || []).map((item) => ({
-      display: item.display,
-    }));
-    const peopleforceOnly = (data.peopleforce_only || []).map((item) => ({
-      display: item.display,
-    }));
+  	const missingPeopleforce = data.missing_peopleforce || [];
+    const yawareOnly = data.yaware_only || [];
+    const peopleforceOnly = data.peopleforce_only || [];
 
     renderDiffList(diffMissingYaWareList, missingYaWare);
     renderDiffList(diffMissingPeopleforceList, missingPeopleforce);
-    renderDiffList(diffYaWareOnlyList, yawareOnly);
-    renderDiffList(diffPeopleforceOnlyList, peopleforceOnly);
+    renderDiffList(diffYaWareOnlyList, yawareOnly, { type: 'yaware' });
+    renderDiffList(diffPeopleforceOnlyList, peopleforceOnly, { type: 'peopleforce' });
 
     diffListsWrapper.hidden = false;
   }
@@ -293,6 +322,27 @@
     if (errors.peopleforce) {
       showAlert(`Не вдалося отримати дані PeopleForce: ${errors.peopleforce}`, 'warning', 8000);
     }
+  }
+
+  if (diffListsWrapper) {
+    diffListsWrapper.addEventListener('click', (event) => {
+      const button = event.target.closest('.diff-add-btn');
+      if (!button) {
+        return;
+      }
+      const raw = button.dataset.entry;
+      if (!raw) {
+        return;
+      }
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch (error) {
+        console.error('Failed to parse diff entry payload', error);
+        return;
+      }
+      openDiffAddModal(data);
+    });
   }
 
   function setDiffState(data) {
@@ -310,11 +360,39 @@
     applyDiffToExistingRows();
   }
 
+  function openDiffAddModal(data) {
+    if (!diffAddModal || !diffAddForm) {
+      return;
+    }
+    diffAddContext = data || {};
+    diffAddForm.reset();
+    const managerValue = data && data.control_manager != null && data.control_manager !== ''
+      ? String(data.control_manager)
+      : '';
+    renderManagerOptions(diffAddManager, managerValue);
+    diffAddName.value = (data && data.name) || (data && data.display) || '';
+    diffAddEmail.value = (data && data.email) || '';
+    diffAddPeopleforce.value = (data && (data.peopleforce_id || data.user_id)) || '';
+    diffAddYaware.value = (data && (data.yaware_user_id || data.yaware_id)) || '';
+    diffAddProject.value = (data && data.project) || '';
+    diffAddDepartment.value = (data && data.department) || '';
+    diffAddTeam.value = (data && data.team) || '';
+    diffAddLocation.value = (data && data.location) || '';
+    diffAddPlanStart.value = (data && (data.plan_start || data.start_time)) || '09:00';
+    if (diffAddHireInfo) {
+      diffAddHireInfo.textContent = data && data.hire_date
+        ? `Дата найму PeopleForce: ${new Date(data.hire_date).toLocaleDateString()}`
+        : '';
+    }
+    diffAddModal.show();
+  }
+
   function renderEmployees(data) {
     const items = data.items || [];
     managerOptions = data.manager_options || [];
     renderManagerOptions(bulkManagerSelect, bulkManagerSelect.value);
     renderManagerOptions(employeeEditManager, employeeEditManager ? employeeEditManager.value : '');
+    renderManagerOptions(diffAddManager, diffAddManager ? diffAddManager.value : '');
 
     if (data.filters) {
       populateFilterSelect(projectFilterSelect, data.filters.project, employeeProjectFilter);
@@ -676,6 +754,61 @@
   // Event bindings
   employeeTable.addEventListener('change', handleTableChange);
   employeeTable.addEventListener('click', handleEmployeeTableClick);
+
+  if (diffAddForm) {
+    diffAddForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = (diffAddName ? diffAddName.value : '').trim();
+      const email = (diffAddEmail ? diffAddEmail.value : '').trim();
+      if (!name || !email) {
+        showAlert('Заповніть ім\'я та email для нового користувача', 'warning');
+        return;
+      }
+      const payload = {
+        name,
+        email,
+        user_id: (diffAddYaware ? diffAddYaware.value : '').trim(),
+        peopleforce_id: (diffAddPeopleforce ? diffAddPeopleforce.value : '').trim(),
+        project: (diffAddProject ? diffAddProject.value : '').trim(),
+        department: (diffAddDepartment ? diffAddDepartment.value : '').trim(),
+        team: (diffAddTeam ? diffAddTeam.value : '').trim(),
+        location: (diffAddLocation ? diffAddLocation.value : '').trim(),
+        plan_start: (diffAddPlanStart ? diffAddPlanStart.value : '').trim(),
+        control_manager: diffAddManager ? diffAddManager.value : '',
+      };
+      if (diffAddSubmit) {
+        diffAddSubmit.disabled = true;
+      }
+      fetch('/api/admin/employees', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.error || 'Не вдалося додати користувача');
+          }
+          showAlert('Користувача додано', 'success');
+          if (diffAddModal) {
+            diffAddModal.hide();
+          }
+          diffAddContext = null;
+          fetchDiffState({ force: true }).catch(() => {});
+          fetchEmployees();
+        })
+        .catch((error) => {
+          showAlert(error.message || 'Сталася помилка');
+        })
+        .finally(() => {
+          if (diffAddSubmit) {
+            diffAddSubmit.disabled = false;
+          }
+        });
+    });
+  }
 
   if (syncUsersBtn) {
     syncUsersBtn.addEventListener('click', () => {

@@ -43,6 +43,18 @@ DEFAULT_SYNC_PASSWORD = 'ChangeMe123'
 
 api_bp = Blueprint('api', __name__)
 
+DEFAULT_SYNC_PASSWORD = 'ChangeMe123'
+
+
+@lru_cache(maxsize=1024)
+def _password_matches_default(hash_value: str | None) -> bool:
+    if not hash_value:
+        return False
+    try:
+        return check_password_hash(hash_value, DEFAULT_SYNC_PASSWORD)
+    except Exception:  # pragma: no cover
+        return False
+
 
 @lru_cache(maxsize=1024)
 def _password_matches_default(hash_value: str | None) -> bool:
@@ -397,11 +409,30 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
                 hire_date = None
             if hire_date and hire_date > today:
                 continue
+        else:
+            hire_date = None
+        location_obj = item.get('location') or {}
+        location_name = ''
+        if isinstance(location_obj, dict):
+            location_name = (location_obj.get('name') or '').strip()
+        department_obj = item.get('department') or {}
+        department_name = ''
+        if isinstance(department_obj, dict):
+            department_name = (department_obj.get('name') or '').strip()
+        division_obj = item.get('division') or {}
+        division_name = ''
+        if isinstance(division_obj, dict):
+            division_name = (division_obj.get('name') or '').strip()
         keys = _diff_key_candidates(full_name, email, employee_id)
         entries.append({
             'name': full_name,
             'email': email,
             'user_id': employee_id,
+             'peopleforce_id': employee_id,
+             'department': department_name,
+             'project': division_name,
+             'location': location_name,
+             'hire_date': hire_date.isoformat() if hire_date else None,
             'keys': keys,
         })
     return entries, None
@@ -468,6 +499,7 @@ def _generate_user_diff(force_refresh: bool = False) -> dict:
                 'display': _humanize_entry(item['name'], item['email'], item['user_id']),
                 'email': item['email'],
                 'user_id': item['user_id'],
+                'name': item['name'],
             }
             for item in yaware_only
         ],
@@ -476,6 +508,13 @@ def _generate_user_diff(force_refresh: bool = False) -> dict:
                 'display': _humanize_entry(item['name'], item['email'], item['user_id']),
                 'email': item['email'],
                 'user_id': item['user_id'],
+                'name': item['name'],
+                'peopleforce_id': item.get('peopleforce_id'),
+                'project': item.get('project'),
+                'department': item.get('department'),
+                'team': item.get('team'),
+                'location': item.get('location'),
+                'hire_date': item.get('hire_date'),
             }
             for item in peopleforce_only
         ],
@@ -1077,6 +1116,87 @@ def admin_sync_attendance():
         'date': target_date.isoformat(),
         'include_absent': include_absent,
     })
+
+
+@api_bp.route('/admin/employees', methods=['POST'])
+@login_required
+def admin_create_employee():
+    _ensure_admin()
+    payload = request.get_json(silent=True) or {}
+    name = (payload.get('name') or '').strip()
+    email_raw = (payload.get('email') or '').strip()
+    email = email_raw.lower()
+    if not name or not email:
+        return jsonify({'error': 'name and email are required'}), 400
+
+    schedules = schedule_user_manager.load_users()
+    users = schedules.get('users')
+    if not isinstance(users, dict):
+        users = {}
+        schedules['users'] = users
+
+    if name in users:
+        return jsonify({'error': 'Користувач з таким ім\'ям вже існує'}), 409
+
+    normalized_email = email.strip().lower()
+    for existing_name, info in users.items():
+        existing_email = str(info.get('email') or '').strip().lower()
+        if existing_email and existing_email == normalized_email:
+            return jsonify({'error': f"Email вже використовується користувачем '{existing_name}'"}), 409
+
+    def _clean(value: object) -> str | None:
+        if isinstance(value, str):
+            value = value.strip()
+        return value or None
+
+    start_time = _clean(payload.get('plan_start') or payload.get('start_time'))
+    control_manager = payload.get('control_manager')
+    if control_manager in (None, '', 'null'):
+        control_manager_value = None
+    else:
+        try:
+            control_manager_value = int(control_manager)
+        except (TypeError, ValueError):
+            return jsonify({'error': 'control_manager must be integer or empty'}), 400
+
+    entry: dict[str, object] = {
+        'email': normalized_email,
+    }
+    yaware_id = _clean(payload.get('user_id'))
+    if yaware_id:
+        entry['user_id'] = yaware_id
+    peopleforce_id = _clean(payload.get('peopleforce_id'))
+    if peopleforce_id:
+        entry['peopleforce_id'] = peopleforce_id
+    location = _clean(payload.get('location'))
+    if location:
+        entry['location'] = location
+    project = _clean(payload.get('project'))
+    if project:
+        entry['project'] = project
+    department = _clean(payload.get('department'))
+    if department:
+        entry['department'] = department
+    team = _clean(payload.get('team'))
+    if team:
+        entry['team'] = team
+    if start_time:
+        entry['start_time'] = start_time
+    if control_manager_value is not None:
+        entry['control_manager'] = control_manager_value
+
+    users[name] = entry
+    if not schedule_user_manager.save_users(schedules):
+        return jsonify({'error': 'Не вдалося зберегти користувача'}), 500
+
+    clear_user_schedule_cache()
+    _schedule_identity_sets.cache_clear()
+
+    _log_admin_action('create_schedule_user', {
+        'name': name,
+        'entry': entry,
+    })
+    return jsonify({'status': 'ok', 'name': name, 'entry': entry})
 
 
 @api_bp.route('/admin/employees')

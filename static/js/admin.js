@@ -78,6 +78,39 @@
   let diffState = null;
   let diffAddContext = null;
 
+  function setButtonLoading(button, isLoading) {
+    if (!button) {
+      return;
+    }
+    if (isLoading) {
+      button.disabled = true;
+      button.classList.add('btn-loading');
+      const extra = button.dataset.loadingClass;
+      if (extra && !button.dataset.loadingExtraApplied) {
+        extra.split(/\s+/).forEach((cls) => {
+          if (cls) {
+            button.classList.add(cls);
+          }
+        });
+        button.dataset.loadingExtraApplied = '1';
+      }
+    } else {
+      button.disabled = false;
+      button.classList.remove('btn-loading');
+      if (button.dataset.loadingExtraApplied) {
+        const extra = button.dataset.loadingClass;
+        if (extra) {
+          extra.split(/\s+/).forEach((cls) => {
+            if (cls) {
+              button.classList.remove(cls);
+            }
+          });
+        }
+        delete button.dataset.loadingExtraApplied;
+      }
+    }
+  }
+
   function showAlert(message, type = 'danger', timeout = 5000) {
     if (!alertsEl) {
       return;
@@ -534,8 +567,7 @@
     if (!syncUsersBtn) {
       return Promise.resolve();
     }
-    syncUsersBtn.disabled = true;
-    syncUsersBtn.classList.add('disabled');
+    setButtonLoading(syncUsersBtn, true);
     return fetch('/api/admin/sync/users', {
       method: 'POST',
       headers: {
@@ -560,8 +592,7 @@
         throw error;
       })
       .finally(() => {
-        syncUsersBtn.disabled = false;
-        syncUsersBtn.classList.remove('disabled');
+        setButtonLoading(syncUsersBtn, false);
       });
   }
 
@@ -574,8 +605,7 @@
       showAlert('Оберіть дату для синхронізації', 'warning');
       return;
     }
-    syncDateBtn.disabled = true;
-    syncDateBtn.classList.add('disabled');
+    setButtonLoading(syncDateBtn, true);
 
     const payload = {
       date: targetDate,
@@ -604,8 +634,7 @@
       })
       .catch((error) => showAlert(error.message))
       .finally(() => {
-        syncDateBtn.disabled = false;
-        syncDateBtn.classList.remove('disabled');
+        setButtonLoading(syncDateBtn, false);
       });
   }
 
@@ -776,9 +805,7 @@
         plan_start: (diffAddPlanStart ? diffAddPlanStart.value : '').trim(),
         control_manager: diffAddManager ? diffAddManager.value : '',
       };
-      if (diffAddSubmit) {
-        diffAddSubmit.disabled = true;
-      }
+      setButtonLoading(diffAddSubmit, true);
       fetch('/api/admin/employees', {
         method: 'POST',
         headers: {
@@ -803,9 +830,7 @@
           showAlert(error.message || 'Сталася помилка');
         })
         .finally(() => {
-          if (diffAddSubmit) {
-            diffAddSubmit.disabled = false;
-          }
+          setButtonLoading(diffAddSubmit, false);
         });
     });
   }
@@ -818,10 +843,12 @@
 
   if (refreshDiffBtn) {
     refreshDiffBtn.addEventListener('click', () => {
-      refreshDiffBtn.disabled = true;
-      fetchDiffState({ force: true }).catch(() => {}).finally(() => {
-        refreshDiffBtn.disabled = false;
-      });
+      setButtonLoading(refreshDiffBtn, true);
+      fetchDiffState({ force: true })
+        .catch(() => {})
+        .finally(() => {
+          setButtonLoading(refreshDiffBtn, false);
+        });
     });
   }
 

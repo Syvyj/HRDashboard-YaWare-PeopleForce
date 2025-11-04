@@ -383,3 +383,51 @@
 .diff-card-list .btn {
   white-space: nowrap;
 }
+
+.btn-loading {
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.btn-loading.btn-outline-success {
+  background-color: var(--bs-success);
+  border-color: var(--bs-success);
+  color: #fff !important;
+}
+
+.btn-loading.btn-outline-primary {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: #fff !important;
+}
+
+.btn-loading.btn-outline-secondary {
+  background-color: var(--bs-secondary);
+  border-color: var(--bs-secondary);
+  color: #fff !important;
+}
+
+.btn-loading.btn-outline-success::after,
+.btn-loading.btn-outline-primary::after,
+.btn-loading.btn-outline-secondary::after {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0.2) 100%);
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0.1) 100%);
+  transform: translateX(-100%);
+  animation: btn-loading-fill 1.4s linear infinite;
+}
+
+@keyframes btn-loading-fill {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

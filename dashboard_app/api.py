@@ -194,17 +194,17 @@ def _parse_date(value: str) -> date | None:
 def _is_synced_employee(user: User) -> bool:
     if not user or user.is_admin:
         return False
-    if _password_matches_default(getattr(user, 'password_hash', None)):
-        return True
     names, emails, ids = _schedule_identity_sets()
-    if user.email and user.email.strip().lower() in emails:
+    email = (user.email or '').strip().lower()
+    if email and email in emails:
         return True
-    if user.name and user.name.strip().lower() in names:
+    name = (user.name or '').strip().lower()
+    if name and name in names:
         return True
     identifier = getattr(user, 'user_id', None)
     if identifier and str(identifier).strip().lower() in ids:
         return True
-    return False
+    return _password_matches_default(getattr(user, 'password_hash', None))
 
 
 def _apply_hierarchy_defaults(project: str | None, department: str | None, team: str | None) -> tuple[str, str, str]:

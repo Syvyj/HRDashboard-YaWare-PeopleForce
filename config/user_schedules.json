@@ -7,7 +7,7 @@
     "without_schedule": 36,
     "unique_users": 181,
     "total_rows_processed": 181,
-    "last_updated": "2025-11-03T17:38:33.091821",
+    "last_updated": "2025-11-04T12:32:02.915004",
     "yaware_groups_added": "2025-10-17T15:44:44.809277",
     "control_data_added": "2025-10-17T15:57:34.592749",
     "control_users_matched": 59,
@@ -471,7 +471,7 @@
       "user_id": 7922500,
       "email": "r.kazmirchuk@evadav.com",
       "control_manager": 1,
-      "department": "IOS Unit",
+      "department": "IOS Team",
       "team": "R&D team",
       "peopleforce_id": 286600,
       "project": "APP"
@@ -681,7 +681,7 @@
       "email": "s.kurbanov@evadav.com",
       "peopleforce_id": 335389,
       "project": "APP",
-      "department": "R&D Team IOS",
+      "department": "IOS Team",
       "team": "R&D team",
       "control_manager": 2
     },
@@ -1340,7 +1340,7 @@
       "email": "o.tatarchenko@evadav.com",
       "peopleforce_id": 292568,
       "project": "APP",
-      "department": "R&D Team IOS",
+      "department": "IOS Team",
       "team": "R&D team",
       "control_manager": 2
     },
@@ -1504,7 +1504,7 @@
       "user_id": 7920390,
       "email": "v.yekhlakov@evadav.com",
       "control_manager": 2,
-      "department": "R&D Team IOS",
+      "department": "IOS Team",
       "team": "R&D team",
       "peopleforce_id": 286601,
       "project": "APP"
@@ -1683,7 +1683,7 @@
       "email": "a.kotliarenko@evadav.com",
       "peopleforce_id": 525862,
       "project": "APP",
-      "department": "R&D Team IOS",
+      "department": "IOS Team",
       "team": "R&D team",
       "control_manager": 2
     },
@@ -1837,6 +1837,16 @@
       "peopleforce_id": "573355",
       "location": "Remote other countries",
       "department": "Media buying Direction"
+    },
+    "Gyrych Maria": {
+      "email": "m.gyrych@evadav.com",
+      "user_id": "7935416",
+      "peopleforce_id": "571860",
+      "location": "Remote other countries",
+      "project": "AD NETWORK",
+      "department": "Traffic Unit",
+      "start_time": "09:00",
+      "control_manager": 1
     }
   }
 }

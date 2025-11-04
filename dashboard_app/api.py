@@ -10,6 +10,7 @@ from urllib.parse import unquote
 
 from flask import Blueprint, request, jsonify, send_file, abort, current_app
 from flask_login import login_required, current_user
+from werkzeug.security import check_password_hash
 from sqlalchemy import or_
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, PatternFill, Font, Border, Side
@@ -38,7 +39,19 @@ except ImportError:  # pragma: no cover
     ParagraphStyle = None
     pdfmetrics = TTFont = None
 
+DEFAULT_SYNC_PASSWORD = 'ChangeMe123'
+
 api_bp = Blueprint('api', __name__)
+
+
+@lru_cache(maxsize=1024)
+def _password_matches_default(hash_value: str | None) -> bool:
+    if not hash_value:
+        return False
+    try:
+        return check_password_hash(hash_value, DEFAULT_SYNC_PASSWORD)
+    except Exception:  # pragma: no cover
+        return False
 
 @lru_cache(maxsize=1)
 def _schedule_identity_sets() -> tuple[set[str], set[str], set[str]]:
@@ -169,6 +182,8 @@ def _parse_date(value: str) -> date | None:
 def _is_synced_employee(user: User) -> bool:
     if not user or user.is_admin:
         return False
+    if _password_matches_default(getattr(user, 'password_hash', None)):
+        return True
     names, emails, ids = _schedule_identity_sets()
     if user.email and user.email.strip().lower() in emails:
         return True
@@ -1470,6 +1485,7 @@ def admin_create_app_user():
 
     user = User(email=email, name=name, manager_filter=manager_filter, is_admin=is_admin)
     user.set_password(password)
+    _password_matches_default.cache_clear()
     db.session.add(user)
     _log_admin_action('create_app_user', {
         'email': email,
@@ -1503,6 +1519,7 @@ def admin_update_app_user(user_id: int):
         password = payload.get('password')
         if isinstance(password, str) and password.strip():
             user.set_password(password.strip())
+            _password_matches_default.cache_clear()
 
     _log_admin_action('update_app_user', {
         'user_id': user.id,

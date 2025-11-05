@@ -20,6 +20,10 @@ from .extensions import db
 from .models import AttendanceRecord, User, AdminAuditLog
 from .user_data import get_user_schedule, load_user_schedules, clear_user_schedule_cache
 from tracker_alert.services import user_manager as schedule_user_manager
+from tracker_alert.services.schedule_utils import (
+    set_manual_override,
+    clear_manual_override,
+)
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.client.peopleforce_api import PeopleForceClient
 from tracker_alert.client.yaware_v2_api import YaWareV2Client
@@ -72,6 +76,9 @@ _LOCATION_REPLACEMENTS: dict[str, str] = {
     'Warsaw office Warsaw, PL': 'Warsaw, PL',
     'Prague office': 'Prague, CZ'
 }
+
+
+_MANUAL_PROTECTED_FIELDS = {'start_time', 'project', 'department', 'team', 'location'}
 
 
 def _normalize_location_label(raw: object | None) -> str | None:
@@ -1213,17 +1220,22 @@ def admin_create_employee():
     location = _normalize_location_label(location_raw) or location_raw
     if location:
         entry['location'] = location
+        set_manual_override(entry, 'location')
     project = _clean(payload.get('project'))
     if project:
         entry['project'] = project
+        set_manual_override(entry, 'project')
     department = _clean(payload.get('department'))
     if department:
         entry['department'] = department
+        set_manual_override(entry, 'department')
     team = _clean(payload.get('team'))
     if team:
         entry['team'] = team
+        set_manual_override(entry, 'team')
     if start_time:
         entry['start_time'] = start_time
+        set_manual_override(entry, 'start_time')
     if control_manager_value is not None:
         entry['control_manager'] = control_manager_value
 
@@ -1376,6 +1388,8 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
             if value in (None, ''):
                 continue
             info_payload[dest] = value
+            if dest in _MANUAL_PROTECTED_FIELDS:
+                set_manual_override(info_payload, dest)
         if 'email' not in info_payload and updates.get('email') is not None:
             info_payload['email'] = updates.get('email')
         if desired_name not in users:
@@ -1417,11 +1431,15 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
                 previous = target_info.pop(dest, None)
                 if previous is not None:
                     changed = True
+            if dest in _MANUAL_PROTECTED_FIELDS:
+                clear_manual_override(target_info, dest)
             continue
 
         if target_info.get(dest) != value:
             target_info[dest] = value
             changed = True
+            if dest in _MANUAL_PROTECTED_FIELDS:
+                set_manual_override(target_info, dest)
 
     new_name = target_name
     if 'name' in updates:

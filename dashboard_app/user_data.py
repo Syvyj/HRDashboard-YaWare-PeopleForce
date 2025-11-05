@@ -5,6 +5,7 @@ from typing import Dict
 
 from dashboard_app.models import User
 from dashboard_app.extensions import db
+from tracker_alert.services.schedule_utils import MANUAL_OVERRIDE_KEY
 
 
 USER_CACHE: Dict[str, dict] | None = None
@@ -62,6 +63,7 @@ def get_user_schedule(name_or_email: str) -> dict | None:
         email = (info.get('email') or '').lower()
         if lower == email or lower == name.lower():
             info_copy = dict(info)
+            info_copy.pop(MANUAL_OVERRIDE_KEY, None)
             info_copy['name'] = name
             return info_copy
     return None

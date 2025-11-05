@@ -8,6 +8,12 @@ from pathlib import Path
 from typing import Dict, Optional, List
 from datetime import datetime
 
+from .schedule_utils import (
+    MANUAL_OVERRIDE_KEY,
+    set_manual_override,
+    clear_manual_override,
+)
+
 logger = logging.getLogger(__name__)
 
 USER_SCHEDULES_FILE = Path(__file__).parent.parent.parent / "config" / "user_schedules.json"
@@ -76,7 +82,11 @@ def add_user(name: str, email: str, user_id: str, location: str, start_time: str
             "user_id": user_id,
             "email": email
         }
-        
+        if start_time:
+            set_manual_override(data["users"][name], "start_time")
+        if location:
+            set_manual_override(data["users"][name], "location")
+
         if save_users(data):
             logger.info(f"✅ Додано користувача: {name} ({email})")
             return True, f"✅ Пользователь '{name}' успешно добавлен!"
@@ -145,7 +155,12 @@ def update_user(name: str, field: str, value: str) -> tuple[bool, str]:
         
         old_value = data["users"][name].get(field, "N/A")
         data["users"][name][field] = value
-        
+        if field in {"start_time", "location", "project", "department", "team"}:
+            if value:
+                set_manual_override(data["users"][name], field)
+            else:
+                clear_manual_override(data["users"][name], field)
+
         if save_users(data):
             logger.info(f"✏️ Оновлено {field} для {name}: {old_value} → {value}")
             
@@ -162,7 +177,7 @@ def update_user(name: str, field: str, value: str) -> tuple[bool, str]:
             
     except Exception as e:
         logger.error(f"Помилка оновлення користувача: {e}")
-        return False, f"❌ Ошибка: {str(e)}"
+            return False, f"❌ Ошибка: {str(e)}"
 
 
 def get_user_info(name: str) -> Optional[Dict]:

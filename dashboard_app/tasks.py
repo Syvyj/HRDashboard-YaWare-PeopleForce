@@ -17,6 +17,7 @@ from tracker_alert.client.peopleforce_api import PeopleForceClient
 from tracker_alert.client.yaware_v2_api import client as yaware_client
 from tracker_alert.services import user_manager as schedule_user_manager
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
+from tracker_alert.services.schedule_utils import has_manual_override
 from dashboard_app.user_data import clear_user_schedule_cache
 
 logger = logging.getLogger(__name__)
@@ -103,7 +104,7 @@ def _sync_peopleforce_metadata(app):
         location_name = ""
         if isinstance(location_obj, dict):
             location_name = (location_obj.get("name") or "").strip()
-        if location_name and info.get("location") != location_name:
+        if location_name and not has_manual_override(info, "location") and info.get("location") != location_name:
             info["location"] = location_name
             updated = True
 
@@ -111,7 +112,7 @@ def _sync_peopleforce_metadata(app):
         department_name = ""
         if isinstance(department_obj, dict):
             department_name = (department_obj.get("name") or "").strip()
-        if department_name and info.get("department") != department_name:
+        if department_name and not has_manual_override(info, "department") and info.get("department") != department_name:
             info["department"] = department_name
             updated = True
 
@@ -284,7 +285,7 @@ def _sync_yaware_plan_start(app, target_date: date | None = None) -> int:
             new_value = start_by_email[email]
         elif user_id and user_id in start_by_id:
             new_value = start_by_id[user_id]
-        if new_value and new_value != current:
+        if new_value and new_value != current and not has_manual_override(info, "start_time"):
             info["start_time"] = new_value
             updated += 1
 

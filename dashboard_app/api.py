@@ -65,6 +65,22 @@ def _password_matches_default(hash_value: str | None) -> bool:
     except Exception:  # pragma: no cover
         return False
 
+
+_LOCATION_REPLACEMENTS: dict[str, str] = {
+    'remote ukraine': 'UA',
+    'remote other countries': 'Remote',
+}
+
+
+def _normalize_location_label(raw: object | None) -> str | None:
+    if raw is None:
+        return None
+    value = str(raw).strip()
+    if not value:
+        return None
+    replacement = _LOCATION_REPLACEMENTS.get(value.casefold())
+    return replacement if replacement is not None else value
+
 @lru_cache(maxsize=1)
 def _schedule_identity_sets() -> tuple[set[str], set[str], set[str]]:
     schedules = load_user_schedules()
@@ -415,6 +431,9 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
         location_name = ''
         if isinstance(location_obj, dict):
             location_name = (location_obj.get('name') or '').strip()
+        elif isinstance(location_obj, str):
+            location_name = location_obj.strip()
+        location_name = _normalize_location_label(location_name) or ''
         department_obj = item.get('department') or {}
         department_name = ''
         if isinstance(department_obj, dict):
@@ -513,7 +532,7 @@ def _generate_user_diff(force_refresh: bool = False) -> dict:
                 'project': item.get('project'),
                 'department': item.get('department'),
                 'team': item.get('team'),
-                'location': item.get('location'),
+                'location': _normalize_location_label(item.get('location')) or (item.get('location') or ''),
                 'hire_date': item.get('hire_date'),
             }
             for item in peopleforce_only
@@ -542,6 +561,7 @@ def _serialize_attendance_record(record: AttendanceRecord) -> dict:
     corrected_display = _minutes_to_str(record.corrected_total_minutes) if record.corrected_total_minutes is not None else ''
     corrected_hm = _minutes_to_hm(record.corrected_total_minutes) if record.corrected_total_minutes is not None else ''
     manual_flags = {field: bool(getattr(record, attr)) for field, attr in MANUAL_FLAG_MAP.items()}
+    location_value = _normalize_location_label(record.location)
     return {
         'id': record.id,
         'date': record.record_date.isoformat(),
@@ -568,7 +588,7 @@ def _serialize_attendance_record(record: AttendanceRecord) -> dict:
         'project': project_resolved,
         'department': department_resolved,
         'team': team_resolved,
-        'location': record.location,
+        'location': location_value if location_value is not None else record.location,
         'control_manager': record.control_manager,
         'corrected_total_minutes': record.corrected_total_minutes,
         'corrected_total_display': corrected_display,
@@ -684,6 +704,7 @@ def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None =
         candidate = schedule.get('peopleforce_id')
         if candidate not in (None, ''):
             peopleforce_id = str(candidate).strip()
+    location_value = _normalize_location_label(record.location)
     return {
         'user_key': record.user_id or record.user_email or record.user_name,
         'user_id': record.user_id,
@@ -692,7 +713,7 @@ def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None =
         'project': project_resolved,
         'department': department_resolved,
         'team': team_resolved,
-        'location': record.location,
+        'location': location_value if location_value is not None else record.location,
         'plan_start': record.scheduled_start,
         'control_manager': record.control_manager,
         'peopleforce_id': peopleforce_id,
@@ -905,12 +926,13 @@ def _build_items(records):
             if note_value:
                 notes_aggregated.append(note_value)
 
+        location_display = _normalize_location_label(first.location)
         items.append({
             'user_name': first.user_name,
             'project': first_project,
             'department': first_department,
             'team': first_team,
-            'location': first.location,
+            'location': location_display if location_display is not None else first.location,
             'plan_start': first.scheduled_start,
             'rows': rows,
             'week_total': {
@@ -943,10 +965,17 @@ def _apply_schedule_overrides(items: list[dict]) -> list[dict]:
         schedule = get_user_schedule(item['user_name']) or {}
         if schedule:
             item['plan_start'] = schedule.get('start_time') or item.get('plan_start')
-            item['location'] = schedule.get('location') or item.get('location')
+            schedule_location = schedule.get('location')
+            normalized_schedule_location = _normalize_location_label(schedule_location)
+            if schedule_location not in (None, ''):
+                item['location'] = normalized_schedule_location if normalized_schedule_location is not None else schedule_location
             for field in ('project', 'department', 'team'):
                 if schedule.get(field):
                     item[field] = schedule[field]
+        if schedule.get('location') in (None, ''):
+            normalized_item_location = _normalize_location_label(item.get('location'))
+            if normalized_item_location is not None:
+                item['location'] = normalized_item_location
         project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(
             item.get('project'),
             item.get('department'),
@@ -1168,7 +1197,8 @@ def admin_create_employee():
     peopleforce_id = _clean(payload.get('peopleforce_id'))
     if peopleforce_id:
         entry['peopleforce_id'] = peopleforce_id
-    location = _clean(payload.get('location'))
+    location_raw = _clean(payload.get('location'))
+    location = _normalize_location_label(location_raw) or location_raw
     if location:
         entry['location'] = location
     project = _clean(payload.get('project'))
@@ -1328,6 +1358,9 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
             value = updates.get(source)
             if source == 'name':
                 continue
+            if source == 'location' and value not in (None, ''):
+                normalized_location = _normalize_location_label(value)
+                value = normalized_location if normalized_location is not None else value
             if value in (None, ''):
                 continue
             info_payload[dest] = value
@@ -1361,7 +1394,11 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
             if target_info.get(dest) != value:
                 target_info[dest] = value
                 changed = True
-            continue
+                continue
+
+        if dest == 'location' and value not in (None, ''):
+            normalized_location = _normalize_location_label(value)
+            value = normalized_location if normalized_location is not None else value
 
         if value in (None, ''):
             if dest in target_info:
@@ -1441,6 +1478,9 @@ def admin_update_employee(user_key: str):
     for field in ('project', 'department', 'team', 'location', 'plan_start'):
         if field in payload:
             value = (payload.get(field) or '').strip() or None
+            if field == 'location' and value is not None:
+                normalized_location = _normalize_location_label(value)
+                value = normalized_location if normalized_location is not None else value
             target_field = 'scheduled_start' if field == 'plan_start' else field
             updates[target_field] = value
             schedule_updates[field] = value
@@ -1783,6 +1823,9 @@ def _serialize_profile(schedule: dict | None, record: AttendanceRecord | None) -
     profile['project'] = project_resolved
     profile['department'] = department_resolved
     profile['team'] = team_resolved
+    location_normalized = _normalize_location_label(profile.get('location'))
+    if location_normalized is not None:
+        profile['location'] = location_normalized
 
     return profile
 
@@ -2176,7 +2219,9 @@ def _build_excel_rows(items: list[dict]) -> list[dict[str, object]]:
         project = (item.get('project') or '-').strip() or '-'
         department = (item.get('department') or '-').strip() or '-'
         team = (item.get('team') or '-').strip() or '-'
-        location_value = (item.get('location') or '-').strip() or '-'
+        raw_location = item.get('location')
+        normalized_location = _normalize_location_label(raw_location)
+        location_value = (normalized_location if normalized_location is not None else (raw_location or '-')).strip() or '-'
         project_line = f"{project} / {department} / {team}".strip()
 
         for idx, row in enumerate(item['rows']):
@@ -2344,7 +2389,9 @@ def _build_pdf_document(items: list[dict]) -> BytesIO:
         project = (item.get('project') or '-').strip() or '-'
         department = (item.get('department') or '-').strip() or '-'
         team = (item.get('team') or '-').strip() or '-'
-        location_value = (item.get('location') or '-').strip() or '-'
+        raw_location = item.get('location')
+        normalized_location = _normalize_location_label(raw_location)
+        location_value = (normalized_location if normalized_location is not None else (raw_location or '-')).strip() or '-'
         project_line = f"{project} / {department} / {team}".strip()
 
         for idx, row in enumerate(item['rows']):

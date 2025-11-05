@@ -60,7 +60,8 @@
     "Dnipro": "remote_ukraine",
     "Kharkiv": "remote_ukraine",
     "Odesa": "remote_ukraine",
-    
+    "UA": "remote_ukraine",
+
     "Remote": "flexible",
     "Remote other countries": "flexible",
     "Remote Other": "flexible"

@@ -8,6 +8,21 @@ from typing import Dict, Optional, Any
 
 logger = logging.getLogger(__name__)
 
+LOCATION_REPLACEMENTS = {
+    "remote ukraine": "UA",
+    "remote other countries": "Remote",
+}
+
+
+def _normalize_location(value: Optional[str]) -> Optional[str]:
+    if not value:
+        return value
+    stripped = value.strip()
+    if not stripped:
+        return None
+    replacement = LOCATION_REPLACEMENTS.get(stripped.casefold())
+    return replacement if replacement is not None else stripped
+
 
 class WorkScheduleManager:
     """Менеджер графіків роботи співробітників."""
@@ -81,6 +96,7 @@ class WorkScheduleManager:
         
         # 3. Визначаємо за локацією
         if schedule_id is None and location:
+            location = _normalize_location(location)
             location_mapping = self.config.get("location_mapping", {})
             schedule_id = location_mapping.get(location)
             if schedule_id:

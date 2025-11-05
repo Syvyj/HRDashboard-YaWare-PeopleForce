@@ -237,9 +237,11 @@ class PeopleForceClient:
         # Маппінг локацій
         location_map = {
             "Remote Ukraine": "Remote Ukraine 🇺🇦",
+            "UA": "Remote Ukraine 🇺🇦",
             "Prague office": "Prague office 🇨🇿",
             "Warsaw office": "Warsaw office 🇵🇱",
-            "Remote other countries": "Remote other countries 🌍"
+            "Remote other countries": "Remote other countries 🌍",
+            "Remote": "Remote 🌍",
         }
         
         formatted = location_map.get(location_name, location_name)

@@ -15,6 +15,21 @@ from ..client.peopleforce_api import get_peopleforce_client
 
 logger = logging.getLogger(__name__)
 
+LOCATION_REPLACEMENTS = {
+    "remote ukraine": "UA",
+    "remote other countries": "Remote",
+}
+
+
+def _normalize_location(value: Optional[str]) -> str:
+    if not value:
+        return ""
+    stripped = value.strip()
+    if not stripped:
+        return ""
+    replacement = LOCATION_REPLACEMENTS.get(stripped.casefold())
+    return replacement if replacement is not None else stripped
+
 
 @dataclass
 class UserSchedule:
@@ -79,7 +94,7 @@ class AttendanceMonitor:
                 email=user_data.get('email', ''),
                 user_id=str(user_data['user_id']),
                 start_time=user_data['start_time'],
-                location=user_data.get('location', ''),
+                location=_normalize_location(user_data.get('location', '')),
                 project=user_data.get('project', '') or "",
                 department=user_data.get('department', '') or "",
                 team=user_data.get('team', '') or "",

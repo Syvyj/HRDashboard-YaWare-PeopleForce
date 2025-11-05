@@ -3,7 +3,7 @@ from __future__ import annotations
 import atexit
 import logging
 from calendar import monthrange
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -141,12 +141,72 @@ def _normalize_time(value: object | None) -> str | None:
     text = str(value).strip()
     if not text:
         return None
+    if text.isdigit() and len(text) == 4:
+        text = f"{text[:2]}:{text[2:]}"
     for fmt in ("%H:%M", "%H:%M:%S"):
         try:
             return datetime.strptime(text, fmt).strftime("%H:%M")
         except ValueError:
             continue
     return text
+
+
+def _parse_int(value: object | None) -> int | None:
+    if value in (None, ''):
+        return None
+    try:
+        return int(float(str(value).replace(',', '.')))
+    except (TypeError, ValueError):
+        return None
+
+
+def _extract_email(record: dict) -> str:
+    candidates = [
+        record.get("email"),
+        record.get("user_email"),
+        record.get("userEmail"),
+    ]
+    user_field = record.get("user") or record.get("full_name") or record.get("fullName")
+    if isinstance(user_field, str) and ", " in user_field:
+        candidates.append(user_field.split(", ", 1)[1])
+    for candidate in candidates:
+        if not candidate:
+            continue
+        email = str(candidate).strip().lower()
+        if email:
+            return email
+    return ""
+
+
+def _extract_schedule_start(record: dict) -> str | None:
+    schedule_obj = record.get("schedule")
+    if isinstance(schedule_obj, dict):
+        for key in ("start_time", "startTime", "start", "begin"):
+            start_value = _normalize_time(schedule_obj.get(key))
+            if start_value:
+                return start_value
+
+    for key in ("schedule_start", "scheduleStart", "plan_start", "planStart", "expected_start", "expectedStart"):
+        start_value = _normalize_time(record.get(key))
+        if start_value:
+            return start_value
+
+    actual_value = _normalize_time(
+        record.get("time_start")
+        or record.get("timeStart")
+        or record.get("start_time")
+        or record.get("startTime")
+    )
+    lateness_minutes = _parse_int(record.get("lateness") or record.get("lateness_minutes") or record.get("late"))
+    if actual_value and lateness_minutes is not None:
+        try:
+            actual_dt = datetime.strptime(actual_value, "%H:%M")
+        except ValueError:
+            return actual_value
+        plan_dt = (datetime.combine(date.today(), actual_dt.time()) - timedelta(minutes=lateness_minutes)).time()
+        return plan_dt.strftime("%H:%M")
+
+    return None
 
 
 def _sync_yaware_plan_start(app, target_date: date | None = None) -> int:
@@ -171,21 +231,30 @@ def _sync_yaware_plan_start(app, target_date: date | None = None) -> int:
                 raise
             continue
 
-        for record in response:
-            schedule_obj = record.get("schedule")
-            if not isinstance(schedule_obj, dict):
+        if isinstance(response, dict):
+            possible_lists = []
+            for key in ("data", "users", "items"):
+                payload = response.get(key)
+                if isinstance(payload, list):
+                    possible_lists.append(payload)
+            if possible_lists:
+                response_iterable = possible_lists[0]
+            else:
+                response_iterable = []
+        else:
+            response_iterable = response
+
+        for record in response_iterable:
+            if not isinstance(record, dict):
                 continue
-            start_time = _normalize_time(schedule_obj.get("start_time"))
+            start_time = _extract_schedule_start(record)
             if not start_time:
                 continue
-            user_id = str(record.get("user_id") or "").strip()
+            user_id = str(record.get("user_id") or record.get("id") or "").strip()
             if user_id and user_id not in start_by_id:
                 start_by_id[user_id] = start_time
-            email = ""
-            user_field = record.get("user")
-            if isinstance(user_field, str) and ", " in user_field:
-                email = user_field.split(", ", 1)[1].strip().lower()
-            email = email or str(record.get("user_email") or "").strip().lower()
+
+            email = _extract_email(record)
             if email and email not in start_by_email:
                 start_by_email[email] = start_time
 

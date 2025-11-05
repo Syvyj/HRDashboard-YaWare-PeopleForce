@@ -71,7 +71,7 @@
               id="sync-users-btn"
               data-loading-class="btn-success text-white"
             >
-              Синхронизировать пользователей с базой PeopleForce и YaWare
+              Синхрон пользователей с PeopleForce и YaWare
             </button>
             <div class="input-group sync-date-group" style="max-width: 280px">
               <input type="date" class="form-control" id="sync-date-input" />
@@ -81,7 +81,7 @@
                 id="sync-date-btn"
                 data-loading-class="btn-primary text-white"
               >
-                Синхронизировать дату с YaWare
+                Синхрон даты с YaWare
               </button>
             </div>
             <button
@@ -90,15 +90,13 @@
               id="refresh-diff-btn"
               data-loading-class="btn-secondary text-white"
             >
-              Обновить сравнение баз сервера с YaWare и PeopleForce
+              Обновить сравнение базы с YaWare и PeopleForce
             </button>
           </div>
           <div class="mb-3" id="diff-legend">
             <span class="badge bg-warning text-dark me-2">Нет в YaWare</span>
             <span class="badge bg-danger me-2">Нет в PeopleForce</span>
-            <span class="badge bg-primary"
-              >Является лишь в YaWare/PeopleForce</span
-            >
+            <span class="badge bg-primary">Только в YaWare/PeopleForce</span>
           </div>
           <div class="small mb-3" id="diff-summary"></div>
           <div class="row g-3 mb-4" id="diff-lists" hidden>
@@ -123,7 +121,7 @@
             </div>
             <div class="col-md-3">
               <div class="diff-card diff-card-outline h-100">
-                <div class="diff-card-header">Лишь в YaWare</div>
+                <div class="diff-card-header">Только в YaWare</div>
                 <div class="diff-card-body">
                   <ul class="diff-card-list" id="diff-yaware-only-list"></ul>
                 </div>
@@ -131,7 +129,7 @@
             </div>
             <div class="col-md-3">
               <div class="diff-card diff-card-outline h-100">
-                <div class="diff-card-header">Лишь в PeopleForce</div>
+                <div class="diff-card-header">Только в PeopleForce</div>
                 <div class="diff-card-body">
                   <ul
                     class="diff-card-list"

@@ -7,7 +7,7 @@
     "without_schedule": 36,
     "unique_users": 181,
     "total_rows_processed": 181,
-    "last_updated": "2025-11-04T12:32:02.915004",
+    "last_updated": "2025-11-05T13:14:05.852062",
     "yaware_groups_added": "2025-10-17T15:44:44.809277",
     "control_data_added": "2025-10-17T15:57:34.592749",
     "control_users_matched": 59,
@@ -17,7 +17,7 @@
   "users": {
     "Abdurazzakov Abdulaziz": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7684922",
       "email": "abdulaziz@evadav.com",
       "peopleforce_id": 297352,
@@ -28,7 +28,7 @@
     },
     "Artemchuk Dmytro": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7930490",
       "email": "d.artemchuk@evadav.com",
       "peopleforce_id": 526146,
@@ -39,7 +39,7 @@
     },
     "Artomenko Andrii": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933972",
       "email": "a.artomenko@evadav.com",
       "peopleforce_id": 559301,
@@ -61,7 +61,7 @@
     },
     "Balaban Iryna": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7900777",
       "email": "i.balaban@evadav.com",
       "control_manager": 1,
@@ -72,7 +72,7 @@
     },
     "Balyunov Valentyn": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7932147",
       "email": "v.balyunov@evadav.com",
       "control_manager": 2,
@@ -83,7 +83,7 @@
     },
     "Bazdyrev Viktor": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7903040",
       "email": "v.bazdyrev@evadav.com",
       "control_manager": 1,
@@ -94,7 +94,7 @@
     },
     "Belkevich Valentina": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7931483",
       "email": "v.belkevich@evadav.com",
       "peopleforce_id": 533585,
@@ -105,7 +105,7 @@
     },
     "Berezhnoy Mykola": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7924158",
       "email": "m.berezhnoy@evadav.com",
       "peopleforce_id": 463790,
@@ -116,7 +116,7 @@
     },
     "Bondarenko Vladyslav": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7917708",
       "email": "v.bondarenko@evadav.com",
       "control_manager": 1,
@@ -127,7 +127,7 @@
     },
     "Bratchenko Anna": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7919553",
       "email": "a.bratchenko@evadav.com",
       "control_manager": 1,
@@ -138,7 +138,7 @@
     },
     "Budaev Ilya": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7924907",
       "email": "i.budaev@evadav.com",
       "peopleforce_id": 464227,
@@ -149,7 +149,7 @@
     },
     "Bushliakova Daria": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7920824",
       "email": "d.bushliakova@evadav.com",
       "peopleforce_id": 326246,
@@ -160,7 +160,7 @@
     },
     "Bylchinskiy Ilya": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933838",
       "email": "i.bylchinskiy@evadav.com",
       "peopleforce_id": 554820,
@@ -171,11 +171,11 @@
     },
     "Chernyakov Andrii": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7897799",
       "email": "a.chernyakov@evadav.com",
       "control_manager": 1,
-      "department": "Technical Support Unit",
+      "department": "Product Operations Unit",
       "team": null,
       "flexible_schedule": true,
       "peopleforce_id": 307385,
@@ -183,7 +183,7 @@
     },
     "Dedovich Elena": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7926351",
       "email": "e.dedovich@evadav.com",
       "peopleforce_id": 479544,
@@ -194,7 +194,7 @@
     },
     "Diakonov Dmytro": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933962",
       "email": "d.diakonov@evadav.com",
       "peopleforce_id": 557798,
@@ -205,7 +205,7 @@
     },
     "Dmytrenko Anna": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7927469,
       "email": "a.dmytrenko@evadav.com",
       "control_manager": 2,
@@ -216,7 +216,7 @@
     },
     "Dubovytskyi  Denys": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "email": "ddenys_pub@evadav.com",
       "user_id": 7790072,
       "control_manager": 2,
@@ -227,7 +227,7 @@
     },
     "Dupenko Valeria": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7929643",
       "email": "v.dupenko@evadav.com",
       "control_manager": 2,
@@ -238,7 +238,7 @@
     },
     "Efimov Dmitrii": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7931049",
       "email": "d.efimov@evadav.com",
       "control_manager": 2,
@@ -249,7 +249,7 @@
     },
     "Fedorenko Tetiana": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7893641,
       "email": "t.fedorenko@evadav.com",
       "peopleforce_id": 293121,
@@ -260,7 +260,7 @@
     },
     "Fedorenko Yurii": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7804353",
       "email": "yurii_adv@evadav.com",
       "peopleforce_id": 309635,
@@ -271,7 +271,7 @@
     },
     "Fomenko Taras": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933968",
       "email": "t.fomenko@evadav.com",
       "control_manager": 1,
@@ -282,7 +282,7 @@
     },
     "Galeev Daniel": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7930664",
       "email": "d.galeev@evadav.com",
       "control_manager": 2,
@@ -293,7 +293,7 @@
     },
     "Gelman Amin": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928832",
       "email": "a.gelman@evadav.com",
       "control_manager": 1,
@@ -315,7 +315,7 @@
     },
     "Gramovich Ivan": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": 7924796,
       "email": "i.gramovich@evadav.com",
       "control_manager": 2,
@@ -326,7 +326,7 @@
     },
     "Harauskaya Maryia": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7927195",
       "email": "m.harauskaya@evadav.com",
       "peopleforce_id": 487068,
@@ -336,7 +336,7 @@
     },
     "Hiermiek Diana": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7917999",
       "email": "d.hiermiek@evadav.com",
       "peopleforce_id": 425942,
@@ -347,7 +347,7 @@
     },
     "Hlukhovskyi Dmytro": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7897392",
       "email": "d.hlukhovskyi@evadav.com",
       "peopleforce_id": 303305,
@@ -358,7 +358,7 @@
     },
     "Honcharuk Maksym": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7927615",
       "email": "m.honcharuk@evadav.com",
       "peopleforce_id": 497817,
@@ -369,7 +369,7 @@
     },
     "Hryvtsova Anastasiia": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "email": "a.hryvtsova@evadav.com",
       "user_id": 7921434,
       "peopleforce_id": 474458,
@@ -380,7 +380,7 @@
     },
     "Hynkaliuk Yana": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7916254",
       "email": "y.hynkaliuk@evadav.com",
       "control_manager": 1,
@@ -391,7 +391,7 @@
     },
     "Iliin Eugeniy": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7669763",
       "email": "yevhenii_sup@evadav.com",
       "control_manager": 2,
@@ -402,7 +402,7 @@
     },
     "Ivashchenko Denys": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7921802",
       "email": "d.ivashchenko@evadav.com",
       "peopleforce_id": 445672,
@@ -413,7 +413,7 @@
     },
     "Kalchenko Bohdana": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7814083,
       "email": "b.kalchenko@evrius.com",
       "peopleforce_id": 280115,
@@ -424,7 +424,7 @@
     },
     "Kanash Dmitrii": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928819",
       "email": "d.kanash@evadav.com",
       "peopleforce_id": 512986,
@@ -435,7 +435,7 @@
     },
     "Kantemir Pavlo": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7789177",
       "email": "p.kantemir@evadav.com",
       "control_manager": 2,
@@ -445,7 +445,7 @@
     },
     "Kastyrin Artem": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7924570",
       "email": "a.kastyrin@evadav.com",
       "control_manager": 1,
@@ -456,7 +456,7 @@
     },
     "Katsiaryna Yarosh": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7918494,
       "email": "k.yarosh@evadav.com",
       "peopleforce_id": 425964,
@@ -467,7 +467,7 @@
     },
     "Kazmirchuk Roman": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7922500,
       "email": "r.kazmirchuk@evadav.com",
       "control_manager": 1,
@@ -478,7 +478,7 @@
     },
     "Khachatrian Mariia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7931047",
       "email": "m.khachatrian@evadav.com",
       "peopleforce_id": 526149,
@@ -489,7 +489,7 @@
     },
     "Khan Anna": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934329",
       "email": "h.khan@evadav.com",
       "control_manager": 2,
@@ -500,7 +500,7 @@
     },
     "Khominskiy Alexey": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928818",
       "email": "a.khominskiy@evadav.com",
       "peopleforce_id": 512436,
@@ -511,7 +511,7 @@
     },
     "Klimchenya Valery": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7931903",
       "email": "v.klimchenya@evadav.com",
       "control_manager": 1,
@@ -522,7 +522,7 @@
     },
     "Koba Bogdan": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7934176",
       "email": "b.koba@evadav.com",
       "control_manager": 1,
@@ -533,7 +533,7 @@
     },
     "Komarova Darina": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7895512",
       "email": "d.komarova@evadav.com",
       "peopleforce_id": 287925,
@@ -544,7 +544,7 @@
     },
     "Kondras Maksym": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7927612",
       "email": "m.kondras@evadav.com",
       "control_manager": 1,
@@ -555,7 +555,7 @@
     },
     "Koreshkova Valeryia": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7916589",
       "email": "v.koreshkova@evadav.com",
       "peopleforce_id": 412326,
@@ -566,7 +566,7 @@
     },
     "Korobkov Daniil": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7930006",
       "email": "d.korobkov@evadav.com",
       "peopleforce_id": 521406,
@@ -577,7 +577,7 @@
     },
     "Koshchei Dariia": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7907311",
       "email": "d.koshchei@evadav.com",
       "control_manager": 1,
@@ -588,7 +588,7 @@
     },
     "Kostina Dariia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7690089",
       "email": "d.kostina@evadav.com",
       "control_manager": 2,
@@ -599,7 +599,7 @@
     },
     "Kozinskii Maksim": {
       "start_time": "17:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7915667",
       "email": "m.kozinskii@evadav.com",
       "control_manager": 2,
@@ -610,7 +610,7 @@
     },
     "Kramareva Anastasiia": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7918666",
       "email": "a.kramareva@evadav.com",
       "peopleforce_id": 422724,
@@ -632,7 +632,7 @@
     },
     "Kucher Diana": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7932054",
       "email": "d.kucher@evadav.com",
       "peopleforce_id": 524446,
@@ -643,7 +643,7 @@
     },
     "Kucherenko Anastasia": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7919534",
       "email": "a.kucherenko@evadav.com",
       "peopleforce_id": 436192,
@@ -654,7 +654,7 @@
     },
     "Kucherenko Nikita": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7932424",
       "email": "n.kucherenko@evadav.com",
       "control_manager": 2,
@@ -665,7 +665,7 @@
     },
     "Kunkevich Igor": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7930330",
       "email": "i.kunkevich@evadav.com",
       "peopleforce_id": 522166,
@@ -676,7 +676,7 @@
     },
     "Kurbanov Sergey": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7904318",
       "email": "s.kurbanov@evadav.com",
       "peopleforce_id": 335389,
@@ -687,7 +687,7 @@
     },
     "Kurylionak Aliaksandr": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7925305",
       "email": "a.kurylionak@evadav.com",
       "control_manager": 2,
@@ -698,7 +698,7 @@
     },
     "Kutkovskyi Mykhailo": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7916119",
       "email": "m.kutkovskyi@evadav.com",
       "control_manager": 2,
@@ -709,7 +709,7 @@
     },
     "Larina Olena": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7672715",
       "email": "o.larina@evadav.com",
       "control_manager": 2,
@@ -720,7 +720,7 @@
     },
     "Latypov Alexander": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7927833",
       "email": "a.latypov@evadav.com",
       "peopleforce_id": 500740,
@@ -731,7 +731,7 @@
     },
     "Lazarenko Maksim": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7667625",
       "email": "m.lazarenko@evadav.com",
       "control_manager": 2,
@@ -741,7 +741,7 @@
     },
     "Lebid Anastasiia": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7929933",
       "email": "a.lebid@evadav.com",
       "control_manager": 2,
@@ -752,7 +752,7 @@
     },
     "Lemeshchenko Vladislava": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7918352",
       "email": "v.lemeshchenko@evadav.com",
       "peopleforce_id": 428232,
@@ -763,7 +763,7 @@
     },
     "Likhobaba Daniil": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928821",
       "email": "d.likhobaba@evadav.com",
       "control_manager": 2,
@@ -774,7 +774,7 @@
     },
     "Lukashov Vasyl": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7922226,
       "email": "v.lukashov@evadav.com",
       "control_manager": 2,
@@ -785,7 +785,7 @@
     },
     "Lysenko Serhii": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7913031",
       "email": "s.lysenko@evadav.com",
       "control_manager": 1,
@@ -796,7 +796,7 @@
     },
     "Machula Yulia": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7927047",
       "email": "y.machula@evadav.com",
       "peopleforce_id": 492988,
@@ -807,7 +807,7 @@
     },
     "Maksymchuk Tatiana": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7793816",
       "email": "t.maksymchuk@evrius.com",
       "control_manager": 2,
@@ -818,7 +818,7 @@
     },
     "Markovskyi Mykyta": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7911670",
       "email": "m.markovskyi@evadav.com",
       "peopleforce_id": 374907,
@@ -829,7 +829,7 @@
     },
     "Marsheva Veronika": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7923573",
       "email": "v.marsheva@evadav.com",
       "control_manager": 2,
@@ -840,7 +840,7 @@
     },
     "Masalov Semyon": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "email": "s.masalov@evadav.com",
       "user_id": 7928820,
       "control_manager": 2,
@@ -851,7 +851,7 @@
     },
     "Mastystyi Valerii": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7928020",
       "email": "v.mastystyi@evadav.com",
       "peopleforce_id": 502383,
@@ -862,7 +862,7 @@
     },
     "Melnychenko Oleh": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7905335",
       "email": "o.melnychenko@evadav.com",
       "control_manager": 1,
@@ -873,7 +873,7 @@
     },
     "Melnyk Iryna": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7890953",
       "email": "i.melnyk@evrius.com",
       "control_manager": 2,
@@ -895,7 +895,7 @@
     },
     "Mushnin Yevhen": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7928013",
       "email": "y.mushnin@evadav.com",
       "control_manager": 1,
@@ -906,7 +906,7 @@
     },
     "Novak Darya": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928828",
       "email": "d.novak@evadav.com",
       "control_manager": 1,
@@ -917,7 +917,7 @@
     },
     "Novak Kiryl": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7929668",
       "email": "k.novak@evadav.com",
       "peopleforce_id": 514398,
@@ -928,7 +928,7 @@
     },
     "Oleynik Katerina": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7669075,
       "email": "e.oleynik@evadav.com",
       "peopleforce_id": 297337,
@@ -939,7 +939,7 @@
     },
     "Oliinyk Veronika": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7919533",
       "email": "v.oliinyk@evadav.com",
       "peopleforce_id": 431856,
@@ -950,7 +950,7 @@
     },
     "Osadtsa Dmitro": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7675966",
       "email": "dmitry_controlteam@evadav.com",
       "peopleforce_id": 297317,
@@ -961,7 +961,7 @@
     },
     "Panasenko Natalya": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928431",
       "email": "n.panasenko@evadav.com",
       "peopleforce_id": 497915,
@@ -972,7 +972,7 @@
     },
     "Pirogov Savva": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7930901",
       "email": "s.pirogov@evadav.com",
       "peopleforce_id": 533331,
@@ -983,7 +983,7 @@
     },
     "Pitukh Daryna": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7916232",
       "email": "d.pitukh@evadav.com",
       "control_manager": 2,
@@ -994,7 +994,7 @@
     },
     "Polishchuk Kateryna": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7896774",
       "email": "k.polishchuk@evadav.com",
       "control_manager": 2,
@@ -1005,7 +1005,7 @@
     },
     "Ponomarenko Yevhen": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7922335",
       "email": "y.ponomarenko@evadav.com",
       "peopleforce_id": 442488,
@@ -1016,7 +1016,7 @@
     },
     "Postnikov Iurii": {
       "start_time": "12:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7929068",
       "email": "i.postnikov@evadav.com",
       "peopleforce_id": 513864,
@@ -1027,7 +1027,7 @@
     },
     "Pryimak Artur": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7919997,
       "email": "a.pryimak@evadav.com",
       "control_manager": 2,
@@ -1038,7 +1038,7 @@
     },
     "Prymak Yuliia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7930312",
       "email": "y.prymak@evadav.com",
       "control_manager": 2,
@@ -1049,7 +1049,7 @@
     },
     "Romanovich Alexey": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7903566",
       "email": "a.romanovich@evadav.com",
       "control_manager": 1,
@@ -1071,7 +1071,7 @@
     },
     "Ruban Mykyta": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7906376,
       "email": "m.ruban@evadav.com",
       "peopleforce_id": 351261,
@@ -1082,7 +1082,7 @@
     },
     "Rudenko Bogdan": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7813255",
       "email": "bogdan_rud@evadav.com",
       "peopleforce_id": 297359,
@@ -1093,7 +1093,7 @@
     },
     "Sankov Yurii": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7683800",
       "email": "y.sankov@evadav.com",
       "peopleforce_id": 286607,
@@ -1104,7 +1104,7 @@
     },
     "Sarkisov Moses": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7927609",
       "email": "m.sarkisov@evadav.com",
       "control_manager": 2,
@@ -1115,7 +1115,7 @@
     },
     "Semeniakina Nadzeya": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928826",
       "email": "n.semeniakina@evadav.com",
       "peopleforce_id": 512583,
@@ -1126,7 +1126,7 @@
     },
     "Serdiuk Alina": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7919535",
       "email": "a.serdiuk@evadav.com",
       "peopleforce_id": 433837,
@@ -1137,7 +1137,7 @@
     },
     "Shersheriia Heorhii": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7906059",
       "email": "h.shersheriia@evadav.com",
       "peopleforce_id": 349136,
@@ -1148,7 +1148,7 @@
     },
     "Shevchenko Igor": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7931816",
       "email": "i.shevchenko@evadav.com",
       "peopleforce_id": 542537,
@@ -1159,7 +1159,7 @@
     },
     "Shilko Alexandra": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933891",
       "email": "a.shilko@evadav.com",
       "control_manager": 1,
@@ -1170,7 +1170,7 @@
     },
     "Shinkus Aleksandr": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7712328,
       "email": "forums@evadav.com",
       "peopleforce_id": 323530,
@@ -1181,7 +1181,7 @@
     },
     "Shkurai Marianna": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7905320,
       "email": "m.shkurai@evadav.com",
       "peopleforce_id": 338748,
@@ -1192,7 +1192,7 @@
     },
     "Shoshina Karina": {
       "start_time": "12:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933579",
       "email": "k.shoshina@evadav.com",
       "control_manager": 1,
@@ -1203,7 +1203,7 @@
     },
     "Shota Artyom": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7926344",
       "email": "a.shota@evadav.com",
       "control_manager": 2,
@@ -1214,7 +1214,7 @@
     },
     "Shpak Andrew": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7807945",
       "email": "andrii_mod@evadav.com",
       "peopleforce_id": 297365,
@@ -1225,7 +1225,7 @@
     },
     "Shubska Oleksandra": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7911097",
       "email": "o.shubska@evadav.com",
       "peopleforce_id": 372364,
@@ -1236,7 +1236,7 @@
     },
     "Shustal  Valeria": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7927891",
       "email": "v.shustal@evadav.com",
       "control_manager": 2,
@@ -1247,7 +1247,7 @@
     },
     "Shykula Artur": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7916590",
       "email": "a.shykula@evadav.com",
       "peopleforce_id": 411141,
@@ -1269,7 +1269,7 @@
     },
     "Smirnov Sergey": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7919987,
       "email": "s.smirnov@evadav.com",
       "peopleforce_id": 434289,
@@ -1280,7 +1280,7 @@
     },
     "Sokolov Mikhail": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7666621",
       "email": "mikhail_pub@evadav.com",
       "peopleforce_id": 297335,
@@ -1291,7 +1291,7 @@
     },
     "Stepanov Oleksandr": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7928124",
       "email": "o.stepanov@evadav.com",
       "peopleforce_id": 501205,
@@ -1302,7 +1302,7 @@
     },
     "Stopochkin Nykyta": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7911091,
       "email": "n.stopochkin@evadav.com",
       "control_manager": 2,
@@ -1313,7 +1313,7 @@
     },
     "Sukhanov Vlad": {
       "start_time": "08:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7913194",
       "email": "v.sukhanov@evadav.com",
       "control_manager": 2,
@@ -1324,7 +1324,7 @@
     },
     "Tarasenko Polina": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "email": "p.tarasenko@evadav.com",
       "user_id": 7916231,
       "peopleforce_id": 401927,
@@ -1335,7 +1335,7 @@
     },
     "Tatarchenko Oleksii": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7896136",
       "email": "o.tatarchenko@evadav.com",
       "peopleforce_id": 292568,
@@ -1346,7 +1346,7 @@
     },
     "Tenditnik Roman": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7758255",
       "email": "roman_adv@evadav.com",
       "control_manager": 2,
@@ -1357,18 +1357,18 @@
     },
     "Tereshchenko Kirill": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7637340,
       "email": "k.tereschenko@evadav.com",
       "control_manager": 1,
-      "department": "Technical Support Unit",
+      "department": "Product Operations Unit",
       "team": null,
       "peopleforce_id": 266236,
       "project": "Agency"
     },
     "Terletskaya Daria": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7905699",
       "email": "d.terletskaya@evadav.com",
       "peopleforce_id": 337970,
@@ -1379,7 +1379,7 @@
     },
     "Torianyk Haiana": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7916235,
       "email": "h.torianyk@evadav.com",
       "control_manager": 2,
@@ -1390,7 +1390,7 @@
     },
     "Tuzman Mykhailo": {
       "start_time": "08:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7911663",
       "email": "m.tuzman@evadav.com",
       "control_manager": 2,
@@ -1401,7 +1401,7 @@
     },
     "Unkovska Anna": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "email": "a.unkovska@evadav.com",
       "user_id": 7820038,
       "peopleforce_id": 297323,
@@ -1434,7 +1434,7 @@
     },
     "Vasilev Nikolai": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933476",
       "email": "n.vasilev@evadav.com",
       "peopleforce_id": 554614,
@@ -1445,7 +1445,7 @@
     },
     "Vcherashniaya Aliaksandra": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7927617,
       "email": "a.vcherashniaya@evadav.com",
       "peopleforce_id": 498916,
@@ -1456,7 +1456,7 @@
     },
     "Vinogradov Oleg": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7929805",
       "email": "o.vinogradov@evadav.com",
       "peopleforce_id": 517654,
@@ -1467,7 +1467,7 @@
     },
     "Vladyslav Taranov": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7926352",
       "email": "v.taranov@evadav.com",
       "control_manager": 1,
@@ -1478,7 +1478,7 @@
     },
     "Vorozheykin Oleksii": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7899975,
       "email": "a.vorozheykin@evadav.com",
       "peopleforce_id": 297331,
@@ -1489,7 +1489,7 @@
     },
     "Vykhodtseva Mariia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7931177",
       "email": "m.vykhodtseva@evadav.com",
       "control_manager": 2,
@@ -1500,7 +1500,7 @@
     },
     "Yekhlakov Viktor": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7920390,
       "email": "v.yekhlakov@evadav.com",
       "control_manager": 2,
@@ -1511,13 +1511,13 @@
     },
     "Yevtushenko Kyrylo": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7910709,
       "email": "k.yevtushenko@evadav.com",
       "flexible_schedule": true,
       "peopleforce_id": 371806,
       "project": "Agency",
-      "department": "Technical Support Unit",
+      "department": "Product Operations Unit",
       "team": null,
       "control_manager": 1
     },
@@ -1534,7 +1534,7 @@
     },
     "Yushkov Pavel": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7932059",
       "email": "p.yushkov@evadav.com",
       "control_manager": 2,
@@ -1557,7 +1557,7 @@
     },
     "Zbutevich Illia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7933477,
       "email": "i.zbutevych@evadav.com",
       "control_manager": 2,
@@ -1568,7 +1568,7 @@
     },
     "Zdorovets Yuliia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7915601",
       "email": "y.zdorovets@evadav.com",
       "peopleforce_id": 406860,
@@ -1579,7 +1579,7 @@
     },
     "Zhara Lilia": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7930713,
       "email": "l.zhara@evadav.com",
       "control_manager": 2,
@@ -1590,7 +1590,7 @@
     },
     "Ziuzin Oleksii": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7918354",
       "email": "o.ziuzin@evadav.com",
       "peopleforce_id": 427564,
@@ -1601,7 +1601,7 @@
     },
     "Zubkova Daryna": {
       "start_time": "12:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7914604",
       "email": "d.zubkova@evadav.com",
       "peopleforce_id": 396708,
@@ -1612,7 +1612,7 @@
     },
     "Veranika Masiuk": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7929103",
       "email": "v.masiuk@evadav.com",
       "control_manager": 2,
@@ -1623,7 +1623,7 @@
     },
     "Danyl Kolos": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928810",
       "email": "d.kolos@evadav.com",
       "control_manager": 1,
@@ -1634,7 +1634,7 @@
     },
     "Dankova Tetiana": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934594",
       "email": "t.dankova@evadav.com",
       "peopleforce_id": 562222,
@@ -1656,7 +1656,7 @@
     },
     "Alina Dobrorodnia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7905079",
       "email": "a.dobrorodnia@evadav.com",
       "control_manager": 1,
@@ -1667,7 +1667,7 @@
     },
     "Kulyk Artem": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": 7934114,
       "email": "a.kulyk@evadav.com",
       "peopleforce_id": 487462,
@@ -1678,7 +1678,7 @@
     },
     "Kotliarenko Alina": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7931381,
       "email": "a.kotliarenko@evadav.com",
       "peopleforce_id": 525862,
@@ -1689,7 +1689,7 @@
     },
     "Kondakov Alexander": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7934508,
       "email": "a.kondakov@evadav.com",
       "peopleforce_id": 564377,
@@ -1700,7 +1700,7 @@
     },
     "Ivasyshyn Oleksandr": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "email": "o.ivasyshyn@evadav.com",
       "user_id": "7934570",
       "peopleforce_id": 564301,
@@ -1711,7 +1711,7 @@
     },
     "Nikolaichuk Tamara": {
       "start_time": "9:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7934729",
       "email": "t.nikolaichuk@evadav.com",
       "peopleforce_id": 567696,
@@ -1722,7 +1722,7 @@
     },
     "Korobiy Vladislav": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934794",
       "email": "v.korobiy@evadav.com",
       "peopleforce_id": 568010,
@@ -1733,7 +1733,7 @@
     },
     "Cherneha Kateryna": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934990",
       "email": "k.cherneha@evadav.com",
       "peopleforce_id": 568182,
@@ -1744,7 +1744,7 @@
     },
     "Kravets Olena": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934987",
       "email": "o.kravets@evadav.com",
       "peopleforce_id": 568178,
@@ -1755,7 +1755,7 @@
     },
     "Zakharychev Fedir": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934989",
       "email": "f.zakharychev@evadav.com",
       "peopleforce_id": 567811,
@@ -1772,7 +1772,7 @@
       "peopleforce_id": 548674,
       "project": "Agency",
       "control_manager": 1,
-      "location": "Remote"
+      "location": "Remote other countries"
     },
     "Andriy Pankov": {
       "user_id": "7673443",
@@ -1782,7 +1782,7 @@
       "peopleforce_id": 297362,
       "project": "Ad Network",
       "control_manager": 2,
-      "location": "UA"
+      "location": "Remote Ukraine"
     },
     "Evhen  Kiliovyi": {
       "user_id": "7682034",
@@ -1792,7 +1792,7 @@
       "peopleforce_id": 297363,
       "project": "Ad Network",
       "control_manager": 2,
-      "location": "UA"
+      "location": "Remote Ukraine"
     },
     "Alexandr Pankov": {
       "user_id": "7912880",
@@ -1802,7 +1802,7 @@
       "peopleforce_id": 356654,
       "project": "Ad Network",
       "control_manager": 2,
-      "location": "UA"
+      "location": "Remote Ukraine"
     },
     "Viktor Demidov": {
       "user_id": "7793894",
@@ -1811,7 +1811,7 @@
       "peopleforce_id": 297358,
       "project": "Ad Network",
       "control_manager": 2,
-      "location": "UA"
+      "location": "Remote Ukraine"
     },
     "Leonid Chernov": {
       "user_id": "7667047",
@@ -1820,14 +1820,14 @@
       "project": "Ad Network",
       "department": "Support Team",
       "control_manager": 2,
-      "location": "UA"
+      "location": "Remote Ukraine"
     },
     "Andrey Otdelnyi": {
       "email": "a.otdelnyi@evadav.com",
       "user_id": "7935176",
       "project": "Ad Network",
       "peopleforce_id": "568445",
-      "location": "Remote",
+      "location": "Remote other countries",
       "department": "RTB Team"
     },
     "Arseni Tatsyn": {
@@ -1835,14 +1835,19 @@
       "user_id": "7935279",
       "project": "Agency",
       "peopleforce_id": "573355",
-      "location": "Remote",
-      "department": "Media buying Direction"
+      "department": "MB Facebook Unit",
+      "_manual_overrides": {
+        "department": true,
+        "start_time": true
+      },
+      "start_time": "11:00",
+      "control_manager": 1
     },
     "Gyrych Maria": {
       "email": "m.gyrych@evadav.com",
       "user_id": "7935416",
       "peopleforce_id": "571860",
-      "location": "Remote",
+      "location": "Remote other countries",
       "project": "AD NETWORK",
       "department": "Traffic Unit",
       "start_time": "09:00",

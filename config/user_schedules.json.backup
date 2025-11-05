@@ -7,7 +7,7 @@
     "without_schedule": 36,
     "unique_users": 181,
     "total_rows_processed": 181,
-    "last_updated": "2025-11-04T12:31:40.082721",
+    "last_updated": "2025-11-04T12:32:02.915004",
     "yaware_groups_added": "2025-10-17T15:44:44.809277",
     "control_data_added": "2025-10-17T15:57:34.592749",
     "control_users_matched": 59,
@@ -61,7 +61,7 @@
     },
     "Balaban Iryna": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": "7900777",
       "email": "i.balaban@evadav.com",
       "control_manager": 1,
@@ -83,7 +83,7 @@
     },
     "Bazdyrev Viktor": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7903040",
       "email": "v.bazdyrev@evadav.com",
       "control_manager": 1,
@@ -127,7 +127,7 @@
     },
     "Bratchenko Anna": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7919553",
       "email": "a.bratchenko@evadav.com",
       "control_manager": 1,
@@ -149,7 +149,7 @@
     },
     "Bushliakova Daria": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7920824",
       "email": "d.bushliakova@evadav.com",
       "peopleforce_id": 326246,
@@ -183,7 +183,7 @@
     },
     "Dedovich Elena": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7926351",
       "email": "e.dedovich@evadav.com",
       "peopleforce_id": 479544,
@@ -249,7 +249,7 @@
     },
     "Fedorenko Tetiana": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": 7893641,
       "email": "t.fedorenko@evadav.com",
       "peopleforce_id": 293121,
@@ -315,7 +315,7 @@
     },
     "Gramovich Ivan": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": 7924796,
       "email": "i.gramovich@evadav.com",
       "control_manager": 2,
@@ -326,7 +326,7 @@
     },
     "Harauskaya Maryia": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7927195",
       "email": "m.harauskaya@evadav.com",
       "peopleforce_id": 487068,
@@ -336,7 +336,7 @@
     },
     "Hiermiek Diana": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7917999",
       "email": "d.hiermiek@evadav.com",
       "peopleforce_id": 425942,
@@ -358,7 +358,7 @@
     },
     "Honcharuk Maksym": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7927615",
       "email": "m.honcharuk@evadav.com",
       "peopleforce_id": 497817,
@@ -369,7 +369,7 @@
     },
     "Hryvtsova Anastasiia": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "email": "a.hryvtsova@evadav.com",
       "user_id": 7921434,
       "peopleforce_id": 474458,
@@ -380,7 +380,7 @@
     },
     "Hynkaliuk Yana": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": "7916254",
       "email": "y.hynkaliuk@evadav.com",
       "control_manager": 1,
@@ -402,7 +402,7 @@
     },
     "Ivashchenko Denys": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": "7921802",
       "email": "d.ivashchenko@evadav.com",
       "peopleforce_id": 445672,
@@ -445,7 +445,7 @@
     },
     "Kastyrin Artem": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7924570",
       "email": "a.kastyrin@evadav.com",
       "control_manager": 1,
@@ -544,7 +544,7 @@
     },
     "Kondras Maksym": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7927612",
       "email": "m.kondras@evadav.com",
       "control_manager": 1,
@@ -555,7 +555,7 @@
     },
     "Koreshkova Valeryia": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7916589",
       "email": "v.koreshkova@evadav.com",
       "peopleforce_id": 412326,
@@ -698,7 +698,7 @@
     },
     "Kutkovskyi Mykhailo": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": "7916119",
       "email": "m.kutkovskyi@evadav.com",
       "control_manager": 2,
@@ -741,7 +741,7 @@
     },
     "Lebid Anastasiia": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7929933",
       "email": "a.lebid@evadav.com",
       "control_manager": 2,
@@ -818,7 +818,7 @@
     },
     "Markovskyi Mykyta": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7911670",
       "email": "m.markovskyi@evadav.com",
       "peopleforce_id": 374907,
@@ -851,7 +851,7 @@
     },
     "Mastystyi Valerii": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7928020",
       "email": "v.mastystyi@evadav.com",
       "peopleforce_id": 502383,
@@ -862,7 +862,7 @@
     },
     "Melnychenko Oleh": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7905335",
       "email": "o.melnychenko@evadav.com",
       "control_manager": 1,
@@ -895,7 +895,7 @@
     },
     "Mushnin Yevhen": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7928013",
       "email": "y.mushnin@evadav.com",
       "control_manager": 1,
@@ -917,7 +917,7 @@
     },
     "Novak Kiryl": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7929668",
       "email": "k.novak@evadav.com",
       "peopleforce_id": 514398,
@@ -983,7 +983,7 @@
     },
     "Pitukh Daryna": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": "7916232",
       "email": "d.pitukh@evadav.com",
       "control_manager": 2,
@@ -994,7 +994,7 @@
     },
     "Polishchuk Kateryna": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7896774",
       "email": "k.polishchuk@evadav.com",
       "control_manager": 2,
@@ -1071,7 +1071,7 @@
     },
     "Ruban Mykyta": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": 7906376,
       "email": "m.ruban@evadav.com",
       "peopleforce_id": 351261,
@@ -1236,7 +1236,7 @@
     },
     "Shustal  Valeria": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7927891",
       "email": "v.shustal@evadav.com",
       "control_manager": 2,
@@ -1247,7 +1247,7 @@
     },
     "Shykula Artur": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": "7916590",
       "email": "a.shykula@evadav.com",
       "peopleforce_id": 411141,
@@ -1324,7 +1324,7 @@
     },
     "Tarasenko Polina": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "email": "p.tarasenko@evadav.com",
       "user_id": 7916231,
       "peopleforce_id": 401927,
@@ -1357,7 +1357,7 @@
     },
     "Tereshchenko Kirill": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": 7637340,
       "email": "k.tereschenko@evadav.com",
       "control_manager": 1,
@@ -1379,7 +1379,7 @@
     },
     "Torianyk Haiana": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": 7916235,
       "email": "h.torianyk@evadav.com",
       "control_manager": 2,
@@ -1467,7 +1467,7 @@
     },
     "Vladyslav Taranov": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7926352",
       "email": "v.taranov@evadav.com",
       "control_manager": 1,
@@ -1579,7 +1579,7 @@
     },
     "Zhara Lilia": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": 7930713,
       "email": "l.zhara@evadav.com",
       "control_manager": 2,
@@ -1590,7 +1590,7 @@
     },
     "Ziuzin Oleksii": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7918354",
       "email": "o.ziuzin@evadav.com",
       "peopleforce_id": 427564,
@@ -1667,7 +1667,7 @@
     },
     "Kulyk Artem": {
       "start_time": "09:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": 7934114,
       "email": "a.kulyk@evadav.com",
       "peopleforce_id": 487462,
@@ -1678,7 +1678,7 @@
     },
     "Kotliarenko Alina": {
       "start_time": "09:00",
-      "location": "Prague office",
+      "location": "Prague, CZ",
       "user_id": 7931381,
       "email": "a.kotliarenko@evadav.com",
       "peopleforce_id": 525862,
@@ -1711,7 +1711,7 @@
     },
     "Nikolaichuk Tamara": {
       "start_time": "9:00",
-      "location": "Warsaw office",
+      "location": "Warsaw, PL",
       "user_id": "7934729",
       "email": "t.nikolaichuk@evadav.com",
       "peopleforce_id": 567696,
@@ -1845,7 +1845,8 @@
       "location": "Remote",
       "project": "AD NETWORK",
       "department": "Traffic Unit",
-      "start_time": "09:00"
+      "start_time": "09:00",
+      "control_manager": 1
     }
   }
 }

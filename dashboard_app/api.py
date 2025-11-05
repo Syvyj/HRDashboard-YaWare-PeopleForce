@@ -1667,11 +1667,30 @@ def admin_create_app_user():
     manager_filter = (payload.get('manager_filter') or '').strip()
     is_admin = bool(payload.get('is_admin'))
 
-    if not email or not name or not password:
-        return jsonify({'error': 'email, name and password are required'}), 400
+    if not email or not name:
+        return jsonify({'error': 'email and name are required'}), 400
 
-    if User.query.filter(db.func.lower(User.email) == email).first():
-        return jsonify({'error': 'User with this email already exists'}), 400
+    existing_user = User.query.filter(db.func.lower(User.email) == email).first()
+    if existing_user:
+        existing_user.name = name
+        existing_user.manager_filter = manager_filter
+        existing_user.is_admin = is_admin
+        if password:
+            existing_user.set_password(password)
+            _password_matches_default.cache_clear()
+        _log_admin_action('update_app_user_existing', {
+            'user_id': existing_user.id,
+            'email': email,
+            'is_admin': is_admin,
+            'manager_filter': manager_filter,
+            'created_via': 'create_endpoint',
+            'password_updated': bool(password),
+        })
+        db.session.commit()
+        return jsonify({'user': _serialize_app_user(existing_user)})
+
+    if not password:
+        return jsonify({'error': 'password is required for new users'}), 400
 
     user = User(email=email, name=name, manager_filter=manager_filter, is_admin=is_admin)
     user.set_password(password)

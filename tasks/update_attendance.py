@@ -51,6 +51,20 @@ def minutes_to_diff(actual: str | None, scheduled: str | None) -> int:
     return actual_minutes - scheduled_minutes
 
 
+def normalize_time(value: str | None) -> str:
+    if not value:
+        return ''
+    text = str(value).strip()
+    if not text:
+        return ''
+    for fmt in ('%H:%M', '%H:%M:%S'):
+        try:
+            return datetime.strptime(text, fmt).strftime('%H:%M')
+        except ValueError:
+            continue
+    return text
+
+
 def determine_status(minutes_late: int, has_data: bool, leave_reason: str | None) -> str:
     if leave_reason:
         return 'leave'
@@ -137,9 +151,18 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         if not schedule and email:
             schedule = schedules_by_email.get(email)
 
-        actual_start = entry.get('time_start') or ''
-        scheduled_start = schedule.start_time if schedule else ''
-        minutes_late = minutes_to_diff(actual_start, scheduled_start) if schedule else 0
+        schedule_raw = entry.get('schedule')
+        yaware_schedule = schedule_raw if isinstance(schedule_raw, dict) else {}
+        schedule_start_yaware = normalize_time(yaware_schedule.get('start_time'))
+        actual_start = normalize_time(entry.get('time_start'))
+
+        scheduled_start = schedule_start_yaware or (schedule.start_time if schedule else '')
+        scheduled_start = normalize_time(scheduled_start)
+
+        if schedule and schedule_start_yaware:
+            schedule.start_time = scheduled_start
+
+        minutes_late = minutes_to_diff(actual_start, scheduled_start) if scheduled_start else 0
 
         non_productive = seconds_to_minutes(entry.get('distracting'))
         not_categorized = seconds_to_minutes(entry.get('uncategorized'))

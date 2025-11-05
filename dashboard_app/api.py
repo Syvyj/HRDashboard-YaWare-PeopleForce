@@ -966,7 +966,10 @@ def _apply_schedule_overrides(items: list[dict]) -> list[dict]:
     for item in items:
         schedule = get_user_schedule(item['user_name']) or {}
         if schedule:
-            item['plan_start'] = schedule.get('start_time') or item.get('plan_start')
+            if not item.get('plan_start'):
+                plan_start_value = schedule.get('start_time')
+                if plan_start_value:
+                    item['plan_start'] = plan_start_value
             schedule_location = schedule.get('location')
             normalized_schedule_location = _normalize_location_label(schedule_location)
             if schedule_location not in (None, ''):
@@ -1095,6 +1098,13 @@ def admin_sync_users():
         sync_summary['peopleforce_metadata'] = 'updated'
     except Exception as exc:  # pragma: no cover - filesystem/network failure
         sync_summary['peopleforce_metadata'] = f'failed: {exc}'
+
+    try:
+        from dashboard_app.tasks import _sync_yaware_plan_start  # local import to avoid circular dependency
+        updated_count = _sync_yaware_plan_start(current_app)
+        sync_summary['yaware_schedule'] = {'updated': updated_count}
+    except Exception as exc:  # pragma: no cover - filesystem/network failure
+        sync_summary['yaware_schedule'] = f'failed: {exc}'
 
     diff_payload = _generate_user_diff(force_refresh=force_refresh)
     _log_admin_action('manual_sync_users', {

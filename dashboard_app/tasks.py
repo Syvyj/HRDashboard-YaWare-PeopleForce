@@ -3,7 +3,7 @@ from __future__ import annotations
 import atexit
 import logging
 from calendar import monthrange
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -14,8 +14,10 @@ from dashboard_app.extensions import db
 from dashboard_app.models import AttendanceRecord
 from tasks.update_attendance import update_for_date
 from tracker_alert.client.peopleforce_api import PeopleForceClient
+from tracker_alert.client.yaware_v2_api import client as yaware_client
 from tracker_alert.services import user_manager as schedule_user_manager
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
+from dashboard_app.user_data import clear_user_schedule_cache
 
 logger = logging.getLogger(__name__)
 
@@ -131,6 +133,100 @@ def _sync_peopleforce_metadata(app):
 
     if new_employees:
         logger.info("[scheduler] Нові співробітники в PeopleForce (потрібно додати вручну): %s", ", ".join(new_employees[:10]))
+
+
+def _normalize_time(value: object | None) -> str | None:
+    if value in (None, ''):
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    for fmt in ("%H:%M", "%H:%M:%S"):
+        try:
+            return datetime.strptime(text, fmt).strftime("%H:%M")
+        except ValueError:
+            continue
+    return text
+
+
+def _sync_yaware_plan_start(app, target_date: date | None = None) -> int:
+    logger.info("[scheduler] Running YaWare schedule sync")
+    target = target_date or date.today()
+    attempt_dates: list[date] = [target]
+    if target.weekday() == 0:
+        attempt_dates.append(target - timedelta(days=3))
+    elif target.weekday() == 6:
+        attempt_dates.append(target - timedelta(days=2))
+    else:
+        attempt_dates.append(target - timedelta(days=1))
+    start_by_id: dict[str, str] = {}
+    start_by_email: dict[str, str] = {}
+
+    for attempt in attempt_dates:
+        try:
+            response = yaware_client.get_summary_by_day(attempt.isoformat()) or []
+        except Exception as exc:
+            logger.warning("[scheduler] Failed to fetch YaWare summary for %s: %s", attempt, exc)
+            if attempt == attempt_dates[-1]:
+                raise
+            continue
+
+        for record in response:
+            schedule_obj = record.get("schedule")
+            if not isinstance(schedule_obj, dict):
+                continue
+            start_time = _normalize_time(schedule_obj.get("start_time"))
+            if not start_time:
+                continue
+            user_id = str(record.get("user_id") or "").strip()
+            if user_id and user_id not in start_by_id:
+                start_by_id[user_id] = start_time
+            email = ""
+            user_field = record.get("user")
+            if isinstance(user_field, str) and ", " in user_field:
+                email = user_field.split(", ", 1)[1].strip().lower()
+            email = email or str(record.get("user_email") or "").strip().lower()
+            if email and email not in start_by_email:
+                start_by_email[email] = start_time
+
+        if start_by_id or start_by_email:
+            break
+
+    if not start_by_id and not start_by_email:
+        logger.info("[scheduler] YaWare summary returned no schedule information for %s (attempts: %s)",
+                    target, ", ".join(d.isoformat() for d in attempt_dates))
+        return 0
+
+    data = schedule_user_manager.load_users()
+    users = data.get("users", {}) if isinstance(data, dict) else {}
+    if not isinstance(users, dict) or not users:
+        logger.info("[scheduler] No schedule users to update")
+        return 0
+
+    updated = 0
+    for name, info in users.items():
+        if not isinstance(info, dict):
+            continue
+        email = str(info.get("email") or "").strip().lower()
+        user_id = str(info.get("user_id") or "").strip()
+        current = str(info.get("start_time") or "").strip()
+        new_value = None
+        if email and email in start_by_email:
+            new_value = start_by_email[email]
+        elif user_id and user_id in start_by_id:
+            new_value = start_by_id[user_id]
+        if new_value and new_value != current:
+            info["start_time"] = new_value
+            updated += 1
+
+    if updated:
+        if not schedule_user_manager.save_users(data):
+            raise RuntimeError("Не вдалося зберегти user_schedules.json після синхронізації YaWare")
+        clear_user_schedule_cache()
+        logger.info("[scheduler] Updated start_time for %s users from YaWare", updated)
+    else:
+        logger.info("[scheduler] YaWare schedule sync made no changes")
+    return updated
 
 
 def register_tasks(app):

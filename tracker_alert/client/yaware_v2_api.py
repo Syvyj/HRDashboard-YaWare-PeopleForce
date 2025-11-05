@@ -126,6 +126,19 @@ class YaWareV2Client:
         data = result.get("data", [])
         logger.info(f"Получена статистика для {len(data)} пользователей за {date}")
         return data
+
+    def get_work_schedules(self) -> Any:
+        """
+        Спробувати отримати робочі розклади користувачів.
+
+        Returns:
+            Сирі дані від YaWare (структура може відрізнятися, тому парсимо на стороні виклику).
+        """
+        try:
+            return self._request("getSchedules")
+        except Exception as exc:
+            logger.warning("YaWare getSchedules не доступний: %s", exc)
+            return None
     
     def get_week_data(self, week_days: List[str]) -> Dict[str, Dict[str, Any]]:
         """

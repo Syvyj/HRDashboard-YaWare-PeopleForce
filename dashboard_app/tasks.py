@@ -210,6 +210,85 @@ def _extract_schedule_start(record: dict) -> str | None:
     return None
 
 
+def _gather_schedule_candidates(entry: dict) -> list[str]:
+    candidates: list[str] = []
+
+    def visit(obj, path: str = "") -> None:
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                next_path = f"{path}.{key}" if path else str(key)
+                visit(value, next_path)
+        elif isinstance(obj, list):
+            for item in obj:
+                visit(item, path)
+        else:
+            normalized = _normalize_time(obj)
+            if not normalized:
+                return
+            path_lower = path.lower()
+            if any(token in path_lower for token in ('start', 'from', 'begin', 'work_start', 'time_from', 'shift_from')):
+                candidates.append(normalized)
+
+    visit(entry)
+    return candidates
+
+
+def _parse_schedule_payload(payload: object) -> tuple[dict[str, str], dict[str, str]]:
+    id_map: dict[str, str] = {}
+    email_map: dict[str, str] = {}
+
+    if not payload:
+        return id_map, email_map
+
+    def iterable_from(obj: object) -> list:
+        if isinstance(obj, list):
+            return obj
+        if isinstance(obj, dict):
+            for key in ("data", "items", "schedules", "users", "result"):
+                value = obj.get(key)
+                if isinstance(value, list):
+                    return value
+            if all(isinstance(v, (dict, list)) for v in obj.values()):
+                return list(obj.values())
+        return []
+
+    entries = iterable_from(payload)
+    if not entries and isinstance(payload, dict):
+        entries = [payload]
+
+    for raw_entry in entries:
+        if not isinstance(raw_entry, dict):
+            continue
+        user_id = None
+        for key in ("user_id", "userId", "employee_id", "employeeId", "id"):
+            value = raw_entry.get(key)
+            if value not in (None, ""):
+                user_id = str(value).strip()
+                break
+        if not user_id:
+            user_block = raw_entry.get("user")
+            if isinstance(user_block, dict):
+                for key in ("user_id", "userId", "id"):
+                    value = user_block.get(key)
+                    if value not in (None, ""):
+                        user_id = str(value).strip()
+                        break
+        email = _extract_email(raw_entry)
+        if not email and isinstance(raw_entry.get("user"), dict):
+            email = _extract_email(raw_entry["user"])
+
+        candidates = _gather_schedule_candidates(raw_entry)
+        start_time = min(candidates) if candidates else None
+        if not start_time:
+            continue
+        if user_id and user_id not in id_map:
+            id_map[user_id] = start_time
+        if email and email not in email_map:
+            email_map[email] = start_time
+
+    return id_map, email_map
+
+
 def _sync_yaware_plan_start(app, target_date: date | None = None) -> int:
     logger.info("[scheduler] Running YaWare schedule sync")
     target = target_date or date.today()
@@ -222,6 +301,11 @@ def _sync_yaware_plan_start(app, target_date: date | None = None) -> int:
         attempt_dates.append(target - timedelta(days=1))
     start_by_id: dict[str, str] = {}
     start_by_email: dict[str, str] = {}
+
+    schedules_payload = yaware_client.get_work_schedules()
+    schedule_id_map, schedule_email_map = _parse_schedule_payload(schedules_payload)
+    start_by_id.update(schedule_id_map)
+    start_by_email.update(schedule_email_map)
 
     for attempt in attempt_dates:
         try:

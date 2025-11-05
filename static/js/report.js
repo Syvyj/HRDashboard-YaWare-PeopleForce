@@ -230,16 +230,16 @@
         });
         if (!response.ok) {
           const error = await response.json().catch(() => ({}));
-          throw new Error(error.error || 'Не вдалося скинути правки');
+          throw new Error(error.error || 'Не удалось скинуть правки');
         }
         if (recordEditModal) {
           recordEditModal.hide();
         }
-        alert('Ручні правки скинуто. Дані оновляться після наступної синхронізації.');
+        alert('Ручные правки скинуты. Данные обновятся после следующей синхронизации.');
         await loadData();
       } catch (error) {
         console.error(error);
-        alert(error.message || 'Не вдалося скинути правки');
+        alert(error.message || 'Не удалось скинуть правки');
       } finally {
         recordEditResetBtn.disabled = false;
       }
@@ -263,7 +263,7 @@
     const query = params.toString();
     const response = await fetch(`/api/users/${encodeURIComponent(userKeyRaw)}${query ? `?${query}` : ''}`);
     if (!response.ok) {
-      throw new Error('Не вдалося отримати статуси');
+      throw new Error('Не удалось получить статусы');
     }
     const payload = await response.json();
     const options = payload.status_options || [];

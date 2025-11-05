@@ -268,7 +268,7 @@
     const parts = [];
     const counts = data.counts || {};
     if (counts.local_total != null) {
-      parts.push(`У базі: ${counts.local_total}`);
+      parts.push(`В базе: ${counts.local_total}`);
     }
     if (counts.local_missing_yaware) {
       parts.push(`без YaWare: ${counts.local_missing_yaware}`);
@@ -277,13 +277,13 @@
       parts.push(`без PeopleForce: ${counts.local_missing_peopleforce}`);
     }
     if (counts.yaware_only) {
-      parts.push(`тільки у YaWare: ${counts.yaware_only}`);
+      parts.push(`только у YaWare: ${counts.yaware_only}`);
     }
     if (counts.peopleforce_only) {
-      parts.push(`тільки у PeopleForce: ${counts.peopleforce_only}`);
+      parts.push(`только у PeopleForce: ${counts.peopleforce_only}`);
     }
     if (!parts.length && data.generated_at) {
-      parts.push(`Оновлено ${new Date(data.generated_at).toLocaleString()}`);
+      parts.push(`Обновлено ${new Date(data.generated_at).toLocaleString()}`);
     }
     diffSummaryEl.textContent = parts.join(' • ');
   }
@@ -316,7 +316,7 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'btn btn-sm btn-primary diff-add-btn';
-        btn.textContent = 'Додати';
+        btn.textContent = 'Добавить';
         btn.dataset.entry = JSON.stringify(item);
         li.appendChild(btn);
       }
@@ -350,10 +350,10 @@
       return;
     }
     if (errors.yaware) {
-      showAlert(`Не вдалося отримати дані YaWare: ${errors.yaware}`, 'warning', 8000);
+      showAlert(`Не удалось получить данные YaWare: ${errors.yaware}`, 'warning', 8000);
     }
     if (errors.peopleforce) {
-      showAlert(`Не вдалося отримати дані PeopleForce: ${errors.peopleforce}`, 'warning', 8000);
+      showAlert(`Не удалось получить данные PeopleForce: ${errors.peopleforce}`, 'warning', 8000);
     }
   }
 
@@ -440,8 +440,8 @@
     selectAllCheckbox.checked = false;
 
     if (!items.length) {
-      employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Немає даних</td></tr>';
-      pageInfo.textContent = '0 записів';
+      employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Нет данных</td></tr>';
+      pageInfo.textContent = '0 записей';
       prevBtn.disabled = true;
       nextBtn.disabled = true;
       updateBulkButtonState();
@@ -508,7 +508,7 @@
     employeeTbody.appendChild(fragment);
 
     const totalPages = Math.ceil(employeeTotal / perPage) || 1;
-    pageInfo.textContent = `${employeePage} / ${totalPages} (усього ${employeeTotal})`;
+    pageInfo.textContent = `${employeePage} / ${totalPages} (всего ${employeeTotal})`;
     prevBtn.disabled = employeePage <= 1;
     nextBtn.disabled = employeePage >= totalPages;
     updateBulkButtonState();
@@ -530,18 +530,18 @@
       params.set('team', employeeTeamFilter);
     }
 
-    employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Завантаження…</td></tr>';
+    employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Загрузка...</td></tr>';
 
     fetch(`/api/admin/employees?${params.toString()}`)
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Не вдалося отримати дані співробітників');
+          throw new Error('Не удалось получить данные сотрудников');
         }
         return response.json();
       })
       .then(renderEmployees)
       .catch((error) => {
-        employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4">Помилка завантаження</td></tr>';
+        employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4">Ошибка загрузки</td></tr>';
         showAlert(error.message);
       });
   }
@@ -552,7 +552,7 @@
       .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
       .then(({ ok, data }) => {
         if (!ok) {
-          throw new Error(data.error || 'Не вдалося отримати порівняння користувачів');
+          throw new Error(data.error || 'Не удалось получить сравнение пользователей');
         }
         setDiffState(data);
         return data;
@@ -578,9 +578,9 @@
       .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
       .then(({ ok, data }) => {
         if (!ok) {
-          throw new Error(data.error || 'Не вдалося виконати синхронізацію');
+          throw new Error(data.error || 'Не удалось выполнить синхронизацию');
         }
-        showAlert('Синхронізація користувачів завершена', 'success');
+        showAlert('Синхронизация пользователей завершена', 'success');
         if (data && data.diff) {
           setDiffState(data.diff);
         }
@@ -602,7 +602,7 @@
     }
     const targetDate = (syncDateInput && syncDateInput.value ? syncDateInput.value : '').trim();
     if (!targetDate) {
-      showAlert('Оберіть дату для синхронізації', 'warning');
+      showAlert('Выберите дату для синхронизации', 'warning');
       return;
     }
     setButtonLoading(syncDateBtn, true);
@@ -623,13 +623,13 @@
       .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
       .then(({ ok, data }) => {
         if (!ok) {
-          throw new Error(data.error || 'Не вдалося синхронізувати дату');
+          throw new Error(data.error || 'Не удалось синхронизировать дату');
         }
         if (data.skipped) {
-          showAlert('Дата припадає на вихідний. Синхронізацію пропущено.', 'warning');
+          showAlert('Дата припадает на выходной. Синхронизацию пропущено.', 'warning');
           return;
         }
-        showAlert(`Дані за ${data.date} оновлено`, 'success');
+        showAlert(`Данные за ${data.date} обновлены`, 'success');
         fetchEmployees();
       })
       .catch((error) => showAlert(error.message))
@@ -673,9 +673,9 @@
       .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
       .then(({ ok, data }) => {
         if (!ok) {
-          throw new Error(data.error || 'Не вдалося оновити менеджера');
+          throw new Error(data.error || 'Не удалось обновить менеджера');
         }
-        showAlert(`Оновлено ${data.updated_records} записів`, 'success');
+        showAlert(`Обновлено ${data.updated_records} записей`, 'success');
         fetchEmployees();
       })
       .catch((error) => {
@@ -737,18 +737,18 @@
 
   function fetchAppUsers() {
     const tbody = appUsersTable.querySelector('tbody');
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Завантаження…</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Загрузка...</td></tr>';
     fetch('/api/admin/app-users')
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Не вдалося отримати користувачів панелі');
+          throw new Error('Не удалось получить пользователей ');
         }
         return response.json();
       })
       .then((payload) => {
         const items = payload.items || [];
         if (!items.length) {
-          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Немає користувачів</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Нет пользователей</td></tr>';
           return;
         }
        const fragment = document.createDocumentFragment();
@@ -775,7 +775,7 @@
         tbody.appendChild(fragment);
       })
       .catch((error) => {
-        appUsersTable.querySelector('tbody').innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Помилка завантаження</td></tr>';
+        appUsersTable.querySelector('tbody').innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Ошибка загрузки</td></tr>';
         showAlert(error.message);
       });
   }
@@ -790,7 +790,7 @@
       const name = (diffAddName ? diffAddName.value : '').trim();
       const email = (diffAddEmail ? diffAddEmail.value : '').trim();
       if (!name || !email) {
-        showAlert('Заповніть ім\'я та email для нового користувача', 'warning');
+        showAlert('Заполните имя и email для нового пользователя', 'warning');
         return;
       }
       const payload = {
@@ -816,9 +816,9 @@
         .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
         .then(({ ok, data }) => {
           if (!ok) {
-            throw new Error(data.error || 'Не вдалося додати користувача');
+            throw new Error(data.error || 'Не удалось добавить пользователя');
           }
-          showAlert('Користувача додано', 'success');
+          showAlert('Пользователь добавлен', 'success');
           if (diffAddModal) {
             diffAddModal.hide();
           }
@@ -827,7 +827,7 @@
           fetchEmployees();
         })
         .catch((error) => {
-          showAlert(error.message || 'Сталася помилка');
+          showAlert(error.message || 'Произошла ошибка');
         })
         .finally(() => {
           setButtonLoading(diffAddSubmit, false);
@@ -970,9 +970,9 @@
         .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
         .then(({ ok, data }) => {
           if (!ok) {
-            throw new Error(data.error || 'Не вдалося оновити дані співробітника');
+            throw new Error(data.error || 'Не удалось обновить данные сотрудника');
           }
-          showAlert('Дані співробітника оновлено', 'success');
+          showAlert('Данные сотрудника обновлены', 'success');
           if (employeeEditModal) {
             employeeEditModal.hide();
           }
@@ -988,7 +988,7 @@
       if (!key) {
         return;
       }
-      if (!window.confirm('Видалити користувача та всі записи attendance?')) {
+      if (!window.confirm('Удалить пользователя и все записи attendance?')) {
         return;
       }
       employeeDeleteBtn.disabled = true;
@@ -998,9 +998,9 @@
         .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
         .then(({ ok, data }) => {
           if (!ok) {
-            throw new Error(data.error || 'Не вдалося видалити користувача');
+            throw new Error(data.error || 'Не удалось удалить пользователя');
           }
-          showAlert('Користувача видалено', 'success');
+          showAlert('Пользователь удален', 'success');
           if (employeeEditModal) {
             employeeEditModal.hide();
           }
@@ -1041,9 +1041,9 @@
         .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
         .then(({ ok, data }) => {
           if (!ok) {
-            throw new Error(data.error || 'Не вдалося створити користувача');
+            throw new Error(data.error || 'Не удалось создать пользователя ');
           }
-          showAlert('Користувача створено', 'success');
+          showAlert('Пользователь создан', 'success');
           appUserForm.reset();
           fetchAppUsers();
         })
@@ -1095,9 +1095,9 @@
         .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
         .then(({ ok, data }) => {
           if (!ok) {
-            throw new Error(data.error || 'Не вдалося оновити користувача');
+            throw new Error(data.error || 'Не удалось обновить пользователя');
           }
-          showAlert('Дані користувача оновлено', 'success');
+          showAlert('Данные пользователя обновлены', 'success');
           if (appUserModal) {
             appUserModal.hide();
           }

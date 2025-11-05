@@ -177,7 +177,7 @@ def update_user(name: str, field: str, value: str) -> tuple[bool, str]:
             
     except Exception as e:
         logger.error(f"Помилка оновлення користувача: {e}")
-            return False, f"❌ Ошибка: {str(e)}"
+        return False, f"❌ Ошибка: {str(e)}"
 
 
 def get_user_info(name: str) -> Optional[Dict]:

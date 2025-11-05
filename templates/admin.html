@@ -2,7 +2,7 @@
 <html lang="uk">
   <head>
     <meta charset="UTF-8" />
-    <title>Админ-панель</title>
+    <title>Панель администратора</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -27,9 +27,10 @@
         <div class="card-body">
           <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
             <div>
-              <h4 class="card-title mb-1">Сотрудники</h4>
+              <h4 class="card-title mb-1">База пользователей</h4>
               <small class="text-muted"
-                >Управление контроль-менеджерами для пользователей</small
+                >Изменение данных о пользователях, назначение
+                контроль-менеджера</small
               >
             </div>
             <div class="ms-auto d-flex flex-wrap align-items-end gap-2">
@@ -70,7 +71,7 @@
               id="sync-users-btn"
               data-loading-class="btn-success text-white"
             >
-              Синхронизировать пользователей
+              Синхронизировать пользователей с базой PeopleForce и YaWare
             </button>
             <div class="input-group sync-date-group" style="max-width: 280px">
               <input type="date" class="form-control" id="sync-date-input" />
@@ -80,7 +81,7 @@
                 id="sync-date-btn"
                 data-loading-class="btn-primary text-white"
               >
-                Синхронизировать дату
+                Синхронизировать дату с YaWare
               </button>
             </div>
             <button
@@ -89,21 +90,21 @@
               id="refresh-diff-btn"
               data-loading-class="btn-secondary text-white"
             >
-              Обновить сравнение
+              Обновить сравнение баз сервера с YaWare и PeopleForce
             </button>
           </div>
           <div class="mb-3" id="diff-legend">
-            <span class="badge bg-warning text-dark me-2">Немає в YaWare</span>
-            <span class="badge bg-danger me-2">Немає в PeopleForce</span>
+            <span class="badge bg-warning text-dark me-2">Нет в YaWare</span>
+            <span class="badge bg-danger me-2">Нет в PeopleForce</span>
             <span class="badge bg-primary"
-              >Являється лише в YaWare/PeopleForce</span
+              >Является лишь в YaWare/PeopleForce</span
             >
           </div>
           <div class="small mb-3" id="diff-summary"></div>
           <div class="row g-3 mb-4" id="diff-lists" hidden>
             <div class="col-md-3">
               <div class="diff-card diff-card-warning h-100">
-                <div class="diff-card-header">Немає в YaWare</div>
+                <div class="diff-card-header">Нет в YaWare</div>
                 <div class="diff-card-body">
                   <ul class="diff-card-list" id="diff-missing-yaware-list"></ul>
                 </div>
@@ -111,7 +112,7 @@
             </div>
             <div class="col-md-3">
               <div class="diff-card diff-card-danger h-100">
-                <div class="diff-card-header">Немає в PeopleForce</div>
+                <div class="diff-card-header">Нет в PeopleForce</div>
                 <div class="diff-card-body">
                   <ul
                     class="diff-card-list"
@@ -122,7 +123,7 @@
             </div>
             <div class="col-md-3">
               <div class="diff-card diff-card-outline h-100">
-                <div class="diff-card-header">Лише в YaWare</div>
+                <div class="diff-card-header">Лишь в YaWare</div>
                 <div class="diff-card-body">
                   <ul class="diff-card-list" id="diff-yaware-only-list"></ul>
                 </div>
@@ -130,7 +131,7 @@
             </div>
             <div class="col-md-3">
               <div class="diff-card diff-card-outline h-100">
-                <div class="diff-card-header">Лише в PeopleForce</div>
+                <div class="diff-card-header">Лишь в PeopleForce</div>
                 <div class="diff-card-body">
                   <ul
                     class="diff-card-list"
@@ -144,7 +145,7 @@
           <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
             <div class="d-flex align-items-center gap-2">
               <label class="form-label mb-0" for="bulk-manager-select"
-                >Назначить менеджера:</label
+                >Определить контроль-менеджера:</label
               >
               <select
                 class="form-select"
@@ -254,9 +255,10 @@
         <div class="card-body">
           <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
             <div>
-              <h4 class="card-title mb-1">Пользователи панели</h4>
+              <h4 class="card-title mb-1">Админ-панель</h4>
               <small class="text-muted"
-                >Создание администраторов и контроль-менеджеров</small
+                >Создание доступа для администраторов и
+                контроль-менеджеров</small
               >
             </div>
           </div>
@@ -346,7 +348,7 @@
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Додати користувача з PeopleForce</h5>
+            <h5 class="modal-title">Добавить пользователя из PeopleForce</h5>
             <button
               type="button"
               class="btn-close"
@@ -358,7 +360,7 @@
             <div class="modal-body">
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                  <label class="form-label">Ім'я</label>
+                  <label class="form-label">Имя</label>
                   <input
                     type="text"
                     class="form-control"
@@ -418,7 +420,7 @@
               </div>
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                  <label class="form-label">Локація</label>
+                  <label class="form-label">Локация</label>
                   <input
                     type="text"
                     class="form-control"
@@ -426,7 +428,7 @@
                   />
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Плановий старт</label>
+                  <label class="form-label">Плановый старт</label>
                   <input
                     type="text"
                     class="form-control"
@@ -447,14 +449,14 @@
                 class="btn btn-outline-secondary"
                 data-bs-dismiss="modal"
               >
-                Скасувати
+                Отменить
               </button>
               <button
                 type="submit"
                 class="btn btn-primary"
                 id="diff-add-submit"
               >
-                Додати
+                Добавить
               </button>
             </div>
           </form>

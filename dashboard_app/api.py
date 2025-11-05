@@ -69,6 +69,8 @@ def _password_matches_default(hash_value: str | None) -> bool:
 _LOCATION_REPLACEMENTS: dict[str, str] = {
     'remote ukraine': 'UA',
     'remote other countries': 'Remote',
+    'Warsaw office Warsaw, PL': 'Warsaw, PL',
+    'Prague office': 'Prague, CZ'
 }
 
 

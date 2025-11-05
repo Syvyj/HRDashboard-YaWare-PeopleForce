@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Планувальник задач</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('admin.admin_index') }}">⬅ Назад</a>
+        <span class="navbar-text text-white">{{ user_name }}</span>
+      </div>
+    </nav>
+
+    <div class="container pb-5">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h4 class="mb-0">Планувальник задач</h4>
+            <button id="scheduler-refresh" class="btn btn-primary btn-sm">
+              Оновити
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered align-middle" id="scheduler-table">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Функція</th>
+                  <th>Тригер</th>
+                  <th>Наступний запуск</th>
+                  <th>Дії</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="card mt-4">
+            <div class="card-header">Reschedule (cron)</div>
+            <div class="card-body">
+              <form id="scheduler-reschedule" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                  <label class="form-label form-label-sm">Job ID</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    name="job_id"
+                    required
+                  />
+                </div>
+                <div class="col-md-1">
+                  <label class="form-label form-label-sm">Minute</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    name="minute"
+                    placeholder="*"
+                  />
+                </div>
+                <div class="col-md-1">
+                  <label class="form-label form-label-sm">Hour</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    name="hour"
+                    placeholder="*"
+                  />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label form-label-sm">Day</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    name="day"
+                    placeholder="*"
+                  />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label form-label-sm">Month</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    name="month"
+                    placeholder="*"
+                  />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label form-label-sm">Day of week</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    name="day_of_week"
+                    placeholder="*"
+                  />
+                </div>
+                <div class="col-md-1 d-grid">
+                  <button class="btn btn-outline-secondary btn-sm" type="submit">
+                    Застосувати
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/scheduler.js') }}"></script>
+  </body>
+</html>

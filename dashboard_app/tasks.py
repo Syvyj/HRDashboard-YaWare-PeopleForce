@@ -23,6 +23,7 @@ from dashboard_app.user_data import clear_user_schedule_cache
 logger = logging.getLogger(__name__)
 
 _scheduler: BackgroundScheduler | None = None
+SCHEDULER: BackgroundScheduler | None = None
 
 
 def _with_app_context(app, func, *args, **kwargs):
@@ -384,7 +385,7 @@ def _sync_yaware_plan_start(app, target_date: date | None = None) -> int:
 
 
 def register_tasks(app):
-    global _scheduler
+    global _scheduler, SCHEDULER
     if not app.config.get("ENABLE_SCHEDULER"):
         return
 
@@ -392,13 +393,19 @@ def register_tasks(app):
         return
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(lambda: _with_app_context(app, _run_daily_attendance), CronTrigger(hour=5, minute=0))
-    scheduler.add_job(lambda: _with_app_context(app, _sync_peopleforce_metadata), CronTrigger(hour=6, minute=0))
-    scheduler.add_job(lambda: _with_app_context(app, _run_prev_month_resync), CronTrigger(day="1", hour=5, minute=15))
-    scheduler.add_job(lambda: _with_app_context(app, _cleanup_old_records), CronTrigger(day="1", hour=5, minute=45))
+    scheduler.add_job(lambda: _with_app_context(app, _run_daily_attendance), CronTrigger(hour=5, minute=0),
+                      id='daily_attendance_sync', replace_existing=True)
+    scheduler.add_job(lambda: _with_app_context(app, _sync_peopleforce_metadata), CronTrigger(hour=6, minute=0),
+                      id='peopleforce_metadata_sync', replace_existing=True)
+    scheduler.add_job(lambda: _with_app_context(app, _run_prev_month_resync), CronTrigger(day="1", hour=5, minute=15),
+                      id='prev_month_resync', replace_existing=True)
+    scheduler.add_job(lambda: _with_app_context(app, _cleanup_old_records), CronTrigger(day="1", hour=5, minute=45),
+                      id='cleanup_old_records', replace_existing=True)
     scheduler.start()
 
     _scheduler = scheduler
+    global SCHEDULER
+    SCHEDULER = scheduler
     atexit.register(lambda: scheduler.shutdown(wait=False))
 
     logger.info("[scheduler] Background scheduler started (tz=%s)", current_app.config.get("TIMEZONE", "UTC"))

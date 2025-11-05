@@ -7,6 +7,8 @@ from html import escape
 from datetime import datetime, date, timedelta
 from io import BytesIO
 from urllib.parse import unquote
+from importlib import import_module
+import threading
 
 from flask import Blueprint, request, jsonify, send_file, abort, current_app
 from flask_login import login_required, current_user
@@ -107,6 +109,27 @@ def _schedule_identity_sets() -> tuple[set[str], set[str], set[str]]:
             if user_id:
                 ids.add(user_id)
     return names, emails, ids
+
+
+def _get_scheduler():
+    """Lazy import to avoid circular dependencies."""
+    try:
+        module = import_module('dashboard_app.tasks')
+        return getattr(module, 'SCHEDULER', None)
+    except Exception:
+        return None
+
+
+def _job_to_dict(job):
+    next_run = job.next_run_time.isoformat() if job.next_run_time else None
+    return {
+        'id': job.id,
+        'name': getattr(job.func, '__name__', str(job.func)),
+        'trigger': str(job.trigger),
+        'next_run_time': next_run,
+        'pending': getattr(job, 'pending', False),
+        'paused': getattr(job, 'paused', False),
+    }
 
 MANUAL_FLAG_MAP = {
     'scheduled_start': 'manual_scheduled_start',
@@ -622,6 +645,111 @@ def _ensure_admin() -> None:
         abort(403)
 
 
+@api_bp.get('/admin/scheduler/jobs')
+@login_required
+def api_scheduler_list_jobs():
+    _ensure_admin()
+    sched = _get_scheduler()
+    if not sched:
+        return jsonify({'error': 'scheduler not started'}), 503
+    jobs = [_job_to_dict(job) for job in sched.get_jobs()]
+    return jsonify({'jobs': jobs})
+
+
+@api_bp.post('/admin/scheduler/jobs/<job_id>/run')
+@login_required
+def api_scheduler_run_job(job_id: str):
+    _ensure_admin()
+    sched = _get_scheduler()
+    if not sched:
+        return jsonify({'error': 'scheduler not started'}), 503
+    job = sched.get_job(job_id)
+    if not job:
+        return jsonify({'error': f'job {job_id} not found'}), 404
+
+    def _call():
+        try:
+            job.func(*job.args, **job.kwargs)
+        except Exception:
+            pass
+
+    threading.Thread(target=_call, daemon=True).start()
+    return jsonify({'status': 'triggered'})
+
+
+@api_bp.post('/admin/scheduler/jobs/<job_id>/pause')
+@login_required
+def api_scheduler_pause_job(job_id: str):
+    _ensure_admin()
+    sched = _get_scheduler()
+    if not sched:
+        return jsonify({'error': 'scheduler not started'}), 503
+    if not sched.get_job(job_id):
+        return jsonify({'error': f'job {job_id} not found'}), 404
+    sched.pause_job(job_id)
+    return jsonify({'status': 'paused'})
+
+
+@api_bp.post('/admin/scheduler/jobs/<job_id>/resume')
+@login_required
+def api_scheduler_resume_job(job_id: str):
+    _ensure_admin()
+    sched = _get_scheduler()
+    if not sched:
+        return jsonify({'error': 'scheduler not started'}), 503
+    if not sched.get_job(job_id):
+        return jsonify({'error': f'job {job_id} not found'}), 404
+    sched.resume_job(job_id)
+    return jsonify({'status': 'resumed'})
+
+
+@api_bp.post('/admin/scheduler/jobs/<job_id>/remove')
+@login_required
+def api_scheduler_remove_job(job_id: str):
+    _ensure_admin()
+    sched = _get_scheduler()
+    if not sched:
+        return jsonify({'error': 'scheduler not started'}), 503
+    if not sched.get_job(job_id):
+        return jsonify({'error': f'job {job_id} not found'}), 404
+    sched.remove_job(job_id)
+    return jsonify({'status': 'removed'})
+
+
+@api_bp.post('/admin/scheduler/jobs/<job_id>/reschedule')
+@login_required
+def api_scheduler_reschedule_job(job_id: str):
+    _ensure_admin()
+    sched = _get_scheduler()
+    if not sched:
+        return jsonify({'error': 'scheduler not started'}), 503
+    job = sched.get_job(job_id)
+    if not job:
+        return jsonify({'error': f'job {job_id} not found'}), 404
+
+    payload = request.get_json(silent=True) or {}
+    from apscheduler.triggers.cron import CronTrigger
+
+    trigger = job.trigger
+    defaults = {
+        'minute': '*',
+        'hour': '*',
+        'day': '*',
+        'month': '*',
+        'day_of_week': '*',
+    }
+    if hasattr(trigger, 'fields'):
+        field_names = ['year', 'month', 'day', 'week', 'day_of_week', 'hour', 'minute', 'second']
+        for field, name in zip(trigger.fields, field_names):
+            if name in defaults and str(field) != '*':
+                defaults[name] = str(field)
+
+    data = {k: str(v).strip() for k, v in payload.items() if v not in (None, '')}
+    defaults.update({k: v for k, v in data.items() if k in defaults})
+
+    new_trigger = CronTrigger(**defaults)
+    job.modify(trigger=new_trigger)
+    return jsonify({'status': 'rescheduled', 'trigger': str(new_trigger)})
 def _log_admin_action(action: str, details: dict) -> None:
     entry = AdminAuditLog(
         user_id=getattr(current_user, 'id', None) if hasattr(current_user, 'id') else None,

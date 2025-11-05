@@ -12,3 +12,11 @@ def admin_index():
     if not getattr(current_user, 'is_admin', False):
         abort(403)
     return render_template('admin.html', user_name=current_user.name)
+
+
+@admin_bp.route('/admin/scheduler')
+@login_required
+def admin_scheduler_page():
+    if not getattr(current_user, 'is_admin', False):
+        abort(403)
+    return render_template('admin_scheduler.html', user_name=current_user.name)

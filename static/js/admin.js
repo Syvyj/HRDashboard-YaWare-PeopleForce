@@ -155,7 +155,7 @@
     }
     const normalizedValues = Array.from(new Set(values || [])).filter(Boolean).sort((a, b) => a.localeCompare(b));
     const selected = currentValue || '';
-    selectEl.innerHTML = '<option value="">Усі</option>';
+    selectEl.innerHTML = '<option value="">Все</option>';
     normalizedValues.forEach((value) => {
       const option = document.createElement('option');
       option.value = value;

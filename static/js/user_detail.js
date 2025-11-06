@@ -148,7 +148,7 @@
   function renderRecords(records, canEdit, statusOptions) {
     currentStatusOptions = statusOptions || [];
     recordsBody.innerHTML = '';
-    recordsCountEl.textContent = `${records.length} записів`;
+  recordsCountEl.textContent = `${records.length} записей`;
 
     if (!records.length) {
       const row = document.createElement('tr');
@@ -207,6 +207,14 @@
 
     const fragment = document.createDocumentFragment();
 
+    const dayNames = {
+      'ПН': 'Понедельник',
+      'ВТ': 'Вторник',
+      'СР': 'Среда',
+      'ЧТ': 'Четверг',
+      'ПТ': 'Пятница',
+    };
+
     labels.forEach((label, index) => {
       const value = Number(values[index] || 0);
       const item = document.createElement('div');
@@ -214,7 +222,15 @@
 
       const dateLabel = document.createElement('div');
       dateLabel.className = 'lateness-date';
-      dateLabel.textContent = label;
+      const separatorIndex = typeof label === 'string' ? label.indexOf('.') : -1;
+      if (separatorIndex > 0) {
+        const abbr = label.slice(0, separatorIndex).trim();
+        const datePart = label.slice(separatorIndex + 1).trim();
+        const dayName = dayNames[abbr] || abbr;
+        dateLabel.textContent = datePart ? `${dayName}, (${datePart})` : dayName;
+      } else {
+        dateLabel.textContent = label;
+      }
 
       const valueLabel = document.createElement('div');
       valueLabel.className = 'lateness-time';
@@ -260,7 +276,7 @@
     formScheduledStart.value = record.scheduled_start || '';
     formActualStart.value = record.actual_start || '';
     fillStatusOptions(record.status);
-    formMinutesLate.value = record.minutes_late_display || ''; // модальне поле залишається для редагування
+    formMinutesLate.value = record.minutes_late_display || ''; // модальное поле остается для редактирования
     formNonProductive.value = record.non_productive_display || '';
     formNotCategorized.value = record.not_categorized_display || '';
     formProductive.value = record.productive_display || '';

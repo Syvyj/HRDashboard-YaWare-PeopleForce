@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <title>Планувальник задач</title>
+    <title>Планировщик задач</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -20,20 +20,18 @@
       <div class="card shadow-sm">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between mb-3">
-            <h4 class="mb-0">Планувальник задач</h4>
-            <button id="scheduler-refresh" class="btn btn-primary btn-sm">
-              Оновити
-            </button>
+            <h4 class="mb-0">Планировщик задач</h4>
+            <button id="scheduler-refresh" class="btn btn-primary btn-sm">Обновить</button>
           </div>
           <div class="table-responsive">
             <table class="table table-sm table-bordered align-middle" id="scheduler-table">
               <thead class="table-light">
                 <tr>
                   <th>ID</th>
-                  <th>Функція</th>
+                  <th>Функция</th>
                   <th>Тригер</th>
-                  <th>Наступний запуск</th>
-                  <th>Дії</th>
+                  <th>Следующий запуск</th>
+                  <th>Действия</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -99,9 +97,7 @@
                   />
                 </div>
                 <div class="col-md-1 d-grid">
-                  <button class="btn btn-outline-secondary btn-sm" type="submit">
-                    Застосувати
-                  </button>
+                  <button class="btn btn-outline-secondary btn-sm" type="submit">Применить</button>
                 </div>
               </form>
             </div>

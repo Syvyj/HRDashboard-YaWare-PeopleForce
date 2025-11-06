@@ -1,4 +1,4 @@
-// Спільні утиліти для роботи з attendance
+// Общие утилиты для работы с attendance
 const STATUS_LABELS = {
   present: 'Присутствовал',
   late: 'Опоздал',
@@ -31,7 +31,7 @@ function formatISO(date) {
   return `${year}-${month}-${day}`;
 }
 
-// Експортуємо для використання в інших модулях
+// Экспортируем для использования в других модулях
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { STATUS_LABELS, escapeHtml, minutesToDuration, formatISO };
 }

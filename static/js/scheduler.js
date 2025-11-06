@@ -3,16 +3,16 @@ async function schedulerLoadJobs() {
   if (!tableBody) {
     return;
   }
-  tableBody.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-3">Завантаження…</td></tr>';
+  tableBody.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-3">Загрузка…</td></tr>';
   try {
     const res = await fetch('/api/admin/scheduler/jobs');
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data.error || 'Не вдалося отримати список задач');
+      throw new Error(data.error || 'Не удалось получить список задач');
     }
     const jobs = data.jobs || [];
     if (!jobs.length) {
-      tableBody.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-3">Жодної задачі</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-3">Нет задач</td></tr>';
       return;
     }
     tableBody.innerHTML = '';
@@ -45,7 +45,7 @@ async function schedulerPost(url, payload) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data.error || 'Помилка запиту');
+    throw new Error(data.error || 'Ошибка запроса');
   }
   return data;
 }

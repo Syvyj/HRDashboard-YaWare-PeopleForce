@@ -1,20 +1,19 @@
 """
-Форматування звітів для Telegram.
+Форматирование отчетов для Telegram.
 """
 from datetime import date
 from typing import Dict, List, Optional, Tuple
 from .attendance_monitor import AttendanceStatus
 
 
-def format_attendance_report(report: Dict, report_date: Optional[date] = None, leaves_list: Optional[List] = None) -> str:
+def format_attendance_report(report: dict, report_date: str | None = None, leaves_list: list | None = None) -> str:
     """
-    Форматувати звіт про присутність для Telegram.
+    Форматировать отчет о присутствии для Telegram.
     
     Args:
-        report: Dict з ключами 'date', 'late', 'absent'
-        report_date: Опціонально дата звіту (якщо не в report['date'])
-        leaves_list: Список відпусток з PeopleForce API
-    
+        report: Словарь с данными отчета
+        report_date: Опционально дата отчета (если не в report['date'])
+        leaves_list: Список отпусков из PeopleForce API
     Returns:
         Відформатоване повідомлення
     """
@@ -82,13 +81,13 @@ def format_attendance_report(report: Dict, report_date: Optional[date] = None, l
                 lines.append(f"     ⏱️ Опоздание: {format_minutes(status.minutes_late)} ч")
             lines.append("")
     
-    # Додаємо блок PeopleForce (відсутні за поважними причинами)
+        # Добавляем блок PeopleForce (отсутствующие по уважительным причинам)
     if leaves_list:
-        lines.append(f"📊 Отсутствуют по уважительной причине ({len(leaves_list)} чел):")
-        lines.append("-" * 40)
+        lines.append("\n\n� ОТСУТСТВУЮТ (PeopleForce)")
+        lines.append("=" * 40)
         
         for leave in leaves_list:
-            # Отримуємо ім'я співробітника
+            # Получаем имя сотрудника
             employee_data = leave.get("employee", {})
             if isinstance(employee_data, dict):
                 first_name = employee_data.get("first_name", "")

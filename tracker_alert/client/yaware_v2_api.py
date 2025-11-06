@@ -18,8 +18,8 @@ class YaWareV2Client:
         if not self.access_key:
             raise ValueError("YAWARE_ACCESS_KEY не настроен в .env")
     
-    def _request(self, method: str, params: Dict[str, Any] = None) -> Any:
-        """Базовий метод для запитів до API."""
+    def _request(self, method: str, params: dict | None = None) -> Any:
+        """Базовый метод для запросов к API."""
         url = f"{self.base_url}/{method}"
         
         request_params = {"access_key": self.access_key}
@@ -36,15 +36,15 @@ class YaWareV2Client:
             logger.error(f"API request failed: {method} - {str(e)}")
             raise
     
-    def get_users(self, active_only: bool = True) -> List[Dict[str, Any]]:
+    def get_users(self, active_only: bool = False) -> list[dict]:
         """
-        Отримати список користувачів.
+        Получить список пользователей.
         
         Args:
-            active_only: Якщо True, повертає тільки активних користувачів
+            active_only: Если True, возвращает только активных пользователей
             
         Returns:
-            Список користувачів
+            Список пользователей
         """
         users = self._request("getUsers")
         
@@ -56,69 +56,55 @@ class YaWareV2Client:
 
         return users
     
-    def get_user(self, email: str) -> Dict[str, Any]:
+    def get_user(self, email: str) -> dict | None:
         """
-        Отримати дані конкретного користувача.
+        Получить данные конкретного пользователя.
         
         Args:
-            email: Email користувача
+            email: Email пользователя
             
         Returns:
-            Дані користувача
+            Данные пользователя
         """
         return self._request("getUser", {"email": email})
     
-    def get_employee_worked_hours(
-        self,
-        employee_id: str,
-        date_from: str,
-        date_to: str
-    ) -> Dict[str, Any]:
+    def get_worked_hours(self, email: str, date_from: str, date_to: str) -> dict:
         """
-        Отримати відпрацьовані години для співробітника.
+        Получить отработанные часы для сотрудника.
         
         Args:
-            employee_id: ID співробітника
-            date_from: Початкова дата (YYYY-MM-DD)
-            date_to: Кінцева дата (YYYY-MM-DD)
+            email: Email сотрудника
+            date_from: Начальная дата (YYYY-MM-DD)
+            date_to: Конечная дата (YYYY-MM-DD)
             
         Returns:
-            Дані про відпрацьовані години:
-            {
-                "totalTime": секунди,
-                "productiveTime": секунди,
-                "neutralTime": секунди,
-                "distractingTime": секунди
-            }
+            Данные об отработанных часах
         """
-        return self._request(
-            "getEmployeesWorkedHours",
-            {
-                "employeeId": employee_id,
-                "dateFrom": date_from,
-                "dateTo": date_to
-            }
-        )
+        return self._request("getWorkedHours", {
+            "email": email,
+            "dateFrom": date_from,
+            "dateTo": date_to
+        })
     
-    def get_summary_by_day(self, date: str) -> List[Dict[str, Any]]:
+    def get_summary_by_day(self, date: str) -> list[dict]:
         """
-        Отримати повну статистику за день для всіх користувачів (один запит!).
+        Получить полную статистику за день для всех пользователей (один запрос).
         
         Args:
             date: Дата (YYYY-MM-DD)
             
         Returns:
-            Список з повною статистикою:
+            Список с полной статистикой:
             {
                 "period": "07 Oct, 2025",
                 "user": "Name Surname, email@example.com",
                 "group": "Tech",
-                "time_start": "09:15",  # ЧАС ПОЧАТКУ!
+                "time_start": "09:15",
                 "time_end": "18:30",
-                "distracting": "1834",  # секунди
-                "uncategorized": "899",  # секунди
-                "productive": "27836",  # секунди
-                "total": "30569",       # секунди
+                "distracting": "1834",
+                "uncategorized": "899",
+                "productive": "27836",
+                "total": "30569",
                 "user_id": "7637340"
             }
         """
@@ -127,28 +113,28 @@ class YaWareV2Client:
         logger.info(f"Получена статистика для {len(data)} пользователей за {date}")
         return data
 
-    def get_work_schedules(self) -> Any:
+    def get_schedules(self) -> list[dict]:
         """
-        Спробувати отримати робочі розклади користувачів.
-
+        Попробовать получить рабочие расписания пользователей.
+        
         Returns:
-            Сирі дані від YaWare (структура може відрізнятися, тому парсимо на стороні виклику).
+            Сырые данные от YaWare (структура может отличаться, поэтому парсим на стороне вызова).
         """
         try:
             return self._request("getSchedules")
         except Exception as exc:
-            logger.warning("YaWare getSchedules не доступний: %s", exc)
+            logger.warning("YaWare getSchedules не доступен: %s", exc)
             return None
     
-    def get_week_data(self, week_days: List[str]) -> Dict[str, Dict[str, Any]]:
+    def get_week_data(self, week_days: list) -> dict:
         """
-        Отримати дані за тиждень (5 днів) згруповані по користувачам.
+        Получить данные за неделю (5 дней) сгруппированные по пользователям.
         
         Args:
-            week_days: Список дат у форматі YYYY-MM-DD (зазвичай Пн-Пт)
+            week_days: Список дат (date objects) для получения
             
         Returns:
-            Dictionary {user_id: {name, group, days: [day1_data, day2_data, ...]}}
+            {email: {user_info, days: [{date, stats}]}}
         """
         week_data = {}
         
@@ -163,7 +149,7 @@ class YaWareV2Client:
                 if not user_id:
                     continue
                 
-                # Ініціалізуємо користувача якщо це перший день
+                # Инициализируем пользователя если это первый день
                 if user_id not in week_data:
                     # Парсимо ім'я (формат: "Name Surname, email@example.com")
                     user_field = record.get("user", "")
@@ -182,7 +168,7 @@ class YaWareV2Client:
                         "days": []
                     }
                 
-                # Додаємо дані за день
+                # Добавляем данные за день
                 week_data[user_id]["days"].append({
                     "date": day_date,
                     "time_start": record.get("time_start", ""),
@@ -196,22 +182,17 @@ class YaWareV2Client:
         logger.info(f"✅ Собрано данные за неделю для {len(week_data)} пользователей")
         return week_data
     
-    def get_all_active_users_stats(
-        self,
-        date_from: str,
-        date_to: str
-    ) -> List[Dict[str, Any]]:
+    def get_all_employees_stats(self, date_from: str, date_to: str) -> list[dict]:
         """
-        ЗАСТАРІЛИЙ МЕТОД: Отримати статистику для всіх активних користувачів.
-        
-        Використовуйте get_summary_by_day() замість цього - він швидший!
+        УСТАРЕВШИЙ МЕТОД: Получить статистику для всех активных пользователей.
+        Используйте get_summary_by_day() вместо этого!
         
         Args:
-            date_from: Початкова дата (YYYY-MM-DD)
-            date_to: Кінцева дата (YYYY-MM-DD)
+            date_from: Начальная дата (YYYY-MM-DD)
+            date_to: Конечная дата (YYYY-MM-DD)
             
         Returns:
-            Список з даними користувачів + їх статистика
+            Список с данными пользователей + их статистика
         """
         users = self.get_users(active_only=True)
         results = []
@@ -226,7 +207,7 @@ class YaWareV2Client:
             try:
                 stats = self.get_employee_worked_hours(user_id, date_from, date_to)
                 
-                # Об'єднуємо дані користувача зі статистикою
+                # Объединяем данные пользователя со статистикой
                 result = {
                     "user_id": user_id,
                     "email": user.get("email"),
@@ -248,84 +229,60 @@ class YaWareV2Client:
         logger.info(f"Успешно получена статистика для {len(results)} пользователей")
         return results
     
-    def get_lateness(
-        self,
-        date_from: str,
-        date_to: str,
-        employee_id: Optional[str] = None
-    ) -> Any:
+    def get_lateness_report(self, date_from: str, date_to: str) -> dict:
         """
-        Отримати звіт по запізненнях.
+        Получить отчет по опозданиям.
         
         Args:
-            date_from: Початкова дата (YYYY-MM-DD)
-            date_to: Кінцева дата (YYYY-MM-DD)
-            employee_id: ID співробітника (опціонально, якщо не вказано - всі)
+            date_from: Начальная дата (YYYY-MM-DD)
+            date_to: Конечная дата (YYYY-MM-DD)
             
         Returns:
-            Дані про запізнення
+            Данные об опозданиях
         """
         params = {
             "dateFrom": date_from,
             "dateTo": date_to
         }
-        if employee_id:
-            params["employeeId"] = employee_id
         
         return self._request("lateness", params)
     
-    def get_worked_at_night(
-        self,
-        date_from: str,
-        date_to: str,
-        employee_id: Optional[str] = None
-    ) -> Any:
+    def get_out_of_schedule_report(self, date_from: str, date_to: str) -> dict:
         """
-        Отримати звіт по роботі поза робочим графіком.
+        Получить отчет по работе вне рабочего графика.
         
         Args:
-            date_from: Початкова дата (YYYY-MM-DD)
-            date_to: Кінцева дата (YYYY-MM-DD)
-            employee_id: ID співробітника (опціонально, якщо не вказано - всі)
+            date_from: Начальная дата (YYYY-MM-DD)
+            date_to: Конечная дата (YYYY-MM-DD)
             
         Returns:
-            Дані про роботу поза графіком
+            Данные о работе вне графика
         """
         params = {
             "dateFrom": date_from,
             "dateTo": date_to
         }
-        if employee_id:
-            params["employeeId"] = employee_id
         
         return self._request("workedAtNight", params)
     
-    def get_left_before(
-        self,
-        date_from: str,
-        date_to: str,
-        employee_id: Optional[str] = None
-    ) -> Any:
+    def get_early_leave_report(self, date_from: str, date_to: str) -> dict:
         """
-        Отримати звіт про тих, хто пішов раніше.
+        Получить отчет о тех, кто ушел раньше.
         
         Args:
-            date_from: Початкова дата (YYYY-MM-DD)
-            date_to: Кінцева дата (YYYY-MM-DD)
-            employee_id: ID співробітника (опціонально, якщо не вказано - всі)
+            date_from: Начальная дата (YYYY-MM-DD)
+            date_to: Конечная дата (YYYY-MM-DD)
             
         Returns:
-            Дані про тих, хто пішов раніше
+            Данные о тех, кто ушел раньше
         """
         params = {
             "dateFrom": date_from,
             "dateTo": date_to
         }
-        if employee_id:
-            params["employeeId"] = employee_id
         
         return self._request("leftBefore", params)
 
 
-# Глобальний інстанс клієнта
+# Глобальній інстанс клієнта
 client = YaWareV2Client()

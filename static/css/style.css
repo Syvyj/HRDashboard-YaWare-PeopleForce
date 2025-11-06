@@ -160,7 +160,7 @@
   color: #f2a33a;
 }
 
-.lateness-item {
+.lateness-card {
   min-width: 90px;
   padding: 0.5rem 0.75rem;
   background-color: #f8f9fa;
@@ -169,13 +169,13 @@
   border: 1px solid #e5e7eb;
 }
 
-.lateness-item-date {
+.lateness-date {
   font-weight: 600;
   font-size: 0.9rem;
   color: #111827;
 }
 
-.lateness-item-value {
+.lateness-time {
   font-size: 0.85rem;
   color: #4b5563;
 }
@@ -183,11 +183,6 @@
 .meta-label {
   font-size: 1rem;
   color: #6b7280;
-}
-
-.reports-wrapper {
-  /* padding: 2rem;
-  background-color: #fafafa; */
 }
 
 .report-table {
@@ -411,14 +406,24 @@
 .btn-loading.btn-outline-success::after,
 .btn-loading.btn-outline-primary::after,
 .btn-loading.btn-outline-secondary::after {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0.2) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
 }
 
 .btn-loading::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0.1) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
   transform: translateX(-100%);
   animation: btn-loading-fill 1.4s linear infinite;
 }

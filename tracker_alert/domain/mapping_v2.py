@@ -1,4 +1,4 @@
-"""Мапери для перетворення v2 API даних в формат для Google Sheets."""
+"""Мапперы для преобразования v2 API данных в формат для Google Sheets."""
 from __future__ import annotations
 from typing import Any, Dict, List
 from datetime import date
@@ -21,16 +21,16 @@ def parse_summary_by_day(
     target_date: date
 ) -> Dict[str, Any]:
     """
-    Перетворити дані з getSummaryByDay в формат для Sheets.
+    Преобразовать данные из getSummaryByDay в формат для Sheets.
     
     Args:
-        record: Запис з getSummaryByDay
-        target_date: Дата для якої дані
+        record: Запись из getSummaryByDay
+        target_date: Дата для которой данные
         
     Returns:
-        Dictionary з даними для одного рядка в Sheets
+        Dictionary с данными для одной строки в Sheets
     """
-    # Час в секундах (вже є в response)
+    # Время в секундах (уже есть в response)
     total_seconds = int(record.get("total", 0))
     productive_seconds = int(record.get("productive", 0))
     uncategorized_seconds = int(record.get("uncategorized", 0))
@@ -57,7 +57,7 @@ def parse_summary_by_day(
         "date": date_str,  # Тепер це текст, не ISO формат
         "full_name": full_name,
         "group_name": record.get("group", ""),
-        "fact_start": record.get("time_start", ""),  # ✅ Час початку!
+        "fact_start": record.get("time_start", ""),  # ✅ Время начала!
         "non_productive_hours": distracting_h,
         "not_categorized_hours": uncategorized_h,
         "productive_hours": productive_h,
@@ -70,35 +70,37 @@ def parse_worked_hours_v2(
     target_date: date
 ) -> Dict[str, Any]:
     """
-    ЗАСТАРІЛИЙ: Перетворити дані з getEmployeesWorkedHours v2 в формат для Sheets.
+    УСТАРЕВШИЙ: Преобразовать данные из getEmployeesWorkedHours v2 в формат для Sheets.
     
-    Використовуйте parse_summary_by_day() замість цього!
+    DEPRECATED! Используйте parse_summary_by_day_record вместо этого.
     
     Args:
-        user_data: Об'єднані дані користувача + статистика
-        target_date: Дата для якої дані
+        user_data: Объединенные данные пользователя + статистика
+        target_date: Дата для которой данные
         
     Returns:
-        Dictionary з даними для одного рядка в Sheets
+        Dictionary с данными для одной строки в Sheets
     """
-    total_seconds = user_data.get("totalTime", 0)
-    productive_seconds = user_data.get("productiveTime", 0)
-    neutral_seconds = user_data.get("neutralTime", 0)
-    distracting_seconds = user_data.get("distractingTime", 0)
-    
-    # Обчислюємо непродуктивний час (нейтральний + відволікаючий)
+    total_seconds = int(user_data.get("totalTime") or 0)
+    productive_seconds = int(user_data.get("productiveTime") or 0)
+    neutral_seconds = int(user_data.get("neutralTime") or 0)
+    distracting_seconds = int(user_data.get("distractingTime") or 0)
+
     non_productive_seconds = distracting_seconds
     not_categorized_seconds = neutral_seconds
-    
-    # Конвертуємо в години
+
     total_h = seconds_to_hours(total_seconds)
     productive_h = seconds_to_hours(productive_seconds)
     non_productive_h = seconds_to_hours(non_productive_seconds)
     not_categorized_h = seconds_to_hours(not_categorized_seconds)
-    
+
+    full_name = f"{user_data.get('firstname', '')} {user_data.get('lastname', '')}".strip()
+    if not full_name.strip():
+        full_name = user_data.get('full_name', '').strip()
+
     return {
         "date": target_date.isoformat(),
-        "full_name": f"{user_data.get('firstname', '')} {user_data.get('lastname', '')}".strip(),
+        "full_name": full_name,
         "group_name": user_data.get("group_name", ""),
         "fact_start": user_data.get("fact_start", ""),
         "non_productive_hours": non_productive_h,
@@ -110,7 +112,7 @@ def parse_worked_hours_v2(
 
 def format_for_sheets_row(data: Dict[str, Any]) -> List[Any]:
     """
-    Перетворити parsed дані в список значень для рядка Sheets.
+    Преобразовать parsed данные в список значений для строки Sheets.
     
     Формат колонок:
     Data | Full Name | Group | Fact start | Non productive | Not categorized | Prodactive | Total
@@ -128,7 +130,7 @@ def format_for_sheets_row(data: Dict[str, Any]) -> List[Any]:
 
 
 def get_sheets_headers() -> List[str]:
-    """Отримати заголовки для Google Sheets."""
+    """Получить заголовки для Google Sheets."""
     return [
         "Data",
         "Full Name",

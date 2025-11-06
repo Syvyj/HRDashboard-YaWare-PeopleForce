@@ -53,13 +53,6 @@
   let managerEditBound = false;
   let currentProfile = {};
 
-  const STATUS_LABELS = {
-    present: 'Присутствовал',
-    late: 'Опоздал',
-    absent: 'Отсутствовал',
-    leave: 'Отпуск / отсутствие',
-  };
-
   function showAlert(message, type = 'danger', timeout = 5000) {
     if (!alertContainer) {
       return;
@@ -217,18 +210,17 @@
     labels.forEach((label, index) => {
       const value = Number(values[index] || 0);
       const item = document.createElement('div');
-      item.className = 'lateness-item';
+      item.className = 'lateness-card';
 
       const dateLabel = document.createElement('div');
-      dateLabel.className = 'lateness-item-date';
-      const parts = String(label).split(' ');
-      dateLabel.textContent = parts.length > 1 ? parts[1] : label;
+      dateLabel.className = 'lateness-date';
+      dateLabel.textContent = label;
 
       const valueLabel = document.createElement('div');
-      valueLabel.className = 'lateness-item-value';
+      valueLabel.className = 'lateness-time';
       const hours = Math.floor(value / 60);
       const minutes = value % 60;
-      valueLabel.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} хв.`;
+      valueLabel.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
       item.appendChild(dateLabel);
       item.appendChild(valueLabel);

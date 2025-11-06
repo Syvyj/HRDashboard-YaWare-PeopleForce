@@ -45,21 +45,9 @@ except ImportError:  # pragma: no cover
     ParagraphStyle = None
     pdfmetrics = TTFont = None
 
-DEFAULT_SYNC_PASSWORD = 'ChangeMe123'
-
 api_bp = Blueprint('api', __name__)
 
 DEFAULT_SYNC_PASSWORD = 'ChangeMe123'
-
-
-@lru_cache(maxsize=1024)
-def _password_matches_default(hash_value: str | None) -> bool:
-    if not hash_value:
-        return False
-    try:
-        return check_password_hash(hash_value, DEFAULT_SYNC_PASSWORD)
-    except Exception:  # pragma: no cover
-        return False
 
 
 @lru_cache(maxsize=1024)
@@ -1946,7 +1934,8 @@ def _build_week_lateness(records: list[AttendanceRecord]) -> dict:
     week_start = today - timedelta(days=today.weekday())
     days = [week_start + timedelta(days=i) for i in range(5)]
     late_map = {rec.record_date: rec.minutes_late for rec in records if rec.record_date in days}
-    labels = [day.strftime('%a %d.%m') for day in days]
+    weekday_names = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ']
+    labels = [f"{weekday_names[i]}.{day.strftime('%d.%m.%y')}" for i, day in enumerate(days)]
     values = [late_map.get(day, 0) for day in days]
     return {'labels': labels, 'values': values}
 

@@ -1,24 +1,24 @@
-"""Утиліти для роботи з тижнями."""
+"""Утилиты для работы с неделями."""
 from datetime import date, timedelta
 from typing import Tuple
 
 
 def get_week_number(target_date: date) -> int:
     """
-    Отримати номер тижня в році (ISO week number).
+    Получить номер недели в году (ISO week number).
     
     Args:
         target_date: Дата
         
     Returns:
-        Номер тижня (1-53)
+        Номер недели (1-53)
     """
     return target_date.isocalendar()[1]
 
 
 def get_week_range(target_date: date) -> Tuple[date, date]:
     """
-    Отримати діапазон тижня (Monday - Friday) для заданої дати.
+    Получить диапазон недели (Monday - Friday) для заданной даты.
     
     Args:
         target_date: Будь-яка дата в тижні

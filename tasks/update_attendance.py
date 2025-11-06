@@ -84,7 +84,7 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         leave_type = leave.get('leave_type', '')
         if isinstance(leave_type, dict):
             leave_type = leave_type.get('name', '')
-        leaves_reason[email.lower()] = leave_type or 'Відпустка'
+        leaves_reason[email.lower()] = leave_type or 'Отпуск'
 
     try:
         summary = yaware_client.get_summary_by_day(target_date.isoformat()) or []

@@ -33,7 +33,7 @@ def _normalize_location(value: Optional[str]) -> str:
 
 @dataclass
 class UserSchedule:
-    """Графік користувача з бази."""
+    """График пользователя из базы."""
     name: str
     email: str
     user_id: str
@@ -49,7 +49,7 @@ class UserSchedule:
 
 @dataclass
 class AttendanceStatus:
-    """Статус присутності користувача."""
+    """Статус присутствия пользователя."""
     user: UserSchedule
     status: str  # 'on_leave', 'late', 'absent', 'on_time', 'early'
     actual_time: Optional[str] = None
@@ -70,7 +70,7 @@ class AttendanceMonitor:
         self.schedules, self.schedules_by_email = self._load_schedules(schedules_path)
     
     def _load_schedules(self, path: str) -> tuple[Dict[str, UserSchedule], Dict[str, UserSchedule]]:
-        """Завантажити графіки користувачів."""
+        """Загрузить графики пользователей."""
         schedules: Dict[str, UserSchedule] = {}
         schedules_by_email: Dict[str, UserSchedule] = {}
         
@@ -110,11 +110,11 @@ class AttendanceMonitor:
             if email_key:
                 schedules_by_email[email_key] = schedule
 
-        logger.info(f"Завантажено {len(schedules)} графіків користувачів")
+        logger.info(f"Загружено {len(schedules)} графиков пользователей")
         return schedules, schedules_by_email
     
     def _get_leaves_for_date(self, check_date: date) -> Dict[str, dict]:
-        """Отримати відпустки на конкретну дату."""
+        """Получить отпуска на конкретную дату."""
         all_leaves = self.pf_client.get_leave_requests(
             start_date=check_date,
             end_date=check_date
@@ -126,7 +126,7 @@ class AttendanceMonitor:
             leave_start = date.fromisoformat(leave["starts_on"])
             leave_end = date.fromisoformat(leave["ends_on"])
             
-            # Перевіряємо чи дата в періоді відпустки
+            # Проверяем дата ли в периоде отпуска
             if leave_start <= check_date <= leave_end:
                 leaves_by_email[emp_email] = leave
         
@@ -142,14 +142,14 @@ class AttendanceMonitor:
     
     def check_attendance(self, check_date: date) -> List[AttendanceStatus]:
         """
-        Перевірити присутність всіх співробітників на дату.
+        Проверить присутствие всех сотрудников на дату.
         
         Returns:
             Список статусів (тільки late та absent)
         """
-        logger.info(f"Перевірка присутності на {check_date}")
+        logger.info(f"Проверка присутствия на {check_date}")
         
-        # Отримуємо дані
+        # Получаем данные
         yaware_data = self.yaware_client.get_summary_by_day(check_date.isoformat())
         yaware_by_id = {
             str(record['user_id']): record 
@@ -159,17 +159,17 @@ class AttendanceMonitor:
         
         leaves_by_email = self._get_leaves_for_date(check_date)
         
-        # Аналізуємо кожного користувача
+        # Анализируем каждого пользователя
         results = []
         
         for user_id, schedule in self.schedules.items():
             email = schedule.email.lower() if schedule.email else ''
             
-            # Пропускаємо якщо у відпустці
+            # Пропускаем если в отпуске
             if email in leaves_by_email:
                 continue
             
-            # Перевіряємо наявність в YaWare
+            # Проверяем наличие в YaWare
             yaware_record = yaware_by_id.get(user_id)
             
             if not yaware_record or not yaware_record.get('time_start'):
@@ -181,7 +181,7 @@ class AttendanceMonitor:
                 ))
                 continue
             
-            # Порівнюємо час приходу
+            # Сравниваем время прихода
             actual_time = yaware_record['time_start'][:5]  # HH:MM
             minutes_late = self._calculate_lateness(actual_time, schedule.start_time)
             
@@ -200,7 +200,7 @@ class AttendanceMonitor:
 
     def get_daily_report(self, check_date: Optional[date] = None) -> Dict:
         """
-        Отримати щоденний звіт про присутність.
+        Получить ежедневный отчет о присутствии.
         
         Returns:
             Dict з категоріями late та absent

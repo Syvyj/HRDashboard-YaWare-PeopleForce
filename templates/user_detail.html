@@ -66,7 +66,7 @@
                     type="button"
                     class="btn btn-sm btn-outline-primary d-none"
                     id="manager-edit-btn"
-                    title="Змінити"
+                    title="Изменить"
                   >
                     <i class="bi bi-pencil"></i>
                   </button>
@@ -76,85 +76,95 @@
           </div>
         </div>
       </div>
-
-      <div class="card shadow-sm mb-4">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="card-title mb-0">Опоздания на этой неделе</h5>
-          </div>
+      
+        <div class="card shadow-sm mb-4">
+          <div class="card-body" style="
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="card-title mb-0">Опоздания на этой неделе</h5>
+            </div>
           <div id="lateness-grid" class="d-flex flex-wrap gap-3"></div>
+          </div>
         </div>
       </div>
-
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <div class="d-flex flex-wrap align-items-end gap-2 mb-3">
-            <div>
-              <h5 class="card-title mb-1">Последние рабочие дни</h5>
-              <span class="badge bg-secondary" id="records-count"
-                >0 записей</span
-              >
-            </div>
-            <div class="d-flex flex-wrap align-items-end gap-2 ms-auto">
+          </div>
+        </div>
+      </div>
+      <div class="container py-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex flex-wrap align-items-end gap-2 mb-3">
               <div>
-                <label class="form-label mb-1" for="range-date-from">С</label>
-                <input type="date" class="form-control" id="range-date-from" />
+                <h5 class="card-title mb-1">Последние рабочие дни</h5>
+                <span class="badge bg-secondary" id="records-count"
+                  >0 записей</span
+                >
               </div>
-              <div>
-                <label class="form-label mb-1" for="range-date-to">По</label>
-                <input type="date" class="form-control" id="range-date-to" />
-              </div>
-              <div class="d-flex gap-2">
-                <button type="button" class="btn btn-primary" id="range-apply">
-                  Показать
-                </button>
+              <div class="d-flex flex-wrap align-items-end gap-2 ms-auto">
+                <div>
+                  <label class="form-label mb-1" for="range-date-from">С</label>
+                  <input type="date" class="form-control" id="range-date-from" />
+                </div>
+                <div>
+                  <label class="form-label mb-1" for="range-date-to">По</label>
+                  <input type="date" class="form-control" id="range-date-to" />
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-primary" id="range-apply">
+                    Показать
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    id="range-reset"
+                  >
+                    Сбросить
+                  </button>
+                </div>
                 <button
                   type="button"
-                  class="btn btn-outline-secondary"
-                  id="range-reset"
+                  class="btn btn-outline-primary"
+                  id="report-btn"
                 >
-                  Сбросить
+                  Сформировать отчет
                 </button>
               </div>
-              <button
-                type="button"
-                class="btn btn-outline-primary"
-                id="report-btn"
+            </div>
+            <div class="table-responsive">
+              <table
+                class="table table-sm table-bordered align-middle"
+                id="records-table"
               >
-                Сформировать отчет
-              </button>
+                <thead class="table-light">
+                  <tr>
+                    <th>Дата</th>
+                    <th>План</th>
+                    <th>Факт</th>
+                    <th>Non Productive</th>
+                    <th>Not Categorized</th>
+                    <th>Productive</th>
+                    <th>Total</th>
+                    <th>Total corrected</th>
+                    <th>Notes</th>
+                    <th style="width: 40px"></th>
+                  </tr>
+                </thead>
+                <tbody id="records-body">
+                  <tr>
+                    <td colspan="10" class="text-center text-muted py-4">
+                      Данные загружаются…
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          <div class="table-responsive">
-            <table
-              class="table table-sm table-bordered align-middle"
-              id="records-table"
-            >
-              <thead class="table-light">
-                <tr>
-                  <th>Дата</th>
-                  <th>План</th>
-                  <th>Факт</th>
-                  <th>Non Productive</th>
-                  <th>Not Categorized</th>
-                  <th>Productive</th>
-                  <th>Total</th>
-                  <th>Total corrected</th>
-                  <th>Notes</th>
-                  <th style="width: 40px"></th>
-                </tr>
-              </thead>
-              <tbody id="records-body">
-                <tr>
-                  <td colspan="10" class="text-center text-muted py-4">
-                    Данные загружаются…
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
-      </div>
+      </div>    
     </div>
 
     <div class="modal fade" id="recordModal" tabindex="-1" aria-hidden="true">
@@ -349,6 +359,7 @@
         </div>
       </div>
     </div>
+    <script src="/static/js/common.js"></script>
     <script src="/static/js/user_detail.js"></script>
   </body>
 </html>

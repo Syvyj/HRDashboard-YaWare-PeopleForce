@@ -53,14 +53,14 @@ def append_rows(rows: List[List[Any]]):
 
 def get_sheet_id_by_name(service, sheet_name: str) -> Optional[int]:
     """
-    Отримати sheet ID за назвою.
+    Получить sheet ID по названию.
     
     Args:
         service: Google Sheets service
-        sheet_name: Назва аркушу
+        sheet_name: Название листа
         
     Returns:
-        Sheet ID або None якщо не знайдено
+        Sheet ID или None если не найден
     """
     try:
         meta = service.spreadsheets().get(spreadsheetId=settings.spreadsheet_id).execute()
@@ -68,37 +68,37 @@ def get_sheet_id_by_name(service, sheet_name: str) -> Optional[int]:
             if sheet["properties"]["title"] == sheet_name:
                 return sheet["properties"]["sheetId"]
     except Exception as e:
-        logger.error(f"Помилка отримання sheet ID: {e}")
+        logger.error(f"Ошибка получения sheet ID: {e}")
     return None
 
 
 def create_weekly_sheet(sheet_name: str, data_rows: List[List[Any]]) -> bool:
     """
-    Створити новий аркуш для тижня і записати дані.
+    Создать новый лист для недели и записать данные.
     
     Args:
-        sheet_name: Назва аркушу (наприклад, "Week 41 (06-10 Oct 2025)")
-        data_rows: Всі рядки з даними (включаючи заголовки)
+        sheet_name: Название листа (например, "Week 41 (06-10 Oct 2025)")
+        data_rows: Все строки с данными (включая заголовки)
         
     Returns:
-        True якщо успішно створено
+        True если успешно создано
     """
     service = _service()
     
     try:
-        # Перевіряємо чи існує аркуш
+        # Проверяем существует ли лист
         sheet_id = get_sheet_id_by_name(service, sheet_name)
         
         if sheet_id is None:
-            # Створюємо новий аркуш
-            logger.info(f"Створюємо новий аркуш '{sheet_name}'...")
+            # Создаем новый лист
+            logger.info(f"Создаем новый лист '{sheet_name}'...")
             body = {
                 "requests": [{
                     "addSheet": {
                         "properties": {
                             "title": sheet_name,
                             "gridProperties": {
-                                "rowCount": max(len(data_rows) + 50, 1100),  # З запасом
+                                "rowCount": max(len(data_rows) + 50, 1100),  # С запасом
                                 "columnCount": 13
                             }
                         }
@@ -110,19 +110,19 @@ def create_weekly_sheet(sheet_name: str, data_rows: List[List[Any]]) -> bool:
                 body=body
             ).execute()
             
-            # Отримуємо ID створеного аркушу
+            # Получаем ID созданного листа
             sheet_id = response["replies"][0]["addSheet"]["properties"]["sheetId"]
-            logger.info(f"✅ Аркуш створено, ID: {sheet_id}")
+            logger.info(f"✅ Лист создан, ID: {sheet_id}")
         else:
-            logger.info(f"Аркуш '{sheet_name}' вже існує, буде перезаписано")
-            # Очищаємо існуючий аркуш
+            logger.info(f"Лист '{sheet_name}' уже существует, будет перезаписан")
+            # Очищаем существующий лист
             service.spreadsheets().values().clear(
                 spreadsheetId=settings.spreadsheet_id,
                 range=f"'{sheet_name}'!A:Z"
             ).execute()
         
-        # Записуємо дані
-        logger.info(f"Записуємо {len(data_rows)} рядків...")
+        # Записываем данные
+        logger.info(f"Записываем {len(data_rows)} строк...")
         service.spreadsheets().values().update(
             spreadsheetId=settings.spreadsheet_id,
             range=f"'{sheet_name}'!A1",
@@ -130,23 +130,23 @@ def create_weekly_sheet(sheet_name: str, data_rows: List[List[Any]]) -> bool:
             body={"values": data_rows}
         ).execute()
         
-        logger.info(f"✅ Дані записано в '{sheet_name}'")
+        logger.info(f"✅ Данные записаны в '{sheet_name}'")
         return True
         
     except Exception as e:
-        logger.error(f"Помилка створення аркушу: {e}")
+        logger.error(f"Ошибка создания листа: {e}")
         return False
 
 
 def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[str, Any], week_days: List, peopleforce_data: Dict[str, Any] = None):
-    """Застосувати форматування до тижневого аркушу.
+    """Применить форматирование к недельному листу.
     
     Args:
-        sheet_name: Назва аркушу
-        total_rows: Загальна кількість рядків
-        week_data: Дані користувачів (dict з email як ключ)
-        week_days: Список дат тижня (для мапінгу днів)
-        peopleforce_data: Дані з PeopleForce (для фарбування днів з відпустками)
+        sheet_name: Название листа
+        total_rows: Общее количество строк
+        week_data: Данные пользователей (dict с email как ключ)
+        week_days: Список дат недели (для маппинга дней)
+        peopleforce_data: Данные из PeopleForce (для покраски дней с отпусками)
     """
     from datetime import date
     
@@ -155,21 +155,21 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
     sheet_id = get_sheet_id_by_name(service, sheet_name)
     
     if sheet_id is None:
-        logger.error(f"Аркуш '{sheet_name}' не знайдено")
+        logger.error(f"Лист '{sheet_name}' не найден")
         return
     
-    logger.info(f"🎨 Застосовуємо кольорове форматування для '{sheet_name}'...")
+    logger.info(f"🎨 Применяем цветное форматирование для '{sheet_name}'...")
     
     requests = []
     
-    # 🧹 Очищуємо всі старі кольори перед новим фарбуванням
-    # (щоб при зміні кількості користувачів не залишалося старе форматування)
+    # 🧹 Очищаем все старые цвета перед новой покраской
+    # (чтобы при изменении количества пользователей не оставалось старое форматирование)
     requests.append({
         "repeatCell": {
             "range": {
                 "sheetId": sheet_id,
-                "startRowIndex": 1,  # Починаємо з другого рядка (пропускаємо заголовки)
-                "endRowIndex": total_rows + 100,  # +100 про запас для старих даних
+                "startRowIndex": 1,  # Начинаем со второй строки (пропускаем заголовки)
+                "endRowIndex": total_rows + 100,  # +100 про запас для старых данных
                 "startColumnIndex": 0,
                 "endColumnIndex": 13
             },
@@ -188,16 +188,16 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
     COLOR_NOT_CATEGORIZED = {"red": 1.0, "green": 0.98, "blue": 0.753}  # #fffac0
     COLOR_PRODUCTIVE = {"red": 0.851, "green": 0.918, "blue": 0.827}  # #d9ead3
     COLOR_TOTAL_COLUMN = {"red": 0.788, "green": 0.855, "blue": 0.973}  # #c9daf8
-    COLOR_HEADER = {"red": 0.9, "green": 0.9, "blue": 0.9}  # Сірий для заголовка таблиці
-    COLOR_TOTAL_ROW = {"red": 0.95, "green": 0.95, "blue": 0.95}  # Світло-сірий для Total тижня
+    COLOR_HEADER = {"red": 0.9, "green": 0.9, "blue": 0.9}  # Серый для заголовка таблицы
+    COLOR_TOTAL_ROW = {"red": 0.95, "green": 0.95, "blue": 0.95}  # Светло-серый для Total недели
     
-    # Індекси колонок (0-based)
+    # Индексы колонок (0-based)
     COL_NON_PRODUCTIVE = 7  # H
     COL_NOT_CATEGORIZED = 8  # I
     COL_PRODUCTIVE = 9  # J
     COL_TOTAL = 10  # K
     
-    # 1. Заморозити перший рядок (заголовки)
+    # 1. Заморозить первую строку (заголовки)
     requests.append({
         "updateSheetProperties": {
             "properties": {
@@ -210,7 +210,7 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
         }
     })
     
-    # 2. Базове форматування заголовків таблиці (перший рядок) - жирний текст
+    # 2. Базовое форматирование заголовков таблицы (первая строка) - жирный текст
     requests.append({
         "repeatCell": {
             "range": {
@@ -231,7 +231,7 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
         }
     })
     
-    # 2.1. Кольорові заголовки (колонки з даними)
+    # 2.1. Цветные заголовки (колонки с данными)
     # Non Productive (колонка E)
     requests.append({
         "repeatCell": {
@@ -308,15 +308,15 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
         }
     })
     
-    # 3. Форматування блоків користувачів
-    # Структура блоку: заголовок + 5 днів + Week total + розділювач = 8 рядків
-    current_row = 1  # Починаємо після заголовків
+    # 3. Форматирование блоков пользователей
+    # Структура блока: заголовок + 5 дней + Week total + разделитель = 8 строк
+    current_row = 1  # Начинаем после заголовков
     
     for i in range(min(users_count, (total_rows - 1) // 8)):
         if current_row >= total_rows - 1:
             break
         
-        # 3.1. Рядок з ім'ям користувача (весь рядок) - бежевий фон + жирний текст
+        # 3.1. Строка с именем пользователя (вся строка) - бежевый фон + жирный текст
         requests.append({
             "repeatCell": {
                 "range": {
@@ -336,12 +336,12 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
             }
         })
         
-        # 3.2. Рядки з днями (5 рядків)
+        # 3.2. Строки с днями (5 строк)
         days_start = current_row + 1
         days_end = min(current_row + 6, total_rows)
         
-        # Project/Department/Team: службові рядки (Location, Week total)
-        # 1. Location (перший рядок днів) — белый текст
+        # Project/Department/Team: служебные строки (Location, Week total)
+        # 1. Location (первая строка дней) — белый текст
         for row in range(days_start, days_end):
             requests.append({
                 "repeatCell": {
@@ -362,7 +362,7 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
                     "fields": "userEnteredFormat.textFormat.foregroundColor"
                 }
             })
-        # 2. Week total (7-й рядок блоку) — серый текст
+        # 2. Week total (7-я строка блока) — серый текст
         total_row = current_row + 6
         if total_row < total_rows:
             requests.append({
@@ -385,7 +385,7 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
                 }
             })
         
-        # Non Productive (колонка E) - червоний
+        # Non Productive (колонка E) - красный
         requests.append({
             "repeatCell": {
                 "range": {
@@ -404,7 +404,7 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
             }
         })
         
-        # Not Categorized (колонка F) - жовтий
+        # Not Categorized (колонка F) - желтый
         requests.append({
             "repeatCell": {
                 "range": {
@@ -423,7 +423,7 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
             }
         })
         
-        # Productive (колонка G) - зелений
+        # Productive (колонка G) - зеленый
         requests.append({
             "repeatCell": {
                 "range": {
@@ -442,7 +442,7 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
             }
         })
         
-        # Total колонка (H) - синій
+        # Total колонка (H) - синий
         requests.append({
             "repeatCell": {
                 "range": {
@@ -461,7 +461,7 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
             }
         })
         
-        # 3.3. Рядок Total тижня (7-й рядок блоку: current_row+6) - сірий фон + жирний текст
+        # 3.3. Строка Total недели (7-я строка блока: current_row+6) - серый фон + жирный текст
         total_row = current_row + 6
         if total_row < total_rows:
             requests.append({
@@ -483,9 +483,9 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
                 }
             })
         
-        current_row += 8  # Переходимо до наступного блоку (ім'я + 5 днів + Total + розділювач)
+        current_row += 8  # Переходим к следующему блоку (имя + 5 дней + Total + разделитель)
     
-    # 4. Фарбування днів з відпустками/лікарняними
+    # 4. Покраска дней с отпусками/больничными
     if peopleforce_data:
         leaves_by_email = peopleforce_data.get("leaves", {})
         sorted_users = sorted(week_data.values(), key=lambda x: x["full_name"])
@@ -534,8 +534,8 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
                     })
             current_row += 8
     
-    # 5. Вирівнювання по центру для всіх колонок з даними (Plan Start, Data, Fact Start, Non Productive, Not Categorized, Productive, Total)
-    # Колонки B, C, D, E, F, G, H (індекси 1-7)
+    # 5. Выравнивание по центру для всех колонок с данными (Plan Start, Data, Fact Start, Non Productive, Not Categorized, Productive, Total)
+    # Колонки B, C, D, E, F, G, H (индексы 1-7)
     requests.append({
         "repeatCell": {
             "range": {
@@ -555,8 +555,8 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
         }
     })
     
-    # 6. Форматування колонок (час/дата)
-    # E (Plan Start) - час HH:MM
+    # 6. Форматирование колонок (время/дата)
+    # E (Plan Start) - время HH:MM
     requests.append({
         "repeatCell": {
             "range": {
@@ -598,7 +598,7 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
             "fields": "userEnteredFormat.numberFormat"
         }
     })
-    # G-K (Fact Start, Non Productive, Not Categorized, Prodactive, Total) - час
+    # G-K (Fact Start, Non Productive, Not Categorized, Prodactive, Total) - время
     requests.append({
         "repeatCell": {
             "range": {
@@ -633,12 +633,12 @@ def apply_weekly_formatting(sheet_name: str, total_rows: int, week_data: Dict[st
             }
         })
     
-    # Виконуємо всі запити
+    # Выполняем все запросы
     try:
         service.spreadsheets().batchUpdate(
             spreadsheetId=settings.spreadsheet_id,
             body={"requests": requests}
         ).execute()
-        logger.info(f"✅ Кольорове форматування застосовано")
+        logger.info(f"✅ Цветное форматирование применено")
     except Exception as e:
-        logger.error(f"Помилка застосування форматування: {e}")
+        logger.error(f"Ошибка применения форматирования: {e}")

@@ -277,10 +277,10 @@
       parts.push(`без PeopleForce: ${counts.local_missing_peopleforce}`);
     }
     if (counts.yaware_only) {
-      parts.push(`только у YaWare: ${counts.yaware_only}`);
+      parts.push(`только в YaWare: ${counts.yaware_only}`);
     }
     if (counts.peopleforce_only) {
-      parts.push(`только у PeopleForce: ${counts.peopleforce_only}`);
+      parts.push(`только в PeopleForce: ${counts.peopleforce_only}`);
     }
     if (!parts.length && data.generated_at) {
       parts.push(`Обновлено ${new Date(data.generated_at).toLocaleString()}`);

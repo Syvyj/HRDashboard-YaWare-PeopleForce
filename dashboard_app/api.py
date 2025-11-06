@@ -1835,6 +1835,16 @@ def admin_update_app_user(user_id: int):
     user = User.query.get_or_404(user_id)
     payload = request.get_json(silent=True) or {}
 
+    email = payload.get('email')
+    if isinstance(email, str) and email.strip():
+        new_email = email.strip().lower()
+        # Check if email is being changed and if new email already exists
+        if new_email != user.email:
+            existing = User.query.filter(db.func.lower(User.email) == new_email).first()
+            if existing:
+                return jsonify({'error': 'Email уже используется'}), 400
+            user.email = new_email
+
     name = payload.get('name')
     if isinstance(name, str) and name.strip():
         user.name = name.strip()
@@ -1856,6 +1866,7 @@ def admin_update_app_user(user_id: int):
 
     _log_admin_action('update_app_user', {
         'user_id': user.id,
+        'email': user.email,
         'is_admin': user.is_admin,
         'is_control_manager': user.is_control_manager,
         'manager_filter': user.manager_filter,

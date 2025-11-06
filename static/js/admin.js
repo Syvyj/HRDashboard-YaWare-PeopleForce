@@ -1072,6 +1072,7 @@
       }
       const data = JSON.parse(button.dataset.user);
       document.getElementById('app-user-edit-id').value = data.id;
+      document.getElementById('app-user-edit-email').value = data.email || '';
       document.getElementById('app-user-edit-name').value = data.name || '';
       document.getElementById('app-user-edit-managers').value = data.manager_filter || '';
       document.getElementById('app-user-edit-password').value = '';
@@ -1085,6 +1086,7 @@
     appUserEditForm.addEventListener('submit', (event) => {
       event.preventDefault();
       const userId = document.getElementById('app-user-edit-id').value;
+      const email = document.getElementById('app-user-edit-email').value.trim();
       const name = document.getElementById('app-user-edit-name').value.trim();
       const managerFilter = document.getElementById('app-user-edit-managers').value.trim();
       const password = document.getElementById('app-user-edit-password').value;
@@ -1092,6 +1094,7 @@
       const isControlManager = document.getElementById('app-user-edit-control-manager').checked;
 
       const payload = {
+        email,
         name,
         manager_filter: managerFilter,
         is_admin: isAdmin,
@@ -1120,6 +1123,22 @@
           fetchAppUsers();
         })
         .catch((error) => showAlert(error.message));
+    });
+  }
+
+  // Toggle password visibility
+  const togglePasswordBtn = document.getElementById('app-user-edit-toggle-password');
+  if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener('click', () => {
+      const passwordInput = document.getElementById('app-user-edit-password');
+      const icon = togglePasswordBtn.querySelector('i');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+      } else {
+        passwordInput.type = 'password';
+        icon.className = 'bi bi-eye';
+      }
     });
   }
 

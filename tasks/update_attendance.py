@@ -162,6 +162,13 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         if schedule and schedule_start_yaware:
             schedule.start_time = scheduled_start
 
+        actual_minutes = time_to_minutes(actual_start)
+        scheduled_minutes = time_to_minutes(scheduled_start)
+        if actual_minutes is not None and scheduled_minutes is not None:
+            if actual_minutes < max(0, scheduled_minutes - 60):
+                actual_start = ''
+                actual_minutes = None
+
         minutes_late = minutes_to_diff(actual_start, scheduled_start) if scheduled_start else 0
 
         non_productive = seconds_to_minutes(entry.get('distracting'))

@@ -10,11 +10,11 @@ from tracker_alert.client.yaware_v2_api import client as yaware_client
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Оновити attendance дані в базі дашборду')
-    parser.add_argument('--date', help='Дата у форматі YYYY-MM-DD. За замовчуванням вчора.')
-    parser.add_argument('--start-date', help='Початкова дата для діапазону (YYYY-MM-DD)')
-    parser.add_argument('--end-date', help='Кінцева дата для діапазону (YYYY-MM-DD)')
-    parser.add_argument('--skip-absent', action='store_true', help='Не зберігати запис про відсутніх.')
+    parser = argparse.ArgumentParser(description='Обновить attendance данные в базе дашборда')
+    parser.add_argument('--date', help='Дата в формате YYYY-MM-DD. По умолчанию вчера.')
+    parser.add_argument('--start-date', help='Начальная дата для диапазона (YYYY-MM-DD)')
+    parser.add_argument('--end-date', help='Конечная дата для диапазона (YYYY-MM-DD)')
+    parser.add_argument('--skip-absent', action='store_true', help='Не сохранять запись о отсутствующих.')
     return parser.parse_args()
 
 
@@ -89,7 +89,7 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
     try:
         summary = yaware_client.get_summary_by_day(target_date.isoformat()) or []
     except Exception as e:
-        print(f"[WARN] Не вдалося отримати дані YaWare за {target_date}: {e}")
+        print(f"[WARN] Не удалось получить данные YaWare за {target_date}: {e}")
         summary = []
 
     existing_records = AttendanceRecord.query.filter_by(record_date=target_date).all()
@@ -165,7 +165,7 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         actual_minutes = time_to_minutes(actual_start)
         scheduled_minutes = time_to_minutes(scheduled_start)
         if actual_minutes is not None and scheduled_minutes is not None:
-            if actual_minutes < max(0, scheduled_minutes - 60):
+            if actual_minutes < max(0, scheduled_minutes - 180):
                 actual_start = ''
                 actual_minutes = None
 
@@ -284,7 +284,7 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         db.session.add(record)
 
     db.session.commit()
-    print(f"[INFO] Збережено дані за {target_date}")
+    print(f"[INFO] Сохранено за {target_date}")
 
 
 def main():

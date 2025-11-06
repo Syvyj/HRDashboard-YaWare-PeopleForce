@@ -2084,7 +2084,10 @@ def _record_belongs_to_user(record: AttendanceRecord, user_key: str) -> bool:
 @api_bp.route('/users/<path:user_key>/records/<int:record_id>', methods=['PATCH'])
 @login_required
 def api_update_user_record(user_key: str, record_id: int):
-    if not getattr(current_user, 'is_admin', False):
+    is_admin = getattr(current_user, 'is_admin', False)
+    is_control_manager = getattr(current_user, 'is_control_manager', False)
+    
+    if not (is_admin or is_control_manager):
         return jsonify({'error': 'Forbidden'}), 403
 
     record = AttendanceRecord.query.get_or_404(record_id)

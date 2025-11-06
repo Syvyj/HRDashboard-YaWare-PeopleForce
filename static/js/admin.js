@@ -755,10 +755,21 @@
        items.forEach((user) => {
          const row = document.createElement('tr');
          row.dataset.userId = user.id;
+         
+         // Determine role badge
+         let roleBadge = '';
+         if (user.is_admin) {
+           roleBadge = '<span class="badge bg-primary">Admin</span>';
+         } else if (user.is_control_manager) {
+           roleBadge = '<span class="badge bg-info">C.M.</span>';
+         } else {
+           roleBadge = '<span class="badge bg-secondary">Manager</span>';
+         }
+         
           row.innerHTML = `
             <td>${user.email}</td>
             <td>${user.name}</td>
-            <td>${user.is_admin ? '<span class="badge bg-primary">Admin</span>' : '<span class="badge bg-secondary">Manager</span>'}</td>
+            <td>${roleBadge}</td>
             <td>${user.manager_filter || '—'}</td>
             <td class="text-center"></td>
           `;

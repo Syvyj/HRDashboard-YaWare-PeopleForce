@@ -39,6 +39,11 @@ class User(db.Model, UserMixin):
                 managers.append(int(value))
             except ValueError:
                 continue
+        
+        # Control manager with ID=3 sees everyone
+        if self.is_control_manager and managers == [3]:
+            return None
+        
         return managers or None
 
 

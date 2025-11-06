@@ -41,6 +41,7 @@
   const statusOptionsCache = new Map();
   const userRecordsMap = new Map();
   const isAdmin = document.body.dataset.isAdmin === '1';
+  const canEdit = document.body.dataset.canEdit === '1';
 
   function ensureDefaultWeekRange() {
     if (dateFromInput.value && dateToInput.value) {
@@ -466,7 +467,7 @@
         totalRow.appendChild(createCell(item.week_total.corrected_total_display || ''));
         const notesCell = document.createElement('td');
         notesCell.className = 'notes-cell';
-        if (isAdmin) {
+        if (canEdit) {
           const editBtn = document.createElement('button');
           editBtn.type = 'button';
           editBtn.className = 'btn btn-link p-0 week-edit-btn';
@@ -559,7 +560,7 @@
     });
   }
 
-  if (isAdmin) {
+  if (canEdit) {
     container.addEventListener('click', (event) => {
       const btn = event.target.closest('[data-week-edit]');
       if (!btn) {

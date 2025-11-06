@@ -879,6 +879,7 @@ def _serialize_app_user(user: User) -> dict:
         'email': user.email,
         'name': user.name,
         'is_admin': user.is_admin,
+        'is_control_manager': user.is_control_manager,
         'manager_filter': user.manager_filter or '',
         'created_at': user.created_at.isoformat() if user.created_at else None,
     }
@@ -1768,7 +1769,7 @@ def admin_delete_employee(user_key: str):
 def admin_app_users():
     _ensure_admin()
     users = User.query.order_by(User.created_at.asc()).all()
-    visible = [user for user in users if user.is_admin or not _is_synced_employee(user)]
+    visible = [user for user in users if user.is_admin or user.is_control_manager or not _is_synced_employee(user)]
     return jsonify({'items': [_serialize_app_user(user) for user in visible]})
 
 
@@ -1782,6 +1783,7 @@ def admin_create_app_user():
     password = payload.get('password')
     manager_filter = (payload.get('manager_filter') or '').strip()
     is_admin = bool(payload.get('is_admin'))
+    is_control_manager = bool(payload.get('is_control_manager'))
 
     if not email or not name:
         return jsonify({'error': 'email and name are required'}), 400
@@ -1791,6 +1793,7 @@ def admin_create_app_user():
         existing_user.name = name
         existing_user.manager_filter = manager_filter
         existing_user.is_admin = is_admin
+        existing_user.is_control_manager = is_control_manager
         if password:
             existing_user.set_password(password)
             _password_matches_default.cache_clear()
@@ -1798,6 +1801,7 @@ def admin_create_app_user():
             'user_id': existing_user.id,
             'email': email,
             'is_admin': is_admin,
+            'is_control_manager': is_control_manager,
             'manager_filter': manager_filter,
             'created_via': 'create_endpoint',
             'password_updated': bool(password),
@@ -1808,7 +1812,7 @@ def admin_create_app_user():
     if not password:
         return jsonify({'error': 'password is required for new users'}), 400
 
-    user = User(email=email, name=name, manager_filter=manager_filter, is_admin=is_admin)
+    user = User(email=email, name=name, manager_filter=manager_filter, is_admin=is_admin, is_control_manager=is_control_manager)
     user.set_password(password)
     _password_matches_default.cache_clear()
     db.session.add(user)
@@ -1816,6 +1820,7 @@ def admin_create_app_user():
         'email': email,
         'name': name,
         'is_admin': is_admin,
+        'is_control_manager': is_control_manager,
         'manager_filter': manager_filter,
     })
     db.session.commit()
@@ -1840,6 +1845,9 @@ def admin_update_app_user(user_id: int):
     if 'is_admin' in payload:
         user.is_admin = bool(payload.get('is_admin'))
 
+    if 'is_control_manager' in payload:
+        user.is_control_manager = bool(payload.get('is_control_manager'))
+
     if 'password' in payload:
         password = payload.get('password')
         if isinstance(password, str) and password.strip():
@@ -1849,6 +1857,7 @@ def admin_update_app_user(user_id: int):
     _log_admin_action('update_app_user', {
         'user_id': user.id,
         'is_admin': user.is_admin,
+        'is_control_manager': user.is_control_manager,
         'manager_filter': user.manager_filter,
         'name': user.name,
     })

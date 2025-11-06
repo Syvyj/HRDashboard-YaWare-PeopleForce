@@ -1022,6 +1022,7 @@
       const password = document.getElementById('app-user-password').value;
       const managerFilter = document.getElementById('app-user-managers').value.trim();
       const isAdmin = document.getElementById('app-user-admin').checked;
+      const isControlManager = document.getElementById('app-user-control-manager').checked;
 
       const payload = {
         email,
@@ -1029,6 +1030,7 @@
         password,
         manager_filter: managerFilter,
         is_admin: isAdmin,
+        is_control_manager: isControlManager,
       };
 
       fetch('/api/admin/app-users', {
@@ -1063,6 +1065,7 @@
       document.getElementById('app-user-edit-managers').value = data.manager_filter || '';
       document.getElementById('app-user-edit-password').value = '';
       document.getElementById('app-user-edit-admin').checked = Boolean(data.is_admin);
+      document.getElementById('app-user-edit-control-manager').checked = Boolean(data.is_control_manager);
       appUserModal.show();
     });
   }
@@ -1075,11 +1078,13 @@
       const managerFilter = document.getElementById('app-user-edit-managers').value.trim();
       const password = document.getElementById('app-user-edit-password').value;
       const isAdmin = document.getElementById('app-user-edit-admin').checked;
+      const isControlManager = document.getElementById('app-user-edit-control-manager').checked;
 
       const payload = {
         name,
         manager_filter: managerFilter,
         is_admin: isAdmin,
+        is_control_manager: isControlManager,
       };
       if (password) {
         payload.password = password;

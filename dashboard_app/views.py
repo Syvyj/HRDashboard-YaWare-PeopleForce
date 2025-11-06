@@ -14,10 +14,12 @@ def dashboard():
     today = date.today()
     yesterday = today - timedelta(days=1)
     now = datetime.now()
+    can_edit = getattr(current_user, 'is_admin', False) or getattr(current_user, 'is_control_manager', False)
     return render_template(
         'dashboard.html',
         user_name=current_user.name,
         is_admin=getattr(current_user, 'is_admin', False),
+        can_edit=can_edit,
         stats_date=yesterday.strftime('%d.%m.%Y'),
         current_time=now.strftime('%H:%M'),
         current_date=now.strftime('%d.%m.%Y')

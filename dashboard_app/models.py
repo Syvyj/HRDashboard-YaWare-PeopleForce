@@ -17,6 +17,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(255), nullable=False)
     manager_filter = db.Column(db.String(255), nullable=True)  # e.g. "1,2"
     is_admin = db.Column(db.Boolean, default=False)
+    is_control_manager = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password: str) -> None:

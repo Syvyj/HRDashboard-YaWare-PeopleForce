@@ -2047,9 +2047,13 @@ def api_user_detail(user_key: str):
     lateness = _build_week_lateness(records)
     status_options = sorted({record.status for record in records if record.status})
 
+    is_admin = bool(getattr(current_user, 'is_admin', False))
+    is_control_manager = bool(getattr(current_user, 'is_control_manager', False))
+    can_edit = is_admin or is_control_manager
+
     permissions = {
-        'can_edit': bool(getattr(current_user, 'is_admin', False)),
-        'can_change_manager': bool(getattr(current_user, 'is_admin', False)),
+        'can_edit': can_edit,
+        'can_change_manager': is_admin,
     }
 
     return jsonify({

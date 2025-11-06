@@ -78,9 +78,7 @@ class AttendanceMonitor:
             data = json.load(f)
         
         for name, user_data in data.get('users', {}).items():
-            # Пропускаємо без графіку
-            if 'start_time' not in user_data:
-                continue
+            start_time = user_data.get('start_time') or ''
             
             control_manager = user_data.get('control_manager')
             if control_manager is not None:
@@ -93,7 +91,7 @@ class AttendanceMonitor:
                 name=name,
                 email=user_data.get('email', ''),
                 user_id=str(user_data['user_id']),
-                start_time=user_data['start_time'],
+                start_time=start_time,
                 location=_normalize_location(user_data.get('location', '')),
                 project=user_data.get('project', '') or "",
                 department=user_data.get('department', '') or "",

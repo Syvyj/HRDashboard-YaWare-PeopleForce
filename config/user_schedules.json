@@ -7,7 +7,7 @@
     "without_schedule": 36,
     "unique_users": 181,
     "total_rows_processed": 181,
-    "last_updated": "2025-11-05T13:14:15.200839",
+    "last_updated": "2025-11-06T11:28:33.979759",
     "yaware_groups_added": "2025-10-17T15:44:44.809277",
     "control_data_added": "2025-10-17T15:57:34.592749",
     "control_users_matched": 59,
@@ -1827,8 +1827,11 @@
       "user_id": "7935176",
       "project": "Ad Network",
       "peopleforce_id": "568445",
-      "location": "Remote",
-      "department": "RTB Team"
+      "department": "RTB",
+      "_manual_overrides": {
+        "department": true
+      },
+      "control_manager": 2
     },
     "Arseni Tatsyn": {
       "email": "a.tatsyn@evadav.com",

@@ -7,7 +7,7 @@
     "without_schedule": 36,
     "unique_users": 181,
     "total_rows_processed": 181,
-    "last_updated": "2025-11-05T13:14:15.200839",
+    "last_updated": "2025-11-07T11:37:04.895033",
     "yaware_groups_added": "2025-10-17T15:44:44.809277",
     "control_data_added": "2025-10-17T15:57:34.592749",
     "control_users_matched": 59,
@@ -468,13 +468,16 @@
     "Kazmirchuk Roman": {
       "start_time": "09:00",
       "location": "Remote",
-      "user_id": 7922500,
+      "user_id": "7922500",
       "email": "r.kazmirchuk@evadav.com",
-      "control_manager": 1,
-      "department": "IOS Team",
+      "control_manager": 2,
+      "department": "iOS team",
       "team": "R&D team",
-      "peopleforce_id": 286600,
-      "project": "APP"
+      "peopleforce_id": "286600",
+      "project": "APP",
+      "_manual_overrides": {
+        "department": true
+      }
     },
     "Khachatrian Mariia": {
       "start_time": "10:00",
@@ -1626,11 +1629,15 @@
       "location": "Remote",
       "user_id": "7928810",
       "email": "d.kolos@evadav.com",
-      "control_manager": 1,
+      "control_manager": 2,
       "department": "Traffic Bizdev Team",
-      "team": "Bizdev team 2",
-      "peopleforce_id": 513158,
-      "project": "AD Network"
+      "team": "BizDev team 2",
+      "peopleforce_id": "513158",
+      "project": "Ad Network",
+      "_manual_overrides": {
+        "project": true,
+        "team": true
+      }
     },
     "Dankova Tetiana": {
       "start_time": "10:00",
@@ -1659,11 +1666,15 @@
       "location": "UA",
       "user_id": "7905079",
       "email": "a.dobrorodnia@evadav.com",
-      "control_manager": 1,
+      "control_manager": 2,
       "department": "Traffic Account Team",
-      "team": "Account team",
-      "peopleforce_id": 337682,
-      "project": "AD Network"
+      "team": "Account Team",
+      "peopleforce_id": "337682",
+      "project": "Ad Network",
+      "_manual_overrides": {
+        "project": true,
+        "team": true
+      }
     },
     "Kulyk Artem": {
       "start_time": "09:00",
@@ -1788,11 +1799,13 @@
       "user_id": "7682034",
       "email": "evgeniy_mod@evadav.com",
       "note": "Нічна зміна",
-      "department": "Moderation Team",
-      "peopleforce_id": 297363,
+      "department": "Moderation team",
+      "peopleforce_id": "297363",
       "project": "Ad Network",
       "control_manager": 2,
-      "location": "UA"
+      "_manual_overrides": {
+        "department": true
+      }
     },
     "Alexandr Pankov": {
       "user_id": "7912880",
@@ -1827,8 +1840,11 @@
       "user_id": "7935176",
       "project": "Ad Network",
       "peopleforce_id": "568445",
-      "location": "Remote",
-      "department": "RTB Team"
+      "department": "RTB",
+      "_manual_overrides": {
+        "department": true
+      },
+      "control_manager": 2
     },
     "Arseni Tatsyn": {
       "email": "a.tatsyn@evadav.com",
@@ -1853,6 +1869,21 @@
       "department": "Traffic Unit",
       "start_time": "09:00",
       "control_manager": 1
+    },
+    "Ustsilka Natallia": {
+      "email": "n.ustsilka@evadav.com",
+      "user_id": "7936887",
+      "peopleforce_id": "564555",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "start_time": true
+      },
+      "project": "Consulting",
+      "department": "Recruitment",
+      "start_time": "09:00"
     }
   }
 }

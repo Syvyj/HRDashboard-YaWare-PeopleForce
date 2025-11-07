@@ -55,10 +55,10 @@ def _run_prev_month_resync(app):
 
 
 def _cleanup_old_records(app):
-    cutoff = date.today().replace(day=1)
-    prev_month_start = (cutoff - timedelta(days=1)).replace(day=1)
+    # Keep records for 1 year instead of 1 month
+    cutoff = date.today() - timedelta(days=365)
     filters = [
-        AttendanceRecord.record_date < prev_month_start,
+        AttendanceRecord.record_date < cutoff,
         AttendanceRecord.manual_scheduled_start.is_(False),
         AttendanceRecord.manual_actual_start.is_(False),
         AttendanceRecord.manual_minutes_late.is_(False),
@@ -73,7 +73,7 @@ def _cleanup_old_records(app):
     ]
     deleted = AttendanceRecord.query.filter(*filters).delete(synchronize_session=False)
     db.session.commit()
-    logger.info("[scheduler] Cleanup removed %s records older than %s", deleted, prev_month_start)
+    logger.info("[scheduler] Cleanup removed %s records older than %s", deleted, cutoff)
 
 
 def _sync_peopleforce_metadata(app):
@@ -399,8 +399,9 @@ def register_tasks(app):
                       id='peopleforce_metadata_sync', replace_existing=True)
     scheduler.add_job(lambda: _with_app_context(app, _run_prev_month_resync), CronTrigger(day="1", hour=5, minute=15),
                       id='prev_month_resync', replace_existing=True)
-    scheduler.add_job(lambda: _with_app_context(app, _cleanup_old_records), CronTrigger(day="1", hour=5, minute=45),
-                      id='cleanup_old_records', replace_existing=True)
+    # Automatic cleanup disabled - keep all records indefinitely
+    # scheduler.add_job(lambda: _with_app_context(app, _cleanup_old_records), CronTrigger(day="1", hour=5, minute=45),
+    #                   id='cleanup_old_records', replace_existing=True)
     scheduler.start()
 
     _scheduler = scheduler

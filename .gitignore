@@ -9,4 +9,5 @@ gcp-sa.json
 .vscode/
 .idea/
 .dashboard.db
-.config/
+config/user_schedules.json
+config/work_schedules.json

@@ -135,10 +135,15 @@ class AttendanceMonitor:
     
     def _calculate_lateness(self, actual: str, expected: str) -> int:
         """Розрахувати запізнення в хвилинах."""
-        actual_time = datetime.strptime(actual, "%H:%M")
-        expected_time = datetime.strptime(expected, "%H:%M")
-        diff = actual_time - expected_time
-        return int(diff.total_seconds() / 60)
+        if not actual or not expected:
+            return 0
+        try:
+            actual_time = datetime.strptime(actual, "%H:%M")
+            expected_time = datetime.strptime(expected, "%H:%M")
+            diff = actual_time - expected_time
+            return int(diff.total_seconds() / 60)
+        except ValueError:
+            return 0
     
     def check_attendance(self, check_date: date) -> List[AttendanceStatus]:
         """

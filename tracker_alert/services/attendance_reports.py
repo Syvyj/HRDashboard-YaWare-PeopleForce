@@ -38,12 +38,14 @@ class AttendanceReport:
             name = user_full
             email = ""
         
+        time_start = str(yaware_record.get("time_start") or '').strip()
+        time_end = str(yaware_record.get("time_end") or '').strip()
         return {
             "name": name,
             "email": email,
             "department": yaware_record.get("group", ""),
-            "time_start": yaware_record.get("time_start", ""),
-            "time_end": yaware_record.get("time_end", ""),
+            "time_start": time_start,
+            "time_end": time_end,
             "total_seconds": int(yaware_record.get("total", 0)),
             "productive_seconds": int(yaware_record.get("productive", 0)),
             "distracting_seconds": int(yaware_record.get("distracting", 0)),
@@ -63,7 +65,9 @@ class AttendanceReport:
     
     def _get_leave_status(self, email: str, date: str) -> Optional[Dict[str, Any]]:
         """Перевірити чи користувач у відпустці."""
-        leave = self.pf_client.get_employee_leave_on_date(email, date)
+        from datetime import datetime
+        date_obj = datetime.fromisoformat(date).date() if isinstance(date, str) else date
+        leave = self.pf_client.get_employee_leave_on_date(email, date_obj)
         return leave
     
     def _format_time(self, seconds: int) -> str:
@@ -157,10 +161,11 @@ class AttendanceReport:
             }
             
             # Перевіряємо запізнення (якщо не у відпустці і є час початку)
-            if not user_info["on_leave"] and user_data["time_start"] and user_data["time_start"] != "—":
+            actual_start = (user_data["time_start"] or "").strip()
+            if not user_info["on_leave"] and actual_start and actual_start != "—":
                 if schedule.get("start_time"):
                     is_late, minutes_late = schedule_manager.is_late(
-                        user_data["time_start"],
+                        actual_start,
                         email,
                         location,
                         user_data["department"]
@@ -173,10 +178,11 @@ class AttendanceReport:
                         report["summary"]["users_late"] += 1
             
             # Перевіряємо раннє завершення
-            if not user_info["on_leave"] and user_data["time_end"] and user_data["time_end"] != "—":
+            actual_end = (user_data["time_end"] or "").strip()
+            if not user_info["on_leave"] and actual_end and actual_end != "—":
                 if schedule.get("end_time"):
                     left_early, minutes_early = schedule_manager.left_early(
-                        user_data["time_end"],
+                        actual_end,
                         email,
                         location,
                         user_data["department"]

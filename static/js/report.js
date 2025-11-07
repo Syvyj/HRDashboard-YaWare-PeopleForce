@@ -397,8 +397,20 @@
       const userKeyRaw = schedule.email || item.user_id || item.user_name;
       userRecordsMap.set(userKeyRaw, { rows: item.rows || [], name: item.user_name });
       const userKey = encodeURIComponent(userKeyRaw);
+      
+      // Build logo links HTML
+      let logoLinksHtml = '';
+      if (item.user_id) {
+        logoLinksHtml += `<a href="https://app.yaware.com/reports/by-user/index/user/${item.user_id}" target="_blank" rel="noopener noreferrer" class="no-print" title="YaWare Profile"><img src="/static/logo/yaware_logo.png" alt="YaWare" style="height: 40px; "></a>`;
+      }
+      if (schedule.peopleforce_id) {
+        logoLinksHtml += `<a href="https://evrius.peopleforce.io/employees/${schedule.peopleforce_id}" target="_blank" rel="noopener noreferrer" class="no-print" title="PeopleForce Profile"><img src="/static/logo/pf_logo.webp" alt="PeopleForce" style="height: 40px;"></a>`;
+      }
+      
       metaPanel.innerHTML = `
-        <div class="meta-name"><a href="/users/${userKey}">${escapeHtml(item.user_name)}</a></div>
+        <div class="meta-name">
+          <a href="/users/${userKey}">${escapeHtml(item.user_name)}</a>
+        </div>
         <div class="meta-links">${metaLinksHtml}</div>
         <div>
           <div class="meta-loc-block">
@@ -410,6 +422,7 @@
             <div class="meta-location">${location || '--'}</div>
           </div>
         </div>
+        ${logoLinksHtml ? `<span class="ms-2">${logoLinksHtml}</span>` : ''}
       `;
       card.appendChild(metaPanel);
 

@@ -436,3 +436,15 @@
     transform: translateX(100%);
   }
 }
+
+/* Hide elements when printing */
+@media print {
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  a[href]:after {
+    content: none !important;
+  }
+}

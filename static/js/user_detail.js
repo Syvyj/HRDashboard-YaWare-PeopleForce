@@ -94,10 +94,20 @@
       profilePlanStartEl.textContent = data.plan_start || '—';
     }
     if (profilePeopleforceEl) {
-      profilePeopleforceEl.textContent = schedule?.peopleforce_id || '—';
+      const pfId = schedule?.peopleforce_id;
+      if (pfId) {
+        profilePeopleforceEl.innerHTML = `<a href="https://evrius.peopleforce.io/employees/${pfId}" target="_blank" rel="noopener noreferrer" class="no-print">${pfId}</a>`;
+      } else {
+        profilePeopleforceEl.textContent = '—';
+      }
     }
     if (profileYawareEl) {
-      profileYawareEl.textContent = data.user_id || '—';
+      const yawareId = data.user_id;
+      if (yawareId) {
+        profileYawareEl.innerHTML = `<a href="https://app.yaware.com/reports/by-user/index/user/${yawareId}" target="_blank" rel="noopener noreferrer" class="no-print">${yawareId}</a>`;
+      } else {
+        profileYawareEl.textContent = '—';
+      }
     }
     if (profileManagerValue) {
       profileManagerValue.textContent = (data.control_manager ?? '') === '' ? '—' : `#${data.control_manager}`;

@@ -1055,6 +1055,7 @@ def _build_items(records):
         location_display = _normalize_location_label(first.location)
         items.append({
             'user_name': first.user_name,
+            'user_id': first.user_id,
             'project': first_project,
             'department': first_department,
             'team': first_team,

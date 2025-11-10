@@ -55,7 +55,6 @@ class AttendanceRecord(db.Model):
     user_id = db.Column(db.String(64), nullable=False, index=True)
     user_name = db.Column(db.String(255), nullable=False)
     user_email = db.Column(db.String(255), nullable=True, index=True)
-    telegram_username = db.Column(db.String(255), nullable=True)
     project = db.Column(db.String(255), nullable=True)
     department = db.Column(db.String(255), nullable=True)
     team = db.Column(db.String(255), nullable=True)
@@ -96,7 +95,6 @@ class AttendanceRecord(db.Model):
             'user_id': self.user_id,
             'user_name': self.user_name,
             'user_email': self.user_email,
-            'telegram_username': self.telegram_username,
             'project': self.project,
             'department': self.department,
             'team': self.team,
@@ -145,7 +143,6 @@ def ensure_schema() -> None:
     """Ensure optional columns exist in database."""
     engine = db.engine
     manual_columns = {
-        'telegram_username': 'TEXT',
         'corrected_total_minutes': 'INTEGER',
         'manual_scheduled_start': 'INTEGER DEFAULT 0',
         'manual_actual_start': 'INTEGER DEFAULT 0',

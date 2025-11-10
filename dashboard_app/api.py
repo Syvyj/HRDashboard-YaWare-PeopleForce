@@ -2025,6 +2025,7 @@ def _serialize_profile(schedule: dict | None, record: AttendanceRecord | None) -
             'plan_start': schedule.get('start_time') or profile['plan_start'],
             'control_manager': schedule.get('control_manager') if schedule.get('control_manager') not in ('', None) else profile['control_manager'],
             'peopleforce_id': schedule.get('peopleforce_id') or profile['peopleforce_id'],
+            'telegram_username': schedule.get('telegram_username') or profile['telegram_username'],
         })
 
     if record:
@@ -2038,7 +2039,6 @@ def _serialize_profile(schedule: dict | None, record: AttendanceRecord | None) -
             'location': record.location or profile['location'],
             'plan_start': record.scheduled_start or profile['plan_start'],
             'control_manager': record.control_manager if record.control_manager is not None else profile['control_manager'],
-            'telegram_username': record.telegram_username or profile['telegram_username'],
         })
 
     # Автогенерація telegram username якщо не задано
@@ -2257,18 +2257,36 @@ def api_update_user_telegram(user_key: str):
     payload = request.get_json(silent=True) or {}
     telegram_username = payload.get('telegram_username', '').strip()
 
-    base_query = _apply_filters(AttendanceRecord.query)
-    query, _ = _apply_user_key_filter(base_query, user_key)
-    records = query.all()
-    if not records:
-        return jsonify({'error': 'User not found or no access'}), 404
-
-    for record in records:
-        record.telegram_username = telegram_username if telegram_username else None
-
-    db.session.commit()
-
-    return jsonify({'telegram_username': telegram_username})
+    # Знаходимо користувача в schedule
+    schedule = _load_user_schedule_variants(user_key, [])
+    if not schedule:
+        return jsonify({'error': 'User not found'}), 404
+    
+    user_name = schedule.get('name')
+    if not user_name:
+        return jsonify({'error': 'User name not found'}), 404
+    
+    # Оновлюємо telegram_username в user_schedules.json
+    try:
+        from dashboard_app.user_data import load_user_schedules
+        from tracker_alert.services.user_manager import save_users
+        
+        data = load_user_schedules()
+        if user_name not in data.get('users', {}):
+            return jsonify({'error': 'User not found in schedules'}), 404
+        
+        data['users'][user_name]['telegram_username'] = telegram_username if telegram_username else None
+        
+        # Зберігаємо
+        if save_users(data):
+            # Очищаємо кеш
+            clear_user_schedule_cache()
+            return jsonify({'telegram_username': telegram_username})
+        else:
+            return jsonify({'error': 'Failed to save'}), 500
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @api_bp.route('/attendance/<int:record_id>/notes', methods=['PATCH'])

@@ -4,6 +4,14 @@
     return;
   }
 
+  // Функція генерації telegram username з імені
+  function generateTelegramUsername(fullName) {
+    if (!fullName) return '';
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length < 2) return parts[0] || '';
+    return `${parts[0]}_${parts[1]}`;
+  }
+
   const form = document.getElementById('filters-form');
   const searchBtn = document.getElementById('search-btn');
   const reportBtn = document.getElementById('report-generate-btn');
@@ -406,6 +414,11 @@
       if (schedule.peopleforce_id) {
         logoLinksHtml += `<a href="https://evrius.peopleforce.io/employees/${schedule.peopleforce_id}" target="_blank" rel="noopener noreferrer" class="no-print" title="PeopleForce Profile"><img src="/static/logo/pf_logo.webp" alt="PeopleForce" style="height: 40px;"></a>`;
       }
+      // Telegram username з можливістю автогенерації
+      const telegramUsername = schedule.telegram_username || generateTelegramUsername(item.user_name);
+      if (telegramUsername) {
+        logoLinksHtml += `<a href="https://t.me/${telegramUsername}" target="_blank" rel="noopener noreferrer" class="no-print" title="Telegram"><img src="/static/logo/tg_logo.png" alt="Telegram" style="height: 40px;"></a>`;
+      }
       
       metaPanel.innerHTML = `
         <div class="meta-name">
@@ -499,7 +512,6 @@
   }
 
   async function loadData() {
-    ensureDefaultWeekRange();
     const params = buildParams();
     try {
       const response = await fetch(`/api/attendance?${params.toString()}`);
@@ -611,7 +623,7 @@
     loadData();
   });
 
-  ensureDefaultWeekRange();
+  // Не підставляємо дати за замовчуванням - backend покаже останні 5 робочих днів
   loadData();
 
   async function submitRecordEdit(event) {

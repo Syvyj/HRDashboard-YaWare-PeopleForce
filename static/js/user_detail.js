@@ -5,6 +5,14 @@
     return;
   }
 
+  // Функція генерації telegram username з імені
+  function generateTelegramUsername(fullName) {
+    if (!fullName) return '';
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length < 2) return parts[0] || '';
+    return `${parts[0]}_${parts[1]}`;
+  }
+
   const alertContainer = document.getElementById('alert-container');
   const profileNameEl = document.getElementById('profile-name');
   const profileMetaEl = document.getElementById('profile-meta');
@@ -15,6 +23,7 @@
   const profileManagerValue = document.getElementById('profile-manager-value');
   const profilePeopleforceEl = document.getElementById('profile-peopleforce');
   const profileYawareEl = document.getElementById('profile-yaware');
+  const profileTelegramEl = document.getElementById('profile-telegram');
   const managerEditBtn = document.getElementById('manager-edit-btn');
   const recordsBody = document.getElementById('records-body');
   const recordsCountEl = document.getElementById('records-count');
@@ -24,6 +33,8 @@
   const managerModalEl = document.getElementById('managerModal');
   const managerModalForm = document.getElementById('manager-modal-form');
   const managerModalSelect = document.getElementById('manager-modal-select');
+  const telegramModalInput = document.getElementById('telegram-modal-input');
+  const telegramEditGroup = document.getElementById('telegram-edit-group');
   const dateFromInput = document.getElementById('range-date-from');
   const dateToInput = document.getElementById('range-date-to');
   const rangeApplyBtn = document.getElementById('range-apply');
@@ -111,6 +122,14 @@
     }
     if (profileManagerValue) {
       profileManagerValue.textContent = (data.control_manager ?? '') === '' ? '—' : `#${data.control_manager}`;
+    }
+    if (profileTelegramEl) {
+      const telegramUsername = data.telegram_username || generateTelegramUsername(data.name);
+      if (telegramUsername) {
+        profileTelegramEl.innerHTML = `<a href="https://t.me/${telegramUsername}" target="_blank" rel="noopener noreferrer"> @${telegramUsername}</a>`;
+      } else {
+        profileTelegramEl.textContent = '—';
+      }
     }
   }
 
@@ -360,6 +379,17 @@
       managerModalSelect.appendChild(option);
     });
     managerModalSelect.value = managerCurrentValue;
+    
+    // Показуємо поле Telegram тільки для адмінів
+    const isAdmin = document.body.dataset.isAdmin === '1';
+    if (isAdmin && telegramEditGroup && telegramModalInput) {
+      telegramEditGroup.classList.remove('d-none');
+      const currentTelegram = currentProfile.telegram_username || generateTelegramUsername(currentProfile.name);
+      telegramModalInput.value = currentTelegram || '';
+    } else if (telegramEditGroup) {
+      telegramEditGroup.classList.add('d-none');
+    }
+    
     managerModal.show();
   }
 
@@ -369,7 +399,10 @@
       return;
     }
     const value = managerModalSelect.value;
+    const isAdmin = document.body.dataset.isAdmin === '1';
+    
     try {
+      // Оновлюємо control manager
       const response = await fetch(`/api/users/${encodeURIComponent(userKey)}/manager`, {
         method: 'PATCH',
         headers: {
@@ -381,13 +414,30 @@
         const error = await response.json().catch(() => ({}));
         throw new Error(error.error || 'Не удалось обновить менеджера');
       }
+      
+      // Оновлюємо Telegram якщо адмін та поле видиме
+      if (isAdmin && telegramModalInput && !telegramEditGroup.classList.contains('d-none')) {
+        const telegramValue = telegramModalInput.value.trim();
+        const telegramResponse = await fetch(`/api/users/${encodeURIComponent(userKey)}/telegram`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ telegram_username: telegramValue }),
+        });
+        if (!telegramResponse.ok) {
+          const error = await telegramResponse.json().catch(() => ({}));
+          throw new Error(error.error || 'Не удалось обновить Telegram');
+        }
+      }
+      
       if (managerModal) {
         managerModal.hide();
       }
-      showAlert('Контроль-менеджера обновлен', 'success', 3000);
+      showAlert('Данные обновлены', 'success', 3000);
       await loadData();
     } catch (error) {
-      showAlert(error.message || 'Не удалось обновить менеджера');
+      showAlert(error.message || 'Не удалось обновить данные');
     }
   }
 

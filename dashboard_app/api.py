@@ -80,6 +80,27 @@ def _normalize_location_label(raw: object | None) -> str | None:
     replacement = _LOCATION_REPLACEMENTS.get(value.casefold())
     return replacement if replacement is not None else value
 
+
+def _generate_telegram_username(full_name: str) -> str:
+    """
+    Генерує telegram username з повного імені у форматі Прізвище_Ім'я.
+    Наприклад: "Kutkovskyi Mykhailo" -> "Kutkovskyi_Mykhailo"
+    """
+    if not full_name:
+        return ''
+    
+    # Видаляємо зайві пробіли та розділяємо
+    parts = full_name.strip().split()
+    if len(parts) < 2:
+        # Якщо тільки одне слово - повертаємо як є
+        return parts[0] if parts else ''
+    
+    # Беремо перше слово (прізвище) та друге слово (ім'я)
+    surname = parts[0]
+    first_name = parts[1]
+    
+    return f"{surname}_{first_name}"
+
 @lru_cache(maxsize=1)
 def _schedule_identity_sets() -> tuple[set[str], set[str], set[str]]:
     schedules = load_user_schedules()
@@ -941,6 +962,20 @@ def _apply_filters(query):
     if single_date:
         query = query.filter(AttendanceRecord.record_date == single_date)
     else:
+        # Якщо дати не задані - показуємо останні 5 робочих днів
+        if not date_from and not date_to:
+            today = date.today()
+            # Шукаємо останні 5 робочих днів (пн-пт)
+            workdays = []
+            current_day = today
+            while len(workdays) < 5:
+                if current_day.weekday() < 5:  # 0-4 = пн-пт
+                    workdays.append(current_day)
+                current_day -= timedelta(days=1)
+            if workdays:
+                date_from = min(workdays)
+                date_to = max(workdays)
+        
         if date_from:
             query = query.filter(AttendanceRecord.record_date >= date_from)
         if date_to:
@@ -1975,6 +2010,7 @@ def _serialize_profile(schedule: dict | None, record: AttendanceRecord | None) -
         'plan_start': None,
         'control_manager': None,
         'peopleforce_id': None,
+        'telegram_username': None,
     }
 
     if schedule:
@@ -2002,7 +2038,12 @@ def _serialize_profile(schedule: dict | None, record: AttendanceRecord | None) -
             'location': record.location or profile['location'],
             'plan_start': record.scheduled_start or profile['plan_start'],
             'control_manager': record.control_manager if record.control_manager is not None else profile['control_manager'],
+            'telegram_username': record.telegram_username or profile['telegram_username'],
         })
+
+    # Автогенерація telegram username якщо не задано
+    if not profile['telegram_username'] and profile['name']:
+        profile['telegram_username'] = _generate_telegram_username(profile['name'])
 
     project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(
         profile.get('project'),
@@ -2205,6 +2246,29 @@ def api_update_user_manager(user_key: str):
     db.session.commit()
 
     return jsonify({'control_manager': manager_value})
+
+
+@api_bp.route('/users/<path:user_key>/telegram', methods=['PATCH'])
+@login_required
+def api_update_user_telegram(user_key: str):
+    if not getattr(current_user, 'is_admin', False):
+        return jsonify({'error': 'Forbidden'}), 403
+
+    payload = request.get_json(silent=True) or {}
+    telegram_username = payload.get('telegram_username', '').strip()
+
+    base_query = _apply_filters(AttendanceRecord.query)
+    query, _ = _apply_user_key_filter(base_query, user_key)
+    records = query.all()
+    if not records:
+        return jsonify({'error': 'User not found or no access'}), 404
+
+    for record in records:
+        record.telegram_username = telegram_username if telegram_username else None
+
+    db.session.commit()
+
+    return jsonify({'telegram_username': telegram_username})
 
 
 @api_bp.route('/attendance/<int:record_id>/notes', methods=['PATCH'])

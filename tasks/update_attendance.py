@@ -164,15 +164,13 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
 
         actual_minutes = time_to_minutes(actual_start)
         scheduled_minutes = time_to_minutes(scheduled_start)
-        # Якщо Fact Start більше ніж на 1 годину раніше за Plan Start → коригуємо до (Plan Start - 1 год)
+        # Якщо Fact Start раніше за (Plan Start - 1 година) → записуємо Plan Start
         if actual_minutes is not None and scheduled_minutes is not None:
             earliest_allowed = max(0, scheduled_minutes - 60)  # Plan Start - 1 година
             if actual_minutes < earliest_allowed:
-                # Обмежуємо до мінімально допустимого часу
-                adjusted_hour = earliest_allowed // 60
-                adjusted_minute = earliest_allowed % 60
-                actual_start = f"{adjusted_hour:02d}:{adjusted_minute:02d}"
-                actual_minutes = earliest_allowed
+                # Якщо прийшов занадто рано - записуємо Plan Start
+                actual_start = scheduled_start
+                actual_minutes = scheduled_minutes
 
         minutes_late = minutes_to_diff(actual_start, scheduled_start) if scheduled_start else 0
 

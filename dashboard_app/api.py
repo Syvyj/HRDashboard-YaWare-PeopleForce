@@ -1027,9 +1027,9 @@ def _build_items(records):
                 'productive_minutes': rec.productive_minutes,
                 'productive_display': _minutes_to_str(rec.productive_minutes),
                 'productive_hm': _minutes_to_hm(rec.productive_minutes),
-                'total_minutes': rec.total_minutes,
-                'total_display': _minutes_to_str(rec.total_minutes),
-                'total_hm': _minutes_to_hm(rec.total_minutes),
+                'total_minutes': (rec.not_categorized_minutes or 0) + (rec.productive_minutes or 0),
+                'total_display': _minutes_to_str((rec.not_categorized_minutes or 0) + (rec.productive_minutes or 0)),
+                'total_hm': _minutes_to_hm((rec.not_categorized_minutes or 0) + (rec.productive_minutes or 0)),
                 'corrected_total_minutes': corrected_minutes,
                 'corrected_total_display': corrected_display,
                 'corrected_total_hm': corrected_hm,
@@ -1044,7 +1044,9 @@ def _build_items(records):
             total_non += rec.non_productive_minutes or 0
             total_not += rec.not_categorized_minutes or 0
             total_prod += rec.productive_minutes or 0
-            total_total += rec.total_minutes or 0
+            # Calculate actual total excluding non_productive
+            actual_total = (rec.not_categorized_minutes or 0) + (rec.productive_minutes or 0)
+            total_total += actual_total
             if corrected_minutes is not None:
                 total_corrected += corrected_minutes
                 has_corrected = True

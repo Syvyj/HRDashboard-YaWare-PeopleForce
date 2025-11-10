@@ -86,6 +86,23 @@ class PeopleForceClient:
         
         return all_employees
     
+    def get_employee_detail(self, employee_id: int) -> Optional[Dict[str, Any]]:
+        """Отримати детальну інформацію про співробітника, включаючи custom fields.
+        
+        Args:
+            employee_id: ID співробітника в PeopleForce
+            
+        Returns:
+            Повні дані співробітника з custom fields або None якщо помилка
+        """
+        try:
+            logger.debug(f"Отримую детальні дані для співробітника ID={employee_id}")
+            response = self._get(f"/employees/{employee_id}")
+            return response.get("data")
+        except Exception as e:
+            logger.error(f"Помилка при отриманні деталей співробітника {employee_id}: {e}")
+            return None
+    
     def get_employee_by_email(self, email: str) -> Optional[Dict[str, Any]]:
         """Знайти співробітника по email.
         

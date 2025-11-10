@@ -126,9 +126,53 @@
     if (profileTelegramEl) {
       const telegramUsername = data.telegram_username || generateTelegramUsername(data.name);
       if (telegramUsername) {
-        profileTelegramEl.innerHTML = `<a href="https://t.me/${telegramUsername}" target="_blank" rel="noopener noreferrer"> @${telegramUsername}</a>`;
+        // Видаляємо @ якщо є на початку
+        const cleanTelegram = telegramUsername.replace(/^@/, '');
+        profileTelegramEl.innerHTML = `<a href="https://t.me/${cleanTelegram}" target="_blank" rel="noopener noreferrer">@${cleanTelegram}</a>`;
       } else {
         profileTelegramEl.textContent = '—';
+      }
+    }
+    
+    // Відображаємо керівника якщо є дані
+    const profileReportingLabel = document.getElementById('profile-reporting-label');
+    const profileReportingEl = document.getElementById('profile-reporting');
+    if (profileReportingLabel && profileReportingEl) {
+      const managerName = data.manager_name;
+      const managerTelegram = data.manager_telegram;
+      
+      if (managerName && managerTelegram) {
+        profileReportingLabel.style.display = 'block';
+        profileReportingEl.style.display = 'block';
+        
+        // Форматуємо ім'я (замінюємо _ на пробіл для відображення)
+        const displayName = managerName.replace(/_/g, ' ');
+        // Видаляємо @ якщо є на початку
+        const cleanTelegram = managerTelegram.replace(/^@/, '');
+        
+        const link = document.createElement('a');
+        link.href = `https://t.me/${cleanTelegram}`;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'd-flex align-items-center gap-1';
+        
+        const img = document.createElement('img');
+        img.src = '/static/logo/tg_logo.png';
+        img.alt = 'Telegram';
+        img.style.width = '20px';
+        img.style.height = '20px';
+        
+        const span = document.createElement('span');
+        span.textContent = displayName;
+        
+        link.appendChild(img);
+        link.appendChild(span);
+        
+        profileReportingEl.innerHTML = '';
+        profileReportingEl.appendChild(link);
+      } else {
+        profileReportingLabel.style.display = 'none';
+        profileReportingEl.style.display = 'none';
       }
     }
   }

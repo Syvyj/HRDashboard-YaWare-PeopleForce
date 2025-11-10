@@ -417,7 +417,9 @@
       // Telegram username з можливістю автогенерації
       const telegramUsername = schedule.telegram_username || generateTelegramUsername(item.user_name);
       if (telegramUsername) {
-        logoLinksHtml += `<a href="https://t.me/${telegramUsername}" target="_blank" rel="noopener noreferrer" class="no-print" title="Telegram"><img src="/static/logo/tg_logo.png" alt="Telegram" style="height: 40px;"></a>`;
+        // Видаляємо @ якщо є на початку
+        const cleanTelegram = telegramUsername.replace(/^@/, '');
+        logoLinksHtml += `<a href="https://t.me/${cleanTelegram}" target="_blank" rel="noopener noreferrer" class="no-print" title="Telegram"><img src="/static/logo/tg_logo.png" alt="Telegram" style="height: 40px;"></a>`;
       }
       
       metaPanel.innerHTML = `

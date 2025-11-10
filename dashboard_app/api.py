@@ -2011,6 +2011,8 @@ def _serialize_profile(schedule: dict | None, record: AttendanceRecord | None) -
         'control_manager': None,
         'peopleforce_id': None,
         'telegram_username': None,
+        'manager_name': None,
+        'manager_telegram': None,
     }
 
     if schedule:
@@ -2026,6 +2028,8 @@ def _serialize_profile(schedule: dict | None, record: AttendanceRecord | None) -
             'control_manager': schedule.get('control_manager') if schedule.get('control_manager') not in ('', None) else profile['control_manager'],
             'peopleforce_id': schedule.get('peopleforce_id') or profile['peopleforce_id'],
             'telegram_username': schedule.get('telegram_username') or profile['telegram_username'],
+            'manager_name': schedule.get('manager_name') or profile['manager_name'],
+            'manager_telegram': schedule.get('manager_telegram') or profile['manager_telegram'],
         })
 
     if record:

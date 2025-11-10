@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import atexit
 import logging
+import re
 from calendar import monthrange
 from datetime import date, datetime, timedelta, time
 
@@ -76,6 +77,21 @@ def _cleanup_old_records(app):
     logger.info("[scheduler] Cleanup removed %s records older than %s", deleted, cutoff)
 
 
+def _clean_telegram_username(value: str) -> str:
+    """Очищує telegram username від HTML тегів та зайвих символів."""
+    if not value:
+        return ""
+    
+    # Видаляємо HTML теги
+    value = re.sub(r'<[^>]+>', '', value)
+    # Видаляємо зайві пробіли
+    value = value.strip()
+    # Видаляємо @ якщо є на початку
+    value = value.lstrip('@')
+    
+    return value
+
+
 def _sync_peopleforce_metadata(app):
     logger.info("[scheduler] Running PeopleForce metadata sync")
     client = PeopleForceClient()
@@ -91,6 +107,10 @@ def _sync_peopleforce_metadata(app):
 
     updated = False
     new_employees: list[str] = []
+    
+    # Створюємо словник менеджерів для швидкого доступу
+    managers_cache = {}
+    
     for name, info in users.items():
         if not isinstance(info, dict):
             continue
@@ -101,6 +121,7 @@ def _sync_peopleforce_metadata(app):
         if not employee:
             continue
 
+        # Оновлюємо location
         location_obj = employee.get("location") or {}
         location_name = ""
         if isinstance(location_obj, dict):
@@ -109,6 +130,7 @@ def _sync_peopleforce_metadata(app):
             info["location"] = location_name
             updated = True
 
+        # Оновлюємо department
         department_obj = employee.get("department") or {}
         department_name = ""
         if isinstance(department_obj, dict):
@@ -116,6 +138,62 @@ def _sync_peopleforce_metadata(app):
         if department_name and not has_manual_override(info, "department") and info.get("department") != department_name:
             info["department"] = department_name
             updated = True
+        
+        # Синхронізуємо telegram та manager з PeopleForce (детальний запит)
+        peopleforce_id = info.get("peopleforce_id")
+        if peopleforce_id:
+            try:
+                detailed_data = client.get_employee_detail(peopleforce_id)
+                if detailed_data:
+                    # Отримуємо робочий телеграм з custom fields
+                    fields = detailed_data.get("fields", {})
+                    work_telegram_raw = fields.get("1", {}).get("value", "").strip() if isinstance(fields.get("1"), dict) else ""
+                    work_telegram = _clean_telegram_username(work_telegram_raw)
+                    
+                    # Якщо знайдено робочий телеграм і він відрізняється
+                    if work_telegram and info.get("telegram_username") != work_telegram:
+                        info["telegram_username"] = work_telegram
+                        updated = True
+                        logger.debug(f"Оновлено telegram для {name}: {work_telegram}")
+                    
+                    # Отримуємо дані про керівника
+                    reporting_to = detailed_data.get("reporting_to")
+                    if reporting_to and isinstance(reporting_to, dict):
+                        manager_id = reporting_to.get("id")
+                        
+                        # Отримуємо telegram керівника (використовуємо кеш)
+                        if manager_id not in managers_cache:
+                            manager_detail = client.get_employee_detail(manager_id)
+                            if manager_detail:
+                                manager_fields = manager_detail.get("fields", {})
+                                manager_tg_raw = manager_fields.get("1", {}).get("value", "").strip() if isinstance(manager_fields.get("1"), dict) else ""
+                                manager_tg = _clean_telegram_username(manager_tg_raw)
+                                managers_cache[manager_id] = {
+                                    "first_name": reporting_to.get("first_name", ""),
+                                    "last_name": reporting_to.get("last_name", ""),
+                                    "telegram": manager_tg
+                                }
+                        
+                        manager_info = managers_cache.get(manager_id)
+                        if manager_info:
+                            # Формуємо ім'я керівника у форматі Прізвище_Ім'я
+                            manager_name = f"{manager_info['last_name']}_{manager_info['first_name']}"
+                            manager_telegram = manager_info['telegram']
+                            
+                            # Оновлюємо дані керівника якщо змінилися
+                            if info.get("manager_name") != manager_name:
+                                info["manager_name"] = manager_name
+                                updated = True
+                                logger.debug(f"Оновлено manager_name для {name}: {manager_name}")
+                            
+                            if manager_telegram and info.get("manager_telegram") != manager_telegram:
+                                info["manager_telegram"] = manager_telegram
+                                updated = True
+                                logger.debug(f"Оновлено manager_telegram для {name}: {manager_telegram}")
+                    
+            except Exception as e:
+                logger.error(f"Помилка при синхронізації telegram/manager для {name}: {e}")
+                continue
 
     for email, employee in employees_by_email.items():
         existing = None
@@ -131,7 +209,7 @@ def _sync_peopleforce_metadata(app):
 
     if updated:
         schedule_user_manager.save_users(data)
-        logger.info("[scheduler] Updated schedule metadata from PeopleForce")
+        logger.info("[scheduler] Updated schedule metadata from PeopleForce (including telegram and manager)")
 
     if new_employees:
         logger.info("[scheduler] Нові співробітники в PeopleForce (потрібно додати вручну): %s", ", ".join(new_employees[:10]))

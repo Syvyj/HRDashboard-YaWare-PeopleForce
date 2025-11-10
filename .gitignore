@@ -9,5 +9,4 @@ gcp-sa.json
 .vscode/
 .idea/
 instance/dashboard.db
-config/user_schedules.json
-config/work_schedules.json
+

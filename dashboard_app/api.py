@@ -2269,16 +2269,22 @@ def api_update_user_telegram(user_key: str):
     # Оновлюємо telegram_username в user_schedules.json
     try:
         from dashboard_app.user_data import load_user_schedules
-        from tracker_alert.services.user_manager import save_users
+        from tracker_alert.services.user_manager import save_users, load_users
         
-        data = load_user_schedules()
-        if user_name not in data.get('users', {}):
-            return jsonify({'error': 'User not found in schedules'}), 404
+        # load_user_schedules() повертає тільки словник користувачів
+        users = load_user_schedules()
+        if user_name not in users:
+            return jsonify({'error': f'User "{user_name}" not found in schedules'}), 404
         
-        data['users'][user_name]['telegram_username'] = telegram_username if telegram_username else None
+        # Оновлюємо telegram_username
+        users[user_name]['telegram_username'] = telegram_username if telegram_username else None
+        
+        # Зберігаємо через save_users який очікує повну структуру
+        full_data = load_users()  # Отримуємо повну структуру з metadata
+        full_data['users'] = users  # Оновлюємо користувачів
         
         # Зберігаємо
-        if save_users(data):
+        if save_users(full_data):
             # Очищаємо кеш
             clear_user_schedule_cache()
             return jsonify({'telegram_username': telegram_username})

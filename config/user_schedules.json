@@ -7,7 +7,7 @@
     "without_schedule": 36,
     "unique_users": 181,
     "total_rows_processed": 181,
-    "last_updated": "2025-11-10T15:58:14.778772",
+    "last_updated": "2025-11-11T06:00:44.756333",
     "yaware_groups_added": "2025-10-17T15:44:44.809277",
     "control_data_added": "2025-10-17T15:57:34.592749",
     "control_users_matched": 59,
@@ -2260,7 +2260,7 @@
       "user_id": "7682034",
       "email": "evgeniy_mod@evadav.com",
       "note": "Нічна зміна",
-      "department": "Moderation team",
+      "department": "Moderation",
       "peopleforce_id": "297363",
       "project": "Ad Network",
       "control_manager": 2,
@@ -2268,9 +2268,9 @@
         "department": true
       },
       "telegram_username": "Kiliovyi_Evhen",
-      "location": "Remote Ukraine",
       "manager_name": "Shpak_Andriy",
-      "manager_telegram": "Shpak_Andriy"
+      "manager_telegram": "Shpak_Andriy",
+      "location": "Remote Ukraine"
     },
     "Alexandr Pankov": {
       "user_id": "7912880",
@@ -2374,6 +2374,111 @@
       "telegram_username": "Ustsilka_Natallia",
       "manager_name": "Zhara_Lilia",
       "manager_telegram": "Zhara_Liliia"
+    },
+    "Brizhak Denis": {
+      "email": "d.brizhak@evadav.com",
+      "user_id": "7937087",
+      "peopleforce_id": "579125",
+      "location": "Czech Republic remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true
+      },
+      "project": "Agency",
+      "department": "Native",
+      "team": "Learning Native",
+      "start_time": "09:00",
+      "control_manager": 1,
+      "telegram_username": "Brizhak_Denis",
+      "manager_name": "Machula_Yuliia",
+      "manager_telegram": "Machula_Yuliia"
+    },
+    "Mykyta Kapulier": {
+      "email": "m.kapulier@evadav.com",
+      "user_id": "7937092",
+      "peopleforce_id": "577486",
+      "location": "Czech Republic remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true
+      },
+      "project": "Agency",
+      "department": "Native",
+      "team": "Learning Native",
+      "start_time": "09:00",
+      "control_manager": 1,
+      "telegram_username": "Kapulier_Mykyta",
+      "manager_name": "Machula_Yuliia",
+      "manager_telegram": "Machula_Yuliia"
+    },
+    "Surzhykov Oleksandr": {
+      "email": "o.surzhykov@evadav.com",
+      "user_id": "7937091",
+      "peopleforce_id": "573640",
+      "location": "Czech Republic remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true
+      },
+      "project": "Agency",
+      "department": "Native",
+      "team": "Learning Native",
+      "start_time": "09:00",
+      "control_manager": 1,
+      "telegram_username": "Surzhykov_Oleksandr",
+      "manager_name": "Machula_Yuliia",
+      "manager_telegram": "Machula_Yuliia"
+    },
+    "Vladymyr Ovchar": {
+      "email": "v.ovchar@evadav.com",
+      "user_id": "7937089",
+      "peopleforce_id": "579098",
+      "location": "Czech Republic remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true
+      },
+      "project": "Agency",
+      "department": "Native",
+      "team": "Learning Native",
+      "start_time": "09:00",
+      "control_manager": 1,
+      "telegram_username": "Ovchar_Vladymyr",
+      "manager_name": "Machula_Yuliia",
+      "manager_telegram": "Machula_Yuliia"
+    },
+    "Yavorskiy Sergey": {
+      "email": "s.yavorskiy@evadav.com",
+      "user_id": "7937088",
+      "peopleforce_id": "577496",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true
+      },
+      "project": "Agency",
+      "department": "Native",
+      "team": "Learning Native",
+      "start_time": "09:00",
+      "control_manager": 1,
+      "telegram_username": "Yavorskiy_Sergey",
+      "manager_name": "Machula_Yuliia",
+      "manager_telegram": "Machula_Yuliia"
     }
   }
 }

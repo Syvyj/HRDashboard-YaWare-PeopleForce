@@ -7,7 +7,7 @@
     "without_schedule": 36,
     "unique_users": 181,
     "total_rows_processed": 181,
-    "last_updated": "2025-11-10T13:58:43.309281",
+    "last_updated": "2025-11-10T18:06:11.163633",
     "yaware_groups_added": "2025-10-17T15:44:44.809277",
     "control_data_added": "2025-10-17T15:57:34.592749",
     "control_users_matched": 59,
@@ -17,7 +17,7 @@
   "users": {
     "Abdurazzakov Abdulaziz": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7684922",
       "email": "abdulaziz@evadav.com",
       "peopleforce_id": 297352,
@@ -25,11 +25,13 @@
       "department": "RTB Team",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Abdurazzakov_Abdulaziz"
+      "telegram_username": "DesperatePain",
+      "manager_name": "Lazarenko_Maksim",
+      "manager_telegram": "max_ssp"
     },
     "Artemchuk Dmytro": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7930490",
       "email": "d.artemchuk@evadav.com",
       "peopleforce_id": 526146,
@@ -37,11 +39,13 @@
       "department": "Native Team",
       "team": "Native (Hlib)",
       "control_manager": 1,
-      "telegram_username": "Artemchuk_Dmytro"
+      "telegram_username": "Artemchuk_Dmytro",
+      "manager_name": "Roshchyn_Hlib",
+      "manager_telegram": "Roshchyn_Hlib"
     },
     "Artomenko Andrii": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933972",
       "email": "a.artomenko@evadav.com",
       "peopleforce_id": 559301,
@@ -49,7 +53,9 @@
       "department": "Tik Tok Team",
       "team": "TikTok",
       "control_manager": 1,
-      "telegram_username": "Artomenko_Andrii"
+      "telegram_username": "Artomenko_Andrii",
+      "manager_name": "Balaban_Iryna",
+      "manager_telegram": "Balaban_Iryna"
     },
     "Bakumova Kseniya": {
       "start_time": "10:00",
@@ -65,7 +71,7 @@
     },
     "Balaban Iryna": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7900777",
       "email": "i.balaban@evadav.com",
       "control_manager": 1,
@@ -73,23 +79,27 @@
       "team": "TikTok",
       "peopleforce_id": 322508,
       "project": "Agency",
-      "telegram_username": "Balaban_Iryna"
+      "telegram_username": "Balaban_Iryna",
+      "manager_name": "Popovych_Anton",
+      "manager_telegram": "Popovych_Anton"
     },
     "Balyunov Valentyn": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7932147",
       "email": "v.balyunov@evadav.com",
       "control_manager": 2,
-      "department": "CPA Unit",
+      "department": "Sales Direction",
       "team": "Head of CPA",
       "peopleforce_id": 546970,
       "project": "AD Network",
-      "telegram_username": "Balyunov_Valentyn"
+      "telegram_username": "Balyunov_Valentin",
+      "manager_name": "Panasenko_Natalya",
+      "manager_telegram": "Panasenko_Natalya"
     },
     "Bazdyrev Viktor": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7903040",
       "email": "v.bazdyrev@evadav.com",
       "control_manager": 1,
@@ -97,11 +107,13 @@
       "team": "FB Mykyta",
       "peopleforce_id": 323814,
       "project": "Agency",
-      "telegram_username": "Bazdyrev_Viktor"
+      "telegram_username": "Bazdyrev_Viktor",
+      "manager_name": "Markovskyi_Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta"
     },
     "Belkevich Valentina": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7931483",
       "email": "v.belkevich@evadav.com",
       "peopleforce_id": 533585,
@@ -109,11 +121,13 @@
       "department": "Control Unit",
       "team": null,
       "control_manager": 3,
-      "telegram_username": "Belkevich_Valentina"
+      "telegram_username": "Belkevich_Valiantsina",
+      "manager_name": "Kryvytska_Olena",
+      "manager_telegram": "Kryvytska_Alena"
     },
     "Berezhnoy Mykola": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7924158",
       "email": "m.berezhnoy@evadav.com",
       "peopleforce_id": 463790,
@@ -121,11 +135,13 @@
       "department": "Hunter Team",
       "team": "Hunter",
       "control_manager": 2,
-      "telegram_username": "Berezhnoy_Mykola"
+      "telegram_username": "Berezhnoy_Mykola",
+      "manager_name": "Tenditnik_Roman",
+      "manager_telegram": "adver_roma"
     },
     "Bondarenko Vladyslav": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7917708",
       "email": "v.bondarenko@evadav.com",
       "control_manager": 1,
@@ -133,11 +149,13 @@
       "team": "Adult",
       "peopleforce_id": 424360,
       "project": "Agency",
-      "telegram_username": "Bondarenko_Vladyslav"
+      "telegram_username": "Bondarenko_Vladyslav",
+      "manager_name": "Shersheriia_Heorhii",
+      "manager_telegram": "Shersheriia_Heorhii"
     },
     "Bratchenko Anna": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7919553",
       "email": "a.bratchenko@evadav.com",
       "control_manager": 1,
@@ -145,11 +163,13 @@
       "team": "FB Anna",
       "peopleforce_id": 427120,
       "project": "Agency",
-      "telegram_username": "Bratchenko_Anna"
+      "telegram_username": "Bratchenko_Hanna",
+      "manager_name": "Klimchenya_Valeriy",
+      "manager_telegram": "Klimchenya_Valeriy"
     },
     "Budaev Ilya": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7924907",
       "email": "i.budaev@evadav.com",
       "peopleforce_id": 464227,
@@ -157,11 +177,13 @@
       "department": "Creative Team 1",
       "team": "Mainstream",
       "control_manager": 1,
-      "telegram_username": "Budaev_Ilya"
+      "telegram_username": "Budaev_Iliaa",
+      "manager_name": "Romanovich_Alexey",
+      "manager_telegram": "Romanovich_Aleksey"
     },
     "Bushliakova Daria": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7920824",
       "email": "d.bushliakova@evadav.com",
       "peopleforce_id": 326246,
@@ -169,11 +191,13 @@
       "department": "MB Facebook Team 1",
       "team": "FB Anna",
       "control_manager": 1,
-      "telegram_username": "Bushliakova_Daria"
+      "telegram_username": "Bushliakova_Daria",
+      "manager_name": "Bratchenko_Anna",
+      "manager_telegram": "Bratchenko_Hanna"
     },
     "Bylchinskiy Ilya": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933838",
       "email": "i.bylchinskiy@evadav.com",
       "peopleforce_id": 554820,
@@ -181,11 +205,13 @@
       "department": "Product Team",
       "team": "Product team",
       "control_manager": 2,
-      "telegram_username": "Bylchinskiy_Ilya"
+      "telegram_username": "Bylchinskiy_Ilya",
+      "manager_name": "Gramovich_Ivan",
+      "manager_telegram": "Gramovich_Ivan"
     },
     "Chernyakov Andrii": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7897799",
       "email": "a.chernyakov@evadav.com",
       "control_manager": 1,
@@ -194,11 +220,13 @@
       "flexible_schedule": true,
       "peopleforce_id": 307385,
       "project": "Agency",
-      "telegram_username": "Chernyakov_Andrii"
+      "telegram_username": "Chernyakov_Andrii",
+      "manager_name": "Tereshchenko_Kirill",
+      "manager_telegram": "Tereshchenko_Kirill"
     },
     "Dedovich Elena": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7926351",
       "email": "e.dedovich@evadav.com",
       "peopleforce_id": 479544,
@@ -206,11 +234,13 @@
       "department": "MB Facebook Team 1",
       "team": "FB Anna",
       "control_manager": 1,
-      "telegram_username": "Dedovich_Elena"
+      "telegram_username": "Dedovich_Elena",
+      "manager_name": "Bratchenko_Anna",
+      "manager_telegram": "Bratchenko_Hanna"
     },
     "Diakonov Dmytro": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933962",
       "email": "d.diakonov@evadav.com",
       "peopleforce_id": 557798,
@@ -218,11 +248,13 @@
       "department": "Tik Tok Team",
       "team": "TikTok",
       "control_manager": 1,
-      "telegram_username": "Diakonov_Dmytro"
+      "telegram_username": "Diakonov_Dmitrii",
+      "manager_name": "Balaban_Iryna",
+      "manager_telegram": "Balaban_Iryna"
     },
     "Dmytrenko Anna": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7927469,
       "email": "a.dmytrenko@evadav.com",
       "control_manager": 2,
@@ -230,11 +262,13 @@
       "team": null,
       "peopleforce_id": 497315,
       "project": "Consulting",
-      "telegram_username": "Dmytrenko_Anna"
+      "telegram_username": "Dmytrenko_Ania",
+      "manager_name": "Maksymchuk_Tetiana",
+      "manager_telegram": "tetiana_finn"
     },
     "Dubovytskyi  Denys": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "email": "ddenys_pub@evadav.com",
       "user_id": 7790072,
       "control_manager": 2,
@@ -242,11 +276,13 @@
       "team": null,
       "peopleforce_id": 297354,
       "project": "AD Network",
-      "telegram_username": "Dubovytskyi_Denys"
+      "telegram_username": "manager_dav_1",
+      "manager_name": "Lazarenko_Maksim",
+      "manager_telegram": "max_ssp"
     },
     "Dupenko Valeria": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7929643",
       "email": "v.dupenko@evadav.com",
       "control_manager": 2,
@@ -254,11 +290,13 @@
       "team": "Head of Demand",
       "peopleforce_id": 514421,
       "project": "AD Network",
-      "telegram_username": "Dupenko_Valeria"
+      "telegram_username": "Dupenko_Valeriia",
+      "manager_name": "Balyunov_Valentin",
+      "manager_telegram": "Balyunov_Valentin"
     },
     "Efimov Dmitrii": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7931049",
       "email": "d.efimov@evadav.com",
       "control_manager": 2,
@@ -266,11 +304,13 @@
       "team": null,
       "peopleforce_id": 526179,
       "project": "AD Network",
-      "telegram_username": "Efimov_Dmitrii"
+      "telegram_username": "Efimov_Dmytrii",
+      "manager_name": "Balyunov_Valentin",
+      "manager_telegram": "Balyunov_Valentin"
     },
     "Fedorenko Tetiana": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7893641,
       "email": "t.fedorenko@evadav.com",
       "peopleforce_id": 293121,
@@ -278,11 +318,13 @@
       "department": "Tik Tok Team",
       "team": "TikTok",
       "control_manager": 1,
-      "telegram_username": "Fedorenko_Tetiana"
+      "telegram_username": "Fedorenko_Tetyana",
+      "manager_name": "Balaban_Iryna",
+      "manager_telegram": "Balaban_Iryna"
     },
     "Fedorenko Yurii": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7804353",
       "email": "yurii_adv@evadav.com",
       "peopleforce_id": 309635,
@@ -290,11 +332,13 @@
       "department": "Demand Account Team",
       "team": "Account",
       "control_manager": 2,
-      "telegram_username": "Fedorenko_Yurii"
+      "telegram_username": "YuriiAMEvadav&nbsp;",
+      "manager_name": "Rudenko_Bogdan",
+      "manager_telegram": "Bogdan_rudenko"
     },
     "Fomenko Taras": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933968",
       "email": "t.fomenko@evadav.com",
       "control_manager": 1,
@@ -302,11 +346,13 @@
       "team": "TikTok",
       "peopleforce_id": 558697,
       "project": "Agency",
-      "telegram_username": "Fomenko_Taras"
+      "telegram_username": "Taras_Fomenko",
+      "manager_name": "Balaban_Iryna",
+      "manager_telegram": "Balaban_Iryna"
     },
     "Galeev Daniel": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7930664",
       "email": "d.galeev@evadav.com",
       "control_manager": 2,
@@ -314,11 +360,13 @@
       "team": "Account",
       "peopleforce_id": 520854,
       "project": "AD Network",
-      "telegram_username": "Galeev_Daniel"
+      "telegram_username": "Galeev_Danil",
+      "manager_name": "Rudenko_Bogdan",
+      "manager_telegram": "Bogdan_rudenko"
     },
     "Gelman Amin": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928832",
       "email": "a.gelman@evadav.com",
       "control_manager": 1,
@@ -326,7 +374,9 @@
       "team": "Native (Hlib)",
       "peopleforce_id": 512125,
       "project": "Agency",
-      "telegram_username": "Gelman_Amin"
+      "telegram_username": "Gelman_Amin",
+      "manager_name": "Roshchyn_Hlib",
+      "manager_telegram": "Roshchyn_Hlib"
     },
     "Goloven Dmytro": {
       "start_time": "09:00",
@@ -342,7 +392,7 @@
     },
     "Gramovich Ivan": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": 7924796,
       "email": "i.gramovich@evadav.com",
       "control_manager": 2,
@@ -350,22 +400,26 @@
       "team": "Product team",
       "peopleforce_id": 470190,
       "project": "APP",
-      "telegram_username": "Gramovich_Ivan"
+      "telegram_username": "Gramovich_Ivan",
+      "manager_name": "Kurylionak_Aliaksandr",
+      "manager_telegram": "Kurylionak_Aliaksandr"
     },
     "Harauskaya Maryia": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7927195",
       "email": "m.harauskaya@evadav.com",
       "peopleforce_id": 487068,
       "project": "Consulting",
       "department": "Human Resources Direction",
       "team": null,
-      "telegram_username": "Harauskaya_Maryia"
+      "telegram_username": "Harauskaya_Maryia",
+      "manager_name": "Sluchevskyi_Gleb",
+      "manager_telegram": "gleb7315"
     },
     "Hiermiek Diana": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7917999",
       "email": "d.hiermiek@evadav.com",
       "peopleforce_id": 425942,
@@ -373,11 +427,13 @@
       "department": "HRBP Unit",
       "team": "HRBP",
       "control_manager": 2,
-      "telegram_username": "Hiermiek_Diana"
+      "telegram_username": "Hiermiek_Diana",
+      "manager_name": "Harauskaya_Maryia",
+      "manager_telegram": "Harauskaya_Maryia"
     },
     "Hlukhovskyi Dmytro": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7897392",
       "email": "d.hlukhovskyi@evadav.com",
       "peopleforce_id": 303305,
@@ -385,11 +441,13 @@
       "department": "Creative Team 2",
       "team": "Adult",
       "control_manager": 1,
-      "telegram_username": "Hlukhovskyi_Dmytro"
+      "telegram_username": "Hlukhovskyi_Dmytro",
+      "manager_name": "Shersheriia_Heorhii",
+      "manager_telegram": "Shersheriia_Heorhii"
     },
     "Honcharuk Maksym": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7927615",
       "email": "m.honcharuk@evadav.com",
       "peopleforce_id": 497817,
@@ -397,11 +455,13 @@
       "department": "MB Facebook Team 1",
       "team": "FB Anna",
       "control_manager": 1,
-      "telegram_username": "Honcharuk_Maksym"
+      "telegram_username": "Honcharuk_Maks",
+      "manager_name": "Bratchenko_Anna",
+      "manager_telegram": "Bratchenko_Hanna"
     },
     "Hryvtsova Anastasiia": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "email": "a.hryvtsova@evadav.com",
       "user_id": 7921434,
       "peopleforce_id": 474458,
@@ -409,11 +469,13 @@
       "department": "Academy Team",
       "team": "Recruitment",
       "control_manager": 2,
-      "telegram_username": "Hryvtsova_Anastasiia"
+      "telegram_username": "Hryvtsova_Anastasiia",
+      "manager_name": "Torianyk_Haiana",
+      "manager_telegram": "Torianyk_Haiana"
     },
     "Hynkaliuk Yana": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7916254",
       "email": "y.hynkaliuk@evadav.com",
       "control_manager": 1,
@@ -421,11 +483,13 @@
       "team": "TikTok",
       "peopleforce_id": 409141,
       "project": "Agency",
-      "telegram_username": "Hynkaliuk_Yana"
+      "telegram_username": "Hynkaliuk_Yana",
+      "manager_name": "Balaban_Iryna",
+      "manager_telegram": "Balaban_Iryna"
     },
     "Iliin Eugeniy": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7669763",
       "email": "yevhenii_sup@evadav.com",
       "control_manager": 2,
@@ -433,11 +497,13 @@
       "team": null,
       "peopleforce_id": 297356,
       "project": "AD Network",
-      "telegram_username": "Iliin_Eugeniy"
+      "telegram_username": "Iliin_Eugeniy",
+      "manager_name": "Balyunov_Valentin",
+      "manager_telegram": "Balyunov_Valentin"
     },
     "Ivashchenko Denys": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7921802",
       "email": "d.ivashchenko@evadav.com",
       "peopleforce_id": 445672,
@@ -445,11 +511,13 @@
       "department": "IOS Unit",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Ivashchenko_Denys"
+      "telegram_username": "Ivashchenko_Denis",
+      "manager_name": "Kurylionak_Aliaksandr",
+      "manager_telegram": "Kurylionak_Aliaksandr"
     },
     "Kalchenko Bohdana": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7814083,
       "email": "b.kalchenko@evrius.com",
       "peopleforce_id": 280115,
@@ -457,11 +525,13 @@
       "department": "Finance Direction",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Kalchenko_Bohdana"
+      "telegram_username": "bohdana_finn",
+      "manager_name": "Maksymchuk_Tetiana",
+      "manager_telegram": "tetiana_finn"
     },
     "Kanash Dmitrii": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928819",
       "email": "d.kanash@evadav.com",
       "peopleforce_id": 512986,
@@ -469,22 +539,26 @@
       "department": "Traffic Bizdev Team",
       "team": "Bizdev team 2",
       "control_manager": 2,
-      "telegram_username": "Kanash_Dmitrii"
+      "telegram_username": "Kanash_Dmitrii",
+      "manager_name": "Sarkisov_Moses",
+      "manager_telegram": "Sarkisov_Moses"
     },
     "Kantemir Pavlo": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7789177",
       "email": "p.kantemir@evadav.com",
       "control_manager": 2,
       "department": "Analyst Team",
       "peopleforce_id": 297332,
       "project": "Ad Network",
-      "telegram_username": "Kantemir_Pavlo"
+      "telegram_username": "Kantemir_Pavlo",
+      "manager_name": "Vorozheykin_Oleksii",
+      "manager_telegram": "Vorozheykin_Oleksii"
     },
     "Kastyrin Artem": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7924570",
       "email": "a.kastyrin@evadav.com",
       "control_manager": 1,
@@ -492,11 +566,13 @@
       "team": "FB Mykyta",
       "peopleforce_id": 464218,
       "project": "Agency",
-      "telegram_username": "Kastyrin_Artem"
+      "telegram_username": "Kastyrin_Artem",
+      "manager_name": "Markovskyi_Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta"
     },
     "Katsiaryna Yarosh": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7918494,
       "email": "k.yarosh@evadav.com",
       "peopleforce_id": 425964,
@@ -504,11 +580,13 @@
       "department": "KLN Control Team",
       "team": null,
       "control_manager": 3,
-      "telegram_username": "Katsiaryna_Yarosh"
+      "telegram_username": "Yarosh_Katsiaryna",
+      "manager_name": "Kryvytska_Olena",
+      "manager_telegram": "Kryvytska_Alena"
     },
     "Kazmirchuk Roman": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7922500",
       "email": "r.kazmirchuk@evadav.com",
       "control_manager": 2,
@@ -519,11 +597,13 @@
       "_manual_overrides": {
         "department": true
       },
-      "telegram_username": "Kazmirchuk_Roman"
+      "telegram_username": "roman_ios",
+      "manager_name": "Kurylionak_Aliaksandr",
+      "manager_telegram": "Kurylionak_Aliaksandr"
     },
     "Khachatrian Mariia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7931047",
       "email": "m.khachatrian@evadav.com",
       "peopleforce_id": 526149,
@@ -531,11 +611,13 @@
       "department": "HRBP Unit",
       "team": "HRBP",
       "control_manager": 2,
-      "telegram_username": "Khachatrian_Mariia"
+      "telegram_username": "Khachatrian_Mariia",
+      "manager_name": "Harauskaya_Maryia",
+      "manager_telegram": "Harauskaya_Maryia"
     },
     "Khan Anna": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934329",
       "email": "h.khan@evadav.com",
       "control_manager": 2,
@@ -543,11 +625,13 @@
       "team": "Recruitment",
       "peopleforce_id": 562908,
       "project": "Consulting",
-      "telegram_username": "Khan_Anna"
+      "telegram_username": "Khan_Hanna",
+      "manager_name": "Zhara_Lilia",
+      "manager_telegram": "Zhara_Liliia"
     },
     "Khominskiy Alexey": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928818",
       "email": "a.khominskiy@evadav.com",
       "peopleforce_id": 512436,
@@ -555,11 +639,13 @@
       "department": "Traffic Bizdev Team",
       "team": "Bizdev team 2",
       "control_manager": 2,
-      "telegram_username": "Khominskiy_Alexey"
+      "telegram_username": "Khominskiy_Alexey",
+      "manager_name": "Sarkisov_Moses",
+      "manager_telegram": "Sarkisov_Moses"
     },
     "Klimchenya Valery": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7931903",
       "email": "v.klimchenya@evadav.com",
       "control_manager": 1,
@@ -567,11 +653,13 @@
       "team": "Head of FB MB",
       "peopleforce_id": 544477,
       "project": "Agency",
-      "telegram_username": "Klimchenya_Valery"
+      "telegram_username": "Klimchenya_Valeriy",
+      "manager_name": "Sluchevskyi_Gleb",
+      "manager_telegram": "gleb7315"
     },
     "Koba Bogdan": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7934176",
       "email": "b.koba@evadav.com",
       "control_manager": 1,
@@ -579,11 +667,13 @@
       "team": "TikTok",
       "peopleforce_id": 559312,
       "project": "Agency",
-      "telegram_username": "Koba_Bogdan"
+      "telegram_username": "Koba_Bogdan",
+      "manager_name": "Balaban_Iryna",
+      "manager_telegram": "Balaban_Iryna"
     },
     "Komarova Darina": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7895512",
       "email": "d.komarova@evadav.com",
       "peopleforce_id": 287925,
@@ -591,11 +681,13 @@
       "department": "Control Unit",
       "team": null,
       "control_manager": 3,
-      "telegram_username": "Komarova_Darina"
+      "telegram_username": "Komarova_Daryna",
+      "manager_name": "Kryvytska_Olena",
+      "manager_telegram": "Kryvytska_Alena"
     },
     "Kondras Maksym": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7927612",
       "email": "m.kondras@evadav.com",
       "control_manager": 1,
@@ -603,11 +695,13 @@
       "team": "FB Mykyta",
       "peopleforce_id": 496285,
       "project": "Agency",
-      "telegram_username": "Kondras_Maksym"
+      "telegram_username": "Kondras_Maksym",
+      "manager_name": "Markovskyi_Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta"
     },
     "Koreshkova Valeryia": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7916589",
       "email": "v.koreshkova@evadav.com",
       "peopleforce_id": 412326,
@@ -615,11 +709,13 @@
       "department": "MB Facebook Team 2",
       "team": "FB Mykyta",
       "control_manager": 1,
-      "telegram_username": "Koreshkova_Valeryia"
+      "telegram_username": "Koreshkov_Valeria",
+      "manager_name": "Markovskyi_Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta"
     },
     "Korobkov Daniil": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7930006",
       "email": "d.korobkov@evadav.com",
       "peopleforce_id": 521406,
@@ -627,11 +723,13 @@
       "department": "Lead BizDev Team",
       "team": "Bizdev team 1",
       "control_manager": 2,
-      "telegram_username": "Korobkov_Daniil"
+      "telegram_username": "Korobkov_Daniil",
+      "manager_name": "Sokolov_Mikhail",
+      "manager_telegram": "mihail_tl"
     },
     "Koshchei Dariia": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7907311",
       "email": "d.koshchei@evadav.com",
       "control_manager": 1,
@@ -639,11 +737,13 @@
       "team": "Native (Hlib)",
       "peopleforce_id": 358327,
       "project": "Agency",
-      "telegram_username": "Koshchei_Dariia"
+      "telegram_username": "Koshchei_Dariia",
+      "manager_name": "Roshchyn_Hlib",
+      "manager_telegram": "Roshchyn_Hlib"
     },
     "Kostina Dariia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7690089",
       "email": "d.kostina@evadav.com",
       "control_manager": 2,
@@ -651,11 +751,13 @@
       "team": null,
       "peopleforce_id": 297322,
       "project": "AD Network",
-      "telegram_username": "Kostina_Dariia"
+      "telegram_username": "Daria_Kostina_Evadav",
+      "manager_name": "Morkin_Serhii",
+      "manager_telegram": "sergey_morkin"
     },
     "Kozinskii Maksim": {
       "start_time": "17:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7915667",
       "email": "m.kozinskii@evadav.com",
       "control_manager": 2,
@@ -663,11 +765,13 @@
       "team": "MB EVA",
       "peopleforce_id": 406863,
       "project": "AD Network",
-      "telegram_username": "Kozinskii_Maksim"
+      "telegram_username": "Maksim_mbCPA",
+      "manager_name": "Tuzman_Mykhailo",
+      "manager_telegram": "Mykhailo_mb_RT_TL"
     },
     "Kramareva Anastasiia": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7918666",
       "email": "a.kramareva@evadav.com",
       "peopleforce_id": 422724,
@@ -675,7 +779,9 @@
       "department": "Finance Direction",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Kramareva_Anastasiia"
+      "telegram_username": "Anastasiia_FINMng",
+      "manager_name": "Maksymchuk_Tetiana",
+      "manager_telegram": "tetiana_finn"
     },
     "Kryvytska Olena": {
       "start_time": "09:00",
@@ -691,7 +797,7 @@
     },
     "Kucher Diana": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7932054",
       "email": "d.kucher@evadav.com",
       "peopleforce_id": 524446,
@@ -699,11 +805,13 @@
       "department": "Native Team",
       "team": "Native (Hlib)",
       "control_manager": 1,
-      "telegram_username": "Kucher_Diana"
+      "telegram_username": "Kucher_Diana_1",
+      "manager_name": "Roshchyn_Hlib",
+      "manager_telegram": "Roshchyn_Hlib"
     },
     "Kucherenko Anastasia": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7919534",
       "email": "a.kucherenko@evadav.com",
       "peopleforce_id": 436192,
@@ -711,11 +819,13 @@
       "department": "KLN Control Team",
       "team": null,
       "control_manager": 3,
-      "telegram_username": "Kucherenko_Anastasia"
+      "telegram_username": "Kucherenko_At",
+      "manager_name": "Yarosh_Katsiaryna",
+      "manager_telegram": "Yarosh_Katsiaryna"
     },
     "Kucherenko Nikita": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7932424",
       "email": "n.kucherenko@evadav.com",
       "control_manager": 2,
@@ -723,11 +833,13 @@
       "team": "BizDev",
       "peopleforce_id": 541734,
       "project": "AD Network",
-      "telegram_username": "Kucherenko_Nikita"
+      "telegram_username": "Kucherenko_Nikita",
+      "manager_name": "Balyunov_Valentin",
+      "manager_telegram": "Balyunov_Valentin"
     },
     "Kunkevich Igor": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7930330",
       "email": "i.kunkevich@evadav.com",
       "peopleforce_id": 522166,
@@ -735,11 +847,13 @@
       "department": "R&D Unit AdNetwork",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Kunkevich_Igor"
+      "telegram_username": "Kunkevich_Ihar",
+      "manager_name": "Morkin_Serhii",
+      "manager_telegram": "sergey_morkin"
     },
     "Kurbanov Sergey": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7904318",
       "email": "s.kurbanov@evadav.com",
       "peopleforce_id": 335389,
@@ -747,11 +861,13 @@
       "department": "IOS Team",
       "team": "R&D team",
       "control_manager": 2,
-      "telegram_username": "Kurbanov_Sergey"
+      "telegram_username": "Kurbanov_Sergey",
+      "manager_name": "Kazmirchuk_Roman",
+      "manager_telegram": "roman_ios"
     },
     "Kurylionak Aliaksandr": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7925305",
       "email": "a.kurylionak@evadav.com",
       "control_manager": 2,
@@ -759,11 +875,13 @@
       "team": "Head of IOS Devision",
       "peopleforce_id": 473645,
       "project": "APP",
-      "telegram_username": "Kurylionak_Aliaksandr"
+      "telegram_username": "Kurylionak_Aliaksandr",
+      "manager_name": "Sidorov_Boris",
+      "manager_telegram": "infokrolik"
     },
     "Kutkovskyi Mykhailo": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7916119",
       "email": "m.kutkovskyi@evadav.com",
       "control_manager": 2,
@@ -771,11 +889,13 @@
       "team": "Administration",
       "peopleforce_id": 498278,
       "project": "Consulting",
-      "telegram_username": "Kutkovskyi_Mykhailo"
+      "telegram_username": "Kutkovskyi_Mykhailo",
+      "manager_name": "Ziuzin_Oleksii",
+      "manager_telegram": "Ziuzin_Oleksii"
     },
     "Larina Olena": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7672715",
       "email": "o.larina@evadav.com",
       "control_manager": 2,
@@ -783,11 +903,13 @@
       "team": null,
       "peopleforce_id": 297364,
       "project": "AD Network",
-      "telegram_username": "Larina_Olena"
+      "telegram_username": "Larina_Olena",
+      "manager_name": "Shpak_Andriy",
+      "manager_telegram": "Shpak_Andriy"
     },
     "Latypov Alexander": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7927833",
       "email": "a.latypov@evadav.com",
       "peopleforce_id": 500740,
@@ -795,22 +917,26 @@
       "department": "CPA Team",
       "team": "MB EVA",
       "control_manager": 2,
-      "telegram_username": "Latypov_Alexander"
+      "telegram_username": "Latypov_Alexander",
+      "manager_name": "Tuzman_Mykhailo",
+      "manager_telegram": "Mykhailo_mb_RT_TL"
     },
     "Lazarenko Maksim": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7667625",
       "email": "m.lazarenko@evadav.com",
       "control_manager": 2,
       "department": "RTB Team",
       "peopleforce_id": 297353,
       "project": "Ad Network",
-      "telegram_username": "Lazarenko_Maksim"
+      "telegram_username": "max_ssp",
+      "manager_name": "Balyunov_Valentin",
+      "manager_telegram": "Balyunov_Valentin"
     },
     "Lebid Anastasiia": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7929933",
       "email": "a.lebid@evadav.com",
       "control_manager": 2,
@@ -818,11 +944,13 @@
       "team": "HRBP",
       "peopleforce_id": 513844,
       "project": "Consulting",
-      "telegram_username": "Lebid_Anastasiia"
+      "telegram_username": "Lebid_Anastasiia",
+      "manager_name": "Harauskaya_Maryia",
+      "manager_telegram": "Harauskaya_Maryia"
     },
     "Lemeshchenko Vladislava": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7918352",
       "email": "v.lemeshchenko@evadav.com",
       "peopleforce_id": 428232,
@@ -830,11 +958,13 @@
       "department": "Creative Team 1",
       "team": "Mainstream",
       "control_manager": 1,
-      "telegram_username": "Lemeshchenko_Vladislava"
+      "telegram_username": "Lemeshchenko_Vladislava",
+      "manager_name": "Romanovich_Alexey",
+      "manager_telegram": "Romanovich_Aleksey"
     },
     "Likhobaba Daniil": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928821",
       "email": "d.likhobaba@evadav.com",
       "control_manager": 2,
@@ -842,11 +972,13 @@
       "team": "Bizdev team 2",
       "peopleforce_id": 507549,
       "project": "AD Network",
-      "telegram_username": "Likhobaba_Daniil"
+      "telegram_username": "Likhobaba_Daniil",
+      "manager_name": "Sarkisov_Moses",
+      "manager_telegram": "Sarkisov_Moses"
     },
     "Lukashov Vasyl": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7922226,
       "email": "v.lukashov@evadav.com",
       "control_manager": 2,
@@ -854,11 +986,13 @@
       "team": null,
       "peopleforce_id": 445146,
       "project": "Consulting",
-      "telegram_username": "Lukashov_Vasyl"
+      "telegram_username": "Lukashov_Vasyl",
+      "manager_name": "Maksymchuk_Tetiana",
+      "manager_telegram": "tetiana_finn"
     },
     "Lysenko Serhii": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7913031",
       "email": "s.lysenko@evadav.com",
       "control_manager": 1,
@@ -866,11 +1000,13 @@
       "team": "Mainstream",
       "peopleforce_id": 384026,
       "project": "Agency",
-      "telegram_username": "Lysenko_Serhii"
+      "telegram_username": "Lysenko_Serhiii",
+      "manager_name": "Romanovich_Alexey",
+      "manager_telegram": "Romanovich_Aleksey"
     },
     "Machula Yulia": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7927047",
       "email": "y.machula@evadav.com",
       "peopleforce_id": 492988,
@@ -878,11 +1014,13 @@
       "department": "L&D Unit",
       "team": "L&D",
       "control_manager": 2,
-      "telegram_username": "Machula_Yulia"
+      "telegram_username": "Machula_Yuliia",
+      "manager_name": "Polishchuk_Kateryna",
+      "manager_telegram": "Polishchuk_Kate"
     },
     "Maksymchuk Tatiana": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7793816",
       "email": "t.maksymchuk@evrius.com",
       "control_manager": 2,
@@ -890,11 +1028,13 @@
       "team": null,
       "peopleforce_id": 280114,
       "project": "Consulting",
-      "telegram_username": "Maksymchuk_Tatiana"
+      "telegram_username": "tetiana_finn",
+      "manager_name": "Sluchevskyi_Gleb",
+      "manager_telegram": "gleb7315"
     },
     "Markovskyi Mykyta": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7911670",
       "email": "m.markovskyi@evadav.com",
       "peopleforce_id": 374907,
@@ -902,11 +1042,13 @@
       "department": "MB Facebook Team 2",
       "team": "FB Mykyta",
       "control_manager": 1,
-      "telegram_username": "Markovskyi_Mykyta"
+      "telegram_username": "Markovskyi_Mykyta",
+      "manager_name": "Klimchenya_Valeriy",
+      "manager_telegram": "Klimchenya_Valeriy"
     },
     "Marsheva Veronika": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7923573",
       "email": "v.marsheva@evadav.com",
       "control_manager": 2,
@@ -914,11 +1056,13 @@
       "team": null,
       "peopleforce_id": 456886,
       "project": "Consulting",
-      "telegram_username": "Marsheva_Veronika"
+      "telegram_username": "Marsheva_Veronika",
+      "manager_name": "Yukhno_Leonid",
+      "manager_telegram": "leotraffic"
     },
     "Masalov Semyon": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "email": "s.masalov@evadav.com",
       "user_id": 7928820,
       "control_manager": 2,
@@ -926,11 +1070,13 @@
       "team": "Bizdev team 2",
       "peopleforce_id": 512814,
       "project": "AD Network",
-      "telegram_username": "Masalov_Semyon"
+      "telegram_username": "Masalov_Semy0n",
+      "manager_name": "Sarkisov_Moses",
+      "manager_telegram": "Sarkisov_Moses"
     },
     "Mastystyi Valerii": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7928020",
       "email": "v.mastystyi@evadav.com",
       "peopleforce_id": 502383,
@@ -938,11 +1084,13 @@
       "department": "MB Facebook Team 2",
       "team": "FB Mykyta",
       "control_manager": 1,
-      "telegram_username": "Mastystyi_Valerii"
+      "telegram_username": "Mastystyi_Valerii",
+      "manager_name": "Markovskyi_Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta"
     },
     "Melnychenko Oleh": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7905335",
       "email": "o.melnychenko@evadav.com",
       "control_manager": 1,
@@ -950,11 +1098,13 @@
       "team": "FB Anna",
       "peopleforce_id": 339853,
       "project": "Agency",
-      "telegram_username": "Melnychenko_Oleh"
+      "telegram_username": "Melnychenko_Oleh",
+      "manager_name": "Bratchenko_Anna",
+      "manager_telegram": "Bratchenko_Hanna"
     },
     "Melnyk Iryna": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7890953",
       "email": "i.melnyk@evrius.com",
       "control_manager": 2,
@@ -962,7 +1112,9 @@
       "team": null,
       "peopleforce_id": 280118,
       "project": "Consulting",
-      "telegram_username": "Melnyk_Iryna"
+      "telegram_username": "Iryna_controlMng",
+      "manager_name": "Tkachenko_Oleksandra",
+      "manager_telegram": "alessa_al"
     },
     "Murygin Nikolai": {
       "start_time": "09:00",
@@ -978,7 +1130,7 @@
     },
     "Mushnin Yevhen": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7928013",
       "email": "y.mushnin@evadav.com",
       "control_manager": 1,
@@ -986,11 +1138,13 @@
       "team": "FB Anna",
       "peopleforce_id": 500679,
       "project": "Agency",
-      "telegram_username": "Mushnin_Yevhen"
+      "telegram_username": "Mushnin_Yevhen",
+      "manager_name": "Bratchenko_Anna",
+      "manager_telegram": "Bratchenko_Hanna"
     },
     "Novak Darya": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928828",
       "email": "d.novak@evadav.com",
       "control_manager": 1,
@@ -998,11 +1152,13 @@
       "team": "Native (Hlib)",
       "peopleforce_id": 512392,
       "project": "Agency",
-      "telegram_username": "Novak_Darya"
+      "telegram_username": "Novak_Daria",
+      "manager_name": "Roshchyn_Hlib",
+      "manager_telegram": "Roshchyn_Hlib"
     },
     "Novak Kiryl": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7929668",
       "email": "k.novak@evadav.com",
       "peopleforce_id": 514398,
@@ -1010,11 +1166,13 @@
       "department": "MB Facebook Team 2",
       "team": "FB Mykyta",
       "control_manager": 1,
-      "telegram_username": "Novak_Kiryl"
+      "telegram_username": "Novak_Kiril",
+      "manager_name": "Markovskyi_Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta"
     },
     "Oleynik Katerina": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7669075,
       "email": "e.oleynik@evadav.com",
       "peopleforce_id": 297337,
@@ -1022,11 +1180,13 @@
       "department": "Traffic Account Team",
       "team": "Account team",
       "control_manager": 2,
-      "telegram_username": "Oleynik_Katerina"
+      "telegram_username": "kitikat123",
+      "manager_name": "Gyrych_Maria",
+      "manager_telegram": "Gyrych_Maria"
     },
     "Oliinyk Veronika": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7919533",
       "email": "v.oliinyk@evadav.com",
       "peopleforce_id": 431856,
@@ -1034,11 +1194,13 @@
       "department": "Control Unit",
       "team": null,
       "control_manager": 3,
-      "telegram_username": "Oliinyk_Veronika"
+      "telegram_username": "Oliinyk_Veronika",
+      "manager_name": "Kryvytska_Olena",
+      "manager_telegram": "Kryvytska_Alena"
     },
     "Osadtsa Dmitro": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7675966",
       "email": "dmitry_controlteam@evadav.com",
       "peopleforce_id": 297317,
@@ -1046,11 +1208,13 @@
       "department": "Traffic Compliance Team",
       "team": "Compliance Department",
       "control_manager": 3,
-      "telegram_username": "Osadtsa_Dmitro"
+      "telegram_username": "Dmitry_Compliance",
+      "manager_name": "Tkachenko_Oleksandra",
+      "manager_telegram": "alessa_al"
     },
     "Panasenko Natalya": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928431",
       "email": "n.panasenko@evadav.com",
       "peopleforce_id": 497915,
@@ -1058,11 +1222,13 @@
       "department": "AdNetwork Division",
       "team": "Head оf Sales",
       "control_manager": 2,
-      "telegram_username": "Panasenko_Natalya"
+      "telegram_username": "Panasenko_Natalya",
+      "manager_name": "Sluchevskyi_Gleb",
+      "manager_telegram": "gleb7315"
     },
     "Pirogov Savva": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7930901",
       "email": "s.pirogov@evadav.com",
       "peopleforce_id": 533331,
@@ -1070,11 +1236,13 @@
       "department": "Hunter Team",
       "team": "Hunter",
       "control_manager": 2,
-      "telegram_username": "Pirogov_Savva"
+      "telegram_username": "Pirogov_Savva",
+      "manager_name": "Tenditnik_Roman",
+      "manager_telegram": "adver_roma"
     },
     "Pitukh Daryna": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7916232",
       "email": "d.pitukh@evadav.com",
       "control_manager": 2,
@@ -1082,11 +1250,13 @@
       "team": "Recruitment",
       "peopleforce_id": 407665,
       "project": "Consulting",
-      "telegram_username": "Pitukh_Daryna"
+      "telegram_username": "Pitukh_Daryna",
+      "manager_name": "Zhara_Lilia",
+      "manager_telegram": "Zhara_Liliia"
     },
     "Polishchuk Kateryna": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7896774",
       "email": "k.polishchuk@evadav.com",
       "control_manager": 2,
@@ -1094,11 +1264,13 @@
       "team": "L&D",
       "peopleforce_id": 304154,
       "project": "Consulting",
-      "telegram_username": "Polishchuk_Kateryna"
+      "telegram_username": "Polishchuk_Kate",
+      "manager_name": "Harauskaya_Maryia",
+      "manager_telegram": "Harauskaya_Maryia"
     },
     "Ponomarenko Yevhen": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7922335",
       "email": "y.ponomarenko@evadav.com",
       "peopleforce_id": 442488,
@@ -1106,11 +1278,13 @@
       "department": "Media buying Unit",
       "team": "Data team",
       "control_manager": 2,
-      "telegram_username": "Ponomarenko_Yevhen"
+      "telegram_username": "Ponomarenko_Yevhen",
+      "manager_name": "Ovcharenko_German",
+      "manager_telegram": "german_21"
     },
     "Postnikov Iurii": {
       "start_time": "12:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7929068",
       "email": "i.postnikov@evadav.com",
       "peopleforce_id": 513864,
@@ -1118,11 +1292,13 @@
       "department": "BizDev Team",
       "team": "BizDev",
       "control_manager": 2,
-      "telegram_username": "Postnikov_Iurii"
+      "telegram_username": "Postnikov_Iurii",
+      "manager_name": "Kucherenko_Nikita",
+      "manager_telegram": "Kucherenko_Nikita"
     },
     "Pryimak Artur": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7919997,
       "email": "a.pryimak@evadav.com",
       "control_manager": 2,
@@ -1130,11 +1306,13 @@
       "team": "Bizdev team 1",
       "peopleforce_id": 439752,
       "project": "AD Network",
-      "telegram_username": "Pryimak_Artur"
+      "telegram_username": "Pryimak_Artur",
+      "manager_name": "Sokolov_Mikhail",
+      "manager_telegram": "mihail_tl"
     },
     "Prymak Yuliia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7930312",
       "email": "y.prymak@evadav.com",
       "control_manager": 2,
@@ -1142,11 +1320,13 @@
       "team": "MB EVA",
       "peopleforce_id": 517613,
       "project": "AD Network",
-      "telegram_username": "Prymak_Yuliia"
+      "telegram_username": "Prymak_Yuliia",
+      "manager_name": "Tuzman_Mykhailo",
+      "manager_telegram": "Mykhailo_mb_RT_TL"
     },
     "Romanovich Alexey": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7903566",
       "email": "a.romanovich@evadav.com",
       "control_manager": 1,
@@ -1154,7 +1334,9 @@
       "team": "Mainstream",
       "peopleforce_id": 332155,
       "project": "Agency",
-      "telegram_username": "Romanovich_Alexey"
+      "telegram_username": "Romanovich_Aleksey",
+      "manager_name": "Sidielnikova_Diana",
+      "manager_telegram": "Sidielnikova_Diana"
     },
     "Roshchyn Hlib": {
       "start_time": "09:00",
@@ -1170,7 +1352,7 @@
     },
     "Ruban Mykyta": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7906376,
       "email": "m.ruban@evadav.com",
       "peopleforce_id": 351261,
@@ -1178,11 +1360,13 @@
       "department": "Performance Team",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Ruban_Mykyta"
+      "telegram_username": "Nikita_Ruban_Marketing",
+      "manager_name": "Balyunov_Valentin",
+      "manager_telegram": "Balyunov_Valentin"
     },
     "Rudenko Bogdan": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7813255",
       "email": "bogdan_rud@evadav.com",
       "peopleforce_id": 297359,
@@ -1190,11 +1374,13 @@
       "department": "Demand Account Team",
       "team": "Аccount team",
       "control_manager": 2,
-      "telegram_username": "Rudenko_Bogdan"
+      "telegram_username": "Bogdan_rudenko",
+      "manager_name": "Dupenko_Valeriia",
+      "manager_telegram": "Dupenko_Valeriia"
     },
     "Sankov Yurii": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7683800",
       "email": "y.sankov@evadav.com",
       "peopleforce_id": 286607,
@@ -1202,11 +1388,13 @@
       "department": "Media buying Unit",
       "team": "Data team",
       "control_manager": 2,
-      "telegram_username": "Sankov_Yurii"
+      "telegram_username": "y_evadav",
+      "manager_name": "Ovcharenko_German",
+      "manager_telegram": "german_21"
     },
     "Sarkisov Moses": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7927609",
       "email": "m.sarkisov@evadav.com",
       "control_manager": 2,
@@ -1214,11 +1402,13 @@
       "team": "Bizdev team 2",
       "peopleforce_id": 498033,
       "project": "AD Network",
-      "telegram_username": "Sarkisov_Moses"
+      "telegram_username": "Sarkisov_Moses",
+      "manager_name": "Gyrych_Maria",
+      "manager_telegram": "Gyrych_Maria"
     },
     "Semeniakina Nadzeya": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928826",
       "email": "n.semeniakina@evadav.com",
       "peopleforce_id": 512583,
@@ -1226,11 +1416,13 @@
       "department": "Native Team",
       "team": "Native (Hlib)",
       "control_manager": 1,
-      "telegram_username": "Semeniakina_Nadzeya"
+      "telegram_username": "Semeniakina_Nadzeya",
+      "manager_name": "Roshchyn_Hlib",
+      "manager_telegram": "Roshchyn_Hlib"
     },
     "Serdiuk Alina": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7919535",
       "email": "a.serdiuk@evadav.com",
       "peopleforce_id": 433837,
@@ -1238,11 +1430,13 @@
       "department": "Analytics Control Team",
       "team": null,
       "control_manager": 3,
-      "telegram_username": "Serdiuk_Alina"
+      "telegram_username": "Serdiuk_Alinaa",
+      "manager_name": "Shkurai_Marianna",
+      "manager_telegram": "Shkurai_Marianna"
     },
     "Shersheriia Heorhii": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7906059",
       "email": "h.shersheriia@evadav.com",
       "peopleforce_id": 349136,
@@ -1250,11 +1444,13 @@
       "department": "Creative Team 2",
       "team": "Adult",
       "control_manager": 1,
-      "telegram_username": "Shersheriia_Heorhii"
+      "telegram_username": "Shersheriia_Heorhii",
+      "manager_name": "Sidielnikova_Diana",
+      "manager_telegram": "Sidielnikova_Diana"
     },
     "Shevchenko Igor": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7931816",
       "email": "i.shevchenko@evadav.com",
       "peopleforce_id": 542537,
@@ -1262,11 +1458,13 @@
       "department": "BizDev Team",
       "team": "BizDev",
       "control_manager": 2,
-      "telegram_username": "Shevchenko_Igor"
+      "telegram_username": "Shevchenko_Ig0r",
+      "manager_name": "Kucherenko_Nikita",
+      "manager_telegram": "Kucherenko_Nikita"
     },
     "Shilko Alexandra": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933891",
       "email": "a.shilko@evadav.com",
       "control_manager": 1,
@@ -1274,11 +1472,13 @@
       "team": "Marketing",
       "peopleforce_id": 558738,
       "project": "Agency",
-      "telegram_username": "Shilko_Alexandra"
+      "telegram_username": "Shilko_Alexandra",
+      "manager_name": "Sidielnikova_Diana",
+      "manager_telegram": "Sidielnikova_Diana"
     },
     "Shinkus Aleksandr": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7712328,
       "email": "forums@evadav.com",
       "peopleforce_id": 323530,
@@ -1286,11 +1486,13 @@
       "department": "Marketing Direction",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Shinkus_Aleksandr"
+      "telegram_username": "Alexander_S1990",
+      "manager_name": "Yukhno_Leonid",
+      "manager_telegram": "leotraffic"
     },
     "Shkurai Marianna": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7905320,
       "email": "m.shkurai@evadav.com",
       "peopleforce_id": 338748,
@@ -1298,11 +1500,13 @@
       "department": "Analytics Control Team",
       "team": null,
       "control_manager": 3,
-      "telegram_username": "Shkurai_Marianna"
+      "telegram_username": "Shkurai_Marianna",
+      "manager_name": "Kryvytska_Olena",
+      "manager_telegram": "Kryvytska_Alena"
     },
     "Shoshina Karina": {
       "start_time": "12:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933579",
       "email": "k.shoshina@evadav.com",
       "control_manager": 1,
@@ -1310,11 +1514,13 @@
       "team": "TikTok",
       "peopleforce_id": 555642,
       "project": "Agency",
-      "telegram_username": "Shoshina_Karina"
+      "telegram_username": "Shoshina_Karina",
+      "manager_name": "Balaban_Iryna",
+      "manager_telegram": "Balaban_Iryna"
     },
     "Shota Artyom": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7926344",
       "email": "a.shota@evadav.com",
       "control_manager": 2,
@@ -1322,11 +1528,13 @@
       "team": "SCAd team",
       "peopleforce_id": 473652,
       "project": "APP",
-      "telegram_username": "Shota_Artyom"
+      "telegram_username": "Shota_Artyom",
+      "manager_name": "Ovcharenko_German",
+      "manager_telegram": "german_21"
     },
     "Shpak Andrew": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7807945",
       "email": "andrii_mod@evadav.com",
       "peopleforce_id": 297365,
@@ -1334,11 +1542,13 @@
       "department": "Moderation Team",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Shpak_Andrew"
+      "telegram_username": "Shpak_Andriy",
+      "manager_name": "Balyunov_Valentin",
+      "manager_telegram": "Balyunov_Valentin"
     },
     "Shubska Oleksandra": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7911097",
       "email": "o.shubska@evadav.com",
       "peopleforce_id": 372364,
@@ -1346,11 +1556,13 @@
       "department": "Finance Direction",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Shubska_Oleksandra"
+      "telegram_username": "Oleksandra_finnEva",
+      "manager_name": "Maksymchuk_Tetiana",
+      "manager_telegram": "tetiana_finn"
     },
     "Shustal  Valeria": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7927891",
       "email": "v.shustal@evadav.com",
       "control_manager": 2,
@@ -1358,11 +1570,13 @@
       "team": "Product team",
       "peopleforce_id": 499881,
       "project": "APP",
-      "telegram_username": "Shustal_Valeria"
+      "telegram_username": "Shustal_Valeria &nbsp;",
+      "manager_name": "Gramovich_Ivan",
+      "manager_telegram": "Gramovich_Ivan"
     },
     "Shykula Artur": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": "7916590",
       "email": "a.shykula@evadav.com",
       "peopleforce_id": 411141,
@@ -1370,7 +1584,9 @@
       "department": "Tik Tok Team",
       "team": "TikTok",
       "control_manager": 1,
-      "telegram_username": "Shykula_Artur"
+      "telegram_username": "Shykula_Artur",
+      "manager_name": "Balaban_Iryna",
+      "manager_telegram": "Balaban_Iryna"
     },
     "Sidielnikova Diana": {
       "start_time": "10:00",
@@ -1386,7 +1602,7 @@
     },
     "Smirnov Sergey": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7919987,
       "email": "s.smirnov@evadav.com",
       "peopleforce_id": 434289,
@@ -1394,11 +1610,13 @@
       "department": "Lead BizDev Team",
       "team": "Bizdev team 1",
       "control_manager": 2,
-      "telegram_username": "Smirnov_Sergey"
+      "telegram_username": "Smirnov_Serhiy",
+      "manager_name": "Sokolov_Mikhail",
+      "manager_telegram": "mihail_tl"
     },
     "Sokolov Mikhail": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7666621",
       "email": "mikhail_pub@evadav.com",
       "peopleforce_id": 297335,
@@ -1406,11 +1624,13 @@
       "department": "Lead BizDev Team",
       "team": "Bizdev team 1",
       "control_manager": 2,
-      "telegram_username": "Sokolov_Mikhail"
+      "telegram_username": "mihail_tl",
+      "manager_name": "Gyrych_Maria",
+      "manager_telegram": "Gyrych_Maria"
     },
     "Stepanov Oleksandr": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7928124",
       "email": "o.stepanov@evadav.com",
       "peopleforce_id": 501205,
@@ -1418,11 +1638,13 @@
       "department": "C&B Unit",
       "team": "Compensation & Benefits",
       "control_manager": 2,
-      "telegram_username": "Stepanov_Oleksandr"
+      "telegram_username": "Stepanov_Oleksandr",
+      "manager_name": "Harauskaya_Maryia",
+      "manager_telegram": "Harauskaya_Maryia"
     },
     "Stopochkin Nykyta": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7911091,
       "email": "n.stopochkin@evadav.com",
       "control_manager": 2,
@@ -1430,11 +1652,13 @@
       "team": null,
       "peopleforce_id": 374722,
       "project": "AD Network",
-      "telegram_username": "Stopochkin_Nykyta"
+      "telegram_username": "Stopochkin_Nykyta",
+      "manager_name": "Shpak_Andriy",
+      "manager_telegram": "Shpak_Andriy"
     },
     "Sukhanov Vlad": {
       "start_time": "08:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7913194",
       "email": "v.sukhanov@evadav.com",
       "control_manager": 2,
@@ -1442,11 +1666,13 @@
       "team": null,
       "peopleforce_id": 385941,
       "project": "AD Network",
-      "telegram_username": "Sukhanov_Vlad"
+      "telegram_username": "Vlad_EvaPM",
+      "manager_name": "Panasenko_Natalya",
+      "manager_telegram": "Panasenko_Natalya"
     },
     "Tarasenko Polina": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "email": "p.tarasenko@evadav.com",
       "user_id": 7916231,
       "peopleforce_id": 401927,
@@ -1454,11 +1680,13 @@
       "department": "Recruitment Team",
       "team": "Recruitment",
       "control_manager": 2,
-      "telegram_username": "Tarasenko_Polina"
+      "telegram_username": "Tarasenko_Polia",
+      "manager_name": "Zhara_Lilia",
+      "manager_telegram": "Zhara_Liliia"
     },
     "Tatarchenko Oleksii": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7896136",
       "email": "o.tatarchenko@evadav.com",
       "peopleforce_id": 292568,
@@ -1466,11 +1694,13 @@
       "department": "IOS Team",
       "team": "R&D team",
       "control_manager": 2,
-      "telegram_username": "Tatarchenko_Oleksii"
+      "telegram_username": "Tatarchenko_Oleksii",
+      "manager_name": "Kazmirchuk_Roman",
+      "manager_telegram": "roman_ios"
     },
     "Tenditnik Roman": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7758255",
       "email": "roman_adv@evadav.com",
       "control_manager": 2,
@@ -1478,11 +1708,13 @@
       "team": "Hunter",
       "peopleforce_id": 297348,
       "project": "AD Network",
-      "telegram_username": "Tenditnik_Roman"
+      "telegram_username": "adver_roma",
+      "manager_name": "Dupenko_Valeriia",
+      "manager_telegram": "Dupenko_Valeriia"
     },
     "Tereshchenko Kirill": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7637340,
       "email": "k.tereschenko@evadav.com",
       "control_manager": 1,
@@ -1490,11 +1722,13 @@
       "team": null,
       "peopleforce_id": 266236,
       "project": "Agency",
-      "telegram_username": "Tereshchenko_Kirill"
+      "telegram_username": "Tereshchenko_Kirill",
+      "manager_name": "Sluchevskyi_Gleb",
+      "manager_telegram": "gleb7315"
     },
     "Terletskaya Daria": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7905699",
       "email": "d.terletskaya@evadav.com",
       "peopleforce_id": 337970,
@@ -1502,11 +1736,13 @@
       "department": "Recruitment Team",
       "team": "Recruitment",
       "control_manager": 2,
-      "telegram_username": "Terletskaya_Daria"
+      "telegram_username": "Daria_Researcher&nbsp;",
+      "manager_name": "Tarasenko_Polina",
+      "manager_telegram": "Tarasenko_Polia"
     },
     "Torianyk Haiana": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7916235,
       "email": "h.torianyk@evadav.com",
       "control_manager": 2,
@@ -1514,11 +1750,13 @@
       "team": "Recruitment",
       "peopleforce_id": 397108,
       "project": "Consulting",
-      "telegram_username": "Torianyk_Haiana"
+      "telegram_username": "Torianyk_Haiana",
+      "manager_name": "Zhara_Lilia",
+      "manager_telegram": "Zhara_Liliia"
     },
     "Tuzman Mykhailo": {
       "start_time": "08:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7911663",
       "email": "m.tuzman@evadav.com",
       "control_manager": 2,
@@ -1526,11 +1764,13 @@
       "team": "MB EVA",
       "peopleforce_id": 378343,
       "project": "AD Network",
-      "telegram_username": "Tuzman_Mykhailo"
+      "telegram_username": "Mykhailo_mb_RT_TL",
+      "manager_name": "Balyunov_Valentin",
+      "manager_telegram": "Balyunov_Valentin"
     },
     "Unkovska Anna": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "email": "a.unkovska@evadav.com",
       "user_id": 7820038,
       "peopleforce_id": 297323,
@@ -1538,7 +1778,9 @@
       "department": "QA Team",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Unkovska_Anna"
+      "telegram_username": "Anna_QAEvadav",
+      "manager_name": "Morkin_Serhii",
+      "manager_telegram": "sergey_morkin"
     },
     "Usenko Roman": {
       "start_time": "09:00",
@@ -1566,7 +1808,7 @@
     },
     "Vasilev Nikolai": {
       "start_time": "11:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7933476",
       "email": "n.vasilev@evadav.com",
       "peopleforce_id": 554614,
@@ -1574,11 +1816,13 @@
       "department": "CPA Unit",
       "team": "Gambling Team",
       "control_manager": 2,
-      "telegram_username": "Vasilev_Nikolai"
+      "telegram_username": "Vasilev_Nikolaj",
+      "manager_name": "Tuzman_Mykhailo",
+      "manager_telegram": "Mykhailo_mb_RT_TL"
     },
     "Vcherashniaya Aliaksandra": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7927617,
       "email": "a.vcherashniaya@evadav.com",
       "peopleforce_id": 498916,
@@ -1586,11 +1830,13 @@
       "department": "Control Unit",
       "team": null,
       "control_manager": 3,
-      "telegram_username": "Vcherashniaya_Aliaksandra"
+      "telegram_username": "Vcherashniaya_Aliaksandra",
+      "manager_name": "Kryvytska_Olena",
+      "manager_telegram": "Kryvytska_Alena"
     },
     "Vinogradov Oleg": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7929805",
       "email": "o.vinogradov@evadav.com",
       "peopleforce_id": 517654,
@@ -1598,11 +1844,13 @@
       "department": "Media buying Unit",
       "team": "Data team",
       "control_manager": 2,
-      "telegram_username": "Vinogradov_Oleg"
+      "telegram_username": "Vinogradov_Oleg",
+      "manager_name": "Ovcharenko_German",
+      "manager_telegram": "german_21"
     },
     "Vladyslav Taranov": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7926352",
       "email": "v.taranov@evadav.com",
       "control_manager": 1,
@@ -1610,11 +1858,13 @@
       "team": "FB Anna",
       "peopleforce_id": 485116,
       "project": "Agency",
-      "telegram_username": "Vladyslav_Taranov"
+      "telegram_username": "Taranov_Vladyslav",
+      "manager_name": "Bratchenko_Anna",
+      "manager_telegram": "Bratchenko_Hanna"
     },
     "Vorozheykin Oleksii": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7899975,
       "email": "a.vorozheykin@evadav.com",
       "peopleforce_id": 297331,
@@ -1622,11 +1872,13 @@
       "department": "Analyst Team",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Vorozheykin_Oleksii"
+      "telegram_username": "Vorozheykin_Oleksii",
+      "manager_name": "Panasenko_Natalya",
+      "manager_telegram": "Panasenko_Natalya"
     },
     "Vykhodtseva Mariia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7931177",
       "email": "m.vykhodtseva@evadav.com",
       "control_manager": 2,
@@ -1634,11 +1886,13 @@
       "team": "Hunter",
       "peopleforce_id": 533335,
       "project": "Ad Network",
-      "telegram_username": "Vykhodtseva_Mariia"
+      "telegram_username": "Vykhodtseva_Mariia",
+      "manager_name": "Tenditnik_Roman",
+      "manager_telegram": "adver_roma"
     },
     "Yekhlakov Viktor": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7920390,
       "email": "v.yekhlakov@evadav.com",
       "control_manager": 2,
@@ -1646,11 +1900,13 @@
       "team": "R&D team",
       "peopleforce_id": 286601,
       "project": "APP",
-      "telegram_username": "Yekhlakov_Viktor"
+      "telegram_username": "Yekhlakov_Viktor",
+      "manager_name": "Kazmirchuk_Roman",
+      "manager_telegram": "roman_ios"
     },
     "Yevtushenko Kyrylo": {
       "start_time": "09:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7910709,
       "email": "k.yevtushenko@evadav.com",
       "flexible_schedule": true,
@@ -1659,7 +1915,9 @@
       "department": "Product Operations Unit",
       "team": null,
       "control_manager": 1,
-      "telegram_username": "Yevtushenko_Kyrylo"
+      "telegram_username": "Yevtushenko_Kyrylo",
+      "manager_name": "Tereshchenko_Kirill",
+      "manager_telegram": "Tereshchenko_Kirill"
     },
     "Yukhno Leonid": {
       "start_time": "09:00",
@@ -1675,7 +1933,7 @@
     },
     "Yushkov Pavel": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7932059",
       "email": "p.yushkov@evadav.com",
       "control_manager": 2,
@@ -1683,7 +1941,9 @@
       "team": "Data team",
       "peopleforce_id": 544893,
       "project": "APP",
-      "telegram_username": "Yushkov_Pavel"
+      "telegram_username": "Yushkov_Pavel",
+      "manager_name": "Kurylionak_Aliaksandr",
+      "manager_telegram": "Kurylionak_Aliaksandr"
     },
     "Zaprudskiy Sergey": {
       "start_time": "09:00",
@@ -1700,7 +1960,7 @@
     },
     "Zbutevich Illia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": 7933477,
       "email": "i.zbutevych@evadav.com",
       "control_manager": 2,
@@ -1708,11 +1968,13 @@
       "team": null,
       "peopleforce_id": 551929,
       "project": "AD Network",
-      "telegram_username": "Zbutevich_Illia"
+      "telegram_username": "Zbutevych_Illia",
+      "manager_name": "Shpak_Andriy",
+      "manager_telegram": "Shpak_Andriy"
     },
     "Zdorovets Yuliia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7915601",
       "email": "y.zdorovets@evadav.com",
       "peopleforce_id": 406860,
@@ -1720,11 +1982,13 @@
       "department": "Finance Direction",
       "team": null,
       "control_manager": 2,
-      "telegram_username": "Zdorovets_Yuliia"
+      "telegram_username": "Yuliia_finnEva",
+      "manager_name": "Maksymchuk_Tetiana",
+      "manager_telegram": "tetiana_finn"
     },
     "Zhara Lilia": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7930713,
       "email": "l.zhara@evadav.com",
       "control_manager": 2,
@@ -1732,11 +1996,13 @@
       "team": "Recruitment",
       "peopleforce_id": 273475,
       "project": "Consulting",
-      "telegram_username": "Zhara_Lilia"
+      "telegram_username": "Zhara_Liliia",
+      "manager_name": "Harauskaya_Maryia",
+      "manager_telegram": "Harauskaya_Maryia"
     },
     "Ziuzin Oleksii": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7918354",
       "email": "o.ziuzin@evadav.com",
       "peopleforce_id": 427564,
@@ -1744,11 +2010,13 @@
       "department": "System admin Team",
       "team": "Administration",
       "control_manager": 2,
-      "telegram_username": "Ziuzin_Oleksii"
+      "telegram_username": "Ziuzin_Oleksii",
+      "manager_name": "Harauskaya_Maryia",
+      "manager_telegram": "Harauskaya_Maryia"
     },
     "Zubkova Daryna": {
       "start_time": "12:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7914604",
       "email": "d.zubkova@evadav.com",
       "peopleforce_id": 396708,
@@ -1756,11 +2024,13 @@
       "department": "CPA Team",
       "team": "MB EVA",
       "control_manager": 2,
-      "telegram_username": "Zubkova_Daryna"
+      "telegram_username": "Daryna_mbCPA",
+      "manager_name": "Tuzman_Mykhailo",
+      "manager_telegram": "Mykhailo_mb_RT_TL"
     },
     "Veranika Masiuk": {
       "start_time": "09:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7929103",
       "email": "v.masiuk@evadav.com",
       "control_manager": 2,
@@ -1768,11 +2038,13 @@
       "team": "Corporate culture",
       "peopleforce_id": 512945,
       "project": "Consulting",
-      "telegram_username": "Veranika_Masiuk"
+      "telegram_username": "Masiuk_Veranika",
+      "manager_name": "Harauskaya_Maryia",
+      "manager_telegram": "Harauskaya_Maryia"
     },
     "Danyl Kolos": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": "7928810",
       "email": "d.kolos@evadav.com",
       "control_manager": 2,
@@ -1784,11 +2056,13 @@
         "project": true,
         "team": true
       },
-      "telegram_username": "Danyl_Kolos"
+      "telegram_username": "Kolos_Danyl",
+      "manager_name": "Sarkisov_Moses",
+      "manager_telegram": "Sarkisov_Moses"
     },
     "Dankova Tetiana": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934594",
       "email": "t.dankova@evadav.com",
       "peopleforce_id": 562222,
@@ -1796,7 +2070,9 @@
       "department": "C&B Unit",
       "team": "Compensation & Benefits",
       "control_manager": 2,
-      "telegram_username": "Dankova_Tetiana"
+      "telegram_username": "Dankova_Tetiana",
+      "manager_name": "Stepanov_Oleksandr",
+      "manager_telegram": "Stepanov_Oleksandr"
     },
     "Anton Popovych": {
       "start_time": "09:00",
@@ -1812,7 +2088,7 @@
     },
     "Alina Dobrorodnia": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7905079",
       "email": "a.dobrorodnia@evadav.com",
       "control_manager": 2,
@@ -1824,11 +2100,13 @@
         "project": true,
         "team": true
       },
-      "telegram_username": "Alina_Dobrorodnia"
+      "telegram_username": "Alina_BizDevEva",
+      "manager_name": "Olieinyk_Kateryna",
+      "manager_telegram": "kitikat123"
     },
     "Kulyk Artem": {
       "start_time": "09:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": 7934114,
       "email": "a.kulyk@evadav.com",
       "peopleforce_id": 487462,
@@ -1836,11 +2114,13 @@
       "department": "MB Facebook Team 2",
       "team": "FB Mykyta",
       "control_manager": 1,
-      "telegram_username": "Kulyk_Artem"
+      "telegram_username": "Kulyk_Artem",
+      "manager_name": "Markovskyi_Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta"
     },
     "Kotliarenko Alina": {
       "start_time": "09:00",
-      "location": "Prague, CZ",
+      "location": "Prague office",
       "user_id": 7931381,
       "email": "a.kotliarenko@evadav.com",
       "peopleforce_id": 525862,
@@ -1848,11 +2128,13 @@
       "department": "IOS Team",
       "team": "R&D team",
       "control_manager": 2,
-      "telegram_username": "Kotliarenko_Alina"
+      "telegram_username": "Kotliarenko_Alina",
+      "manager_name": "Kurylionak_Aliaksandr",
+      "manager_telegram": "Kurylionak_Aliaksandr"
     },
     "Kondakov Alexander": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "user_id": 7934508,
       "email": "a.kondakov@evadav.com",
       "peopleforce_id": 564377,
@@ -1860,11 +2142,13 @@
       "department": "Demand Account Team",
       "team": "Account",
       "control_manager": 2,
-      "telegram_username": "Kondakov_Alexander"
+      "telegram_username": "Kondakov_Alexander",
+      "manager_name": "Rudenko_Bogdan",
+      "manager_telegram": "Bogdan_rudenko"
     },
     "Ivasyshyn Oleksandr": {
       "start_time": "10:00",
-      "location": "Remote",
+      "location": "Remote other countries",
       "email": "o.ivasyshyn@evadav.com",
       "user_id": "7934570",
       "peopleforce_id": 564301,
@@ -1872,23 +2156,27 @@
       "department": "Native Team",
       "team": "Native (Hlib)",
       "control_manager": 1,
-      "telegram_username": "Ivasyshyn_Oleksandr"
+      "telegram_username": "Ivasyshyn_Oleksandr",
+      "manager_name": "Roshchyn_Hlib",
+      "manager_telegram": "Roshchyn_Hlib"
     },
     "Nikolaichuk Tamara": {
       "start_time": "9:00",
-      "location": "Warsaw, PL",
+      "location": "Warsaw office",
       "user_id": "7934729",
       "email": "t.nikolaichuk@evadav.com",
       "peopleforce_id": 567696,
       "project": "Consulting",
-      "department": "HR department",
+      "department": "Corporate Culture Unit",
       "team": "Corporate culture",
       "control_manager": 2,
-      "telegram_username": "Nikolaichuk_Tamara"
+      "telegram_username": "Nikolaichuk_Tamara",
+      "manager_name": "Masiuk_Veranika",
+      "manager_telegram": "Masiuk_Veranika"
     },
     "Korobiy Vladislav": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934794",
       "email": "v.korobiy@evadav.com",
       "peopleforce_id": 568010,
@@ -1896,11 +2184,13 @@
       "department": "Creative Unit",
       "team": "Mainstream",
       "control_manager": 1,
-      "telegram_username": "Korobiy_Vladislav"
+      "telegram_username": "Korobiy_Vladislav",
+      "manager_name": "Shersheriia_Heorhii",
+      "manager_telegram": "Shersheriia_Heorhii"
     },
     "Cherneha Kateryna": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934990",
       "email": "k.cherneha@evadav.com",
       "peopleforce_id": 568182,
@@ -1908,11 +2198,13 @@
       "department": "Native Team",
       "team": "Native (Hlib)",
       "control_manager": 1,
-      "telegram_username": "Cherneha_Kateryna"
+      "telegram_username": "Cherneha_Kateryna",
+      "manager_name": "Kucher_Diana",
+      "manager_telegram": "Kucher_Diana_1"
     },
     "Kravets Olena": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934987",
       "email": "o.kravets@evadav.com",
       "peopleforce_id": 568178,
@@ -1920,11 +2212,13 @@
       "department": "Native Team",
       "team": "Native (Hlib)",
       "control_manager": 1,
-      "telegram_username": "Kravets_Olena"
+      "telegram_username": "Kravets_Olenaa",
+      "manager_name": "Kucher_Diana",
+      "manager_telegram": "Kucher_Diana_1"
     },
     "Zakharychev Fedir": {
       "start_time": "10:00",
-      "location": "UA",
+      "location": "Remote Ukraine",
       "user_id": "7934989",
       "email": "f.zakharychev@evadav.com",
       "peopleforce_id": 567811,
@@ -1932,7 +2226,9 @@
       "department": "Native Team",
       "team": "Native (Hlib)",
       "control_manager": 1,
-      "telegram_username": "Zakharychev_Fedir"
+      "telegram_username": "Zakharychev_Fedir",
+      "manager_name": "Kucher_Diana",
+      "manager_telegram": "Kucher_Diana_1"
     },
     "Amir Kasimov": {
       "user_id": "7932371",
@@ -1942,8 +2238,10 @@
       "peopleforce_id": 548674,
       "project": "Agency",
       "control_manager": 1,
-      "location": "Remote",
-      "telegram_username": "Amir_Kasimov"
+      "location": "Remote other countries",
+      "telegram_username": "Kasimov_Amir",
+      "manager_name": "Roshchyn_Hlib",
+      "manager_telegram": "Roshchyn_Hlib"
     },
     "Andriy Pankov": {
       "user_id": "7673443",
@@ -1953,21 +2251,25 @@
       "peopleforce_id": 297362,
       "project": "Ad Network",
       "control_manager": 2,
-      "location": "UA",
-      "telegram_username": "Andriy_Pankov"
+      "location": "Remote Ukraine",
+      "telegram_username": "Pankov_Andrii",
+      "manager_name": "Shpak_Andriy",
+      "manager_telegram": "Shpak_Andriy"
     },
     "Evhen  Kiliovyi": {
       "user_id": "7682034",
       "email": "evgeniy_mod@evadav.com",
       "note": "Нічна зміна",
-      "department": "Moderation team",
+      "department": "Moderation",
       "peopleforce_id": "297363",
       "project": "Ad Network",
       "control_manager": 2,
       "_manual_overrides": {
         "department": true
       },
-      "telegram_username": "Evhen_Kiliovyi"
+      "telegram_username": "Kiliovyi_Evhen",
+      "manager_name": "Shpak_Andriy",
+      "manager_telegram": "Shpak_Andriy"
     },
     "Alexandr Pankov": {
       "user_id": "7912880",
@@ -1977,8 +2279,10 @@
       "peopleforce_id": 356654,
       "project": "Ad Network",
       "control_manager": 2,
-      "location": "UA",
-      "telegram_username": "Alexandr_Pankov"
+      "location": "Remote Ukraine",
+      "telegram_username": "Pankov_Oleksandr",
+      "manager_name": "Shpak_Andriy",
+      "manager_telegram": "Shpak_Andriy"
     },
     "Viktor Demidov": {
       "user_id": "7793894",
@@ -1987,8 +2291,10 @@
       "peopleforce_id": 297358,
       "project": "Ad Network",
       "control_manager": 2,
-      "location": "UA",
-      "telegram_username": "Viktor_Demidov"
+      "location": "Remote Ukraine",
+      "telegram_username": "Demidov_Viktor",
+      "manager_name": "Iliin_Eugeniy",
+      "manager_telegram": "Iliin_Eugeniy"
     },
     "Leonid Chernov": {
       "user_id": "7667047",
@@ -1997,8 +2303,10 @@
       "project": "Ad Network",
       "department": "Support Team",
       "control_manager": 2,
-      "location": "UA",
-      "telegram_username": "Leonid_Chernov"
+      "location": "Remote Ukraine",
+      "telegram_username": "Chernov_Leonid",
+      "manager_name": "Iliin_Eugeniy",
+      "manager_telegram": "Iliin_Eugeniy"
     },
     "Andrey Otdelnyi": {
       "email": "a.otdelnyi@evadav.com",
@@ -2010,7 +2318,10 @@
         "department": true
       },
       "control_manager": 2,
-      "telegram_username": "Andrey_Otdelnyi"
+      "telegram_username": "Otdelnyi_Andrey",
+      "location": "Remote other countries",
+      "manager_name": "Balyunov_Valentin",
+      "manager_telegram": "Balyunov_Valentin"
     },
     "Arseni Tatsyn": {
       "email": "a.tatsyn@evadav.com",
@@ -2024,14 +2335,16 @@
       },
       "start_time": "11:00",
       "control_manager": 1,
-      "location": "Remote",
-      "telegram_username": "Arseni_Tatsyn"
+      "location": "Remote other countries",
+      "telegram_username": "Tatsyn_Arseni",
+      "manager_name": "Klimchenya_Valeriy",
+      "manager_telegram": "Klimchenya_Valeriy"
     },
     "Gyrych Maria": {
       "email": "m.gyrych@evadav.com",
       "user_id": "7935416",
       "peopleforce_id": "571860",
-      "location": "Remote",
+      "location": "Remote other countries",
       "project": "Ad Network",
       "department": "Traffic Unit",
       "start_time": "09:00",
@@ -2039,7 +2352,9 @@
       "_manual_overrides": {
         "project": true
       },
-      "telegram_username": "Gyrych_Maria"
+      "telegram_username": "Gyrych_Maria",
+      "manager_name": "Balyunov_Valentin",
+      "manager_telegram": "Balyunov_Valentin"
     },
     "Ustsilka Natallia": {
       "email": "n.ustsilka@evadav.com",
@@ -2055,7 +2370,99 @@
       "project": "Consulting",
       "department": "Recruitment",
       "start_time": "09:00",
-      "telegram_username": "Ustsilka_Natallia"
+      "telegram_username": "Ustsilka_Natallia",
+      "manager_name": "Zhara_Lilia",
+      "manager_telegram": "Zhara_Liliia"
+    },
+    "Brizhak Denis": {
+      "email": "d.brizhak@evadav.com",
+      "user_id": "7937087",
+      "peopleforce_id": "579125",
+      "location": "Czech Republic remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true
+      },
+      "project": "Agency",
+      "department": "Native",
+      "team": "Learning Native",
+      "start_time": "09:00",
+      "control_manager": 1
+    },
+    "Mykyta Kapulier": {
+      "email": "m.kapulier@evadav.com",
+      "user_id": "7937092",
+      "peopleforce_id": "577486",
+      "location": "Czech Republic remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true
+      },
+      "project": "Agency",
+      "department": "Native",
+      "team": "Learning Native",
+      "start_time": "09:00",
+      "control_manager": 1
+    },
+    "Surzhykov Oleksandr": {
+      "email": "o.surzhykov@evadav.com",
+      "user_id": "7937091",
+      "peopleforce_id": "573640",
+      "location": "Czech Republic remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true
+      },
+      "project": "Agency",
+      "department": "Native",
+      "team": "Learning Native",
+      "start_time": "09:00",
+      "control_manager": 1
+    },
+    "Vladymyr Ovchar": {
+      "email": "v.ovchar@evadav.com",
+      "user_id": "7937089",
+      "peopleforce_id": "579098",
+      "location": "Czech Republic remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true
+      },
+      "project": "Agency",
+      "department": "Native",
+      "team": "Learning Native",
+      "start_time": "09:00",
+      "control_manager": 1
+    },
+    "Yavorskiy Sergey": {
+      "email": "s.yavorskiy@evadav.com",
+      "user_id": "7937088",
+      "peopleforce_id": "577496",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true
+      },
+      "project": "Agency",
+      "department": "Native",
+      "team": "Learning Native",
+      "start_time": "09:00",
+      "control_manager": 1
     }
   }
 }

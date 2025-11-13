@@ -229,13 +229,18 @@ class AttendanceBot:
             logger.warning("No admin chat IDs configured - cannot send message")
             return
         
+        # Разбиваем длинное сообщение на части
+        from tracker_alert.services.report_formatter import split_message
+        parts = split_message(message)
+        
         for chat_id in self.admin_chat_ids:
             try:
-                await self.application.bot.send_message(
-                    chat_id=chat_id,
-                    text=message,
-                    parse_mode=parse_mode
-                )
+                for part in parts:
+                    await self.application.bot.send_message(
+                        chat_id=chat_id,
+                        text=part,
+                        parse_mode=parse_mode
+                    )
                 logger.info(f"Message sent to admin chat {chat_id}")
             except Exception as e:
                 logger.error(f"Failed to send message to chat {chat_id}: {e}")
@@ -243,11 +248,17 @@ class AttendanceBot:
     async def send_message(self, chat_id: int, message: str, parse_mode: str = "Markdown") -> None:
         if not self.application:
             raise RuntimeError("Application not initialized. Call build_application() first.")
-        await self.application.bot.send_message(
-            chat_id=chat_id,
-            text=message,
-            parse_mode=parse_mode
-        )
+        
+        # Разбиваем длинное сообщение на части
+        from tracker_alert.services.report_formatter import split_message
+        parts = split_message(message)
+        
+        for part in parts:
+            await self.application.bot.send_message(
+                chat_id=chat_id,
+                text=part,
+                parse_mode=parse_mode
+            )
 
     def get_manager_sheet_url(self, chat_id: int) -> str:
         """Повернути посилання на Google Sheet відповідно до менеджера."""

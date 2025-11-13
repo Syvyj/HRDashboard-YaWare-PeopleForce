@@ -2,11 +2,50 @@
 Форматирование отчетов для Telegram.
 """
 from datetime import date
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 from .attendance_monitor import AttendanceStatus
 
+# Лимит Telegram на длину сообщения (4096 символов)
+TELEGRAM_MAX_LENGTH = 4096
 
-def format_attendance_report(report: dict, report_date: str | None = None, leaves_list: list | None = None) -> str:
+
+def split_message(text: str, max_length: int = TELEGRAM_MAX_LENGTH) -> List[str]:
+    """
+    Разбить длинное сообщение на части для отправки в Telegram.
+    
+    Args:
+        text: Текст сообщения
+        max_length: Максимальная длина одного сообщения
+        
+    Returns:
+        Список частей сообщения
+    """
+    if len(text) <= max_length:
+        return [text]
+    
+    parts = []
+    current_part = ""
+    lines = text.split("\n")
+    
+    for line in lines:
+        # Если добавление строки превышит лимит, начинаем новую часть
+        if len(current_part) + len(line) + 1 > max_length:
+            if current_part:
+                parts.append(current_part)
+            current_part = line
+        else:
+            if current_part:
+                current_part += "\n" + line
+            else:
+                current_part = line
+    
+    if current_part:
+        parts.append(current_part)
+    
+    return parts
+
+
+def format_attendance_report(report: dict, report_date: Optional[Union[str, date]] = None, leaves_list: Optional[list] = None) -> str:
     """
     Форматировать отчет о присутствии для Telegram.
     
@@ -103,9 +142,9 @@ def format_attendance_report(report: dict, report_date: str | None = None, leave
             else:
                 leave_type_name = str(leave_type_data)
             
-            lines.append(f"� **{name}**")
-            lines.append(f"   📄 Причина: {leave_type_name}")
-            lines.append("")
+            # Компактный формат для уменьшения размера сообщения
+            lines.append(f"   • {name} ({leave_type_name})")
+        lines.append("")
     
     # Відсутні без причини
     if absent_users:

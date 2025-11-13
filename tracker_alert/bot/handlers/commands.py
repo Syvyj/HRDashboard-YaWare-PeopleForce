@@ -596,10 +596,25 @@ async def handle_report_today_callback(query, context):
             keyboard = [[InlineKeyboardButton("◀️ Назад в меню", callback_data="back_to_menu")]]
             reply_markup = InlineKeyboardMarkup(keyboard)
             
-            await query.edit_message_text(
-                formatted_report,
-                reply_markup=reply_markup
-            )
+            # Если отчет слишком длинный, отправляем его как новое сообщение вместо редактирования
+            from tracker_alert.services.report_formatter import split_message, TELEGRAM_MAX_LENGTH
+            if len(formatted_report) > TELEGRAM_MAX_LENGTH:
+                # Отправляем как новое сообщение вместо edit
+                await context.bot.send_message(
+                    chat_id=query.message.chat_id,
+                    text=formatted_report,
+                    parse_mode="Markdown"
+                )
+                # Обновляем старое сообщение с финальной кнопкой
+                await query.edit_message_text(
+                    "📊 Отчет отправлен выше ⬆️",
+                    reply_markup=reply_markup
+                )
+            else:
+                await query.edit_message_text(
+                    formatted_report,
+                    reply_markup=reply_markup
+                )
         else:
             # Якщо немає опозданий і відсутніх, але є відпустки
             if leaves_list:

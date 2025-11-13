@@ -70,9 +70,9 @@ def format_attendance_report(report: dict, report_date: str | None = None, leave
         grouped_late = group_statuses(late_users)
         for key in sorted(grouped_late.keys()):
             header = format_group_header(*key)
-            lines.append(f"🔹 {header}")
             for status in sorted(grouped_late[key], key=lambda s: s.user.name):
-                lines.append(f"   • {status.user.name}")
+                lines.append(f"🔹 **{status.user.name}**")
+                lines.append(f"   • {header}")
                 if status.user.location:
                     lines.append(f"     📍 {status.user.location}")
                 lines.append(
@@ -83,8 +83,8 @@ def format_attendance_report(report: dict, report_date: str | None = None, leave
     
         # Добавляем блок PeopleForce (отсутствующие по уважительным причинам)
     if leaves_list:
-        lines.append("\n\n� ОТСУТСТВУЮТ (PeopleForce)")
-        lines.append("=" * 40)
+        lines.append(f"✅ Отсутствуют (уважительные причины) ({len(leaves_list)} чел):")
+        lines.append("-" * 40)
         
         for leave in leaves_list:
             # Получаем имя сотрудника
@@ -103,8 +103,8 @@ def format_attendance_report(report: dict, report_date: str | None = None, leave
             else:
                 leave_type_name = str(leave_type_data)
             
-            lines.append(f"📋 Имя: {name}")
-            lines.append(f"📄 Причина: {leave_type_name}")
+            lines.append(f"� **{name}**")
+            lines.append(f"   📄 Причина: {leave_type_name}")
             lines.append("")
     
     # Відсутні без причини
@@ -114,12 +114,13 @@ def format_attendance_report(report: dict, report_date: str | None = None, leave
         grouped_absent = group_statuses(absent_users)
         for key in sorted(grouped_absent.keys()):
             header = format_group_header(*key)
-            lines.append(f"🔹 {header}")
             for status in sorted(grouped_absent[key], key=lambda s: s.user.name):
-                lines.append(f"   • {status.user.name}")
+                lines.append(f"🔹 **{status.user.name}**")
+                lines.append(f"   • {header}")
                 if status.user.location:
                     lines.append(f"     📍 {status.user.location}")
-                lines.append(f"     ⏰ График: {status.expected_time}")
+                if status.expected_time:
+                    lines.append(f"     ⏰ График: {status.expected_time}")
             lines.append("")
     
     return "\n".join(lines)

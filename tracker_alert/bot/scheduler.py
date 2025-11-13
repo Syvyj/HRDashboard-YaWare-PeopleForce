@@ -16,6 +16,7 @@ from apscheduler.triggers.cron import CronTrigger
 from tracker_alert.config.settings import settings
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.services.report_formatter import format_attendance_report
+from tracker_alert.client.peopleforce_api import PeopleForceClient
 
 logger = logging.getLogger(__name__)
 
@@ -57,20 +58,31 @@ class AttendanceScheduler:
             today = datetime.now().date()
             logger.info(f"Generating daily attendance report for {today}")
             
+            # Отримуємо дані про відпустки з PeopleForce
+            leaves_list = []
+            try:
+                from tracker_alert.client.peopleforce_api import PeopleForceClient
+                pf_client = PeopleForceClient()
+                all_leaves = pf_client.get_leave_requests(start_date=today, end_date=today)
+                leaves_list = all_leaves or []
+                logger.debug(f"Fetched {len(leaves_list)} leave requests for {today}")
+            except Exception as e:
+                logger.warning(f"Failed to fetch leaves from PeopleForce: {e}")
+            
             # Generate report
             report = self.monitor.get_daily_report(today)
             admin_ids = list(self.bot.admin_chat_ids) if self.bot.admin_chat_ids else []
             if not admin_ids:
-                message = format_attendance_report(report, today)
+                message = format_attendance_report(report, today, leaves_list=leaves_list)
                 await self.bot.send_message_to_admins(message)
                 logger.info("Daily report sent to default channel (no admins configured)")
                 return
 
             for chat_id in admin_ids:
                 allowed_managers = self.bot.get_allowed_managers(chat_id)
-                filtered_report, _ = self.monitor.filter_report_by_managers(report, allowed_managers)
-                if filtered_report['late'] or filtered_report['absent']:
-                    message = format_attendance_report(filtered_report, today)
+                filtered_report, filtered_leaves = self.monitor.filter_report_by_managers(report, allowed_managers, leaves_list)
+                if filtered_report['late'] or filtered_report['absent'] or filtered_leaves:
+                    message = format_attendance_report(filtered_report, today, leaves_list=filtered_leaves)
                 else:
                     message = (
                         f"✅ *Attendance Report - {today.strftime('%Y-%m-%d')}*\n\n"

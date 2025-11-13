@@ -381,7 +381,7 @@ def _sync_yaware_plan_start(app, target_date: date | None = None) -> int:
     start_by_id: dict[str, str] = {}
     start_by_email: dict[str, str] = {}
 
-    schedules_payload = yaware_client.get_work_schedules()
+    schedules_payload = yaware_client.get_schedules()
     schedule_id_map, schedule_email_map = _parse_schedule_payload(schedules_payload)
     start_by_id.update(schedule_id_map)
     start_by_email.update(schedule_email_map)

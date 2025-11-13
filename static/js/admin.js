@@ -575,7 +575,14 @@
       },
       body: JSON.stringify({ force_refresh: true }),
     })
-      .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+      .then((response) => {
+        // Перевіряємо чи відповідь дійсно JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Сервер повернув некоректну відповідь (не JSON). Можливо помилка на сервері.');
+        }
+        return response.json().then((data) => ({ ok: response.ok, data }));
+      })
       .then(({ ok, data }) => {
         if (!ok) {
           throw new Error(data.error || 'Не удалось выполнить синхронизацию');

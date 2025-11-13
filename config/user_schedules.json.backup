@@ -7,7 +7,7 @@
     "without_schedule": 36,
     "unique_users": 181,
     "total_rows_processed": 181,
-    "last_updated": "2025-11-10T18:06:11.163633",
+    "last_updated": "2025-11-13T10:22:56.804686",
     "yaware_groups_added": "2025-10-17T15:44:44.809277",
     "control_data_added": "2025-10-17T15:57:34.592749",
     "control_users_matched": 59,
@@ -26,8 +26,8 @@
       "team": null,
       "control_manager": 2,
       "telegram_username": "DesperatePain",
-      "manager_name": "Lazarenko_Maksim",
-      "manager_telegram": "max_ssp"
+      "manager_name": "Оtdelnyi_Andrey",
+      "manager_telegram": "Otdelnyi_Andrey"
     },
     "Artemchuk Dmytro": {
       "start_time": "10:00",
@@ -277,8 +277,8 @@
       "peopleforce_id": 297354,
       "project": "AD Network",
       "telegram_username": "manager_dav_1",
-      "manager_name": "Lazarenko_Maksim",
-      "manager_telegram": "max_ssp"
+      "manager_name": "Оtdelnyi_Andrey",
+      "manager_telegram": "Otdelnyi_Andrey"
     },
     "Dupenko Valeria": {
       "start_time": "09:00",
@@ -528,20 +528,6 @@
       "telegram_username": "bohdana_finn",
       "manager_name": "Maksymchuk_Tetiana",
       "manager_telegram": "tetiana_finn"
-    },
-    "Kanash Dmitrii": {
-      "start_time": "10:00",
-      "location": "Remote other countries",
-      "user_id": "7928819",
-      "email": "d.kanash@evadav.com",
-      "peopleforce_id": 512986,
-      "project": "AD Network",
-      "department": "Traffic Bizdev Team",
-      "team": "Bizdev team 2",
-      "control_manager": 2,
-      "telegram_username": "Kanash_Dmitrii",
-      "manager_name": "Sarkisov_Moses",
-      "manager_telegram": "Sarkisov_Moses"
     },
     "Kantemir Pavlo": {
       "start_time": "10:00",
@@ -931,8 +917,8 @@
       "peopleforce_id": 297353,
       "project": "Ad Network",
       "telegram_username": "max_ssp",
-      "manager_name": "Balyunov_Valentin",
-      "manager_telegram": "Balyunov_Valentin"
+      "manager_name": "Оtdelnyi_Andrey",
+      "manager_telegram": "Otdelnyi_Andrey"
     },
     "Lebid Anastasiia": {
       "start_time": "09:00",
@@ -2104,20 +2090,6 @@
       "manager_name": "Olieinyk_Kateryna",
       "manager_telegram": "kitikat123"
     },
-    "Kulyk Artem": {
-      "start_time": "09:00",
-      "location": "Warsaw office",
-      "user_id": 7934114,
-      "email": "a.kulyk@evadav.com",
-      "peopleforce_id": 487462,
-      "project": "Agency",
-      "department": "MB Facebook Team 2",
-      "team": "FB Mykyta",
-      "control_manager": 1,
-      "telegram_username": "Kulyk_Artem",
-      "manager_name": "Markovskyi_Mykyta",
-      "manager_telegram": "Markovskyi_Mykyta"
-    },
     "Kotliarenko Alina": {
       "start_time": "09:00",
       "location": "Prague office",
@@ -2269,7 +2241,8 @@
       },
       "telegram_username": "Kiliovyi_Evhen",
       "manager_name": "Shpak_Andriy",
-      "manager_telegram": "Shpak_Andriy"
+      "manager_telegram": "Shpak_Andriy",
+      "location": "Remote Ukraine"
     },
     "Alexandr Pankov": {
       "user_id": "7912880",
@@ -2390,7 +2363,10 @@
       "department": "Native",
       "team": "Learning Native",
       "start_time": "09:00",
-      "control_manager": 1
+      "control_manager": 1,
+      "telegram_username": "Brizhak_Denis",
+      "manager_name": "Machula_Yuliia",
+      "manager_telegram": "Machula_Yuliia"
     },
     "Mykyta Kapulier": {
       "email": "m.kapulier@evadav.com",
@@ -2408,7 +2384,10 @@
       "department": "Native",
       "team": "Learning Native",
       "start_time": "09:00",
-      "control_manager": 1
+      "control_manager": 1,
+      "telegram_username": "Kapulier_Mykyta",
+      "manager_name": "Machula_Yuliia",
+      "manager_telegram": "Machula_Yuliia"
     },
     "Surzhykov Oleksandr": {
       "email": "o.surzhykov@evadav.com",
@@ -2426,7 +2405,10 @@
       "department": "Native",
       "team": "Learning Native",
       "start_time": "09:00",
-      "control_manager": 1
+      "control_manager": 1,
+      "telegram_username": "Surzhykov_Oleksandr",
+      "manager_name": "Machula_Yuliia",
+      "manager_telegram": "Machula_Yuliia"
     },
     "Vladymyr Ovchar": {
       "email": "v.ovchar@evadav.com",
@@ -2444,7 +2426,10 @@
       "department": "Native",
       "team": "Learning Native",
       "start_time": "09:00",
-      "control_manager": 1
+      "control_manager": 1,
+      "telegram_username": "Ovchar_Vladymyr",
+      "manager_name": "Machula_Yuliia",
+      "manager_telegram": "Machula_Yuliia"
     },
     "Yavorskiy Sergey": {
       "email": "s.yavorskiy@evadav.com",
@@ -2462,7 +2447,10 @@
       "department": "Native",
       "team": "Learning Native",
       "start_time": "09:00",
-      "control_manager": 1
+      "control_manager": 1,
+      "telegram_username": "Yavorskiy_Sergey",
+      "manager_name": "Machula_Yuliia",
+      "manager_telegram": "Machula_Yuliia"
     }
   }
 }

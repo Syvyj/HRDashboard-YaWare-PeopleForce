@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import logging
 from collections import defaultdict
 from functools import lru_cache
 from html import escape
@@ -28,6 +29,8 @@ from tracker_alert.services.schedule_utils import (
 )
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.client.peopleforce_api import PeopleForceClient
+
+logger = logging.getLogger(__name__)
 from tracker_alert.client.yaware_v2_api import YaWareV2Client
 from tasks.update_attendance import update_for_date
 
@@ -1259,6 +1262,7 @@ def admin_sync_users():
         _sync_peopleforce_metadata(current_app)
         sync_summary['peopleforce_metadata'] = 'updated'
     except Exception as exc:  # pragma: no cover - filesystem/network failure
+        logger.error(f"PeopleForce sync error: {exc}", exc_info=True)
         sync_summary['peopleforce_metadata'] = f'failed: {exc}'
 
     try:
@@ -1266,9 +1270,15 @@ def admin_sync_users():
         updated_count = _sync_yaware_plan_start(current_app)
         sync_summary['yaware_schedule'] = {'updated': updated_count}
     except Exception as exc:  # pragma: no cover - filesystem/network failure
+        logger.error(f"YaWare sync error: {exc}", exc_info=True)
         sync_summary['yaware_schedule'] = f'failed: {exc}'
 
-    diff_payload = _generate_user_diff(force_refresh=force_refresh)
+    try:
+        diff_payload = _generate_user_diff(force_refresh=force_refresh)
+    except Exception as exc:
+        logger.error(f"User diff generation error: {exc}", exc_info=True)
+        return jsonify({'error': f'Помилка генерації diff: {str(exc)}'}), 500
+    
     _log_admin_action('manual_sync_users', {
         'force_refresh': force_refresh,
         'sync_summary': sync_summary,

@@ -31,7 +31,91 @@ function formatISO(date) {
   return `${year}-${month}-${day}`;
 }
 
+// Shared filter utilities for multi-select modals
+function buildFilterParams(dateFromValue, dateToValue, userValue, selectedFilters) {
+  const params = new URLSearchParams();
+  if (dateFromValue) {
+    params.set('date_from', dateFromValue);
+  }
+  if (dateToValue) {
+    params.set('date_to', dateToValue);
+  }
+  if (userValue) {
+    params.set('user', userValue);
+  }
+  // Support multiple filter values
+  if (selectedFilters && selectedFilters.projects && selectedFilters.projects.size > 0) {
+    Array.from(selectedFilters.projects).forEach(project => {
+      params.append('project', project);
+    });
+  }
+  if (selectedFilters && selectedFilters.departments && selectedFilters.departments.size > 0) {
+    Array.from(selectedFilters.departments).forEach(department => {
+      params.append('department', department);
+    });
+  }
+  if (selectedFilters && selectedFilters.teams && selectedFilters.teams.size > 0) {
+    Array.from(selectedFilters.teams).forEach(team => {
+      params.append('team', team);
+    });
+  }
+  return params;
+}
+
+function updateFilterDisplay(displayElement, selectedFilters) {
+  const parts = [];
+  if (selectedFilters.projects && selectedFilters.projects.size > 0) {
+    parts.push(`Проекты: ${Array.from(selectedFilters.projects).join(', ')}`);
+  }
+  if (selectedFilters.departments && selectedFilters.departments.size > 0) {
+    parts.push(`Департаменты: ${Array.from(selectedFilters.departments).join(', ')}`);
+  }
+  if (selectedFilters.teams && selectedFilters.teams.size > 0) {
+    parts.push(`Команды: ${Array.from(selectedFilters.teams).join(', ')}`);
+  }
+  if (displayElement) {
+    displayElement.textContent = parts.length > 0 ? parts.join(' | ') : '';
+  }
+}
+
+function renderFilterCheckboxes(containerEl, filterValues, selectedSet, onChange) {
+  if (!containerEl) {
+    return;
+  }
+  containerEl.innerHTML = '';
+  (filterValues || []).forEach(value => {
+    const label = document.createElement('label');
+    label.className = 'form-check mt-2';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'form-check-input';
+    checkbox.checked = selectedSet.has(value);
+    checkbox.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        selectedSet.add(value);
+      } else {
+        selectedSet.delete(value);
+      }
+      if (onChange) onChange();
+    });
+    const span = document.createElement('span');
+    span.className = 'form-check-label';
+    span.textContent = value;
+    label.appendChild(checkbox);
+    label.appendChild(span);
+    containerEl.appendChild(label);
+  });
+}
+
 // Экспортируем для использования в других модулях
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { STATUS_LABELS, escapeHtml, minutesToDuration, formatISO };
+  module.exports = { 
+    STATUS_LABELS, 
+    escapeHtml, 
+    minutesToDuration, 
+    formatISO,
+    buildFilterParams,
+    updateFilterDisplay,
+    renderFilterCheckboxes
+  };
 }

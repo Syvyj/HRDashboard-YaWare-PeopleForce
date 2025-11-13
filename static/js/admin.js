@@ -16,9 +16,6 @@
   const pageInfo = document.getElementById('employee-page-info');
   const bulkManagerSelect = document.getElementById('bulk-manager-select');
   const bulkManagerApply = document.getElementById('bulk-manager-apply');
-  const projectFilterSelect = document.getElementById('employee-filter-project');
-  const departmentFilterSelect = document.getElementById('employee-filter-department');
-  const teamFilterSelect = document.getElementById('employee-filter-team');
   const employeeEditModalEl = document.getElementById('employeeEditModal');
   const employeeEditForm = document.getElementById('employee-edit-form');
   const employeeEditKey = document.getElementById('employee-edit-key');
@@ -72,11 +69,22 @@
   let employeeSearch = '';
   let managerOptions = [];
   const selectedKeys = new Set();
-  let employeeProjectFilter = '';
-  let employeeDepartmentFilter = '';
-  let employeeTeamFilter = '';
   let diffState = null;
   let diffAddContext = null;
+
+  // Modal filter variables
+  const employeeFiltersModalEl = document.getElementById('employeeFiltersModal');
+  const openEmployeeFiltersModalBtn = document.getElementById('open-employee-filters-modal');
+  const employeeFilterModalApplyBtn = document.getElementById('employee-filter-modal-apply');
+  const employeeFilterModalClearBtn = document.getElementById('employee-filter-modal-clear');
+  const employeeSelectedFiltersDisplay = document.getElementById('employee-selected-filters-display');
+  const employeeFilterProjectsList = document.getElementById('employee-filter-projects-list');
+  const employeeFilterDepartmentsList = document.getElementById('employee-filter-departments-list');
+  const employeeFilterTeamsList = document.getElementById('employee-filter-teams-list');
+  
+  let employeeFiltersModal = null; // Will be initialized when needed
+  let currentEmployeeFilterOptions = { projects: [], departments: [], teams: [] };
+  let selectedEmployeeFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
 
   function setButtonLoading(button, isLoading) {
     if (!button) {
@@ -428,9 +436,16 @@
     renderManagerOptions(diffAddManager, diffAddManager ? diffAddManager.value : '');
 
     if (data.filters) {
-      populateFilterSelect(projectFilterSelect, data.filters.project, employeeProjectFilter);
-      populateFilterSelect(departmentFilterSelect, data.filters.department, employeeDepartmentFilter);
-      populateFilterSelect(teamFilterSelect, data.filters.team, employeeTeamFilter);
+      // Store filter options for modal
+      currentEmployeeFilterOptions = {
+        projects: data.filters.project || [],
+        departments: data.filters.department || [],
+        teams: data.filters.team || []
+      };
+      
+      // No need to restore - filters are already in selectedEmployeeFilters from modal selection
+      
+      updateEmployeeSelectedFiltersDisplay();
     }
 
     employeeTotal = data.total || 0;
@@ -520,14 +535,11 @@
     if (employeeSearch) {
       params.set('search', employeeSearch);
     }
-    if (employeeProjectFilter) {
-      params.set('project', employeeProjectFilter);
-    }
-    if (employeeDepartmentFilter) {
-      params.set('department', employeeDepartmentFilter);
-    }
-    if (employeeTeamFilter) {
-      params.set('team', employeeTeamFilter);
+    
+    // Use shared filter builder for project/department/team filters
+    const filterParams = buildFilterParams(null, null, null, selectedEmployeeFilters);
+    for (const [key, value] of filterParams.entries()) {
+      params.append(key, value);
     }
 
     employeeTbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Загрузка...</td></tr>';
@@ -886,18 +898,8 @@
     resetBtn.addEventListener('click', () => {
       searchInput.value = '';
       employeeSearch = '';
-      if (projectFilterSelect) {
-        projectFilterSelect.value = '';
-      }
-      if (departmentFilterSelect) {
-        departmentFilterSelect.value = '';
-      }
-      if (teamFilterSelect) {
-        teamFilterSelect.value = '';
-      }
-      employeeProjectFilter = '';
-      employeeDepartmentFilter = '';
-      employeeTeamFilter = '';
+      selectedEmployeeFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+      updateEmployeeSelectedFiltersDisplay();
       employeePage = 1;
       fetchEmployees();
     });
@@ -926,29 +928,7 @@
     bulkManagerSelect.addEventListener('change', updateBulkButtonState);
   }
 
-  if (projectFilterSelect) {
-    projectFilterSelect.addEventListener('change', () => {
-      employeeProjectFilter = projectFilterSelect.value || '';
-      employeePage = 1;
-      fetchEmployees();
-    });
-  }
-
-  if (departmentFilterSelect) {
-    departmentFilterSelect.addEventListener('change', () => {
-      employeeDepartmentFilter = departmentFilterSelect.value || '';
-      employeePage = 1;
-      fetchEmployees();
-    });
-  }
-
-  if (teamFilterSelect) {
-    teamFilterSelect.addEventListener('change', () => {
-      employeeTeamFilter = teamFilterSelect.value || '';
-      employeePage = 1;
-      fetchEmployees();
-    });
-  }
+  // Old select filters - removed in favor of modal-based filters
 
   if (bulkManagerApply) {
     bulkManagerApply.addEventListener('click', () => {
@@ -1146,6 +1126,60 @@
         passwordInput.type = 'password';
         icon.className = 'bi bi-eye';
       }
+    });
+  }
+
+  // Employee modal filters
+  function updateEmployeeSelectedFiltersDisplay() {
+    updateFilterDisplay(employeeSelectedFiltersDisplay, selectedEmployeeFilters);
+  }
+
+  function renderEmployeeFilterModal() {
+    renderFilterCheckboxes(employeeFilterProjectsList, currentEmployeeFilterOptions.projects, selectedEmployeeFilters.projects);
+    renderFilterCheckboxes(employeeFilterDepartmentsList, currentEmployeeFilterOptions.departments, selectedEmployeeFilters.departments);
+    renderFilterCheckboxes(employeeFilterTeamsList, currentEmployeeFilterOptions.teams, selectedEmployeeFilters.teams);
+  }
+
+  if (openEmployeeFiltersModalBtn) {
+    openEmployeeFiltersModalBtn.addEventListener('click', () => {
+      console.log('=== Opening employee filters modal ===');
+      console.log('Modal element exists:', !!employeeFiltersModalEl);
+      console.log('Modal element:', employeeFiltersModalEl);
+      
+      renderEmployeeFilterModal();
+      
+      // Initialize modal if not already done
+      if (!employeeFiltersModal && employeeFiltersModalEl) {
+        console.log('Initializing new bootstrap Modal...');
+        employeeFiltersModal = new bootstrap.Modal(employeeFiltersModalEl);
+        console.log('Modal initialized:', !!employeeFiltersModal);
+      }
+      
+      if (employeeFiltersModal) {
+        console.log('Calling modal.show()...');
+        employeeFiltersModal.show();
+        console.log('Modal show() called');
+      } else {
+        console.error('ERROR: Could not initialize modal');
+        alert('Ошибка: не удалось открыть модальное окно');
+      }
+    });
+  }
+
+  if (employeeFilterModalApplyBtn) {
+    employeeFilterModalApplyBtn.addEventListener('click', () => {
+      // Filters are already in selectedEmployeeFilters Sets, just refresh display and data
+      updateEmployeeSelectedFiltersDisplay();
+      employeePage = 1;
+      fetchEmployees();
+    });
+  }
+
+  if (employeeFilterModalClearBtn) {
+    employeeFilterModalClearBtn.addEventListener('click', () => {
+      selectedEmployeeFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+      renderEmployeeFilterModal();
+      updateEmployeeSelectedFiltersDisplay();
     });
   }
 

@@ -189,7 +189,7 @@
               </button>
             </div>
             <small class="text-muted"
-              >1 - Valentina Belkevich | 2 - Alina Serdyuk | 3 - просмотр
+              >1 - Alina Serdyuk | 2 - Valentina Belkevich | 3 - просмотр
               всех</small
             >
           </div>
@@ -208,35 +208,18 @@
                   <th>Контакты</th>
                   <th class="align-top">
                     <div class="d-flex flex-column">
-                      <span>Проект</span>
-                      <select
-                        class="form-select form-select-sm mt-1"
-                        id="employee-filter-project"
+                      <div>Проект / Департамент / Команда</div>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary mt-1"
+                        id="open-employee-filters-modal"
                       >
-                        <option value="">Все</option>
-                      </select>
-                    </div>
-                  </th>
-                  <th class="align-top">
-                    <div class="d-flex flex-column">
-                      <span>Департамент</span>
-                      <select
-                        class="form-select form-select-sm mt-1"
-                        id="employee-filter-department"
-                      >
-                        <option value="">Все</option>
-                      </select>
-                    </div>
-                  </th>
-                  <th class="align-top">
-                    <div class="d-flex flex-column">
-                      <span>Команда</span>
-                      <select
-                        class="form-select form-select-sm mt-1"
-                        id="employee-filter-team"
-                      >
-                        <option value="">Все</option>
-                      </select>
+                        Фильтр
+                      </button>
+                      <div
+                        id="employee-selected-filters-display"
+                        class="small text-muted mt-1"
+                      ></div>
                     </div>
                   </th>
                   <th>Control manager</th>
@@ -723,6 +706,95 @@
               <button type="submit" class="btn btn-primary">Сохранить</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for employee filters -->
+    <div
+      class="modal fade"
+      id="employeeFiltersModal"
+        tabindex="-1"
+        aria-labelledby="employeeFiltersModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="employeeFiltersModalLabel">
+                Фильтр по проекту/департаменту/команде
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-4">
+                  <h6 class="mb-3">Проекты</h6>
+                  <div
+                    id="employee-filter-projects-list"
+                    class="filter-checkboxes-container"
+                    style="max-height: 300px; overflow-y: auto"
+                  >
+                    <div class="spinner-border spinner-border-sm" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="mb-3">Департаменты</h6>
+                  <div
+                    id="employee-filter-departments-list"
+                    class="filter-checkboxes-container"
+                    style="max-height: 300px; overflow-y: auto"
+                  >
+                    <div class="spinner-border spinner-border-sm" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="mb-3">Команды</h6>
+                  <div
+                    id="employee-filter-teams-list"
+                    class="filter-checkboxes-container"
+                    style="max-height: 300px; overflow-y: auto"
+                  >
+                    <div class="spinner-border spinner-border-sm" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                id="employee-filter-modal-clear"
+              >
+                Очистить все
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-bs-dismiss="modal"
+              >
+                Отменить
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="employee-filter-modal-apply"
+                data-bs-dismiss="modal"
+              >
+                Применить
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -992,17 +992,26 @@ def _apply_filters(query):
             db.func.lower(AttendanceRecord.user_email).like(like_pattern)
         ))
 
-    project = request.args.get('project')
-    if project:
-        query = query.filter(db.func.lower(AttendanceRecord.project) == project.lower())
+    # Support multiple project filters: ?project=A&project=B
+    projects = request.args.getlist('project')
+    if projects:
+        projects_lower = [p.lower() for p in projects if p]
+        if projects_lower:
+            query = query.filter(db.func.lower(AttendanceRecord.project).in_(projects_lower))
 
-    department = request.args.get('department')
-    if department:
-        query = query.filter(db.func.lower(AttendanceRecord.department) == department.lower())
+    # Support multiple department filters: ?department=A&department=B
+    departments = request.args.getlist('department')
+    if departments:
+        departments_lower = [d.lower() for d in departments if d]
+        if departments_lower:
+            query = query.filter(db.func.lower(AttendanceRecord.department).in_(departments_lower))
 
-    team = request.args.get('team')
-    if team:
-        query = query.filter(db.func.lower(AttendanceRecord.team) == team.lower())
+    # Support multiple team filters: ?team=A&team=B
+    teams = request.args.getlist('team')
+    if teams:
+        teams_lower = [t.lower() for t in teams if t]
+        if teams_lower:
+            query = query.filter(db.func.lower(AttendanceRecord.team).in_(teams_lower))
 
     status = request.args.get('status')
     if status:
@@ -1423,17 +1432,28 @@ def admin_create_employee():
 def admin_employees():
     _ensure_admin()
     search = request.args.get('search', '').strip()
-    project_filter = request.args.get('project', '').strip()
-    department_filter = request.args.get('department', '').strip()
-    team_filter = request.args.get('team', '').strip()
+    project_filters = request.args.getlist('project')
+    department_filters = request.args.getlist('department')
+    team_filters = request.args.getlist('team')
     page = max(int(request.args.get('page', 1) or 1), 1)
     per_page = max(min(int(request.args.get('per_page', 25) or 25), 100), 1)
 
     records = _gather_employee_records(search)
     filter_options = _collect_employee_filters(records)
-    records = _filter_employee_records(records, 'project', project_filter)
-    records = _filter_employee_records(records, 'department', department_filter)
-    records = _filter_employee_records(records, 'team', team_filter)
+    
+    # Support multiple filters for each category
+    if project_filters:
+        project_filters_lower = {p.lower() for p in project_filters if p}
+        records = [r for r in records if (r.project or '').lower() in project_filters_lower]
+    
+    if department_filters:
+        department_filters_lower = {d.lower() for d in department_filters if d}
+        records = [r for r in records if (r.department or '').lower() in department_filters_lower]
+    
+    if team_filters:
+        team_filters_lower = {t.lower() for t in team_filters if t}
+        records = [r for r in records if (r.team or '').lower() in team_filters_lower]
+    
     total = len(records)
     start = (page - 1) * per_page
     page_records = records[start:start + per_page]

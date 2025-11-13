@@ -27,6 +27,21 @@
   const resetBtn = document.getElementById('reset-filters');
   const applySecondaryBtn = document.getElementById('filters-apply-secondary');
   const resetSecondaryBtn = document.getElementById('filters-reset-secondary');
+  
+  // Modal filter elements
+  const filtersModalEl = document.getElementById('filtersModal');
+  const openFiltersModalBtn = document.getElementById('open-filters-modal');
+  const filterModalApplyBtn = document.getElementById('filter-modal-apply');
+  const filterModalClearBtn = document.getElementById('filter-modal-clear');
+  const selectedFiltersDisplay = document.getElementById('selected-filters-display');
+  const filterProjectsList = document.getElementById('filter-projects-list');
+  const filterDepartmentsList = document.getElementById('filter-departments-list');
+  const filterTeamsList = document.getElementById('filter-teams-list');
+  
+  let filtersModal = null; // Will be initialized when needed
+  
+  let currentFilterOptions = { projects: [], departments: [], teams: [] };
+  let selectedFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
   const recordEditModalEl = document.getElementById('recordEditModal');
   const recordEditModal = recordEditModalEl ? new bootstrap.Modal(recordEditModalEl) : null;
   const recordEditForm = document.getElementById('record-edit-form');
@@ -94,26 +109,7 @@
   }
 
   function buildParams() {
-    const params = new URLSearchParams();
-    if (dateFromInput.value) {
-      params.set('date_from', dateFromInput.value);
-    }
-    if (dateToInput.value) {
-      params.set('date_to', dateToInput.value);
-    }
-    if (userInput.value) {
-      params.set('user', userInput.value);
-    }
-    if (projectSelect.value) {
-      params.set('project', projectSelect.value);
-    }
-    if (departmentSelect.value) {
-      params.set('department', departmentSelect.value);
-    }
-    if (teamSelect.value) {
-      params.set('team', teamSelect.value);
-    }
-    return params;
+    return buildFilterParams(dateFromInput.value, dateToInput.value, userInput.value, selectedFilters);
   }
 
   function createCell(text, className) {
@@ -331,34 +327,32 @@
     updateStatusField();
   }
 
+  function updateSelectedFiltersDisplay() {
+    updateFilterDisplay(selectedFiltersDisplay, selectedFilters);
+  }
+
+  function renderFilterModal() {
+    renderFilterCheckboxes(filterProjectsList, currentFilterOptions.projects, selectedFilters.projects);
+    renderFilterCheckboxes(filterDepartmentsList, currentFilterOptions.departments, selectedFilters.departments);
+    renderFilterCheckboxes(filterTeamsList, currentFilterOptions.teams, selectedFilters.teams);
+  }
+
   function renderReport(data) {
     container.innerHTML = '';
 
     const filterMeta = data.filters || {};
     const filterOptions = filterMeta.options || {};
-    const resolvedFilters = filterMeta.selected || {};
 
-    populateSelect(projectSelect, filterOptions.projects || [], 'Все проекты');
-    populateSelect(departmentSelect, filterOptions.departments || [], 'Все департаменты');
-    populateSelect(teamSelect, filterOptions.teams || [], 'Все команды');
+    // Store filter options for modal
+    currentFilterOptions = {
+      projects: filterOptions.projects || [],
+      departments: filterOptions.departments || [],
+      teams: filterOptions.teams || []
+    };
 
-    if (resolvedFilters.project) {
-      setSelectValue(projectSelect, resolvedFilters.project);
-    } else if (!Array.from(projectSelect.options).some((option) => option.value === projectSelect.value)) {
-      projectSelect.value = '';
-    }
-
-    if (resolvedFilters.department) {
-      setSelectValue(departmentSelect, resolvedFilters.department);
-    } else if (!Array.from(departmentSelect.options).some((option) => option.value === departmentSelect.value)) {
-      departmentSelect.value = '';
-    }
-
-    if (resolvedFilters.team) {
-      setSelectValue(teamSelect, resolvedFilters.team);
-    } else if (!Array.from(teamSelect.options).some((option) => option.value === teamSelect.value)) {
-      teamSelect.value = '';
-    }
+    // selectedFilters already contains the current selection from modal
+    // Don't restore old single-value filters - keep what user selected
+    updateSelectedFiltersDisplay();
 
     statusOptionsCache.clear();
     userRecordsMap.clear();
@@ -698,6 +692,56 @@
       if (recordEditUserLabel) {
         recordEditUserLabel.textContent = '';
       }
+    });
+  }
+
+  // Modal filter handlers
+  if (openFiltersModalBtn) {
+    openFiltersModalBtn.addEventListener('click', () => {
+      console.log('=== Opening filters modal ===');
+      console.log('Modal element exists:', !!filtersModalEl);
+      console.log('Modal element:', filtersModalEl);
+      
+      renderFilterModal();
+      
+      // Initialize modal if not already done
+      if (!filtersModal && filtersModalEl) {
+        console.log('Initializing new bootstrap Modal...');
+        filtersModal = new bootstrap.Modal(filtersModalEl);
+        console.log('Modal initialized:', !!filtersModal);
+      }
+      
+      if (filtersModal) {
+        console.log('Calling modal.show()...');
+        filtersModal.show();
+        console.log('Modal show() called');
+      } else {
+        console.error('ERROR: Could not initialize modal');
+        alert('Ошибка: не удалось открыть модальное окно');
+      }
+    });
+  }
+
+  if (filterModalApplyBtn) {
+    filterModalApplyBtn.addEventListener('click', () => {
+      updateSelectedFiltersDisplay();
+      submitFilters();
+    });
+  }
+
+  if (filterModalClearBtn) {
+    filterModalClearBtn.addEventListener('click', () => {
+      selectedFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+      renderFilterModal();
+      updateSelectedFiltersDisplay();
+    });
+  }
+
+  if (document.getElementById('clear-project-filters')) {
+    document.getElementById('clear-project-filters').addEventListener('click', () => {
+      selectedFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+      updateSelectedFiltersDisplay();
+      submitFilters();
     });
   }
 })();

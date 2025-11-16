@@ -1,0 +1,358 @@
+{
+  "divisions": [
+    {
+      "name": "APPS Division"
+    },
+    {
+      "name": "Agency Division"
+    },
+    {
+      "name": "AdNetwork Division"
+    },
+    {
+      "name": "CONSULTING Division"
+    }
+  ],
+  "directions": [
+    {
+      "name": "Media buying Direction",
+      "division": "Agency Division"
+    },
+    {
+      "name": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Product Team",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Analyst Team",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "R&D Unit AdNetwork",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Finance Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Control & Compliance Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Human Resources Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Marketing Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Legal Unit",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Office team",
+      "division": "CONSULTING Division"
+    }
+  ],
+  "units": [
+    {
+      "name": "IOS Unit",
+      "direction": "",
+      "division": "APPS Division"
+    },
+    {
+      "name": "Web to Web Unit",
+      "direction": "",
+      "division": "APPS Division"
+    },
+    {
+      "name": "Media buying Unit",
+      "direction": "",
+      "division": "APPS Division"
+    },
+    {
+      "name": "Product Operations Unit",
+      "direction": "",
+      "division": "Agency Division"
+    },
+    {
+      "name": "Creative Unit",
+      "direction": "",
+      "division": "Agency Division"
+    },
+    {
+      "name": "MB Facebook Unit",
+      "direction": "Media buying Direction",
+      "division": "Agency Division"
+    },
+    {
+      "name": "MB Native & TikTok Unit",
+      "direction": "Media buying Direction",
+      "division": "Agency Division"
+    },
+    {
+      "name": "MB Leadgen Team",
+      "direction": "Media buying Direction",
+      "division": "Agency Division"
+    },
+    {
+      "name": "Performance Team",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Demand Unit",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Traffic Unit",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "CPA Unit",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "RTB Team",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Moderation Team",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Support Team",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "QA Team",
+      "direction": "R&D Unit AdNetwork",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Management Accounting Unit",
+      "direction": "Finance Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Control Unit",
+      "direction": "Control & Compliance Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Traffic Compliance Team",
+      "direction": "Control & Compliance Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "L&D Unit",
+      "direction": "Human Resources Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Recruitment Unit",
+      "direction": "Human Resources Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "C&B Unit",
+      "direction": "Human Resources Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Corporate Culture Unit",
+      "direction": "Human Resources Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "HR Administration Unit",
+      "direction": "Human Resources Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "HRBP Unit",
+      "direction": "Human Resources Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "System admin Team",
+      "direction": "Human Resources Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "BizDev Unit",
+      "direction": "Marketing Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Marketing & PR Unit",
+      "direction": "Marketing Direction",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "KLN Control Team",
+      "direction": "Office team",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Analytics Control Team",
+      "direction": "Office team",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Recruitment Team",
+      "direction": "Office team",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Academy Team",
+      "direction": "Office team",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "HR Generalist",
+      "direction": "Office team",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "AdNetwork Team",
+      "direction": "Office team",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Search Team",
+      "direction": "Office team",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Apps Team",
+      "direction": "Office team",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Brand&PR Team",
+      "direction": "Office team",
+      "division": "CONSULTING Division"
+    },
+    {
+      "name": "Marketing Team",
+      "direction": "Office team",
+      "division": "CONSULTING Division"
+    }
+  ],
+  "teams": [
+    {
+      "name": "IOS Team",
+      "unit": "IOS Unit",
+      "direction": "",
+      "division": "APPS Division"
+    },
+    {
+      "name": "Data Team",
+      "unit": "IOS Unit",
+      "direction": "",
+      "division": "APPS Division"
+    },
+    {
+      "name": "Product Team",
+      "unit": "IOS Unit",
+      "direction": "",
+      "division": "APPS Division"
+    },
+    {
+      "name": "Media Buyer SCAd Team",
+      "unit": "Media buying Unit",
+      "direction": "",
+      "division": "APPS Division"
+    },
+    {
+      "name": "Creative Team 1",
+      "unit": "Creative Unit",
+      "direction": "",
+      "division": "Agency Division"
+    },
+    {
+      "name": "Creative Team 2",
+      "unit": "Creative Unit",
+      "direction": "",
+      "division": "Agency Division"
+    },
+    {
+      "name": "MB Facebook Team 1",
+      "unit": "MB Facebook Unit",
+      "direction": "Media buying Direction",
+      "division": "Agency Division"
+    },
+    {
+      "name": "MB Facebook Team 2",
+      "unit": "MB Facebook Unit",
+      "direction": "Media buying Direction",
+      "division": "Agency Division"
+    },
+    {
+      "name": "Tik Tok Team",
+      "unit": "MB Native & TikTok Unit",
+      "direction": "Media buying Direction",
+      "division": "Agency Division"
+    },
+    {
+      "name": "Native Team",
+      "unit": "MB Native & TikTok Unit",
+      "direction": "Media buying Direction",
+      "division": "Agency Division"
+    },
+    {
+      "name": "Demand Account Team",
+      "unit": "Demand Unit",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Hunter Team",
+      "unit": "Demand Unit",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Traffic Bizdev Team",
+      "unit": "Traffic Unit",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Traffic Account Team",
+      "unit": "Traffic Unit",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "Lead BizDev Team",
+      "unit": "Traffic Unit",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "CPA Team",
+      "unit": "CPA Unit",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    },
+    {
+      "name": "BizDev Team",
+      "unit": "CPA Unit",
+      "direction": "Sales Direction",
+      "division": "AdNetwork Division"
+    }
+  ]
+}

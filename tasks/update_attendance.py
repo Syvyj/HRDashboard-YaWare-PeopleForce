@@ -75,16 +75,88 @@ def determine_status(minutes_late: int, has_data: bool, leave_reason: str | None
     return 'present'
 
 
+MANUAL_FIELD_ATTRS = {
+    'scheduled_start': 'manual_scheduled_start',
+    'actual_start': 'manual_actual_start',
+    'minutes_late': 'manual_minutes_late',
+    'non_productive_minutes': 'manual_non_productive_minutes',
+    'not_categorized_minutes': 'manual_not_categorized_minutes',
+    'productive_minutes': 'manual_productive_minutes',
+    'total_minutes': 'manual_total_minutes',
+    'corrected_total_minutes': 'manual_corrected_total_minutes',
+    'status': 'manual_status',
+    'notes': 'manual_notes',
+    'leave_reason': 'manual_leave_reason',
+}
+
+
+def _record_key_from_values(user_id: str | None, email: str | None, user_name: str | None) -> str:
+    for value in (user_id, email, user_name):
+        if value:
+            lowered = str(value).strip().lower()
+            if lowered:
+                return lowered
+    return ''
+
+
+def _extract_manual_overrides(record: AttendanceRecord) -> dict | None:
+    manual_values = {}
+    manual_flags: list[str] = []
+    for field, flag_attr in MANUAL_FIELD_ATTRS.items():
+        if getattr(record, flag_attr, False):
+            manual_flags.append(flag_attr)
+            manual_values[field] = getattr(record, field)
+    if not manual_flags:
+        return None
+    return {
+        'values': manual_values,
+        'flags': manual_flags,
+        'applied': False,
+    }
+
+
+def _resolve_manual_key(key: str, manual_map: dict[str, dict], alias_map: dict[str, str]) -> tuple[str | None, dict | None]:
+    if not key:
+        return None, None
+    manual = manual_map.get(key)
+    if manual:
+        return key, manual
+    canonical = alias_map.get(key)
+    if canonical:
+        manual = manual_map.get(canonical)
+        if manual:
+            return canonical, manual
+    return None, None
+
+
+def _apply_manual_overrides(record: AttendanceRecord, key: str, manual_map: dict[str, dict], alias_map: dict[str, str]) -> None:
+    canonical_key, manual = _resolve_manual_key(key, manual_map, alias_map)
+    if not manual:
+        return
+    values = manual.get('values', {})
+    flags = manual.get('flags', [])
+    for field, value in values.items():
+        setattr(record, field, value)
+    for flag_attr in flags:
+        setattr(record, flag_attr, True)
+    manual['applied'] = True
+    if canonical_key:
+        manual_map[canonical_key] = manual
+
+
 def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absent: bool) -> None:
     schedules_by_id: Dict[str, AttendanceMonitor.UserSchedule] = monitor.schedules
     schedules_by_email: Dict[str, AttendanceMonitor.UserSchedule] = monitor.schedules_by_email
-    leaves_raw = monitor._get_leaves_for_date(target_date)  # email -> leave
+    leaves_raw = monitor._get_leaves_for_date(target_date)  # email -> leave (with amount field)
     leaves_reason = {}
+    leaves_amount = {}  # email -> amount (0.5 or 1.0)
+    
     for email, leave in leaves_raw.items():
         leave_type = leave.get('leave_type', '')
         if isinstance(leave_type, dict):
             leave_type = leave_type.get('name', '')
         leaves_reason[email.lower()] = leave_type or 'Отпуск'
+        leaves_amount[email.lower()] = leave.get('amount', 1.0)
 
     try:
         summary = yaware_client.get_summary_by_day(target_date.isoformat()) or []
@@ -171,7 +243,16 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         total_minutes = seconds_to_minutes(entry.get('total'))
 
         leave_reason = leaves_reason.get(email) if email else None
-        status = determine_status(minutes_late, True, leave_reason)
+        leave_amount = leaves_amount.get(email) if email else None
+        
+        # Якщо є половина дня відпустки (0.5) - дозволяємо YaWare дані для іншої половини
+        # Статус буде визначено як "present" або "late" незалежно від leave
+        if leave_amount == 0.5:
+            # Половина дня відпустки - зберігаємо і leave_reason, і YaWare дані
+            status = determine_status(minutes_late, True, None)  # визначаємо без урахування leave
+        else:
+            # Повний день відпустки або немає відпустки
+            status = determine_status(minutes_late, True, leave_reason)
 
         record = AttendanceRecord(
             record_date=target_date,
@@ -192,6 +273,7 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
             status=status,
             control_manager=schedule.control_manager if schedule else None,
             leave_reason=leave_reason,
+            half_day_amount=leave_amount,
             notes=schedule.note if schedule else None
         )
         record_key = _record_key_from_values(record.user_id, record.user_email, record.user_name)
@@ -209,6 +291,11 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         schedule = schedules_by_email.get(email)
         if not schedule:
             continue
+        
+        leave_amount = leaves_amount.get(email, 1.0)
+        
+        # Якщо половина дня відпустки і немає YaWare даних - все одно створюємо запис
+        # (можливо людина взяла відпустку на другу половину дня і не працювала)
         record = AttendanceRecord(
             record_date=target_date,
             user_id=schedule.user_id,
@@ -228,6 +315,7 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
             status='leave',
             control_manager=schedule.control_manager,
             leave_reason=reason,
+            half_day_amount=leave_amount,
             notes=schedule.note
         )
         record_key = _record_key_from_values(record.user_id, record.user_email, record.user_name)
@@ -311,70 +399,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-MANUAL_FIELD_ATTRS = {
-    'scheduled_start': 'manual_scheduled_start',
-    'actual_start': 'manual_actual_start',
-    'minutes_late': 'manual_minutes_late',
-    'non_productive_minutes': 'manual_non_productive_minutes',
-    'not_categorized_minutes': 'manual_not_categorized_minutes',
-    'productive_minutes': 'manual_productive_minutes',
-    'total_minutes': 'manual_total_minutes',
-    'corrected_total_minutes': 'manual_corrected_total_minutes',
-    'status': 'manual_status',
-    'notes': 'manual_notes',
-    'leave_reason': 'manual_leave_reason',
-}
-
-
-def _record_key_from_values(user_id: str | None, email: str | None, user_name: str | None) -> str:
-    for value in (user_id, email, user_name):
-        if value:
-            lowered = str(value).strip().lower()
-            if lowered:
-                return lowered
-    return ''
-
-
-def _extract_manual_overrides(record: AttendanceRecord) -> dict | None:
-    manual_values = {}
-    manual_flags: list[str] = []
-    for field, flag_attr in MANUAL_FIELD_ATTRS.items():
-        if getattr(record, flag_attr, False):
-            manual_flags.append(flag_attr)
-            manual_values[field] = getattr(record, field)
-    if not manual_flags:
-        return None
-    return {
-        'values': manual_values,
-        'flags': manual_flags,
-        'applied': False,
-    }
-
-
-def _resolve_manual_key(key: str, manual_map: dict[str, dict], alias_map: dict[str, str]) -> tuple[str | None, dict | None]:
-    if not key:
-        return None, None
-    manual = manual_map.get(key)
-    if manual:
-        return key, manual
-    canonical = alias_map.get(key)
-    if canonical:
-        manual = manual_map.get(canonical)
-        if manual:
-            return canonical, manual
-    return None, None
-
-
-def _apply_manual_overrides(record: AttendanceRecord, key: str, manual_map: dict[str, dict], alias_map: dict[str, str]) -> None:
-    canonical_key, manual = _resolve_manual_key(key, manual_map, alias_map)
-    if not manual:
-        return
-    values = manual.get('values', {})
-    flags = manual.get('flags', [])
-    for field, value in values.items():
-        setattr(record, field, value)
-    for flag_attr in flags:
-        setattr(record, flag_attr, True)
-    manual['applied'] = True
-    if canonical_key:
-        manual_map[canonical_key] = manual

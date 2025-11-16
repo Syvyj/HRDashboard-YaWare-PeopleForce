@@ -24,6 +24,11 @@
   const profilePeopleforceEl = document.getElementById('profile-peopleforce');
   const profileYawareEl = document.getElementById('profile-yaware');
   const profileTelegramEl = document.getElementById('profile-telegram');
+  const profileDivisionEl = document.getElementById('profile-division');
+  const profileDirectionEl = document.getElementById('profile-direction');
+  const profileUnitEl = document.getElementById('profile-unit');
+  const profileTeamEl = document.getElementById('profile-team');
+  const profileTeamLeadEl = document.getElementById('profile-team-lead');
   const managerEditBtn = document.getElementById('manager-edit-btn');
   const recordsBody = document.getElementById('records-body');
   const recordsCountEl = document.getElementById('records-count');
@@ -134,45 +139,65 @@
       }
     }
     
-    // Відображаємо керівника якщо є дані
-    const profileReportingLabel = document.getElementById('profile-reporting-label');
-    const profileReportingEl = document.getElementById('profile-reporting');
-    if (profileReportingLabel && profileReportingEl) {
-      const managerName = data.manager_name;
-      const managerTelegram = data.manager_telegram;
+    // Відображаємо нові поля ієрархії
+    if (profileDivisionEl) {
+      profileDivisionEl.textContent = schedule?.division_name || '—';
+    }
+    if (profileDirectionEl) {
+      profileDirectionEl.textContent = schedule?.direction_name || '—';
+    }
+    if (profileUnitEl) {
+      profileUnitEl.textContent = schedule?.unit_name || '—';
+    }
+    if (profileTeamEl) {
+      profileTeamEl.textContent = schedule?.team_name || '—';
+    }
+    
+    // Відображаємо team_lead
+    if (profileTeamLeadEl) {
+      const teamLead = schedule?.team_lead;
+      const teamLeadTelegram = schedule?.manager_telegram;
       
-      if (managerName && managerTelegram) {
-        profileReportingLabel.style.display = 'block';
-        profileReportingEl.style.display = 'block';
-        
-        // Форматуємо ім'я (замінюємо _ на пробіл для відображення)
-        const displayName = managerName.replace(/_/g, ' ');
-        // Видаляємо @ якщо є на початку
-        const cleanTelegram = managerTelegram.replace(/^@/, '');
-        
-        const link = document.createElement('a');
-        link.href = `https://t.me/${cleanTelegram}`;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.className = 'd-flex align-items-center gap-1';
-        
-        const img = document.createElement('img');
-        img.src = '/static/logo/tg_logo.png';
-        img.alt = 'Telegram';
-        img.style.width = '20px';
-        img.style.height = '20px';
-        
-        const span = document.createElement('span');
-        span.textContent = displayName;
-        
-        link.appendChild(img);
-        link.appendChild(span);
-        
-        profileReportingEl.innerHTML = '';
-        profileReportingEl.appendChild(link);
+      if (teamLead && teamLeadTelegram) {
+        // Форматуємо ім'я (замінюємо _ на пробіл)
+        const displayName = teamLead.replace(/_/g, ' ');
+        const cleanTelegram = teamLeadTelegram.replace(/^@/, '');
+        profileTeamLeadEl.innerHTML = `${displayName} <a href="https://t.me/${cleanTelegram}" target="_blank" rel="noopener noreferrer">@${cleanTelegram}</a>`;
+      } else if (teamLead) {
+        profileTeamLeadEl.textContent = teamLead.replace(/_/g, ' ');
       } else {
-        profileReportingLabel.style.display = 'none';
-        profileReportingEl.style.display = 'none';
+        profileTeamLeadEl.textContent = '—';
+      }
+    }
+    
+    // Відображаємо нові поля ієрархії
+    if (profileDivisionEl) {
+      profileDivisionEl.textContent = schedule?.division_name || '—';
+    }
+    if (profileDirectionEl) {
+      profileDirectionEl.textContent = schedule?.direction_name || '—';
+    }
+    if (profileUnitEl) {
+      profileUnitEl.textContent = schedule?.unit_name || '—';
+    }
+    if (profileTeamEl) {
+      profileTeamEl.textContent = schedule?.team_name || '—';
+    }
+    
+    // Відображаємо team_lead
+    if (profileTeamLeadEl) {
+      const teamLead = schedule?.team_lead;
+      const teamLeadTelegram = schedule?.manager_telegram;
+      
+      if (teamLead && teamLeadTelegram) {
+        // Форматуємо ім'я (замінюємо _ на пробіл)
+        const displayName = teamLead.replace(/_/g, ' ');
+        const cleanTelegram = teamLeadTelegram.replace(/^@/, '');
+        profileTeamLeadEl.innerHTML = `${displayName} <a href="https://t.me/${cleanTelegram}" target="_blank" rel="noopener noreferrer">@${cleanTelegram}</a>`;
+      } else if (teamLead) {
+        profileTeamLeadEl.textContent = teamLead.replace(/_/g, ' ');
+      } else {
+        profileTeamLeadEl.textContent = '—';
       }
     }
   }
@@ -212,7 +237,13 @@
     if (record.leave_reason) {
       const info = document.createElement('div');
       info.className = 'small text-muted';
-      info.textContent = record.leave_reason;
+      
+      // Додаємо "(0.5 дня)" якщо це половина дня відпустки
+      let leaveText = record.leave_reason;
+      if (record.half_day_amount === 0.5) {
+        leaveText += ' (0.5 дня)';
+      }
+      info.textContent = leaveText;
       td.appendChild(info);
     }
     return td;

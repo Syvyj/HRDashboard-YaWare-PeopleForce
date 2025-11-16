@@ -80,11 +80,12 @@
   const employeeSelectedFiltersDisplay = document.getElementById('employee-selected-filters-display');
   const employeeFilterProjectsList = document.getElementById('employee-filter-projects-list');
   const employeeFilterDepartmentsList = document.getElementById('employee-filter-departments-list');
+  const employeeFilterUnitsList = document.getElementById('employee-filter-units-list');
   const employeeFilterTeamsList = document.getElementById('employee-filter-teams-list');
   
   let employeeFiltersModal = null; // Will be initialized when needed
-  let currentEmployeeFilterOptions = { projects: [], departments: [], teams: [] };
-  let selectedEmployeeFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+  let currentEmployeeFilterOptions = { projects: [], departments: [], units: [], teams: [] };
+  let selectedEmployeeFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
 
   function setButtonLoading(button, isLoading) {
     if (!button) {
@@ -440,6 +441,7 @@
       currentEmployeeFilterOptions = {
         projects: data.filters.project || [],
         departments: data.filters.department || [],
+        units: data.filters.unit || [],
         teams: data.filters.team || []
       };
       
@@ -898,7 +900,7 @@
     resetBtn.addEventListener('click', () => {
       searchInput.value = '';
       employeeSearch = '';
-      selectedEmployeeFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+      selectedEmployeeFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
       updateEmployeeSelectedFiltersDisplay();
       employeePage = 1;
       fetchEmployees();
@@ -1137,6 +1139,7 @@
   function renderEmployeeFilterModal() {
     renderFilterCheckboxes(employeeFilterProjectsList, currentEmployeeFilterOptions.projects, selectedEmployeeFilters.projects);
     renderFilterCheckboxes(employeeFilterDepartmentsList, currentEmployeeFilterOptions.departments, selectedEmployeeFilters.departments);
+    renderFilterCheckboxes(employeeFilterUnitsList, currentEmployeeFilterOptions.units, selectedEmployeeFilters.units);
     renderFilterCheckboxes(employeeFilterTeamsList, currentEmployeeFilterOptions.teams, selectedEmployeeFilters.teams);
   }
 
@@ -1177,7 +1180,7 @@
 
   if (employeeFilterModalClearBtn) {
     employeeFilterModalClearBtn.addEventListener('click', () => {
-      selectedEmployeeFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+      selectedEmployeeFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
       renderEmployeeFilterModal();
       updateEmployeeSelectedFiltersDisplay();
     });

@@ -114,7 +114,15 @@ class AttendanceMonitor:
         return schedules, schedules_by_email
     
     def _get_leaves_for_date(self, check_date: date) -> Dict[str, dict]:
-        """Получить отпуска на конкретную дату."""
+        """
+        Получить отпуска на конкретную дату.
+        
+        Returns:
+            Dict[email, dict] где dict содержит:
+            - leave_type: название типа отпуска
+            - amount: 0.5 для половины дня, 1.0 для полного дня
+            - все остальные поля из leave request
+        """
         all_leaves = self.pf_client.get_leave_requests(
             start_date=check_date,
             end_date=check_date
@@ -128,7 +136,21 @@ class AttendanceMonitor:
             
             # Проверяем дата ли в периоде отпуска
             if leave_start <= check_date <= leave_end:
-                leaves_by_email[emp_email] = leave
+                # Ищем запись для конкретной даты в entries
+                entries = leave.get("entries", [])
+                amount = 1.0  # по умолчанию полный день
+                
+                for entry in entries:
+                    entry_date_str = entry.get("date", "")
+                    if entry_date_str:
+                        entry_date = date.fromisoformat(entry_date_str)
+                        if entry_date == check_date:
+                            amount = float(entry.get("amount", 1.0))
+                            break
+                
+                leave_with_amount = leave.copy()
+                leave_with_amount["amount"] = amount
+                leaves_by_email[emp_email] = leave_with_amount
         
         logger.info(f"Знайдено {len(leaves_by_email)} відсутностей на {check_date}")
         return leaves_by_email

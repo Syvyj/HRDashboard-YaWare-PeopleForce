@@ -36,14 +36,25 @@
   const selectedFiltersDisplay = document.getElementById('selected-filters-display');
   const filterProjectsList = document.getElementById('filter-projects-list');
   const filterDepartmentsList = document.getElementById('filter-departments-list');
+  const filterUnitsList = document.getElementById('filter-units-list');
   const filterTeamsList = document.getElementById('filter-teams-list');
   
   let filtersModal = null; // Will be initialized when needed
   
-  let currentFilterOptions = { projects: [], departments: [], teams: [] };
-  let selectedFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+  let currentFilterOptions = { projects: [], departments: [], units: [], teams: [] };
+  let selectedFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
+  
   const recordEditModalEl = document.getElementById('recordEditModal');
   const recordEditModal = recordEditModalEl ? new bootstrap.Modal(recordEditModalEl) : null;
+  
+  const weekNotesModalEl = document.getElementById('weekNotesModal');
+  const weekNotesModal = weekNotesModalEl ? new bootstrap.Modal(weekNotesModalEl) : null;
+  const weekNotesForm = document.getElementById('week-notes-form');
+  const weekNotesText = document.getElementById('week-notes-text');
+  const weekNotesUserLabel = document.getElementById('week-notes-username');
+  const weekNotesSaveBtn = document.getElementById('week-notes-save');
+  let weekNotesContext = null;
+  
   const recordEditForm = document.getElementById('record-edit-form');
   const recordEditScheduled = document.getElementById('record-edit-scheduled');
   const recordEditActual = document.getElementById('record-edit-actual');
@@ -121,21 +132,59 @@
     return td;
   }
 
-  function createNotesCell(row) {
+  function createNotesCell(row, canEdit = false, userKey = null, isWeekTotal = false) {
     const td = document.createElement('td');
     td.className = 'notes-cell';
+    td.style.position = 'relative';
+    
+    const contentWrapper = document.createElement('div');
+    contentWrapper.style.paddingRight = canEdit && userKey ? '32px' : '0';
+    contentWrapper.style.lineHeight = '1.3';
+    contentWrapper.style.textAlign = 'left';
+    
     const display = document.createElement('div');
     display.className = 'notes-display';
+    display.style.lineHeight = '1.3';
     display.textContent = row.notes_display || '';
-    td.appendChild(display);
+    contentWrapper.appendChild(display);
 
     if (row.leave_reason && row.notes) {
       const leaveInfo = document.createElement('div');
       leaveInfo.className = 'text-muted small';
-      leaveInfo.textContent = row.leave_reason;
-      td.appendChild(leaveInfo);
+      leaveInfo.style.lineHeight = '1.3';
+      
+      // Додаємо "(0.5 дня)" якщо це половина дня відпустки
+      let leaveText = row.leave_reason;
+      if (row.half_day_amount === 0.5) {
+        leaveText += ' (0.5 дня)';
+      }
+      leaveInfo.textContent = leaveText;
+      contentWrapper.appendChild(leaveInfo);
     }
-
+    
+    td.appendChild(contentWrapper);
+    
+    if (canEdit && userKey) {
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'btn btn-link p-0 text-primary';
+      editBtn.style.position = 'absolute';
+      editBtn.style.right = '8px';
+      editBtn.style.top = '50%';
+      editBtn.style.transform = 'translateY(-50%)';
+      editBtn.style.minWidth = '24px';
+      editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+      editBtn.title = 'Редактировать';
+      
+      if (isWeekTotal) {
+        editBtn.dataset.weekNotesEdit = userKey;
+      } else {
+        editBtn.dataset.weekEdit = userKey;
+      }
+      
+      td.appendChild(editBtn);
+    }
+    
     return td;
   }
 
@@ -302,6 +351,19 @@
     fillStatusOptions(recordEditStatus, options, row.status);
   }
 
+  function openWeekNotesModal(userKey, userName, currentNotes) {
+    if (!weekNotesModal || !weekNotesForm) {
+      return;
+    }
+    weekNotesContext = {
+      userKey: userKey,
+      userName: userName || userKey
+    };
+    weekNotesUserLabel.textContent = userName || userKey;
+    weekNotesText.value = currentNotes || '';
+    weekNotesModal.show();
+  }
+
   async function openUserEditModal(userKeyRaw, rows, userName) {
     if (!recordEditModal || !recordEditForm || !rows || !rows.length) {
       return;
@@ -334,6 +396,7 @@
   function renderFilterModal() {
     renderFilterCheckboxes(filterProjectsList, currentFilterOptions.projects, selectedFilters.projects);
     renderFilterCheckboxes(filterDepartmentsList, currentFilterOptions.departments, selectedFilters.departments);
+    renderFilterCheckboxes(filterUnitsList, currentFilterOptions.units, selectedFilters.units);
     renderFilterCheckboxes(filterTeamsList, currentFilterOptions.teams, selectedFilters.teams);
   }
 
@@ -347,6 +410,7 @@
     currentFilterOptions = {
       projects: filterOptions.projects || [],
       departments: filterOptions.departments || [],
+      units: filterOptions.units || [],
       teams: filterOptions.teams || []
     };
 
@@ -374,6 +438,8 @@
       metaPanel.className = 'user-meta-panel';
       const metaLines = [];
       const metaMainLine = [];
+      
+      // Відображаємо всі 4 рівні ієрархії: Division → Direction → Unit → Team
       if (item.project) {
         metaMainLine.push(
           `<a href="#" class="meta-link" data-filter="project" data-value="${encodeURIComponent(item.project)}">${escapeHtml(item.project)}</a>`
@@ -382,6 +448,12 @@
       if (item.department) {
         metaMainLine.push(
           `<a href="#" class="meta-link" data-filter="department" data-value="${encodeURIComponent(item.department)}">${escapeHtml(item.department)}</a>`
+        );
+      }
+      // Додаємо Unit (якщо є в даних)
+      if (schedule.unit_name) {
+        metaMainLine.push(
+          `<a href="#" class="meta-link" data-filter="unit" data-value="${encodeURIComponent(schedule.unit_name)}">${escapeHtml(schedule.unit_name)}</a>`
         );
       }
       if (item.team) {
@@ -473,7 +545,7 @@
         tr.appendChild(createCell(row.productive_display));
         tr.appendChild(createCell(row.total_display));
         tr.appendChild(createCell(row.corrected_total_display || ''));
-        tr.appendChild(createNotesCell(row));
+        tr.appendChild(createNotesCell(row, canEdit, userKeyRaw));
         tbody.appendChild(tr);
       });
 
@@ -487,17 +559,9 @@
         totalRow.appendChild(createCell(item.week_total.productive_display));
         totalRow.appendChild(createCell(item.week_total.total_display));
         totalRow.appendChild(createCell(item.week_total.corrected_total_display || ''));
-        const notesCell = document.createElement('td');
-        notesCell.className = 'notes-cell';
-        if (canEdit) {
-          const editBtn = document.createElement('button');
-          editBtn.type = 'button';
-          editBtn.className = 'btn btn-link p-0 week-edit-btn';
-          editBtn.dataset.weekEdit = userKeyRaw;
-          editBtn.textContent = 'Редактировать';
-          notesCell.appendChild(editBtn);
-        }
-        totalRow.appendChild(notesCell);
+        // Створюємо фейковий об'єкт з notes_display для Week total
+        const weekTotalRow = { notes_display: item.week_total.notes || '' };
+        totalRow.appendChild(createNotesCell(weekTotalRow, canEdit, userKeyRaw, true));
         tbody.appendChild(totalRow);
       }
 
@@ -582,6 +646,7 @@
   }
 
   if (canEdit) {
+    // Обробка кліку по звичайних рядках (окремі дні)
     container.addEventListener('click', (event) => {
       const btn = event.target.closest('[data-week-edit]');
       if (!btn) {
@@ -599,6 +664,22 @@
         alert('Не удалось открыть окно редактирования.');
       });
     });
+
+    // Обробка кліку по Week total (коментар до тижня)
+    container.addEventListener('click', (event) => {
+      const btn = event.target.closest('[data-week-notes-edit]');
+      if (!btn) {
+        return;
+      }
+      event.preventDefault();
+      const userKey = btn.dataset.weekNotesEdit;
+      const info = userRecordsMap.get(userKey);
+      if (!info) {
+        alert('Нет данных пользователя.');
+        return;
+      }
+      openWeekNotesModal(userKey, info.name, info.week_total?.notes || '');
+    });
   }
 
   document.addEventListener('click', function (event) {
@@ -609,13 +690,24 @@
     event.preventDefault();
     const type = link.dataset.filter;
     const value = decodeURIComponent(link.dataset.value || '');
+    
+    // Відкриваємо модальне вікно і встановлюємо фільтр
     if (type === 'project') {
-      setSelectValue(projectSelect, value);
+      selectedFilters.projects.clear();
+      selectedFilters.projects.add(value);
     } else if (type === 'department') {
-      setSelectValue(departmentSelect, value);
+      selectedFilters.departments.clear();
+      selectedFilters.departments.add(value);
+    } else if (type === 'unit') {
+      selectedFilters.units.clear();
+      selectedFilters.units.add(value);
     } else if (type === 'team') {
-      setSelectValue(teamSelect, value);
+      selectedFilters.teams.clear();
+      selectedFilters.teams.add(value);
     }
+    
+    // Оновлюємо візуальне відображення та завантажуємо дані
+    updateSelectedFiltersDisplay();
     loadData();
   });
 
@@ -674,6 +766,67 @@
         recordEditSaveBtn.disabled = false;
       }
     }
+  }
+
+  async function submitWeekNotes(event) {
+    event.preventDefault();
+    if (!weekNotesContext) {
+      return;
+    }
+    
+    const { userKey } = weekNotesContext;
+    const notes = weekNotesText.value.trim();
+    
+    if (weekNotesSaveBtn) {
+      weekNotesSaveBtn.disabled = true;
+    }
+    
+    try {
+      // Тут потрібно створити API endpoint для збереження week notes
+      // Поки що просто закриваємо модалку - API буде додано далі
+      alert('Функція збереження коментарів до тижня буде реалізована найближчим часом');
+      
+      if (weekNotesModal) {
+        weekNotesModal.hide();
+      }
+      
+      // Після додання API розкоментувати:
+      // const response = await fetch(`/api/users/${encodeURIComponent(userKey)}/week-notes`, {
+      //   method: 'PATCH',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ notes: notes })
+      // });
+      // if (!response.ok) {
+      //   throw new Error('Failed to save week notes');
+      // }
+      // await loadData(); // Перезавантажити дані
+      // if (weekNotesModal) {
+      //   weekNotesModal.hide();
+      // }
+    } catch (error) {
+      console.error(error);
+      alert('Не удалось сохранить комментарий: ' + error.message);
+    } finally {
+      if (weekNotesSaveBtn) {
+        weekNotesSaveBtn.disabled = false;
+      }
+    }
+  }
+
+  if (weekNotesForm) {
+    weekNotesForm.addEventListener('submit', submitWeekNotes);
+  }
+
+  if (weekNotesModalEl) {
+    weekNotesModalEl.addEventListener('hidden.bs.modal', () => {
+      weekNotesContext = null;
+      if (weekNotesForm) {
+        weekNotesForm.reset();
+      }
+      if (weekNotesUserLabel) {
+        weekNotesUserLabel.textContent = '';
+      }
+    });
   }
 
   if (recordEditForm) {

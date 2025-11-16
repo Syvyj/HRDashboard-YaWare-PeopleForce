@@ -142,8 +142,20 @@ def format_attendance_report(report: dict, report_date: Optional[Union[str, date
             else:
                 leave_type_name = str(leave_type_data)
             
+            # Перевіряємо чи це пів дня
+            half_day_suffix = ""
+            entries = leave.get("entries", [])
+            if entries and isinstance(date_str, str):
+                # Знаходимо entry для поточної дати
+                for entry in entries:
+                    if entry.get("date") == date_str:
+                        amount = float(entry.get("amount", 1.0))
+                        if amount == 0.5:
+                            half_day_suffix = " (0.5 дня)"
+                        break
+            
             # Компактный формат для уменьшения размера сообщения
-            lines.append(f"   • {name} ({leave_type_name})")
+            lines.append(f"   • {name} ({leave_type_name}{half_day_suffix})")
         lines.append("")
     
     # Відсутні без причини

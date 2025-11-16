@@ -24,11 +24,11 @@ logger = logging.getLogger(__name__)
 class AttendanceScheduler:
     """Scheduler for automated attendance reports."""
     
-    # Report time in Warsaw timezone
-    REPORT_TIME = time(10, 0)      # 10:00 - Telegram звіт
-    EXPORT_TIME = time(8, 0)       # 08:00 - Експорт в Google Sheets
-    MORNING_MESSAGE_TIME = time(9, 0)  # 09:00 - Ранкове повідомлення
-    REPORT_TIMEZONE = "Europe/Warsaw"
+    # Report time in UTC (Warsaw = UTC+2)
+    REPORT_TIME = time(9, 15)      # 09:15 UTC (11:15 Warsaw) - Telegram звіт
+    EXPORT_TIME = time(10, 15)     # 10:15 UTC (12:15 Warsaw) - Експорт в Google Sheets
+    MORNING_MESSAGE_TIME = time(10, 20)  # 10:20 UTC (12:20 Warsaw) - Ранкове повідомлення
+    REPORT_TIMEZONE = "UTC"
     DEFAULT_SHEET_URL = f"https://docs.google.com/spreadsheets/d/{settings.spreadsheet_id}"
     MANAGER_SHEET_URLS = {
         1: f"https://docs.google.com/spreadsheets/d/{settings.spreadsheet_id_control_1}",
@@ -239,12 +239,13 @@ class AttendanceScheduler:
         
         self.scheduler = BackgroundScheduler(timezone=self.REPORT_TIMEZONE)
         
-        # Schedule daily Telegram report at 10:00 Warsaw time
+        # Schedule daily Telegram report at 10:00 Warsaw time (Mon-Fri only)
         self.scheduler.add_job(
             self._send_daily_report_sync,
             trigger=CronTrigger(
                 hour=self.REPORT_TIME.hour,
                 minute=self.REPORT_TIME.minute,
+                day_of_week='mon-fri',  # Тільки робочі дні
                 timezone=pytz.timezone(self.REPORT_TIMEZONE)
             ),
             id='daily_attendance_report',
@@ -282,10 +283,10 @@ class AttendanceScheduler:
         
         self.scheduler.start()
         logger.info(
-            f"Scheduler started:\n"
-            f"  - Sheets export: {self.EXPORT_TIME.strftime('%H:%M')} {self.REPORT_TIMEZONE} (Mon-Fri)\n"
-            f"  - Morning message: {self.MORNING_MESSAGE_TIME.strftime('%H:%M')} {self.REPORT_TIMEZONE} (Mon-Fri)\n"
-            f"  - Telegram reports: {self.REPORT_TIME.strftime('%H:%M')} {self.REPORT_TIMEZONE}"
+            f"Scheduler started (timezone: {self.REPORT_TIMEZONE}):\n"
+            f"  - 09:15 UTC (11:15 Warsaw) - Telegram reports (Mon-Fri)\n"
+            f"  - 10:15 UTC (12:15 Warsaw) - Google Sheets export (Mon-Fri)\n"
+            f"  - 10:20 UTC (12:20 Warsaw) - Morning message (Mon-Fri)"
         )
     
     def stop(self) -> None:

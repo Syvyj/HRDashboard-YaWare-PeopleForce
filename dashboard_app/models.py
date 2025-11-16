@@ -81,6 +81,7 @@ class AttendanceRecord(db.Model):
     status = db.Column(db.String(16), nullable=False)  # late / absent / present / leave
     control_manager = db.Column(db.Integer, nullable=True, index=True)
     leave_reason = db.Column(db.String(255), nullable=True)
+    half_day_amount = db.Column(db.Float, nullable=True)  # 0.5 for half-day leave, 1.0 for full day, None if not a leave
     notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -123,6 +124,7 @@ class AttendanceRecord(db.Model):
             'status': self.status,
             'control_manager': self.control_manager,
             'leave_reason': self.leave_reason,
+            'half_day_amount': self.half_day_amount,
             'notes': self.notes,
         }
 

@@ -71,7 +71,7 @@ _LOCATION_REPLACEMENTS: dict[str, str] = {
 }
 
 
-_MANUAL_PROTECTED_FIELDS = {'start_time', 'project', 'department', 'team', 'location'}
+_MANUAL_PROTECTED_FIELDS = {'start_time', 'location'}
 
 
 def _normalize_location_label(raw: object | None) -> str | None:
@@ -158,137 +158,7 @@ MANUAL_FLAG_MAP = {
 }
 MANUAL_TRACKED_FIELDS = tuple(MANUAL_FLAG_MAP.keys())
 
-PROJECT_NORMALIZATION: dict[str, str] = {
-    'ad network': 'Ad Network',
-    'consulting': 'Consulting',
-}
 
-HIERARCHY_PATHS: tuple[tuple[str, ...], ...] = (
-    ('Ad Network',),
-    ('Ad Network', 'Analyst'),
-    ('Ad Network', 'CPA'),
-    ('Ad Network', 'CPA', 'BizDev СPA'),
-    ('Ad Network', 'CPA', 'Gambling team'),
-    ('Ad Network', 'CPA', 'MB EVA'),
-    ('Ad Network', 'Demand department'),
-    ('Ad Network', 'Demand department', 'Account Team (DD)'),
-    ('Ad Network', 'Demand department', 'Hot team (DD)'),
-    ('Ad Network', 'Marketing'),
-    ('Ad Network', 'Moderation'),
-    ('Ad Network', 'Product team'),
-    ('Ad Network', 'R&D'),
-    ('Ad Network', 'RTB'),
-    ('Ad Network', 'Support'),
-    ('Ad Network', 'Support team'),
-    ('Ad Network', 'Support', 'Support team'),
-    ('Ad Network', 'Traffic'),
-    ('Ad Network', 'Traffic', 'Account Team'),
-    ('Ad Network', 'Traffic', 'Bizdev team 1'),
-    ('Ad Network', 'Traffic', 'BizDev team 2'),
-    ('Agency',),
-    ('Agency', 'Creative'),
-    ('Agency', 'FB MB'),
-    ('Agency', 'FB MB', 'FB - MB (Anna)'),
-    ('Agency', 'FB MB', 'FB - MB (Mykyta)'),
-    ('Agency', 'FB MB', 'Klimchenya Valery'),
-    ('Agency', 'Native Anton'),
-    ('Agency', 'Native Anton', 'Native (Hlib)'),
-    ('Agency', 'Native Anton', 'Tik Tok (Iryna)'),
-    ('Agency', 'Tech'),
-    ('APPs',),
-    ('APPs', 'iOS team'),
-    ('APPs', 'iOS team', 'iOS team'),
-    ('APPs', 'Mediabuy team'),
-    ('APPs', 'Mediabuy team', 'Mediabuy team'),
-    ('Consulting',),
-    ('Consulting', 'Administration'),
-    ('Consulting', 'CBDO'),
-    ('Consulting', 'Consulting Alla Kokosha'),
-    ('Consulting', 'Consulting Marcikute Ilona'),
-    ('Consulting', 'Consulting Maryia Harauskaya'),
-    ('Consulting', 'Control'),
-    ('Consulting', 'Control', 'Consulting-Control-Serdiuk Alina'),
-    ('Consulting', 'Control', 'Control-Kryvytska Olena'),
-    ('Consulting', 'Finance'),
-    ('Consulting', 'HR Department'),
-    ('Consulting', 'HR Department', 'C&B'),
-    ('Consulting', 'HR Department', 'C&B', 'C&B Dankova Tetiana'),
-    ('Consulting', 'HR Department', 'C&B', 'C&B Ilona Marcinkute'),
-    ('Consulting', 'HR Department', 'HR'),
-    ('Consulting', 'HR Department', 'HRBP'),
-    ('Consulting', 'HR Department', 'L&D'),
-    ('Consulting', 'HR Department', 'Recruitment'),
-    ('Consulting', 'Legal'),
-    ('Consulting', 'Operation Control'),
-)
-
-DEPARTMENT_TO_PROJECT: dict[str, tuple[str, str]] = {}
-TEAM_TO_INFO: dict[str, tuple[str, str, str]] = {}
-
-for path in HIERARCHY_PATHS:
-    if not path:
-        continue
-    project = path[0].strip()
-    if len(path) >= 2:
-        department = path[1].strip() if len(path) == 2 else path[-2].strip()
-        key = department.lower()
-        if key and key not in DEPARTMENT_TO_PROJECT:
-            DEPARTMENT_TO_PROJECT[key] = (project, department)
-    if len(path) >= 3:
-        team = path[-1].strip()
-        department_for_team = path[-2].strip()
-        team_key = team.lower()
-        if team_key and team_key not in TEAM_TO_INFO:
-            TEAM_TO_INFO[team_key] = (project, department_for_team, team)
-
-
-def _parse_date(value: str) -> date | None:
-    if not value:
-        return None
-    try:
-        return datetime.strptime(value, '%Y-%m-%d').date()
-    except ValueError:
-        return None
-
-
-def _is_synced_employee(user: User) -> bool:
-    if not user or user.is_admin:
-        return False
-    names, emails, ids = _schedule_identity_sets()
-    email = (user.email or '').strip().lower()
-    if email and email in emails:
-        return True
-    name = (user.name or '').strip().lower()
-    if name and name in names:
-        return True
-    identifier = getattr(user, 'user_id', None)
-    if identifier and str(identifier).strip().lower() in ids:
-        return True
-    return _password_matches_default(getattr(user, 'password_hash', None))
-
-
-def _apply_hierarchy_defaults(project: str | None, department: str | None, team: str | None) -> tuple[str, str, str]:
-    proj = (project or '').strip()
-    dept = (department or '').strip()
-    team_value = (team or '').strip()
-
-    if team_value:
-        info = TEAM_TO_INFO.get(team_value.lower())
-        if info:
-            proj = proj or info[0]
-            if not dept:
-                dept = info[1]
-            team_value = info[2]
-    if dept:
-        info = DEPARTMENT_TO_PROJECT.get(dept.lower())
-        if info:
-            proj = proj or info[0]
-            dept = info[1]
-
-    if proj:
-        proj = PROJECT_NORMALIZATION.get(proj.lower(), proj)
-
-    return proj, dept, team_value
 
 
 def _minutes_to_str(minutes: int | None) -> str:
@@ -343,6 +213,15 @@ def _format_time_hm(value: str | None) -> str:
             minute = 0
             hour += 1
     return f"{hour:02d}:{minute:02d}"
+
+
+def _parse_date(date_str: str | None) -> date | None:
+    if not date_str:
+        return None
+    try:
+        return datetime.strptime(date_str, '%Y-%m-%d').date()
+    except (ValueError, TypeError):
+        return None
 
 
 def _parse_duration(value: str | None) -> int | None:
@@ -449,6 +328,16 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
     except Exception as exc:  # pragma: no cover - network failure
         return [], str(exc)
 
+    # Load schedule data to get position, telegram, team_lead
+    schedule_data = schedule_user_manager.load_users() if schedule_user_manager else {}
+    schedule_by_email = {}
+    if isinstance(schedule_data, dict):
+        for name, info in schedule_data.get('users', {}).items():
+            if isinstance(info, dict):
+                email = (info.get('email') or '').strip().lower()
+                if email:
+                    schedule_by_email[email] = info
+
     entries: list[dict] = []
     today = date.today()
     for item in raw_items:
@@ -486,6 +375,17 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
         division_name = ''
         if isinstance(division_obj, dict):
             division_name = (division_obj.get('name') or '').strip()
+        
+        # Get position, telegram, team_lead from schedule data (cached from sync)
+        position_name = ''
+        telegram_handle = ''
+        team_lead_name = ''
+        schedule_info = schedule_by_email.get(email)
+        if schedule_info:
+            position_name = (schedule_info.get('position') or '').strip()
+            telegram_handle = (schedule_info.get('telegram_username') or '').strip()
+            team_lead_name = (schedule_info.get('team_lead') or '').strip()
+        
         keys = _diff_key_candidates(full_name, email, employee_id)
         entries.append({
             'name': full_name,
@@ -495,6 +395,9 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
              'department': department_name,
              'project': division_name,
              'location': location_name,
+             'position': position_name,
+             'telegram': telegram_handle,
+             'team_lead': team_lead_name,
              'hire_date': hire_date.isoformat() if hire_date else None,
             'keys': keys,
         })
@@ -597,47 +500,65 @@ def _generate_user_diff(force_refresh: bool = False) -> dict:
 
 
 def _serialize_attendance_record(record: AttendanceRecord) -> dict:
-    project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(
-        record.project,
-        record.department,
-        record.team,
-    )
-    corrected_display = _minutes_to_str(record.corrected_total_minutes) if record.corrected_total_minutes is not None else ''
-    corrected_hm = _minutes_to_hm(record.corrected_total_minutes) if record.corrected_total_minutes is not None else ''
-    manual_flags = {field: bool(getattr(record, attr)) for field, attr in MANUAL_FLAG_MAP.items()}
-    location_value = _normalize_location_label(record.location)
+    user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
+
+    scheduled_start = record.scheduled_start or ''
+    actual_start = record.actual_start or ''
+    corrected_minutes = record.corrected_total_minutes
+    corrected_display = _minutes_to_str(corrected_minutes) if corrected_minutes is not None else ''
+    corrected_hm = _minutes_to_hm(corrected_minutes) if corrected_minutes is not None else ''
+    
     return {
         'id': record.id,
         'date': record.record_date.isoformat(),
         'date_display': record.record_date.strftime('%d.%m.%y'),
-        'weekday': record.record_date.strftime('%a'),
-        'scheduled_start': record.scheduled_start or '',
-        'scheduled_start_hm': _format_time_hm(record.scheduled_start),
-        'actual_start': record.actual_start or '',
-        'actual_start_hm': _format_time_hm(record.actual_start),
+        'date_iso': record.record_date.strftime('%Y-%m-%d'),
+        'user_id': record.user_id,
+        'user_name': record.user_name,
+        'user_email': record.user_email,
+        
+        # Нові поля ієрархії
+        'division_name': user_schedule.get('division_name'),
+        'direction_name': user_schedule.get('direction_name'),
+        'unit_name': user_schedule.get('unit_name'),
+        'team_name': user_schedule.get('team_name'),
+
+        # Старі поля, залишені для сумісності (можна буде видалити)
+        'project': user_schedule.get('division_name'),
+        'department': user_schedule.get('direction_name'),
+        'team': user_schedule.get('team_name'),
+
+        'location': _normalize_location_label(record.location),
+        'scheduled_start': scheduled_start,
+        'scheduled_start_hm': _format_time_hm(scheduled_start),
+        'actual_start': actual_start,
+        'actual_start_hm': _format_time_hm(actual_start),
         'minutes_late': record.minutes_late,
         'minutes_late_display': _minutes_to_str(record.minutes_late),
         'non_productive_minutes': record.non_productive_minutes,
         'non_productive_display': _minutes_to_str(record.non_productive_minutes),
+        'non_productive_hm': _minutes_to_hm(record.non_productive_minutes),
         'not_categorized_minutes': record.not_categorized_minutes,
         'not_categorized_display': _minutes_to_str(record.not_categorized_minutes),
+        'not_categorized_hm': _minutes_to_hm(record.not_categorized_minutes),
         'productive_minutes': record.productive_minutes,
         'productive_display': _minutes_to_str(record.productive_minutes),
+        'productive_hm': _minutes_to_hm(record.productive_minutes),
         'total_minutes': record.total_minutes,
         'total_display': _minutes_to_str(record.total_minutes),
-        'status': record.status,
-        'notes': (record.notes or '').strip(),
-        'notes_display': (record.notes or record.leave_reason or '').strip(),
-        'leave_reason': (record.leave_reason or '').strip(),
-        'project': project_resolved,
-        'department': department_resolved,
-        'team': team_resolved,
-        'location': location_value if location_value is not None else record.location,
-        'control_manager': record.control_manager,
-        'corrected_total_minutes': record.corrected_total_minutes,
+        'total_hm': _minutes_to_hm(record.total_minutes),
+        'corrected_total_minutes': corrected_minutes,
         'corrected_total_display': corrected_display,
         'corrected_total_hm': corrected_hm,
-        'manual_flags': manual_flags,
+        'status': record.status,
+        'control_manager': record.control_manager,
+        'leave_reason': record.leave_reason,
+        'half_day_amount': record.half_day_amount,
+        'notes': record.notes,
+        'manual_flags': {
+            flag_key: getattr(record, flag_name, False)
+            for flag_key, flag_name in MANUAL_FLAG_MAP.items()
+        }
     }
 
 
@@ -796,24 +717,29 @@ def _gather_employee_records(search: str | None) -> list[AttendanceRecord]:
 
 
 def _collect_employee_filters(records: list[AttendanceRecord]) -> dict[str, list[str]]:
-    projects: set[str] = set()
-    departments: set[str] = set()
+    divisions: set[str] = set()
+    directions: set[str] = set()
+    units: set[str] = set()
     teams: set[str] = set()
     for record in records:
-        project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(
-            record.project,
-            record.department,
-            record.team,
-        )
-        if project_resolved:
-            projects.add(project_resolved)
-        if department_resolved:
-            departments.add(department_resolved)
-        if team_resolved:
-            teams.add(team_resolved)
+        user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
+        division_name = user_schedule.get('division_name')
+        direction_name = user_schedule.get('direction_name')
+        unit_name = user_schedule.get('unit_name')
+        team_name = user_schedule.get('team_name')
+        
+        if division_name:
+            divisions.add(division_name)
+        if direction_name:
+            directions.add(direction_name)
+        if unit_name:
+            units.add(unit_name)
+        if team_name:
+            teams.add(team_name)
     return {
-        'project': sorted(projects),
-        'department': sorted(departments),
+        'project': sorted(divisions),
+        'department': sorted(directions),
+        'unit': sorted(units),
         'team': sorted(teams),
     }
 
@@ -826,15 +752,12 @@ def _filter_employee_records(records: list[AttendanceRecord], attr: str, value: 
         return records
     filtered: list[AttendanceRecord] = []
     for record in records:
-        project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(
-            record.project,
-            record.department,
-            record.team,
-        )
+        user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
         resolved_map = {
-            'project': project_resolved,
-            'department': department_resolved,
-            'team': team_resolved,
+            'project': user_schedule.get('division_name'),
+            'department': user_schedule.get('direction_name'),
+            'unit': user_schedule.get('unit_name'),
+            'team': user_schedule.get('team_name'),
         }
         attr_value = resolved_map.get(attr, getattr(record, attr, None))
         if attr_value and str(attr_value).strip().lower() == lowered:
@@ -843,26 +766,56 @@ def _filter_employee_records(records: list[AttendanceRecord], attr: str, value: 
 
 
 def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None = None) -> dict:
-    project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(
-        record.project,
-        record.department,
-        record.team,
-    )
-    peopleforce_id = None
+    user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
+    
+    division_name = user_schedule.get('division_name', '')
+    direction_name = user_schedule.get('direction_name', '')
+    unit_name = user_schedule.get('unit_name', '')
+    team_name = user_schedule.get('team_name', '')
+    
+    peopleforce_id = user_schedule.get('peopleforce_id')
+    hierarchy_data = {
+        'division_name': division_name,
+        'direction_name': direction_name,
+        'unit_name': unit_name,
+        'team_name': team_name,
+        'position': '',
+        'telegram': '',
+        'team_lead': '',
+        'manager_name': '',
+        'manager_telegram': '',
+    }
+    
     if schedule and isinstance(schedule, dict):
         candidate = schedule.get('peopleforce_id')
         if candidate not in (None, ''):
             peopleforce_id = str(candidate).strip()
+        # Get all data from schedule (newly synced from PeopleForce)
+        hierarchy_data = {
+            'division_name': (schedule.get('division_name') or '').strip(),
+            'direction_name': (schedule.get('direction_name') or '').strip(),
+            'unit_name': (schedule.get('unit_name') or '').strip(),
+            'team_name': (schedule.get('team_name') or '').strip(),
+            'position': (schedule.get('position') or '').strip(),
+            'telegram': (schedule.get('telegram_username') or '').strip(),
+            'team_lead': (schedule.get('team_lead') or '').strip(),
+            'manager_name': (schedule.get('manager_name') or '').strip(),
+            'manager_telegram': (schedule.get('manager_telegram') or '').strip(),
+        }
+    
     location_value = _normalize_location_label(record.location)
     return {
         'user_key': record.user_id or record.user_email or record.user_name,
         'user_id': record.user_id,
         'name': record.user_name,
         'email': record.user_email,
-        'project': project_resolved,
-        'department': department_resolved,
-        'team': team_resolved,
+        'project': division_name,
+        'department': direction_name,
+        'team': team_name,
         'location': location_value if location_value is not None else record.location,
+        'position': hierarchy_data.get('position', ''),
+        'telegram': hierarchy_data.get('telegram', ''),
+        'team_lead': hierarchy_data.get('team_lead', ''),
         'plan_start': record.scheduled_start,
         'control_manager': record.control_manager,
         'peopleforce_id': peopleforce_id,
@@ -992,26 +945,19 @@ def _apply_filters(query):
             db.func.lower(AttendanceRecord.user_email).like(like_pattern)
         ))
 
+    # Фільтрація по project, department, unit, team тепер відбувається 
+    # на рівні _filter_employee_records, бо дані зберігаються в user_schedules.json
+    # а не в БД. Цей код залишаємо для зворотної сумісності, але він не спрацює
+    # для нових даних.
+    
     # Support multiple project filters: ?project=A&project=B
     projects = request.args.getlist('project')
-    if projects:
-        projects_lower = [p.lower() for p in projects if p]
-        if projects_lower:
-            query = query.filter(db.func.lower(AttendanceRecord.project).in_(projects_lower))
-
     # Support multiple department filters: ?department=A&department=B
     departments = request.args.getlist('department')
-    if departments:
-        departments_lower = [d.lower() for d in departments if d]
-        if departments_lower:
-            query = query.filter(db.func.lower(AttendanceRecord.department).in_(departments_lower))
-
+    # Support multiple unit filters: ?unit=A&unit=B
+    units = request.args.getlist('unit')
     # Support multiple team filters: ?team=A&team=B
     teams = request.args.getlist('team')
-    if teams:
-        teams_lower = [t.lower() for t in teams if t]
-        if teams_lower:
-            query = query.filter(db.func.lower(AttendanceRecord.team).in_(teams_lower))
 
     status = request.args.get('status')
     if status:
@@ -1030,11 +976,52 @@ def _build_items(records):
         key = record.user_id or record.user_email or record.user_name
         grouped[key].append(record)
 
+    # Load schedule data to get position, telegram, team_lead
+    schedule_data = schedule_user_manager.load_users() if schedule_user_manager else {}
+    schedule_by_email = {}
+    if isinstance(schedule_data, dict):
+        for name, info in schedule_data.get('users', {}).items():
+            if isinstance(info, dict):
+                email = (info.get('email') or '').strip().lower()
+                if email:
+                    schedule_by_email[email] = info
+
     items = []
     for key, recs in grouped.items():
         recs.sort(key=lambda r: r.record_date)
         first = recs[0]
-        first_project, first_department, first_team = _apply_hierarchy_defaults(first.project, first.department, first.team)
+        user_schedule_first = get_user_schedule(first.user_name) or get_user_schedule(first.user_id) or {}
+        first_division = user_schedule_first.get('division_name', '')
+        first_direction = user_schedule_first.get('direction_name', '')
+        first_team = user_schedule_first.get('team_name', '')
+        
+        # Get hierarchy data from schedule (cached from PeopleForce sync)
+        hierarchy_data = {
+            'division_name': '',
+            'direction_name': '',
+            'unit_name': '',
+            'team_name': '',
+            'position': '',
+            'telegram': '',
+            'team_lead': '',
+            'manager_name': '',
+            'manager_telegram': '',
+        }
+        email = (first.user_email or '').strip().lower()
+        schedule_info = schedule_by_email.get(email)
+        if schedule_info:
+            hierarchy_data = {
+                'division_name': (schedule_info.get('division_name') or '').strip(),
+                'direction_name': (schedule_info.get('direction_name') or '').strip(),
+                'unit_name': (schedule_info.get('unit_name') or '').strip(),
+                'team_name': (schedule_info.get('team_name') or '').strip(),
+                'position': (schedule_info.get('position') or '').strip(),
+                'telegram': (schedule_info.get('telegram_username') or '').strip(),
+                'team_lead': (schedule_info.get('team_lead') or '').strip(),
+                'manager_name': (schedule_info.get('manager_name') or '').strip(),
+                'manager_telegram': (schedule_info.get('manager_telegram') or '').strip(),
+            }
+        
         rows = []
         total_non = 0
         total_not = 0
@@ -1045,7 +1032,11 @@ def _build_items(records):
         notes_aggregated = []
 
         for rec in recs:
-            project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(rec.project, rec.department, rec.team)
+            rec_schedule = get_user_schedule(rec.user_name) or get_user_schedule(rec.user_id) or {}
+            division_name = rec_schedule.get('division_name', '')
+            direction_name = rec_schedule.get('direction_name', '')
+            team_name = rec_schedule.get('team_name', '')
+            
             scheduled_start = rec.scheduled_start or ''
             actual_start = rec.actual_start or ''
             corrected_minutes = rec.corrected_total_minutes
@@ -1055,9 +1046,9 @@ def _build_items(records):
             rows.append({
                 'record_id': rec.id,
                 'user_name': (rec.user_name or '').strip(),
-                'project': project_resolved,
-                'department': department_resolved,
-                'team': team_resolved,
+                'project': division_name,
+                'department': direction_name,
+                'team': team_name,
                 'date': rec.record_date.isoformat(),
                 'date_display': rec.record_date.strftime('%d.%m.%y'),
                 'date_iso': rec.record_date.strftime('%Y-%m-%d'),
@@ -1105,10 +1096,13 @@ def _build_items(records):
         items.append({
             'user_name': first.user_name,
             'user_id': first.user_id,
-            'project': first_project,
-            'department': first_department,
+            'project': first_division,
+            'department': first_direction,
             'team': first_team,
             'location': location_display if location_display is not None else first.location,
+            'position': hierarchy_data.get('position', ''),
+            'telegram': hierarchy_data.get('telegram', ''),
+            'team_lead': hierarchy_data.get('team_lead', ''),
             'plan_start': first.scheduled_start,
             'rows': rows,
             'week_total': {
@@ -1148,21 +1142,23 @@ def _apply_schedule_overrides(items: list[dict]) -> list[dict]:
             normalized_schedule_location = _normalize_location_label(schedule_location)
             if schedule_location not in (None, ''):
                 item['location'] = normalized_schedule_location if normalized_schedule_location is not None else schedule_location
-            for field in ('project', 'department', 'team'):
-                if schedule.get(field):
-                    item[field] = schedule[field]
-        if schedule.get('location') in (None, ''):
+            # Додаємо нові поля ієрархії
+            if schedule.get('division_name'):
+                item['division_name'] = schedule['division_name']
+            if schedule.get('direction_name'):
+                item['direction_name'] = schedule['direction_name']
+            if schedule.get('unit_name'):
+                item['unit_name'] = schedule['unit_name']
+            if schedule.get('team_name'):
+                item['team_name'] = schedule['team_name']
+            # Для зворотної сумісності
+            item['project'] = schedule.get('division_name', '')
+            item['department'] = schedule.get('direction_name', '')
+            item['team'] = schedule.get('team_name', '')
+        if schedule and schedule.get('location') in (None, ''):
             normalized_item_location = _normalize_location_label(item.get('location'))
             if normalized_item_location is not None:
                 item['location'] = normalized_item_location
-        project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(
-            item.get('project'),
-            item.get('department'),
-            item.get('team'),
-        )
-        item['project'] = project_resolved
-        item['department'] = department_resolved
-        item['team'] = team_resolved
         item['schedule'] = schedule
     return items
 
@@ -1171,7 +1167,7 @@ def _get_schedule_filters(selected: dict[str, str] | None = None) -> dict[str, d
     """Return available filter options and resolved selections based on schedules."""
 
     schedules = load_user_schedules()
-    fields = ('project', 'department', 'team')
+    fields = ('project', 'department', 'unit', 'team')
 
     def normalize(value: str | None) -> str:
         return (value or '').strip()
@@ -1182,15 +1178,15 @@ def _get_schedule_filters(selected: dict[str, str] | None = None) -> dict[str, d
 
     entries: list[dict[str, str]] = []
     for info in schedules.values():
-        entry = {field: normalize(info.get(field)) for field in fields}
-        project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(
-            entry.get('project'),
-            entry.get('department'),
-            entry.get('team'),
-        )
-        entry['project'] = project_resolved
-        entry['department'] = department_resolved
-        entry['team'] = team_resolved
+        if not isinstance(info, dict):
+            continue
+        # Використовуємо нові поля ієрархії
+        entry = {
+            'project': normalize(info.get('division_name')),
+            'department': normalize(info.get('direction_name')),
+            'unit': normalize(info.get('unit_name')),
+            'team': normalize(info.get('team_name')),
+        }
         if any(entry.values()):
             entries.append(entry)
 
@@ -1229,6 +1225,26 @@ def _get_schedule_filters(selected: dict[str, str] | None = None) -> dict[str, d
 def _get_filtered_items():
     query = _apply_filters(AttendanceRecord.query)
     records = query.order_by(AttendanceRecord.user_name.asc(), AttendanceRecord.record_date.asc()).all()
+    
+    # Застосовуємо фільтри по ієрархії (з user_schedules.json)
+    projects = request.args.getlist('project')
+    departments = request.args.getlist('department')
+    units = request.args.getlist('unit')
+    teams = request.args.getlist('team')
+    
+    for project in projects:
+        if project:
+            records = _filter_employee_records(records, 'project', project)
+    for department in departments:
+        if department:
+            records = _filter_employee_records(records, 'department', department)
+    for unit in units:
+        if unit:
+            records = _filter_employee_records(records, 'unit', unit)
+    for team in teams:
+        if team:
+            records = _filter_employee_records(records, 'team', team)
+    
     items = _apply_schedule_overrides(_build_items(records))
     return items, len(records)
 
@@ -1240,6 +1256,7 @@ def attendance_list():
     selected_filters = {
         'project': request.args.get('project', ''),
         'department': request.args.get('department', ''),
+        'unit': request.args.get('unit', ''),
         'team': request.args.get('team', '')
     }
     return jsonify({
@@ -1728,29 +1745,30 @@ def admin_update_employee(user_key: str):
         for attr, value in updates.items():
             setattr(record, attr, value)
 
-    # Apply hierarchy defaults to ensure consistent project/department/team values.
+    # Отримуємо canonical hierarchy з user_schedules
     sample_record = records[0]
-    canonical_project, canonical_department, canonical_team = _apply_hierarchy_defaults(
-        getattr(sample_record, 'project', None),
-        getattr(sample_record, 'department', None),
-        getattr(sample_record, 'team', None),
-    )
+    sample_schedule = get_user_schedule(sample_record.user_name) or get_user_schedule(sample_record.user_id) or {}
+    canonical_division = sample_schedule.get('division_name')
+    canonical_direction = sample_schedule.get('direction_name')
+    canonical_team = sample_schedule.get('team_name')
+    
+    # Оновлюємо старі поля для зворотної сумісності (можна видалити пізніше)
     for record in records:
-        if canonical_project:
-            record.project = canonical_project
-        if canonical_department:
-            record.department = canonical_department
+        if canonical_division:
+            record.project = canonical_division
+        if canonical_direction:
+            record.department = canonical_direction
         if canonical_team:
             record.team = canonical_team
 
     # Ensure updates and schedule payload include resolved hierarchy.
-    if canonical_project and not updates.get('project'):
-        updates['project'] = canonical_project
-    if canonical_department and not updates.get('department'):
-        updates['department'] = canonical_department
+    if canonical_division and not updates.get('project'):
+        updates['project'] = canonical_division
+    if canonical_direction and not updates.get('department'):
+        updates['department'] = canonical_direction
     if canonical_team and not updates.get('team'):
         updates['team'] = canonical_team
-    for field, value in (('project', canonical_project), ('department', canonical_department), ('team', canonical_team)):
+    for field, value in (('project', canonical_division), ('department', canonical_direction), ('team', canonical_team)):
         if value and field not in schedule_updates:
             schedule_updates[field] = value
 
@@ -1832,6 +1850,16 @@ def admin_delete_employee(user_key: str):
     })
 
 
+def _is_synced_employee(user: User) -> bool:
+    """Перевіряє чи користувач є синхронізованим співробітником з PeopleForce."""
+    names, emails, ids = _schedule_identity_sets()
+    if user.email and user.email.strip().lower() in emails:
+        return True
+    if user.name and user.name.strip().lower() in names:
+        return True
+    return False
+
+
 @api_bp.route('/admin/app-users')
 @login_required
 def admin_app_users():
@@ -1910,7 +1938,7 @@ def admin_update_app_user(user_id: int):
         if new_email != user.email:
             existing = User.query.filter(db.func.lower(User.email) == new_email).first()
             if existing:
-                return jsonify({'error': 'Email уже используется'}), 400
+                return jsonify({'error': 'Email вже використовується'}), 400
             user.email = new_email
 
     name = payload.get('name')
@@ -1962,6 +1990,7 @@ def admin_delete_app_user(user_id: int):
 def _available_control_managers() -> list[int]:
     schedules = load_user_schedules()
     values = {
+       
         info.get('control_manager')
         for info in schedules.values()
         if info.get('control_manager') not in (None, '')
@@ -2079,14 +2108,7 @@ def _serialize_profile(schedule: dict | None, record: AttendanceRecord | None) -
     if not profile['telegram_username'] and profile['name']:
         profile['telegram_username'] = _generate_telegram_username(profile['name'])
 
-    project_resolved, department_resolved, team_resolved = _apply_hierarchy_defaults(
-        profile.get('project'),
-        profile.get('department'),
-        profile.get('team'),
-    )
-    profile['project'] = project_resolved
-    profile['department'] = department_resolved
-    profile['team'] = team_resolved
+    # Нормалізація location
     location_normalized = _normalize_location_label(profile.get('location'))
     if location_normalized is not None:
         profile['location'] = location_normalized
@@ -2226,9 +2248,9 @@ def api_update_user_record(user_key: str, record_id: int):
     update_duration('minutes_late', 'minutes_late')
     update_duration('non_productive_minutes', 'non_productive_minutes')
     update_duration('not_categorized_minutes', 'not_categorized_minutes')
-    update_duration('productive_minutes', 'productive_minutes')
-    update_duration('total_minutes', 'total_minutes')
-    update_duration('corrected_total_minutes', 'corrected_total_minutes')
+    update_duration('productive_minutes', 'manual_productive_minutes')
+    update_duration('total_minutes', 'manual_total_minutes')
+    update_duration('corrected_total_minutes', 'manual_corrected_total_minutes')
 
     if 'status' in payload:
         status = str(payload.get('status') or '').strip()
@@ -2523,8 +2545,8 @@ def _resolve_team_display() -> str:
 def _build_excel_rows(items: list[dict]) -> list[dict[str, object]]:
     cols = 10
     rows: list[dict[str, object]] = [
-        {'values': ['Отчет сформирован за период:', '', _resolve_period_display(), '', '', '', '', '', '', ''], 'role': 'summary_period'},
-        {'values': ['по команде:', '', _resolve_team_display(), '', '', '', '', '', '', ''], 'role': 'summary_team'},
+        {'values': ['Отчет сформирован за період:', '', _resolve_period_display(), '', '', '', '', '', '', ''], 'role': 'summary_period'},
+        {'values': ['по команді:', '', _resolve_team_display(), '', '', '', '', '', '', ''], 'role': 'summary_team'},
         {'values': [''] * cols, 'role': 'divider'}
     ]
 

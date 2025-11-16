@@ -1,0 +1,119 @@
+[
+  {
+    "peopleforce_id": 286600,
+    "user_name": "Kazmirchuk Roman",
+    "first_name": "Roman",
+    "last_name": "Kazmirchuk",
+    "email": null,
+    "department_name": "IOS Team",
+    "department_id": 125476
+  },
+  {
+    "peopleforce_id": 513158,
+    "user_name": "Kolos Daniil",
+    "first_name": "Daniil",
+    "last_name": "Kolos",
+    "email": null,
+    "department_name": "Traffic Bizdev Team",
+    "department_id": 127886
+  },
+  {
+    "peopleforce_id": 337682,
+    "user_name": "Dobrorodnia Alina",
+    "first_name": "Alina",
+    "last_name": "Dobrorodnia",
+    "email": null,
+    "department_name": "Traffic Account Team",
+    "department_id": 128368
+  },
+  {
+    "peopleforce_id": 297363,
+    "user_name": "Kiliovyi Evhen",
+    "first_name": "Evhen",
+    "last_name": "Kiliovyi",
+    "email": null,
+    "department_name": "Moderation Team",
+    "department_id": 125486
+  },
+  {
+    "peopleforce_id": 568445,
+    "user_name": "Оtdelnyi Andrey",
+    "first_name": "Andrey",
+    "last_name": "Оtdelnyi",
+    "email": null,
+    "department_name": "RTB Team",
+    "department_id": 125485
+  },
+  {
+    "peopleforce_id": 573355,
+    "user_name": "Tatsyn Arseni",
+    "first_name": "Arseni",
+    "last_name": "Tatsyn",
+    "email": null,
+    "department_name": "Media buying Direction",
+    "department_id": 126392
+  },
+  {
+    "peopleforce_id": 571860,
+    "user_name": "Gyrych Maria",
+    "first_name": "Maria",
+    "last_name": "Gyrych",
+    "email": null,
+    "department_name": "Traffic Unit",
+    "department_id": 125483
+  },
+  {
+    "peopleforce_id": 564555,
+    "user_name": "Ustsilka Natallia",
+    "first_name": "Natallia",
+    "last_name": "Ustsilka",
+    "email": null,
+    "department_name": "Recruitment Unit",
+    "department_id": 125495
+  },
+  {
+    "peopleforce_id": 579125,
+    "user_name": "Brizhak Denis",
+    "first_name": "Denis",
+    "last_name": "Brizhak",
+    "email": null,
+    "department_name": null,
+    "department_id": null
+  },
+  {
+    "peopleforce_id": 577486,
+    "user_name": "Mykyta Kapulier",
+    "first_name": "Kapulier",
+    "last_name": "Mykyta",
+    "email": null,
+    "department_name": null,
+    "department_id": null
+  },
+  {
+    "peopleforce_id": 573640,
+    "user_name": "Surzhykov Oleksandr",
+    "first_name": "Oleksandr",
+    "last_name": "Surzhykov",
+    "email": null,
+    "department_name": null,
+    "department_id": null
+  },
+  {
+    "peopleforce_id": 579098,
+    "user_name": "Vladymyr Ovchar",
+    "first_name": "Ovchar",
+    "last_name": "Vladymyr",
+    "email": null,
+    "department_name": null,
+    "department_id": null
+  },
+  {
+    "peopleforce_id": 577496,
+    "user_name": "Yavorskiy Sergey",
+    "first_name": "Sergey",
+    "last_name": "Yavorskiy",
+    "email": null,
+    "department_name": null,
+    "department_id": null
+  }
+]

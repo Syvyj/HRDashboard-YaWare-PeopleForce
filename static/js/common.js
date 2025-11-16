@@ -54,6 +54,11 @@ function buildFilterParams(dateFromValue, dateToValue, userValue, selectedFilter
       params.append('department', department);
     });
   }
+  if (selectedFilters && selectedFilters.units && selectedFilters.units.size > 0) {
+    Array.from(selectedFilters.units).forEach(unit => {
+      params.append('unit', unit);
+    });
+  }
   if (selectedFilters && selectedFilters.teams && selectedFilters.teams.size > 0) {
     Array.from(selectedFilters.teams).forEach(team => {
       params.append('team', team);
@@ -69,6 +74,9 @@ function updateFilterDisplay(displayElement, selectedFilters) {
   }
   if (selectedFilters.departments && selectedFilters.departments.size > 0) {
     parts.push(`Департаменты: ${Array.from(selectedFilters.departments).join(', ')}`);
+  }
+  if (selectedFilters.units && selectedFilters.units.size > 0) {
+    parts.push(`Подразделения: ${Array.from(selectedFilters.units).join(', ')}`);
   }
   if (selectedFilters.teams && selectedFilters.teams.size > 0) {
     parts.push(`Команды: ${Array.from(selectedFilters.teams).join(', ')}`);

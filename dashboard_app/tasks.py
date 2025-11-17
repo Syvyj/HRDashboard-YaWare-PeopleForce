@@ -27,6 +27,23 @@ _scheduler: BackgroundScheduler | None = None
 SCHEDULER: BackgroundScheduler | None = None
 
 
+def _auto_assign_control_manager(division_name: str) -> int:
+    """
+    Автоматичне призначення control_manager на основі division_name:
+    - Agency → 1
+    - Apps, Adnetwork, Consulting → 2
+    - Інші → 2 (за замовчуванням)
+    """
+    division_normalized = (division_name or "").strip().lower()
+    
+    if division_normalized == "agency":
+        return 1
+    elif division_normalized in ("apps", "adnetwork", "consulting"):
+        return 2
+    else:
+        return 3  # За замовчуванням
+
+
 def _with_app_context(app, func, *args, **kwargs):
     with app.app_context():
         return func(app, *args, **kwargs)
@@ -225,6 +242,17 @@ def _sync_peopleforce_metadata(app):
             info["project"] = project_name
             updated = True
             logger.debug(f"Оновлено project (DIVISION) для {name}: {project_name}")
+        
+        # Автопризначення control_manager на основі division_name
+        division_name = info.get("division_name", "")
+        auto_manager = _auto_assign_control_manager(division_name)
+        current_manager = info.get("control_manager")
+        
+        # Призначаємо автоматично тільки якщо немає ручного override або якщо поточне значення None
+        if not has_manual_override(info, "control_manager") and current_manager != auto_manager:
+            info["control_manager"] = auto_manager
+            updated = True
+            logger.debug(f"Автопризначено control_manager={auto_manager} для {name} (division: {division_name})")
 
         # Оновлюємо department (DIRECTION/UNIT)
         department_obj = employee.get("department") or {}
@@ -251,6 +279,16 @@ def _sync_peopleforce_metadata(app):
                         info["position"] = position_name
                         updated = True
                         logger.debug(f"Оновлено position для {name}: {position_name}")
+                    
+                    # Отримуємо локацію
+                    location_obj = detailed_data.get("location") or {}
+                    location_name = ""
+                    if isinstance(location_obj, dict):
+                        location_name = (location_obj.get("name") or "").strip()
+                    if location_name and info.get("location") != location_name:
+                        info["location"] = location_name
+                        updated = True
+                        logger.debug(f"Оновлено location для {name}: {location_name}")
                     
                     # Отримуємо робочий телеграм з custom fields
                     fields = detailed_data.get("fields", {})

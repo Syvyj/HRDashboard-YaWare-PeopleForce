@@ -29,6 +29,7 @@ from tracker_alert.services.schedule_utils import (
 )
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.client.peopleforce_api import PeopleForceClient
+from dashboard_app.tasks import _auto_assign_control_manager
 
 logger = logging.getLogger(__name__)
 from tracker_alert.client.yaware_v2_api import YaWareV2Client
@@ -544,9 +545,9 @@ def _serialize_attendance_record(record: AttendanceRecord) -> dict:
         'productive_minutes': record.productive_minutes,
         'productive_display': _minutes_to_str(record.productive_minutes),
         'productive_hm': _minutes_to_hm(record.productive_minutes),
-        'total_minutes': record.total_minutes,
-        'total_display': _minutes_to_str(record.total_minutes),
-        'total_hm': _minutes_to_hm(record.total_minutes),
+        'total_minutes': (record.not_categorized_minutes or 0) + (record.productive_minutes or 0),
+        'total_display': _minutes_to_str((record.not_categorized_minutes or 0) + (record.productive_minutes or 0)),
+        'total_hm': _minutes_to_hm((record.not_categorized_minutes or 0) + (record.productive_minutes or 0)),
         'corrected_total_minutes': corrected_minutes,
         'corrected_total_display': corrected_display,
         'corrected_total_hm': corrected_hm,
@@ -703,7 +704,7 @@ def _gather_employee_records(search: str | None) -> list[AttendanceRecord]:
             db.func.lower(AttendanceRecord.department).like(search_value),
             db.func.lower(AttendanceRecord.team).like(search_value)
         ))
-    query = query.order_by(AttendanceRecord.record_date.desc())
+    query = query.order_by(AttendanceRecord.record_date.asc())
 
     seen = set()
     records: list[AttendanceRecord] = []
@@ -1046,6 +1047,7 @@ def _build_items(records):
             rows.append({
                 'record_id': rec.id,
                 'user_name': (rec.user_name or '').strip(),
+                'division_name': division_name,  # Додаємо для підсвічування в Total
                 'project': division_name,
                 'department': direction_name,
                 'team': team_name,
@@ -1427,8 +1429,18 @@ def admin_create_employee():
     if start_time:
         entry['start_time'] = start_time
         set_manual_override(entry, 'start_time')
+    
+    # Автопризначення control_manager якщо не вказано вручну
     if control_manager_value is not None:
         entry['control_manager'] = control_manager_value
+        set_manual_override(entry, 'control_manager')
+    else:
+        # Автоматично визначаємо на основі division_name
+        division_name = _clean(payload.get('division_name'))
+        if division_name:
+            entry['division_name'] = division_name
+        auto_manager = _auto_assign_control_manager(entry.get('division_name', ''))
+        entry['control_manager'] = auto_manager
 
     users[name] = entry
     if not schedule_user_manager.save_users(schedules):
@@ -1609,6 +1621,14 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
         target_info = users[target_name]
 
     changed = False
+    
+    # Перевіряємо чи змінилася division_name для автопризначення control_manager
+    division_changed = False
+    new_division = None
+    if 'division_name' in updates or 'project' in updates:
+        new_division = updates.get('division_name') or updates.get('project')
+        if new_division and target_info.get('division_name') != new_division:
+            division_changed = True
 
     for source, dest in mapping.items():
         if source not in updates:
@@ -1651,6 +1671,17 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
             users.pop(target_name, None)
             new_name = desired
             changed = True
+    
+    # Автопризначення control_manager якщо змінилася division і немає явного override
+    set_override = updates.get('_set_control_manager_override', False)
+    from tracker_alert.services.schedule_utils import has_manual_override
+    
+    if division_changed and not set_override and not has_manual_override(target_info, 'control_manager'):
+        auto_manager = _auto_assign_control_manager(new_division or '')
+        if target_info.get('control_manager') != auto_manager:
+            target_info['control_manager'] = auto_manager
+            changed = True
+            logger.debug(f"Автопризначено control_manager={auto_manager} при оновленні division для {new_name}")
 
     if changed:
         schedule_user_manager.save_users(data)
@@ -1728,6 +1759,8 @@ def admin_update_employee(user_key: str):
                 return jsonify({'error': 'control_manager must be integer or empty'}), 400
         updates['control_manager'] = control_manager
         schedule_updates['control_manager'] = control_manager
+        # Встановлюємо manual override, бо це явне призначення адміном
+        schedule_updates['_set_control_manager_override'] = True
 
     if not updates:
         return jsonify({'error': 'No valid fields to update'}), 400
@@ -1865,7 +1898,8 @@ def _is_synced_employee(user: User) -> bool:
 def admin_app_users():
     _ensure_admin()
     users = User.query.order_by(User.created_at.asc()).all()
-    visible = [user for user in users if user.is_admin or user.is_control_manager or not _is_synced_employee(user)]
+    # Показуємо тільки адмінів та control_manager
+    visible = [user for user in users if user.is_admin or user.is_control_manager]
     return jsonify({'items': [_serialize_app_user(user) for user in visible]})
 
 
@@ -2127,7 +2161,7 @@ def api_user_detail(user_key: str):
         query = query.filter(AttendanceRecord.record_date >= date_from)
     if date_to:
         query = query.filter(AttendanceRecord.record_date <= date_to)
-    records = query.order_by(AttendanceRecord.record_date.desc()).all()
+    records = query.order_by(AttendanceRecord.record_date.asc()).all()
 
     schedule = _load_user_schedule_variants(normalized_key, records)
 
@@ -2145,7 +2179,9 @@ def api_user_detail(user_key: str):
     profile = _serialize_profile(schedule, primary_record)
     recent_records = _collect_recent_records(records, date_from, date_to)
     lateness = _build_week_lateness(records)
-    status_options = sorted({record.status for record in records if record.status})
+    
+    # Фіксований список статусів
+    status_options = ['присутствовал', 'отпуск', 'больничный', 'за свой счет']
 
     is_admin = bool(getattr(current_user, 'is_admin', False))
     is_control_manager = bool(getattr(current_user, 'is_control_manager', False))
@@ -2349,6 +2385,166 @@ def api_update_user_telegram(user_key: str):
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/users/<path:user_key>/plan_start', methods=['PATCH'])
+@login_required
+def api_update_user_plan_start(user_key: str):
+    """Глобально змінити плановий час старту для користувача."""
+    if not getattr(current_user, 'is_control_manager', False) and not getattr(current_user, 'is_admin', False):
+        return jsonify({'error': 'Forbidden'}), 403
+
+    payload = request.get_json(silent=True) or {}
+    plan_start = payload.get('plan_start', '').strip()
+    apply_to_month = payload.get('apply_to_month', False)
+
+    if not plan_start:
+        return jsonify({'error': 'plan_start is required'}), 400
+
+    # Валідація формату часу (HH:MM)
+    import re
+    if not re.match(r'^\d{1,2}:\d{2}$', plan_start):
+        return jsonify({'error': 'Invalid time format. Expected HH:MM'}), 400
+
+    # Знаходимо користувача в schedule
+    schedule = _load_user_schedule_variants(user_key, [])
+    if not schedule:
+        return jsonify({'error': 'User not found'}), 404
+    
+    user_name = schedule.get('name')
+    if not user_name:
+        return jsonify({'error': 'User name not found'}), 404
+    
+    # Оновлюємо start_time в user_schedules.json
+    try:
+        from dashboard_app.user_data import load_user_schedules, clear_user_schedule_cache
+        from tracker_alert.services.user_manager import save_users, load_users
+        from tracker_alert.services.schedule_utils import set_manual_override
+        from datetime import datetime
+        
+        # load_user_schedules() повертає тільки словник користувачів
+        users = load_user_schedules()
+        if user_name not in users:
+            return jsonify({'error': f'User "{user_name}" not found in schedules'}), 404
+        
+        # Оновлюємо start_time
+        users[user_name]['start_time'] = plan_start
+        
+        # Встановлюємо прапорець manual override
+        set_manual_override(users[user_name], 'start_time')
+        
+        # Зберігаємо через save_users який очікує повну структуру
+        full_data = load_users()  # Отримуємо повну структуру з metadata
+        full_data['users'] = users  # Оновлюємо користувачів
+        
+        # Зберігаємо
+        if not save_users(full_data):
+            return jsonify({'error': 'Failed to save'}), 500
+        
+        # Очищаємо кеш
+        clear_user_schedule_cache()
+        
+        updated_days = 0
+        
+        # Якщо потрібно застосувати до поточного місяця
+        if apply_to_month:
+            today = datetime.now()
+            first_day = today.replace(day=1).date()
+            
+            # Отримуємо всі записи користувача за поточний місяць
+            base_query = _apply_filters(AttendanceRecord.query)
+            query, _ = _apply_user_key_filter(base_query, user_key)
+            
+            records = query.filter(
+                AttendanceRecord.record_date >= first_day,
+                AttendanceRecord.record_date <= today.date()
+            ).all()
+            
+            # Оновлюємо тільки записи БЕЗ ручних змін scheduled_start
+            for record in records:
+                manual_flags = record.manual_flags or {}
+                if not manual_flags.get('scheduled_start'):
+                    record.scheduled_start = plan_start
+                    updated_days += 1
+            
+            if updated_days > 0:
+                db.session.commit()
+        
+        return jsonify({
+            'plan_start': plan_start,
+            'updated_days': updated_days if apply_to_month else None
+        })
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/users/<path:user_key>/monthly_category_stats')
+@login_required
+def api_user_monthly_category_stats(user_key: str):
+    """Отримати статистику по категоріях за місяць для конкретного користувача."""
+    # Отримуємо параметри року та місяця
+    year = request.args.get('year', type=int)
+    month = request.args.get('month', type=int)
+    
+    if not year or not month:
+        # Використовуємо поточний місяць якщо не передано
+        now = datetime.now()
+        year = year or now.year
+        month = month or now.month
+    
+    # Визначаємо перший та останній день місяця
+    from calendar import monthrange
+    first_day = date(year, month, 1)
+    last_day = date(year, month, monthrange(year, month)[1])
+    
+    # Базовий запит БЕЗ фільтрів дат (тільки manager фільтр)
+    base_query = AttendanceRecord.query
+    
+    # Застосовуємо фільтр за manager (якщо не адмін)
+    allowed_managers = current_user.allowed_managers
+    if allowed_managers:
+        base_query = base_query.filter(AttendanceRecord.control_manager.in_(allowed_managers))
+    
+    # Застосовуємо фільтр за користувачем
+    query, normalized_key = _apply_user_key_filter(base_query, user_key)
+    
+    # Фільтруємо за датами місяця
+    query = query.filter(
+        AttendanceRecord.record_date >= first_day,
+        AttendanceRecord.record_date <= last_day
+    )
+    
+    # Отримуємо всі записи за місяць
+    records = query.all()
+    
+    if not records:
+        return jsonify({
+            'not_categorized': 0,
+            'productive': 0,
+            'non_productive': 0,
+            'total': 0,
+            'monthly_lateness': 0,
+            'year': year,
+            'month': month
+        })
+    
+    # Підраховуємо суми
+    not_categorized_total = sum(r.not_categorized_minutes or 0 for r in records)
+    productive_total = sum(r.productive_minutes or 0 for r in records)
+    non_productive_total = sum(r.non_productive_minutes or 0 for r in records)
+    total_minutes = sum(r.total_minutes or 0 for r in records)
+    monthly_lateness_total = sum(r.minutes_late or 0 for r in records)
+    
+    return jsonify({
+        'not_categorized': not_categorized_total,
+        'productive': productive_total,
+        'non_productive': non_productive_total,
+        'total': total_minutes,
+        'monthly_lateness': monthly_lateness_total,
+        'year': year,
+        'month': month
+    })
 
 
 @api_bp.route('/attendance/<int:record_id>/notes', methods=['PATCH'])

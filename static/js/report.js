@@ -132,6 +132,28 @@
     return td;
   }
 
+  function createTotalCell(row) {
+    const td = document.createElement('td');
+    td.textContent = row.total_display || '';
+    
+    // Перевіряємо чи треба підсвітити червоним
+    const divisionName = row.division_name || '';
+    const totalMinutes = row.total_minutes || 0;
+    
+    let threshold = 0;
+    if (divisionName === 'Agency' || divisionName === 'Apps') {
+      threshold = 390; // 6.5 годин
+    } else if (divisionName === 'AdNetwork' || divisionName === 'Cons') {
+      threshold = 420; // 7 годин
+    }
+    
+    if (threshold > 0 && totalMinutes < threshold) {
+      td.style.color = '#dc3545'; // Bootstrap text-danger color
+    }
+    
+    return td;
+  }
+
   function createNotesCell(row, canEdit = false, userKey = null, isWeekTotal = false) {
     const td = document.createElement('td');
     td.className = 'notes-cell';
@@ -543,7 +565,7 @@
         tr.appendChild(createCell(row.non_productive_display));
         tr.appendChild(createCell(row.not_categorized_display));
         tr.appendChild(createCell(row.productive_display));
-        tr.appendChild(createCell(row.total_display));
+        tr.appendChild(createTotalCell(row)); // Використовуємо createTotalCell замість createCell
         tr.appendChild(createCell(row.corrected_total_display || ''));
         tr.appendChild(createNotesCell(row, canEdit, userKeyRaw));
         tbody.appendChild(tr);

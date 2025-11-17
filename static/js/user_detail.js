@@ -15,20 +15,20 @@
 
   const alertContainer = document.getElementById('alert-container');
   const profileNameEl = document.getElementById('profile-name');
-  const profileMetaEl = document.getElementById('profile-meta');
   const profileIdentifierEl = document.getElementById('profile-identifier');
   const profileEmailEl = document.getElementById('profile-email');
-  const profileLocationEl = document.getElementById('profile-location');
   const profilePlanStartEl = document.getElementById('profile-plan-start');
   const profileManagerValue = document.getElementById('profile-manager-value');
   const profilePeopleforceEl = document.getElementById('profile-peopleforce');
   const profileYawareEl = document.getElementById('profile-yaware');
   const profileTelegramEl = document.getElementById('profile-telegram');
+  const profilePositionEl = document.getElementById('profile-position');
   const profileDivisionEl = document.getElementById('profile-division');
   const profileDirectionEl = document.getElementById('profile-direction');
   const profileUnitEl = document.getElementById('profile-unit');
   const profileTeamEl = document.getElementById('profile-team');
   const profileTeamLeadEl = document.getElementById('profile-team-lead');
+  const profileLocationEl = document.getElementById('profile-location');
   const managerEditBtn = document.getElementById('manager-edit-btn');
   const recordsBody = document.getElementById('records-body');
   const recordsCountEl = document.getElementById('records-count');
@@ -40,6 +40,10 @@
   const managerModalSelect = document.getElementById('manager-modal-select');
   const telegramModalInput = document.getElementById('telegram-modal-input');
   const telegramEditGroup = document.getElementById('telegram-edit-group');
+  const planStartModalEl = document.getElementById('planStartModal');
+  const planStartModalForm = document.getElementById('plan-start-modal-form');
+  const planStartModalInput = document.getElementById('plan-start-modal-input');
+  const planStartEditBtn = document.getElementById('plan-start-edit-btn');
   const dateFromInput = document.getElementById('range-date-from');
   const dateToInput = document.getElementById('range-date-to');
   const rangeApplyBtn = document.getElementById('range-apply');
@@ -62,11 +66,13 @@
 
   const recordModal = recordModalEl ? new bootstrap.Modal(recordModalEl) : null;
   const managerModal = managerModalEl ? new bootstrap.Modal(managerModalEl) : null;
+  const planStartModal = planStartModalEl ? new bootstrap.Modal(planStartModalEl) : null;
   const reportModal = reportModalEl ? new bootstrap.Modal(reportModalEl) : null;
   let currentStatusOptions = [];
   let managerOptions = [];
   let managerCurrentValue = '';
   let managerEditBound = false;
+  let planStartEditBound = false;
   let currentProfile = {};
 
   function showAlert(message, type = 'danger', timeout = 5000) {
@@ -98,13 +104,13 @@
       return;
     }
     profileNameEl.textContent = data.name || schedule?.name || 'Неизвестный пользователь';
-    profileMetaEl.textContent = joinNonEmpty([data.project, data.department, data.team], ' • ');
-    profileIdentifierEl.textContent = data.user_id ? `YaWare ID: ${data.user_id}` : '';
+    // Відображаємо локацію в правому верхньому куті
+    console.log('Schedule object:', schedule);
+    const location = schedule?.location || data.location || '—';
+    console.log('Location value:', location);
+    profileIdentifierEl.textContent = `Локация: ${location}`;
     if (profileEmailEl) {
       profileEmailEl.textContent = data.email || '—';
-    }
-    if (profileLocationEl) {
-      profileLocationEl.textContent = data.location || '—';
     }
     if (profilePlanStartEl) {
       profilePlanStartEl.textContent = data.plan_start || '—';
@@ -140,8 +146,14 @@
     }
     
     // Відображаємо нові поля ієрархії
+    if (profilePositionEl) {
+      profilePositionEl.textContent = schedule?.position || '—';
+    }
     if (profileDivisionEl) {
       profileDivisionEl.textContent = schedule?.division_name || '—';
+    }
+    if (profileLocationEl) {
+      profileLocationEl.textContent = schedule?.location || data.location || '—';
     }
     if (profileDirectionEl) {
       profileDirectionEl.textContent = schedule?.direction_name || '—';
@@ -153,49 +165,13 @@
       profileTeamEl.textContent = schedule?.team_name || '—';
     }
     
-    // Відображаємо team_lead
+    // Відображаємо team_lead - тільки телеграм лінк
     if (profileTeamLeadEl) {
-      const teamLead = schedule?.team_lead;
       const teamLeadTelegram = schedule?.manager_telegram;
       
-      if (teamLead && teamLeadTelegram) {
-        // Форматуємо ім'я (замінюємо _ на пробіл)
-        const displayName = teamLead.replace(/_/g, ' ');
+      if (teamLeadTelegram) {
         const cleanTelegram = teamLeadTelegram.replace(/^@/, '');
-        profileTeamLeadEl.innerHTML = `${displayName} <a href="https://t.me/${cleanTelegram}" target="_blank" rel="noopener noreferrer">@${cleanTelegram}</a>`;
-      } else if (teamLead) {
-        profileTeamLeadEl.textContent = teamLead.replace(/_/g, ' ');
-      } else {
-        profileTeamLeadEl.textContent = '—';
-      }
-    }
-    
-    // Відображаємо нові поля ієрархії
-    if (profileDivisionEl) {
-      profileDivisionEl.textContent = schedule?.division_name || '—';
-    }
-    if (profileDirectionEl) {
-      profileDirectionEl.textContent = schedule?.direction_name || '—';
-    }
-    if (profileUnitEl) {
-      profileUnitEl.textContent = schedule?.unit_name || '—';
-    }
-    if (profileTeamEl) {
-      profileTeamEl.textContent = schedule?.team_name || '—';
-    }
-    
-    // Відображаємо team_lead
-    if (profileTeamLeadEl) {
-      const teamLead = schedule?.team_lead;
-      const teamLeadTelegram = schedule?.manager_telegram;
-      
-      if (teamLead && teamLeadTelegram) {
-        // Форматуємо ім'я (замінюємо _ на пробіл)
-        const displayName = teamLead.replace(/_/g, ' ');
-        const cleanTelegram = teamLeadTelegram.replace(/^@/, '');
-        profileTeamLeadEl.innerHTML = `${displayName} <a href="https://t.me/${cleanTelegram}" target="_blank" rel="noopener noreferrer">@${cleanTelegram}</a>`;
-      } else if (teamLead) {
-        profileTeamLeadEl.textContent = teamLead.replace(/_/g, ' ');
+        profileTeamLeadEl.innerHTML = `<a href="https://t.me/${cleanTelegram}" target="_blank" rel="noopener noreferrer">@${cleanTelegram}</a>`;
       } else {
         profileTeamLeadEl.textContent = '—';
       }
@@ -224,14 +200,53 @@
     }
   }
 
+  function configurePlanStartControl(canChange) {
+    if (!planStartEditBtn) {
+      return;
+    }
+
+    if (canChange) {
+      planStartEditBtn.classList.remove('d-none');
+      if (!planStartEditBound) {
+        planStartEditBtn.addEventListener('click', openPlanStartModal);
+        planStartEditBound = true;
+      }
+    } else {
+      planStartEditBtn.classList.add('d-none');
+    }
+  }
+
   function createCell(text) {
     const td = document.createElement('td');
     td.textContent = text ?? '';
     return td;
   }
 
+  function createTotalCell(record) {
+    const td = document.createElement('td');
+    td.textContent = record.total_display || '00:00';
+    
+    // Перевіряємо чи треба підсвітити червоним
+    const divisionName = record.division_name || '';
+    const totalMinutes = record.total_minutes || 0;
+    
+    let threshold = 0;
+    if (divisionName === 'Agency' || divisionName === 'Apps') {
+      threshold = 390; // 6.5 годин
+    } else if (divisionName === 'AdNetwork' || divisionName === 'Cons') {
+      threshold = 420; // 7 годин
+    }
+    
+    if (threshold > 0 && totalMinutes < threshold) {
+      td.style.color = '#dc3545'; // Bootstrap text-danger color
+    }
+    
+    return td;
+  }
+
   function createNotesCell(record) {
     const td = document.createElement('td');
+    td.style.textAlign = 'left';
     const note = record.notes_display || record.notes || '';
     td.innerHTML = note ? `<span class="text-wrap">${note}</span>` : '<span class="text-muted">—</span>';
     if (record.leave_reason) {
@@ -273,7 +288,7 @@
       row.appendChild(createCell(record.non_productive_display || '00:00'));
       row.appendChild(createCell(record.not_categorized_display || '00:00'));
       row.appendChild(createCell(record.productive_display || '00:00'));
-      row.appendChild(createCell(record.total_display || '00:00'));
+      row.appendChild(createTotalCell(record)); // Використовуємо createTotalCell замість createCell
       row.appendChild(createCell(record.corrected_total_display || ''));
       row.appendChild(createNotesCell(record));
 
@@ -324,26 +339,24 @@
       const item = document.createElement('div');
       item.className = 'lateness-card';
 
-      const dateLabel = document.createElement('div');
-      dateLabel.className = 'lateness-date';
+      const hours = Math.floor(value / 60);
+      const minutes = value % 60;
+      const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
       const separatorIndex = typeof label === 'string' ? label.indexOf('.') : -1;
+      let fullText = label;
       if (separatorIndex > 0) {
         const abbr = label.slice(0, separatorIndex).trim();
         const datePart = label.slice(separatorIndex + 1).trim();
         const dayName = dayNames[abbr] || abbr;
-        dateLabel.textContent = datePart ? `${dayName}, (${datePart})` : dayName;
-      } else {
-        dateLabel.textContent = label;
+        fullText = datePart ? `${dayName}, (${datePart})` : dayName;
       }
 
-      const valueLabel = document.createElement('div');
-      valueLabel.className = 'lateness-time';
-      const hours = Math.floor(value / 60);
-      const minutes = value % 60;
-      valueLabel.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      const textLabel = document.createElement('div');
+      textLabel.className = 'lateness-date';
+      textLabel.textContent = `${fullText} - ${timeString}`;
 
-      item.appendChild(dateLabel);
-      item.appendChild(valueLabel);
+      item.appendChild(textLabel);
       fragment.appendChild(item);
     });
 
@@ -393,12 +406,35 @@
 
   function buildRangeParams() {
     const params = new URLSearchParams();
-    if (dateFromInput && dateFromInput.value) {
-      params.set('date_from', dateFromInput.value);
+    
+    // Якщо поля дат порожні, використовуємо поточний місяць
+    const hasDateFrom = dateFromInput && dateFromInput.value;
+    const hasDateTo = dateToInput && dateToInput.value;
+    
+    if (!hasDateFrom && !hasDateTo) {
+      // За замовчуванням: з 1-го числа поточного місяця до сьогодні
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      
+      params.set('date_from', formatDate(firstDay));
+      params.set('date_to', formatDate(today));
+    } else {
+      if (hasDateFrom) {
+        params.set('date_from', dateFromInput.value);
+      }
+      if (hasDateTo) {
+        params.set('date_to', dateToInput.value);
+      }
     }
-    if (dateToInput && dateToInput.value) {
-      params.set('date_to', dateToInput.value);
-    }
+    
     return params;
   }
 
@@ -516,6 +552,66 @@
     }
   }
 
+  function openPlanStartModal() {
+    if (!planStartModal || !planStartModalInput) {
+      return;
+    }
+    const currentPlanStart = currentProfile.plan_start || '';
+    planStartModalInput.value = currentPlanStart;
+    planStartModal.show();
+  }
+
+  async function submitPlanStartModalForm(event) {
+    event.preventDefault();
+    if (!planStartModalInput) {
+      return;
+    }
+    const value = planStartModalInput.value.trim();
+    const action = event.submitter?.value || 'global';
+    
+    // Якщо застосовуємо до місяця, показуємо попередження
+    if (action === 'apply_month') {
+      const confirmed = confirm(
+        'Применить новый плановый старт ко всем рабочим дням текущего месяца?\n\n' +
+        'Будут обновлены только дни без ручных изменений scheduled_start.'
+      );
+      if (!confirmed) {
+        return;
+      }
+    }
+    
+    try {
+      const response = await fetch(`/api/users/${encodeURIComponent(userKey)}/plan_start`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          plan_start: value,
+          apply_to_month: action === 'apply_month'
+        }),
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || 'Не удалось обновить плановый старт');
+      }
+      
+      const result = await response.json();
+      if (planStartModal) {
+        planStartModal.hide();
+      }
+      
+      let message = 'Плановый старт обновлен';
+      if (result.updated_days !== undefined) {
+        message += ` (обновлено дней: ${result.updated_days})`;
+      }
+      showAlert(message, 'success', 3000);
+      await loadData();
+    } catch (error) {
+      showAlert(error.message || 'Не удалось обновить плановый старт');
+    }
+  }
+
   async function loadData() {
     try {
       const rangeParams = buildRangeParams();
@@ -534,6 +630,7 @@
         currentProfile.control_manager ?? null,
         Boolean(payload.permissions?.can_change_manager)
       );
+      configurePlanStartControl(Boolean(payload.permissions?.can_edit));
       renderRecords(payload.recent_records || [], payload.permissions?.can_edit, payload.status_options || []);
       renderLateness(payload.lateness || {});
       if (payload.date_range) {
@@ -563,6 +660,10 @@
 
   if (managerModalForm) {
     managerModalForm.addEventListener('submit', submitManagerModalForm);
+  }
+
+  if (planStartModalForm) {
+    planStartModalForm.addEventListener('submit', submitPlanStartModalForm);
   }
 
   if (rangeApplyBtn) {
@@ -605,5 +706,165 @@
     });
   }
 
+  // Графіки місячної статистики
+  let notCategorizedChart = null;
+  let productiveChart = null;
+  let nonProductiveChart = null;
+  let totalChart = null;
+
+  function minutesToHoursString(minutes) {
+    if (!minutes || minutes === 0) return '00:00';
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+  }
+
+  function createDoughnutChart(canvasId, minutes, label, color) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return null;
+
+    const ctx = canvas.getContext('2d');
+    const timeString = minutesToHoursString(minutes);
+
+    return new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [minutes, Math.max(0, 10000 - minutes)], // 10000 як максимальне значення для візуалізації
+          backgroundColor: [color, '#e9ecef'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        cutout: '70%',
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            enabled: false
+          }
+        }
+      },
+      plugins: [{
+        id: 'centerText',
+        beforeDraw: function(chart) {
+          const width = chart.width;
+          const height = chart.height;
+          const ctx = chart.ctx;
+          ctx.restore();
+          
+          const fontSize = (height / 114).toFixed(2);
+          ctx.font = `bold ${fontSize}em sans-serif`;
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#333';
+          
+          const text = timeString;
+          const textX = Math.round((width - ctx.measureText(text).width) / 2);
+          const textY = height / 2;
+          
+          ctx.fillText(text, textX, textY);
+          ctx.save();
+        }
+      }]
+    });
+  }
+
+  async function loadMonthlyStats() {
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      
+      // Визначаємо перший та останній день місяця
+      const firstDay = new Date(year, month - 1, 1);
+      const lastDay = new Date(year, month, 0);
+      
+      // Форматуємо дати для заголовка
+      const formatDate = (date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const mon = String(date.getMonth() + 1).padStart(2, '0');
+        const yr = String(date.getFullYear()).slice(-2);
+        return `${day}.${mon}.${yr}`;
+      };
+      
+      // Оновлюємо заголовок
+      const titleEl = document.getElementById('monthly-stats-title');
+      if (titleEl) {
+        titleEl.textContent = `Статистика за месяц: с ${formatDate(firstDay)} по ${formatDate(lastDay)}`;
+      }
+      
+      const response = await fetch(`/api/users/${encodeURIComponent(userKey)}/monthly_category_stats?year=${year}&month=${month}`);
+      if (!response.ok) {
+        console.error('Failed to load monthly stats');
+        return;
+      }
+
+      const data = await response.json();
+      
+      // Знищуємо старі графіки якщо існують
+      if (notCategorizedChart) notCategorizedChart.destroy();
+      if (productiveChart) productiveChart.destroy();
+      if (nonProductiveChart) nonProductiveChart.destroy();
+      if (totalChart) totalChart.destroy();
+
+      // Створюємо нові графіки
+      notCategorizedChart = createDoughnutChart(
+        'notCategorizedChart',
+        data.not_categorized || 0,
+        'Not Categorized',
+        '#6c757d'
+      );
+
+      productiveChart = createDoughnutChart(
+        'productiveChart',
+        data.productive || 0,
+        'Productive',
+        '#28a745'
+      );
+
+      nonProductiveChart = createDoughnutChart(
+        'nonProductiveChart',
+        data.non_productive || 0,
+        'Non Productive',
+        '#dc3545'
+      );
+
+      totalChart = createDoughnutChart(
+        'totalChart',
+        data.total || 0,
+        'Total',
+        '#007bff'
+      );
+
+      // Оновлюємо відображення місячних запізнень
+      updateMonthlyLatenessBar(data.monthly_lateness || 0);
+
+    } catch (error) {
+      console.error('Error loading monthly stats:', error);
+    }
+  }
+
+  function updateMonthlyLatenessBar(latenessMinutes) {
+    const bar = document.getElementById('monthly-lateness-bar');
+    const timeEl = document.getElementById('monthly-lateness-time');
+    
+    if (!bar || !timeEl) return;
+
+    // Конвертуємо хвилини в формат HH:MM
+    const timeString = minutesToHoursString(latenessMinutes);
+    timeEl.textContent = timeString;
+
+    // Розраховуємо відсоток запізнення (максимум 8 годин = 480 хвилин для візуалізації)
+    const maxMinutes = 480; // 8 годин
+    const percentage = Math.min((latenessMinutes / maxMinutes) * 100, 100);
+
+    // Оновлюємо градієнт: червоний зліва на відсоток запізнення, зелений - решта
+    bar.style.background = `linear-gradient(to right, #dc3545 0%, #dc3545 ${percentage}%, #28a745 ${percentage}%, #28a745 100%)`;
+  }
+
   loadData();
+  loadMonthlyStats();
 })();

@@ -16,8 +16,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "DesperatePain",
-      "team_lead": "Оtdelnyi_Andrey",
-      "manager_telegram": "Otdelnyi_Andrey"
+      "team_lead": "Оtdelnyi Andrey",
+      "manager_telegram": "Otdelnyi_Andrey",
+      "project": "AdNetwork Division",
+      "department": "RTB Team",
+      "position": "AdEx Process Owner",
+      "manager_name": "Оtdelnyi_Andrey",
+      "location": "Remote Ukraine"
     },
     "Artemchuk Dmytro": {
       "user_name": "Artemchuk Dmytro",
@@ -35,8 +40,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Artemchuk_Dmytro",
-      "team_lead": "Roshchyn_Hlib",
-      "manager_telegram": ""
+      "team_lead": "Roshchyn Hlib",
+      "manager_telegram": "Roshchyn_Hlib",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Assistant Media buyer Native",
+      "manager_name": "Roshchyn_Hlib",
+      "location": "Remote Ukraine"
     },
     "Artomenko Andrii": {
       "user_name": "Artomenko Andrii",
@@ -54,8 +64,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Artomenko_Andrii",
-      "team_lead": "Balaban_Iryna",
-      "manager_telegram": "Balaban_Iryna"
+      "team_lead": "Balaban Iryna",
+      "manager_telegram": "Balaban_Iryna",
+      "project": "Agency Division",
+      "department": "Tik Tok Team",
+      "position": "Media buyer Tik Tok",
+      "manager_name": "Balaban_Iryna",
+      "location": "Remote other countries"
     },
     "Bakumova Kseniya": {
       "user_name": "Bakumova Kseniya",
@@ -92,8 +107,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Balaban_Iryna",
-      "team_lead": "Popovych_Anton",
-      "manager_telegram": ""
+      "team_lead": "Klimchenya Valeriy",
+      "manager_telegram": "Popovych_Anton",
+      "project": "Agency Division",
+      "department": "Tik Tok Team",
+      "position": "Team Lead Tik Tok",
+      "manager_name": "Popovych_Anton",
+      "location": "Prague office"
     },
     "Balyunov Valentyn": {
       "user_name": "Balyunov Valentin",
@@ -111,8 +131,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Balyunov_Valentin",
-      "team_lead": "Panasenko_Natalya",
-      "manager_telegram": "Panasenko_Natalya"
+      "team_lead": "Panasenko Natalya",
+      "manager_telegram": "Panasenko_Natalya",
+      "project": "AdNetwork Division",
+      "department": "Sales Direction",
+      "position": "Chief Revenue Officer",
+      "manager_name": "Panasenko_Natalya",
+      "location": "Remote other countries"
     },
     "Bazdyrev Viktor": {
       "user_name": "Bazdyrev Viktor",
@@ -130,8 +155,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Bazdyrev_Viktor",
-      "team_lead": "Markovskyi_Mykyta",
-      "manager_telegram": "Markovskyi_Mykyta"
+      "team_lead": "Markovskyi Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 2",
+      "position": "Media buyer Facebook",
+      "manager_name": "Markovskyi_Mykyta",
+      "location": "Warsaw office"
     },
     "Belkevich Valentina": {
       "user_name": "Belkevich Valiantsina",
@@ -149,8 +179,13 @@
       "start_time": "10:00",
       "control_manager": 3,
       "telegram_username": "Belkevich_Valiantsina",
-      "team_lead": "Kryvytska_Olena",
-      "manager_telegram": ""
+      "team_lead": "Kryvytska Olena",
+      "manager_telegram": "Kryvytska_Alena",
+      "project": "Consulting Division",
+      "department": "Control Unit",
+      "position": "Control manager",
+      "manager_name": "Kryvytska_Olena",
+      "location": "Remote other countries"
     },
     "Berezhnoy Mykola": {
       "user_name": "Berezhnyi Mykola",
@@ -168,8 +203,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Berezhnoy_Mykola",
-      "team_lead": "Tenditnik_Roman",
-      "manager_telegram": "adver_roma"
+      "team_lead": "Tenditnik Roman",
+      "manager_telegram": "adver_roma",
+      "project": "AdNetwork Division",
+      "department": "Hunter Team",
+      "position": "Demand Hunter Hot",
+      "manager_name": "Tenditnik_Roman",
+      "location": "Remote other countries"
     },
     "Bondarenko Vladyslav": {
       "user_name": "Bondarenko Vladyslav",
@@ -187,8 +227,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Bondarenko_Vladyslav",
-      "team_lead": "Shersheriia_Heorhii",
-      "manager_telegram": "Shersheriia_Heorhii"
+      "team_lead": "Sidielnikova Diana",
+      "manager_telegram": "Shersheriia_Heorhii",
+      "project": "Agency Division",
+      "department": "Creative Team 2",
+      "position": "Creative manager",
+      "manager_name": "Shersheriia_Heorhii",
+      "location": "Remote Ukraine"
     },
     "Bratchenko Anna": {
       "user_name": "Bratchenko Anna",
@@ -206,8 +251,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Bratchenko_Hanna",
-      "team_lead": "Klimchenya_Valeriy",
-      "manager_telegram": "Klimchenya_Valeriy"
+      "team_lead": "Klimchenya Valeriy",
+      "manager_telegram": "Klimchenya_Valeriy",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 1",
+      "position": "Team Lead Facebook 1",
+      "manager_name": "Klimchenya_Valeriy",
+      "location": "Warsaw office"
     },
     "Budaev Ilya": {
       "user_name": "Budaev Ilya",
@@ -225,8 +275,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Budaev_Iliaa",
-      "team_lead": "Romanovich_Alexey",
-      "manager_telegram": "Romanovich_Aleksey"
+      "team_lead": "Sidielnikova Diana",
+      "manager_telegram": "Romanovich_Aleksey",
+      "project": "Agency Division",
+      "department": "Creative Team 1",
+      "position": "Creative manager",
+      "manager_name": "Romanovich_Alexey",
+      "location": "Remote Ukraine"
     },
     "Bushliakova Daria": {
       "user_name": "Bushliakova Daria",
@@ -244,8 +299,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Bushliakova_Daria",
-      "team_lead": "Bratchenko_Anna",
-      "manager_telegram": "Bratchenko_Hanna"
+      "team_lead": "Rossina Tamara",
+      "manager_telegram": "Bratchenko_Hanna",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 1",
+      "position": "Media buyer Facebook",
+      "manager_name": "Bratchenko_Anna",
+      "location": "Warsaw office"
     },
     "Bylchinskiy Ilya": {
       "user_name": "Bylchinskiy Ilya",
@@ -263,8 +323,13 @@
       "start_time": "11:00",
       "control_manager": 2,
       "telegram_username": "Bylchinskiy_Ilya",
-      "team_lead": "Gramovich_Ivan",
-      "manager_telegram": "Gramovich_Ivan"
+      "team_lead": "Gramovich Ivan",
+      "manager_telegram": "Gramovich_Ivan",
+      "project": "APPS Division",
+      "department": "Product Team",
+      "position": "Product Manager iOS",
+      "manager_name": "Gramovich_Ivan",
+      "location": "Remote other countries"
     },
     "Chernyakov Andrii": {
       "user_name": "Chernyakov Andrii",
@@ -282,8 +347,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Chernyakov_Andrii",
-      "team_lead": "Tereshchenko_Kirill",
-      "manager_telegram": "Tereshchenko_Kirill"
+      "team_lead": "Tereshchenko Kirill",
+      "manager_telegram": "Tereshchenko_Kirill",
+      "project": "Agency Division",
+      "department": "Product Operations Unit",
+      "position": "Technical Support Manager",
+      "manager_name": "Tereshchenko_Kirill",
+      "location": "Remote Ukraine"
     },
     "Dedovich Elena": {
       "user_name": "Dziadovich Alena",
@@ -301,8 +371,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Dedovich_Elena",
-      "team_lead": "Bratchenko_Anna",
-      "manager_telegram": "Bratchenko_Hanna"
+      "team_lead": "Rossina Tamara",
+      "manager_telegram": "Bratchenko_Hanna",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 1",
+      "position": "Media buyer Facebook",
+      "manager_name": "Bratchenko_Anna",
+      "location": "Warsaw office"
     },
     "Diakonov Dmytro": {
       "user_name": "Diakonov Dmitrii",
@@ -320,8 +395,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Diakonov_Dmitrii",
-      "team_lead": "Balaban_Iryna",
-      "manager_telegram": "Balaban_Iryna"
+      "team_lead": "Balaban Iryna",
+      "manager_telegram": "Balaban_Iryna",
+      "project": "Agency Division",
+      "department": "Tik Tok Team",
+      "position": "Media buyer Tik Tok",
+      "manager_name": "Balaban_Iryna",
+      "location": "Remote other countries"
     },
     "Dmytrenko Anna": {
       "user_name": "Dmytrenko Anna",
@@ -339,8 +419,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Dmytrenko_Ania",
-      "team_lead": "Maksymchuk_Tetiana",
-      "manager_telegram": "tetiana_finn"
+      "team_lead": "Maksymchuk Tetiana",
+      "manager_telegram": "tetiana_finn",
+      "project": "Consulting Division",
+      "department": "Finance Direction",
+      "position": "Financial manager",
+      "manager_name": "Maksymchuk_Tetiana",
+      "location": "Remote other countries"
     },
     "Dubovytskyi  Denys": {
       "user_name": "Dubovytskyi Denys",
@@ -358,8 +443,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "manager_dav_1",
-      "team_lead": "Оtdelnyi_Andrey",
-      "manager_telegram": "Otdelnyi_Andrey"
+      "team_lead": "Оtdelnyi Andrey",
+      "manager_telegram": "Otdelnyi_Andrey",
+      "project": "AdNetwork Division",
+      "department": "RTB Team",
+      "position": "SSP manager",
+      "manager_name": "Оtdelnyi_Andrey",
+      "location": "Remote Ukraine"
     },
     "Dupenko Valeria": {
       "user_name": "Dupenko Valeriia",
@@ -377,8 +467,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Dupenko_Valeriia",
-      "team_lead": "Balyunov_Valentin",
-      "manager_telegram": "Balyunov_Valentin"
+      "team_lead": "Balyunov Valentin",
+      "manager_telegram": "Balyunov_Valentin",
+      "project": "AdNetwork Division",
+      "department": "Demand Unit",
+      "position": "Head of Demand Unit",
+      "manager_name": "Balyunov_Valentin",
+      "location": "Remote other countries"
     },
     "Efimov Dmitrii": {
       "user_name": "Efimov Dmitrii",
@@ -396,8 +491,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Efimov_Dmytrii",
-      "team_lead": "Balyunov_Valentin",
-      "manager_telegram": "Balyunov_Valentin"
+      "team_lead": "Balyunov Valentin",
+      "manager_telegram": "Balyunov_Valentin",
+      "project": "AdNetwork Division",
+      "department": "Sales Direction",
+      "position": "Deputy CRO",
+      "manager_name": "Balyunov_Valentin",
+      "location": "Remote other countries"
     },
     "Fedorenko Tetiana": {
       "user_name": "Fedorenko Tetiana",
@@ -415,8 +515,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Fedorenko_Tetyana",
-      "team_lead": "Balaban_Iryna",
-      "manager_telegram": "Balaban_Iryna"
+      "team_lead": "Balaban Iryna",
+      "manager_telegram": "Balaban_Iryna",
+      "project": "Agency Division",
+      "department": "Tik Tok Team",
+      "position": "Media buyer Tik Tok",
+      "manager_name": "Balaban_Iryna",
+      "location": "Prague office"
     },
     "Fedorenko Yurii": {
       "user_name": "Fedorenko Yurii",
@@ -433,9 +538,14 @@
       "user_id": "7804353",
       "start_time": "09:00",
       "control_manager": 2,
-      "telegram_username": "YuriiAMEvadav",
-      "team_lead": "Rudenko_Bogdan",
-      "manager_telegram": "Bogdan_rudenko"
+      "telegram_username": "YuriiAMEvadav&nbsp;",
+      "team_lead": "Rudenko Bogdan",
+      "manager_telegram": "Bogdan_rudenko",
+      "project": "AdNetwork Division",
+      "department": "Demand Account Team",
+      "position": "Account manager",
+      "manager_name": "Rudenko_Bogdan",
+      "location": "Remote other countries"
     },
     "Fomenko Taras": {
       "user_name": "Fomenko Taras",
@@ -453,8 +563,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Taras_Fomenko",
-      "team_lead": "Balaban_Iryna",
-      "manager_telegram": "Balaban_Iryna"
+      "team_lead": "Balaban Iryna",
+      "manager_telegram": "Balaban_Iryna",
+      "project": "Agency Division",
+      "department": "Tik Tok Team",
+      "position": "Media buyer Tik Tok",
+      "manager_name": "Balaban_Iryna",
+      "location": "Remote other countries"
     },
     "Galeev Daniel": {
       "user_name": "Galeev Danil",
@@ -472,8 +587,13 @@
       "start_time": "11:00",
       "control_manager": 2,
       "telegram_username": "Galeev_Danil",
-      "team_lead": "Rudenko_Bogdan",
-      "manager_telegram": "Bogdan_rudenko"
+      "team_lead": "Rudenko Bogdan",
+      "manager_telegram": "Bogdan_rudenko",
+      "project": "AdNetwork Division",
+      "department": "Demand Account Team",
+      "position": "Account manager",
+      "manager_name": "Rudenko_Bogdan",
+      "location": "Remote other countries"
     },
     "Gelman Amin": {
       "user_name": "Helman Amin",
@@ -491,8 +611,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Gelman_Amin",
-      "team_lead": "Roshchyn_Hlib",
-      "manager_telegram": ""
+      "team_lead": "Popovych Anton",
+      "manager_telegram": "Roshchyn_Hlib",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Media buyer Native",
+      "manager_name": "Roshchyn_Hlib",
+      "location": "Remote other countries"
     },
     "Goloven Dmytro": {
       "user_name": "Goloven Dmitriy",
@@ -529,8 +654,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Gramovich_Ivan",
-      "team_lead": "Kurylionak_Aliaksandr",
-      "manager_telegram": "Kurylionak_Aliaksandr"
+      "team_lead": "Kurylionak Aliaksandr",
+      "manager_telegram": "Kurylionak_Aliaksandr",
+      "project": "APPS Division",
+      "department": "Product Team",
+      "position": "Team Lead of Product Team",
+      "manager_name": "Kurylionak_Aliaksandr",
+      "location": "Warsaw office"
     },
     "Harauskaya Maryia": {
       "user_name": "Harauskaya Maryia",
@@ -547,8 +677,13 @@
       "user_id": "7927195",
       "start_time": "09:00",
       "telegram_username": "Harauskaya_Maryia",
-      "team_lead": "Sluchevskyi_Gleb",
-      "manager_telegram": ""
+      "team_lead": "Sluchevskyi Gleb",
+      "manager_telegram": "gleb7315",
+      "project": "Consulting Division",
+      "department": "Human Resources Direction",
+      "position": "Chief Human Resources Officer",
+      "manager_name": "Sluchevskyi_Gleb",
+      "location": "Warsaw office"
     },
     "Hiermiek Diana": {
       "user_name": "Hiermiek Diana",
@@ -566,8 +701,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Hiermiek_Diana",
-      "team_lead": "Harauskaya_Maryia",
-      "manager_telegram": "Harauskaya_Maryia"
+      "team_lead": "Harauskaya Maryia",
+      "manager_telegram": "Harauskaya_Maryia",
+      "project": "Consulting Division",
+      "department": "HRBP Unit",
+      "position": "HR Generalist",
+      "manager_name": "Harauskaya_Maryia",
+      "location": "Warsaw office"
     },
     "Hlukhovskyi Dmytro": {
       "user_name": "Hlukhovskyi Dmytro",
@@ -585,8 +725,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Hlukhovskyi_Dmytro",
-      "team_lead": "Shersheriia_Heorhii",
-      "manager_telegram": "Shersheriia_Heorhii"
+      "team_lead": "Sidielnikova Diana",
+      "manager_telegram": "Shersheriia_Heorhii",
+      "project": "Agency Division",
+      "department": "Creative Team 2",
+      "position": "Creative manager",
+      "manager_name": "Shersheriia_Heorhii",
+      "location": "Remote Ukraine"
     },
     "Honcharuk Maksym": {
       "user_name": "Honcharuk Maksym",
@@ -604,8 +749,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Honcharuk_Maks",
-      "team_lead": "Bratchenko_Anna",
-      "manager_telegram": "Bratchenko_Hanna"
+      "team_lead": "Bratchenko Anna",
+      "manager_telegram": "Bratchenko_Hanna",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 1",
+      "position": "Media buyer Facebook",
+      "manager_name": "Bratchenko_Anna",
+      "location": "Warsaw office"
     },
     "Hryvtsova Anastasiia": {
       "user_name": "Hryvtsova Anastasiia",
@@ -623,8 +773,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Hryvtsova_Anastasiia",
-      "team_lead": "Torianyk_Haiana",
-      "manager_telegram": "Torianyk_Haiana"
+      "team_lead": "Zhara Lilia",
+      "manager_telegram": "Torianyk_Haiana",
+      "project": "Consulting Division",
+      "department": "Academy Team",
+      "position": "Recruiter",
+      "manager_name": "Torianyk_Haiana",
+      "location": "Prague office"
     },
     "Hynkaliuk Yana": {
       "user_name": "Hynkaliuk Yana",
@@ -642,8 +797,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Hynkaliuk_Yana",
-      "team_lead": "Balaban_Iryna",
-      "manager_telegram": "Balaban_Iryna"
+      "team_lead": "Balaban Iryna",
+      "manager_telegram": "Balaban_Iryna",
+      "project": "Agency Division",
+      "department": "Tik Tok Team",
+      "position": "Media buyer Tik Tok",
+      "manager_name": "Balaban_Iryna",
+      "location": "Prague office"
     },
     "Iliin Eugeniy": {
       "user_name": "Iliin Eugeniy",
@@ -661,8 +821,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Iliin_Eugeniy",
-      "team_lead": "Balyunov_Valentin",
-      "manager_telegram": "Balyunov_Valentin"
+      "team_lead": "Balyunov Valentin",
+      "manager_telegram": "Balyunov_Valentin",
+      "project": "AdNetwork Division",
+      "department": "Support Team",
+      "position": "Head of Support Team",
+      "manager_name": "Balyunov_Valentin",
+      "location": "Remote Ukraine"
     },
     "Ivashchenko Denys": {
       "user_name": "Ivashchenko Denys",
@@ -680,8 +845,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Ivashchenko_Denis",
-      "team_lead": "Kurylionak_Aliaksandr",
-      "manager_telegram": "Kurylionak_Aliaksandr"
+      "team_lead": "Kurylionak Aliaksandr",
+      "manager_telegram": "Kurylionak_Aliaksandr",
+      "project": "APPS Division",
+      "department": "IOS Unit",
+      "position": "Web Integrator",
+      "manager_name": "Kurylionak_Aliaksandr",
+      "location": "Prague office"
     },
     "Kalchenko Bohdana": {
       "user_name": "Kalchenko Bohdana",
@@ -699,8 +869,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "bohdana_finn",
-      "team_lead": "Maksymchuk_Tetiana",
-      "manager_telegram": "tetiana_finn"
+      "team_lead": "Maksymchuk Tetiana",
+      "manager_telegram": "tetiana_finn",
+      "project": "Consulting Division",
+      "department": "Finance Direction",
+      "position": "Financial manager",
+      "manager_name": "Maksymchuk_Tetiana",
+      "location": "Remote Ukraine"
     },
     "Kantemir Pavlo": {
       "user_name": "Kantemir Pavlo",
@@ -718,8 +893,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Kantemir_Pavlo",
-      "team_lead": "Vorozheykin_Oleksii",
-      "manager_telegram": "Vorozheykin_Oleksii"
+      "team_lead": "Vorozheykin Oleksii",
+      "manager_telegram": "Vorozheykin_Oleksii",
+      "project": "AdNetwork Division",
+      "department": "Analyst Team",
+      "position": "Data Analyst",
+      "manager_name": "Vorozheykin_Oleksii",
+      "location": "Remote Ukraine"
     },
     "Kastyrin Artem": {
       "user_name": "Kastyrin Artem",
@@ -737,8 +917,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Kastyrin_Artem",
-      "team_lead": "Markovskyi_Mykyta",
-      "manager_telegram": "Markovskyi_Mykyta"
+      "team_lead": "Markovskyi Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 2",
+      "position": "Media buyer Facebook",
+      "manager_name": "Markovskyi_Mykyta",
+      "location": "Warsaw office"
     },
     "Katsiaryna Yarosh": {
       "user_name": "Yarosh Katsiaryna",
@@ -756,8 +941,13 @@
       "start_time": "10:00",
       "control_manager": 3,
       "telegram_username": "Yarosh_Katsiaryna",
-      "team_lead": "Kryvytska_Olena",
-      "manager_telegram": ""
+      "team_lead": "Kryvytska Olena",
+      "manager_telegram": "Kryvytska_Alena",
+      "project": "Consulting Division",
+      "department": "KLN Control Team",
+      "position": "Team Lead KLN Control Team",
+      "manager_name": "Kryvytska_Olena",
+      "location": "Remote other countries"
     },
     "Kazmirchuk Roman": {
       "user_name": "Kazmirchuk Roman",
@@ -775,27 +965,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "roman_ios",
-      "team_lead": "Kurylionak_Aliaksandr",
-      "manager_telegram": "Kurylionak_Aliaksandr"
-    },
-    "Khachatrian Mariia": {
-      "user_name": "Khachatrian Mariia",
-      "division_name": "Consulting",
-      "division_id": 54877,
-      "direction_name": "Human Resources",
-      "direction_id": null,
-      "unit_name": "Hrbp Unit",
-      "unit_id": 125499,
-      "team_name": "",
-      "team_id": null,
-      "peopleforce_id": 526149,
-      "email": "m.khachatrian@evadav.com",
-      "user_id": "7931047",
-      "start_time": "10:00",
-      "control_manager": 2,
-      "telegram_username": "Khachatrian_Mariia",
-      "team_lead": "Harauskaya_Maryia",
-      "manager_telegram": "Harauskaya_Maryia"
+      "team_lead": "Kurylionak Aliaksandr",
+      "manager_telegram": "Kurylionak_Aliaksandr",
+      "project": "APPS Division",
+      "department": "IOS Team",
+      "position": "Team Lead IOS Team",
+      "manager_name": "Kurylionak_Aliaksandr",
+      "location": "Remote other countries"
     },
     "Khan Anna": {
       "user_name": "Khan Hanna",
@@ -813,8 +989,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Khan_Hanna",
-      "team_lead": "Zhara_Lilia",
-      "manager_telegram": "Zhara_Liliia"
+      "team_lead": "Zhara Lilia",
+      "manager_telegram": "Zhara_Liliia",
+      "project": "Consulting Division",
+      "department": "Recruitment Unit",
+      "position": "Recruiter",
+      "manager_name": "Zhara_Lilia",
+      "location": "Remote Ukraine"
     },
     "Khominskiy Alexey": {
       "user_name": "Khominskii Aleksei",
@@ -832,8 +1013,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Khominskiy_Alexey",
-      "team_lead": "Sarkisov_Moses",
-      "manager_telegram": "Sarkisov_Moses"
+      "team_lead": "Sarkisov Moses",
+      "manager_telegram": "Sarkisov_Moses",
+      "project": "AdNetwork Division",
+      "department": "Traffic Bizdev Team",
+      "position": "Sales manager",
+      "manager_name": "Sarkisov_Moses",
+      "location": "Remote other countries"
     },
     "Klimchenya Valery": {
       "user_name": "Klimchenya Valeriy",
@@ -851,8 +1037,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Klimchenya_Valeriy",
-      "team_lead": "Sluchevskyi_Gleb",
-      "manager_telegram": ""
+      "team_lead": "Sluchevskyi Gleb",
+      "manager_telegram": "gleb7315",
+      "project": "Agency Division",
+      "department": "MB Facebook Unit",
+      "position": "Head of Facebook Media Buying Unit",
+      "manager_name": "Sluchevskyi_Gleb",
+      "location": "Remote other countries"
     },
     "Koba Bogdan": {
       "user_name": "Koba Bogdan",
@@ -870,8 +1061,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Koba_Bogdan",
-      "team_lead": "Balaban_Iryna",
-      "manager_telegram": "Balaban_Iryna"
+      "team_lead": "Balaban Iryna",
+      "manager_telegram": "Balaban_Iryna",
+      "project": "Agency Division",
+      "department": "Tik Tok Team",
+      "position": "Media buyer Tik Tok",
+      "manager_name": "Balaban_Iryna",
+      "location": "Remote other countries"
     },
     "Komarova Darina": {
       "user_name": "Komarova Daryna",
@@ -889,8 +1085,13 @@
       "start_time": "10:00",
       "control_manager": 3,
       "telegram_username": "Komarova_Daryna",
-      "team_lead": "Kryvytska_Olena",
-      "manager_telegram": ""
+      "team_lead": "Kryvytska Olena",
+      "manager_telegram": "Kryvytska_Alena",
+      "project": "Consulting Division",
+      "department": "Control Unit",
+      "position": "Control manager",
+      "manager_name": "Kryvytska_Olena",
+      "location": "Remote other countries"
     },
     "Kondras Maksym": {
       "user_name": "Kondras Maksym",
@@ -908,8 +1109,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Kondras_Maksym",
-      "team_lead": "Markovskyi_Mykyta",
-      "manager_telegram": "Markovskyi_Mykyta"
+      "team_lead": "Markovskyi Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 2",
+      "position": "Media buyer Facebook",
+      "manager_name": "Markovskyi_Mykyta",
+      "location": "Warsaw office"
     },
     "Koreshkova Valeryia": {
       "user_name": "Karashkova Valeryia",
@@ -927,8 +1133,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Koreshkov_Valeria",
-      "team_lead": "Markovskyi_Mykyta",
-      "manager_telegram": "Markovskyi_Mykyta"
+      "team_lead": "Markovskyi Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 2",
+      "position": "Media buyer Facebook",
+      "manager_name": "Markovskyi_Mykyta",
+      "location": "Warsaw office"
     },
     "Korobkov Daniil": {
       "user_name": "Korobkov Daniil",
@@ -946,8 +1157,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Korobkov_Daniil",
-      "team_lead": "Sokolov_Mikhail",
-      "manager_telegram": "mihail_tl"
+      "team_lead": "Sokolov Mikhail",
+      "manager_telegram": "mihail_tl",
+      "project": "AdNetwork Division",
+      "department": "Lead BizDev Team",
+      "position": "BizDev Manager",
+      "manager_name": "Sokolov_Mikhail",
+      "location": "Remote other countries"
     },
     "Koshchei Dariia": {
       "user_name": "Koshchei Dariia",
@@ -965,8 +1181,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Koshchei_Dariia",
-      "team_lead": "Roshchyn_Hlib",
-      "manager_telegram": ""
+      "team_lead": "Popovych Anton",
+      "manager_telegram": "Roshchyn_Hlib",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Media buyer Native",
+      "manager_name": "Roshchyn_Hlib",
+      "location": "Remote other countries"
     },
     "Kostina Dariia": {
       "user_name": "Kostina Dariia",
@@ -984,8 +1205,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Daria_Kostina_Evadav",
-      "team_lead": "Morkin_Serhii",
-      "manager_telegram": ""
+      "team_lead": "Morkin Serhii",
+      "manager_telegram": "sergey_morkin",
+      "project": "AdNetwork Division",
+      "department": "QA Team",
+      "position": "Team Lead QA Engineer",
+      "manager_name": "Morkin_Serhii",
+      "location": "Remote Ukraine"
     },
     "Kozinskii Maksim": {
       "user_name": "Kozinskii Maksim",
@@ -1003,8 +1229,13 @@
       "start_time": "17:00",
       "control_manager": 2,
       "telegram_username": "Maksim_mbCPA",
-      "team_lead": "Tuzman_Mykhailo",
-      "manager_telegram": "Mykhailo_mb_RT_TL"
+      "team_lead": "Tuzman Mykhailo",
+      "manager_telegram": "Mykhailo_mb_RT_TL",
+      "project": "AdNetwork Division",
+      "department": "CPA Team",
+      "position": "Media Buyer",
+      "manager_name": "Tuzman_Mykhailo",
+      "location": "Remote other countries"
     },
     "Kramareva Anastasiia": {
       "user_name": "Kramareva Anastasiia",
@@ -1022,8 +1253,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Anastasiia_FINMng",
-      "team_lead": "Maksymchuk_Tetiana",
-      "manager_telegram": "tetiana_finn"
+      "team_lead": "Maksymchuk Tetiana",
+      "manager_telegram": "tetiana_finn",
+      "project": "Consulting Division",
+      "department": "Finance Direction",
+      "position": "Financial manager",
+      "manager_name": "Maksymchuk_Tetiana",
+      "location": "Remote other countries"
     },
     "Kryvytska Olena": {
       "user_name": "Kryvytska Olena",
@@ -1060,8 +1296,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Kucher_Diana_1",
-      "team_lead": "Roshchyn_Hlib",
-      "manager_telegram": ""
+      "team_lead": "Roshchyn Hlib",
+      "manager_telegram": "Roshchyn_Hlib",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Media buyer Native",
+      "manager_name": "Roshchyn_Hlib",
+      "location": "Remote Ukraine"
     },
     "Kucherenko Anastasia": {
       "user_name": "Kucherenko Anastasia",
@@ -1079,8 +1320,13 @@
       "start_time": "09:00",
       "control_manager": 3,
       "telegram_username": "Kucherenko_At",
-      "team_lead": "Yarosh_Katsiaryna",
-      "manager_telegram": "Yarosh_Katsiaryna"
+      "team_lead": "Yarosh Katsiaryna",
+      "manager_telegram": "Yarosh_Katsiaryna",
+      "project": "Consulting Division",
+      "department": "KLN Control Team",
+      "position": "Control manager",
+      "manager_name": "Yarosh_Katsiaryna",
+      "location": "Remote Ukraine"
     },
     "Kucherenko Nikita": {
       "user_name": "Kucherenko Nikita",
@@ -1098,8 +1344,13 @@
       "start_time": "11:00",
       "control_manager": 2,
       "telegram_username": "Kucherenko_Nikita",
-      "team_lead": "Balyunov_Valentin",
-      "manager_telegram": "Balyunov_Valentin"
+      "team_lead": "Balyunov Valentin",
+      "manager_telegram": "Balyunov_Valentin",
+      "project": "AdNetwork Division",
+      "department": "BizDev Team",
+      "position": "Team Lead BizDev",
+      "manager_name": "Balyunov_Valentin",
+      "location": "Remote other countries"
     },
     "Kunkevich Igor": {
       "user_name": "Kunkevich Ihar",
@@ -1117,8 +1368,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Kunkevich_Ihar",
-      "team_lead": "Morkin_Serhii",
-      "manager_telegram": ""
+      "team_lead": "Morkin Serhii",
+      "manager_telegram": "sergey_morkin",
+      "project": "AdNetwork Division",
+      "department": "R&D Unit AdNetwork",
+      "position": "PHP developer",
+      "manager_name": "Morkin_Serhii",
+      "location": "Remote other countries"
     },
     "Kurbanov Sergey": {
       "user_name": "Kurbanau Siarhei",
@@ -1136,8 +1392,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Kurbanov_Sergey",
-      "team_lead": "Kazmirchuk_Roman",
-      "manager_telegram": "roman_ios"
+      "team_lead": "Kazmirchuk Roman",
+      "manager_telegram": "roman_ios",
+      "project": "APPS Division",
+      "department": "IOS Team",
+      "position": "iOS Developer",
+      "manager_name": "Kazmirchuk_Roman",
+      "location": "Remote other countries"
     },
     "Kurylionak Aliaksandr": {
       "user_name": "Kurylionak Aliaksandr",
@@ -1155,8 +1416,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Kurylionak_Aliaksandr",
-      "team_lead": "Sidorov_Boris",
-      "manager_telegram": ""
+      "team_lead": "Sidorov Boris",
+      "manager_telegram": "infokrolik",
+      "project": "APPS Division",
+      "department": "IOS Unit",
+      "position": "Head of IOS Unit",
+      "manager_name": "Sidorov_Boris",
+      "location": "Remote other countries"
     },
     "Kutkovskyi Mykhailo": {
       "user_name": "Kutkovskyi Mykhailo",
@@ -1174,8 +1440,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Kutkovskyi_Mykhailo",
-      "team_lead": "Ziuzin_Oleksii",
-      "manager_telegram": "Ziuzin_Oleksii"
+      "team_lead": "Ziuzin Oleksii",
+      "manager_telegram": "Ziuzin_Oleksii",
+      "project": "Consulting Division",
+      "department": "System admin Team",
+      "position": "System administrator",
+      "manager_name": "Ziuzin_Oleksii",
+      "location": "Prague office"
     },
     "Larina Olena": {
       "user_name": "Larina Olena",
@@ -1193,8 +1464,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Larina_Olena",
-      "team_lead": "Shpak_Andriy",
-      "manager_telegram": "Shpak_Andriy"
+      "team_lead": "Shpak Andriy",
+      "manager_telegram": "Shpak_Andriy",
+      "project": "AdNetwork Division",
+      "department": "Moderation Team",
+      "position": "Moderation manager",
+      "manager_name": "Shpak_Andriy",
+      "location": "Remote Ukraine"
     },
     "Latypov Alexander": {
       "user_name": "Latypov Alexander",
@@ -1212,8 +1488,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Latypov_Alexander",
-      "team_lead": "Tuzman_Mykhailo",
-      "manager_telegram": "Mykhailo_mb_RT_TL"
+      "team_lead": "Tuzman Mykhailo",
+      "manager_telegram": "Mykhailo_mb_RT_TL",
+      "project": "AdNetwork Division",
+      "department": "CPA Team",
+      "position": "Media Buyer",
+      "manager_name": "Tuzman_Mykhailo",
+      "location": "Remote other countries"
     },
     "Lazarenko Maksim": {
       "user_name": "Lazarenko Maksim",
@@ -1231,8 +1512,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "max_ssp",
-      "team_lead": "Оtdelnyi_Andrey",
-      "manager_telegram": "Otdelnyi_Andrey"
+      "team_lead": "Оtdelnyi Andrey",
+      "manager_telegram": "Otdelnyi_Andrey",
+      "project": "AdNetwork Division",
+      "department": "RTB Team",
+      "position": "DSP Manager",
+      "manager_name": "Оtdelnyi_Andrey",
+      "location": "Remote Ukraine"
     },
     "Lebid Anastasiia": {
       "user_name": "Lebid Anastasiia",
@@ -1250,8 +1536,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Lebid_Anastasiia",
-      "team_lead": "Harauskaya_Maryia",
-      "manager_telegram": "Harauskaya_Maryia"
+      "team_lead": "Harauskaya Maryia",
+      "manager_telegram": "Harauskaya_Maryia",
+      "project": "Consulting Division",
+      "department": "HR Administration Unit",
+      "position": "Head of HR Administration Unit",
+      "manager_name": "Harauskaya_Maryia",
+      "location": "Warsaw office"
     },
     "Lemeshchenko Vladislava": {
       "user_name": "Lemeshchenko Vladislava",
@@ -1269,8 +1560,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Lemeshchenko_Vladislava",
-      "team_lead": "Romanovich_Alexey",
-      "manager_telegram": "Romanovich_Aleksey"
+      "team_lead": "Sidielnikova Diana",
+      "manager_telegram": "Romanovich_Aleksey",
+      "project": "Agency Division",
+      "department": "Creative Team 1",
+      "position": "Creative manager",
+      "manager_name": "Romanovich_Alexey",
+      "location": "Remote Ukraine"
     },
     "Likhobaba Daniil": {
       "user_name": "Likhobaba Daniil",
@@ -1288,8 +1584,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Likhobaba_Daniil",
-      "team_lead": "Sarkisov_Moses",
-      "manager_telegram": "Sarkisov_Moses"
+      "team_lead": "Sarkisov Moses",
+      "manager_telegram": "Sarkisov_Moses",
+      "project": "AdNetwork Division",
+      "department": "Traffic Bizdev Team",
+      "position": "Sales manager",
+      "manager_name": "Sarkisov_Moses",
+      "location": "Remote other countries"
     },
     "Lukashov Vasyl": {
       "user_name": "Lukashov Vasyl",
@@ -1307,8 +1608,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Lukashov_Vasyl",
-      "team_lead": "Maksymchuk_Tetiana",
-      "manager_telegram": "tetiana_finn"
+      "team_lead": "Maksymchuk Tetiana",
+      "manager_telegram": "tetiana_finn",
+      "project": "Consulting Division",
+      "department": "Finance Direction",
+      "position": "Financial manager",
+      "manager_name": "Maksymchuk_Tetiana",
+      "location": "Remote other countries"
     },
     "Lysenko Serhii": {
       "user_name": "Lysenko Serhii",
@@ -1326,8 +1632,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Lysenko_Serhiii",
-      "team_lead": "Romanovich_Alexey",
-      "manager_telegram": "Romanovich_Aleksey"
+      "team_lead": "Sidielnikova Diana",
+      "manager_telegram": "Romanovich_Aleksey",
+      "project": "Agency Division",
+      "department": "Creative Team 1",
+      "position": "Creative manager",
+      "manager_name": "Romanovich_Alexey",
+      "location": "Remote Ukraine"
     },
     "Machula Yulia": {
       "user_name": "Machula Yuliia",
@@ -1345,8 +1656,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Machula_Yuliia",
-      "team_lead": "Polishchuk_Kateryna",
-      "manager_telegram": "Polishchuk_Kate"
+      "team_lead": "Polishchuk Kateryna",
+      "manager_telegram": "Polishchuk_Kate",
+      "project": "Consulting Division",
+      "department": "L&D Unit",
+      "position": "L&D Manager",
+      "manager_name": "Polishchuk_Kateryna",
+      "location": "Remote other countries"
     },
     "Maksymchuk Tatiana": {
       "user_name": "Maksymchuk Tetiana",
@@ -1364,8 +1680,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "tetiana_finn",
-      "team_lead": "Sluchevskyi_Gleb",
-      "manager_telegram": ""
+      "team_lead": "Sluchevskyi Gleb",
+      "manager_telegram": "gleb7315",
+      "project": "Consulting Division",
+      "department": "Management Accounting Unit",
+      "position": "Head of Management Accounting Division",
+      "manager_name": "Sluchevskyi_Gleb",
+      "location": "Remote Ukraine"
     },
     "Markovskyi Mykyta": {
       "user_name": "Markovskyi Mykyta",
@@ -1383,8 +1704,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Markovskyi_Mykyta",
-      "team_lead": "Klimchenya_Valeriy",
-      "manager_telegram": "Klimchenya_Valeriy"
+      "team_lead": "Klimchenya Valeriy",
+      "manager_telegram": "Klimchenya_Valeriy",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 2",
+      "position": "Team Lead Facebook 2",
+      "manager_name": "Klimchenya_Valeriy",
+      "location": "Warsaw office"
     },
     "Marsheva Veronika": {
       "user_name": "Marsheva Veronika",
@@ -1402,8 +1728,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Marsheva_Veronika",
-      "team_lead": "Yukhno_Leonid",
-      "manager_telegram": ""
+      "team_lead": "Yukhno Leonid",
+      "manager_telegram": "leotraffic",
+      "project": "Consulting Division",
+      "department": "Marketing Direction",
+      "position": "Content Specialist",
+      "manager_name": "Yukhno_Leonid",
+      "location": "Remote other countries"
     },
     "Mastystyi Valerii": {
       "user_name": "Mastystyy Valeriy",
@@ -1421,8 +1752,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Mastystyi_Valerii",
-      "team_lead": "Markovskyi_Mykyta",
-      "manager_telegram": "Markovskyi_Mykyta"
+      "team_lead": "Markovskyi Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 2",
+      "position": "Media buyer Facebook",
+      "manager_name": "Markovskyi_Mykyta",
+      "location": "Warsaw office"
     },
     "Melnychenko Oleh": {
       "user_name": "Melnychenko Oleh",
@@ -1440,8 +1776,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Melnychenko_Oleh",
-      "team_lead": "Bratchenko_Anna",
-      "manager_telegram": "Bratchenko_Hanna"
+      "team_lead": "Bratchenko Anna",
+      "manager_telegram": "Bratchenko_Hanna",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 1",
+      "position": "Media buyer Facebook",
+      "manager_name": "Bratchenko_Anna",
+      "location": "Warsaw office"
     },
     "Melnyk Iryna": {
       "user_name": "Melnyk Iryna",
@@ -1459,8 +1800,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Iryna_controlMng",
-      "team_lead": "Tkachenko_Oleksandra",
-      "manager_telegram": ""
+      "team_lead": "Tkachenko Oleksandra",
+      "manager_telegram": "alessa_al",
+      "project": "Consulting Division",
+      "department": "Control Unit",
+      "position": "Control manager",
+      "manager_name": "Tkachenko_Oleksandra",
+      "location": "Remote Ukraine"
     },
     "Murygin Nikolai": {
       "user_name": "Murygin Nikolai",
@@ -1497,8 +1843,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Mushnin_Yevhen",
-      "team_lead": "Bratchenko_Anna",
-      "manager_telegram": "Bratchenko_Hanna"
+      "team_lead": "Kaulko Maksym",
+      "manager_telegram": "Bratchenko_Hanna",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 1",
+      "position": "Media buyer Facebook",
+      "manager_name": "Bratchenko_Anna",
+      "location": "Warsaw office"
     },
     "Novak Darya": {
       "user_name": "Novak Darya",
@@ -1516,8 +1867,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Novak_Daria",
-      "team_lead": "Roshchyn_Hlib",
-      "manager_telegram": ""
+      "team_lead": "Roshchyn Hlib",
+      "manager_telegram": "Roshchyn_Hlib",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Media buyer Native",
+      "manager_name": "Roshchyn_Hlib",
+      "location": "Remote other countries"
     },
     "Novak Kiryl": {
       "user_name": "Novak Kiryl",
@@ -1535,8 +1891,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Novak_Kiril",
-      "team_lead": "Markovskyi_Mykyta",
-      "manager_telegram": "Markovskyi_Mykyta"
+      "team_lead": "Markovskyi Mykyta",
+      "manager_telegram": "Markovskyi_Mykyta",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 2",
+      "position": "Media buyer Facebook",
+      "manager_name": "Markovskyi_Mykyta",
+      "location": "Warsaw office"
     },
     "Oliinyk Veronika": {
       "user_name": "Oliinyk Veronika",
@@ -1554,8 +1915,13 @@
       "start_time": "09:00",
       "control_manager": 3,
       "telegram_username": "Oliinyk_Veronika",
-      "team_lead": "Kryvytska_Olena",
-      "manager_telegram": ""
+      "team_lead": "Kryvytska Olena",
+      "manager_telegram": "Kryvytska_Alena",
+      "project": "Consulting Division",
+      "department": "Control Unit",
+      "position": "Control manager",
+      "manager_name": "Kryvytska_Olena",
+      "location": "Remote other countries"
     },
     "Osadtsa Dmitro": {
       "user_name": "Osadtsa Dmytro",
@@ -1573,8 +1939,13 @@
       "start_time": "10:00",
       "control_manager": 3,
       "telegram_username": "Dmitry_Compliance",
-      "team_lead": "Tkachenko_Oleksandra",
-      "manager_telegram": ""
+      "team_lead": "Tkachenko Oleksandra",
+      "manager_telegram": "alessa_al",
+      "project": "Consulting Division",
+      "department": "Traffic Compliance Team",
+      "position": "Head of Traffic Compliance Team",
+      "manager_name": "Tkachenko_Oleksandra",
+      "location": "Remote Ukraine"
     },
     "Panasenko Natalya": {
       "user_name": "Panasenko Natalya",
@@ -1592,8 +1963,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Panasenko_Natalya",
-      "team_lead": "Sluchevskyi_Gleb",
-      "manager_telegram": ""
+      "team_lead": "Sluchevskyi Gleb",
+      "manager_telegram": "gleb7315",
+      "project": "AdNetwork Division",
+      "department": "AdNetwork Division",
+      "position": "Chief Operating Officer AdNetwork",
+      "manager_name": "Sluchevskyi_Gleb",
+      "location": "Remote other countries"
     },
     "Pirogov Savva": {
       "user_name": "Pirogov Savva",
@@ -1611,8 +1987,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Pirogov_Savva",
-      "team_lead": "Tenditnik_Roman",
-      "manager_telegram": "adver_roma"
+      "team_lead": "Tenditnik Roman",
+      "manager_telegram": "adver_roma",
+      "project": "AdNetwork Division",
+      "department": "Hunter Team",
+      "position": "Hunter Cold Manager",
+      "manager_name": "Tenditnik_Roman",
+      "location": "Remote other countries"
     },
     "Pitukh Daryna": {
       "user_name": "Pitukh Daryna",
@@ -1630,8 +2011,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Pitukh_Daryna",
-      "team_lead": "Zhara_Lilia",
-      "manager_telegram": "Zhara_Liliia"
+      "team_lead": "Zhara Lilia",
+      "manager_telegram": "Zhara_Liliia",
+      "project": "Consulting Division",
+      "department": "Recruitment Unit",
+      "position": "Recruiter",
+      "manager_name": "Zhara_Lilia",
+      "location": "Prague office"
     },
     "Polishchuk Kateryna": {
       "user_name": "Polishchuk Kateryna",
@@ -1649,8 +2035,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Polishchuk_Kate",
-      "team_lead": "Harauskaya_Maryia",
-      "manager_telegram": "Harauskaya_Maryia"
+      "team_lead": "Harauskaya Maryia",
+      "manager_telegram": "Harauskaya_Maryia",
+      "project": "Consulting Division",
+      "department": "L&D Unit",
+      "position": "Head of L&D Unit",
+      "manager_name": "Harauskaya_Maryia",
+      "location": "Warsaw office"
     },
     "Ponomarenko Yevhen": {
       "user_name": "Ponomarenko Yevhen",
@@ -1668,8 +2059,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Ponomarenko_Yevhen",
-      "team_lead": "Ovcharenko_German",
-      "manager_telegram": ""
+      "team_lead": "Ovcharenko German",
+      "manager_telegram": "german_21",
+      "project": "APPS Division",
+      "department": "Media buying Unit",
+      "position": "Media Buyer Apps",
+      "manager_name": "Ovcharenko_German",
+      "location": "Remote other countries"
     },
     "Postnikov Iurii": {
       "user_name": "Postnikov Iurii",
@@ -1687,8 +2083,13 @@
       "start_time": "12:00",
       "control_manager": 2,
       "telegram_username": "Postnikov_Iurii",
-      "team_lead": "Kucherenko_Nikita",
-      "manager_telegram": "Kucherenko_Nikita"
+      "team_lead": "Kucherenko Nikita",
+      "manager_telegram": "Kucherenko_Nikita",
+      "project": "AdNetwork Division",
+      "department": "BizDev Team",
+      "position": "BizDev Manager",
+      "manager_name": "Kucherenko_Nikita",
+      "location": "Remote other countries"
     },
     "Pryimak Artur": {
       "user_name": "Pryimak Artur",
@@ -1706,8 +2107,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Pryimak_Artur",
-      "team_lead": "Sokolov_Mikhail",
-      "manager_telegram": "mihail_tl"
+      "team_lead": "Sokolov Mikhail",
+      "manager_telegram": "mihail_tl",
+      "project": "AdNetwork Division",
+      "department": "Lead BizDev Team",
+      "position": "BizDev Manager",
+      "manager_name": "Sokolov_Mikhail",
+      "location": "Remote other countries"
     },
     "Prymak Yuliia": {
       "user_name": "Prymak Yuliia",
@@ -1725,8 +2131,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Prymak_Yuliia",
-      "team_lead": "Tuzman_Mykhailo",
-      "manager_telegram": "Mykhailo_mb_RT_TL"
+      "team_lead": "Tuzman Mykhailo",
+      "manager_telegram": "Mykhailo_mb_RT_TL",
+      "project": "AdNetwork Division",
+      "department": "CPA Team",
+      "position": "Media Buyer",
+      "manager_name": "Tuzman_Mykhailo",
+      "location": "Remote Ukraine"
     },
     "Romanovich Alexey": {
       "user_name": "Romanovich Alexey",
@@ -1744,8 +2155,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Romanovich_Aleksey",
-      "team_lead": "Sidielnikova_Diana",
-      "manager_telegram": ""
+      "team_lead": "Sidielnikova Diana",
+      "manager_telegram": "Sidielnikova_Diana",
+      "project": "Agency Division",
+      "department": "Creative Team 1",
+      "position": "Team Lead Creative Team 1",
+      "manager_name": "Sidielnikova_Diana",
+      "location": "Remote other countries"
     },
     "Roshchyn Hlib": {
       "user_name": "Roshchyn Hlib",
@@ -1782,8 +2198,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Nikita_Ruban_Marketing",
-      "team_lead": "Balyunov_Valentin",
-      "manager_telegram": "Balyunov_Valentin"
+      "team_lead": "Balyunov Valentin",
+      "manager_telegram": "Balyunov_Valentin",
+      "project": "AdNetwork Division",
+      "department": "Performance Team",
+      "position": "Performance Marketing Specialist",
+      "manager_name": "Balyunov_Valentin",
+      "location": "Prague office"
     },
     "Rudenko Bogdan": {
       "user_name": "Rudenko Bogdan",
@@ -1801,8 +2222,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Bogdan_rudenko",
-      "team_lead": "Dupenko_Valeriia",
-      "manager_telegram": "Dupenko_Valeriia"
+      "team_lead": "Dupenko Valeriia",
+      "manager_telegram": "Dupenko_Valeriia",
+      "project": "AdNetwork Division",
+      "department": "Demand Account Team",
+      "position": "Team Lead Demand Account Team",
+      "manager_name": "Dupenko_Valeriia",
+      "location": "Remote other countries"
     },
     "Sankov Yurii": {
       "user_name": "Sankov Yurii",
@@ -1820,8 +2246,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "y_evadav",
-      "team_lead": "Ovcharenko_German",
-      "manager_telegram": ""
+      "team_lead": "Ovcharenko German",
+      "manager_telegram": "german_21",
+      "project": "APPS Division",
+      "department": "Media buying Unit",
+      "position": "Media Buyer Apps",
+      "manager_name": "Ovcharenko_German",
+      "location": "Remote Ukraine"
     },
     "Sarkisov Moses": {
       "user_name": "Sarkisov Moses",
@@ -1839,8 +2270,13 @@
       "start_time": "11:00",
       "control_manager": 2,
       "telegram_username": "Sarkisov_Moses",
-      "team_lead": "Gyrych_Maria",
-      "manager_telegram": "Gyrych_Maria"
+      "team_lead": "Gyrych Maria",
+      "manager_telegram": "Gyrych_Maria",
+      "project": "AdNetwork Division",
+      "department": "Traffic Bizdev Team",
+      "position": "Team Lead Traffic Bizdev Team",
+      "manager_name": "Gyrych_Maria",
+      "location": "Remote other countries"
     },
     "Semeniakina Nadzeya": {
       "user_name": "Semeniakina Nadzeya",
@@ -1858,8 +2294,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Semeniakina_Nadzeya",
-      "team_lead": "Roshchyn_Hlib",
-      "manager_telegram": ""
+      "team_lead": "Popovych Anton",
+      "manager_telegram": "Roshchyn_Hlib",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Media buyer Native",
+      "manager_name": "Roshchyn_Hlib",
+      "location": "Remote other countries"
     },
     "Serdiuk Alina": {
       "user_name": "Serdiuk Alina",
@@ -1877,8 +2318,13 @@
       "start_time": "10:00",
       "control_manager": 3,
       "telegram_username": "Serdiuk_Alinaa",
-      "team_lead": "Shkurai_Marianna",
-      "manager_telegram": "Shkurai_Marianna"
+      "team_lead": "Shkurai Marianna",
+      "manager_telegram": "Shkurai_Marianna",
+      "project": "Consulting Division",
+      "department": "Analytics Control Team",
+      "position": "Control manager",
+      "manager_name": "Shkurai_Marianna",
+      "location": "Remote other countries"
     },
     "Shersheriia Heorhii": {
       "user_name": "Shersheriia Heorhii",
@@ -1896,8 +2342,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Shersheriia_Heorhii",
-      "team_lead": "Sidielnikova_Diana",
-      "manager_telegram": ""
+      "team_lead": "Sidielnikova Diana",
+      "manager_telegram": "Sidielnikova_Diana",
+      "project": "Agency Division",
+      "department": "Creative Team 2",
+      "position": "Team Lead Creative Team 2",
+      "manager_name": "Sidielnikova_Diana",
+      "location": "Remote Ukraine"
     },
     "Shevchenko Igor": {
       "user_name": "Shevchenko Igor",
@@ -1915,8 +2366,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Shevchenko_Ig0r",
-      "team_lead": "Kucherenko_Nikita",
-      "manager_telegram": "Kucherenko_Nikita"
+      "team_lead": "Kucherenko Nikita",
+      "manager_telegram": "Kucherenko_Nikita",
+      "project": "AdNetwork Division",
+      "department": "BizDev Team",
+      "position": "BizDev Manager",
+      "manager_name": "Kucherenko_Nikita",
+      "location": "Remote other countries"
     },
     "Shilko Alexandra": {
       "user_name": "Shilko Alexandra",
@@ -1934,8 +2390,13 @@
       "start_time": "11:00",
       "control_manager": 1,
       "telegram_username": "Shilko_Alexandra",
-      "team_lead": "Sidielnikova_Diana",
-      "manager_telegram": ""
+      "team_lead": "Sidielnikova Diana",
+      "manager_telegram": "Sidielnikova_Diana",
+      "project": "Agency Division",
+      "department": "Creative Unit",
+      "position": "Designer",
+      "manager_name": "Sidielnikova_Diana",
+      "location": "Remote other countries"
     },
     "Shinkus Aleksandr": {
       "user_name": "Shinkuns Aleksandr",
@@ -1953,8 +2414,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Alexander_S1990",
-      "team_lead": "Yukhno_Leonid",
-      "manager_telegram": ""
+      "team_lead": "Yukhno Leonid",
+      "manager_telegram": "leotraffic",
+      "project": "Consulting Division",
+      "department": "Marketing Direction",
+      "position": "Community manager",
+      "manager_name": "Yukhno_Leonid",
+      "location": "Remote other countries"
     },
     "Shkurai Marianna": {
       "user_name": "Shkurai Marianna",
@@ -1972,8 +2438,13 @@
       "start_time": "09:00",
       "control_manager": 3,
       "telegram_username": "Shkurai_Marianna",
-      "team_lead": "Kryvytska_Olena",
-      "manager_telegram": ""
+      "team_lead": "Kryvytska Olena",
+      "manager_telegram": "Kryvytska_Alena",
+      "project": "Consulting Division",
+      "department": "Analytics Control Team",
+      "position": "Team Lead Analytics Control Team",
+      "manager_name": "Kryvytska_Olena",
+      "location": "Remote other countries"
     },
     "Shoshina Karina": {
       "user_name": "Shoshina Karina",
@@ -1991,8 +2462,13 @@
       "start_time": "12:00",
       "control_manager": 1,
       "telegram_username": "Shoshina_Karina",
-      "team_lead": "Balaban_Iryna",
-      "manager_telegram": "Balaban_Iryna"
+      "team_lead": "Balaban Iryna",
+      "manager_telegram": "Balaban_Iryna",
+      "project": "Agency Division",
+      "department": "Tik Tok Team",
+      "position": "Media buyer Tik Tok",
+      "manager_name": "Balaban_Iryna",
+      "location": "Remote other countries"
     },
     "Shota Artyom": {
       "user_name": "Shota Artyom",
@@ -2010,8 +2486,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Shota_Artyom",
-      "team_lead": "Ovcharenko_German",
-      "manager_telegram": ""
+      "team_lead": "Ovcharenko German",
+      "manager_telegram": "german_21",
+      "project": "APPS Division",
+      "department": "Media buying Unit",
+      "position": "Team Lead Media Buyer SCAd",
+      "manager_name": "Ovcharenko_German",
+      "location": "Remote other countries"
     },
     "Shpak Andrew": {
       "user_name": "Shpak Andriy",
@@ -2029,8 +2510,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Shpak_Andriy",
-      "team_lead": "Balyunov_Valentin",
-      "manager_telegram": "Balyunov_Valentin"
+      "team_lead": "Balyunov Valentin",
+      "manager_telegram": "Balyunov_Valentin",
+      "project": "AdNetwork Division",
+      "department": "Moderation Team",
+      "position": "Team lead moderation team",
+      "manager_name": "Balyunov_Valentin",
+      "location": "Remote Ukraine"
     },
     "Shubska Oleksandra": {
       "user_name": "Shubska Oleksandra",
@@ -2048,8 +2534,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Oleksandra_finnEva",
-      "team_lead": "Maksymchuk_Tetiana",
-      "manager_telegram": "tetiana_finn"
+      "team_lead": "Maksymchuk Tetiana",
+      "manager_telegram": "tetiana_finn",
+      "project": "Consulting Division",
+      "department": "Finance Direction",
+      "position": "Financial manager",
+      "manager_name": "Maksymchuk_Tetiana",
+      "location": "Remote Ukraine"
     },
     "Shustal  Valeria": {
       "user_name": "Shustal Valeryia",
@@ -2066,9 +2557,14 @@
       "user_id": "7927891",
       "start_time": "09:00",
       "control_manager": 2,
-      "telegram_username": "Shustal_Valeria",
-      "team_lead": "Gramovich_Ivan",
-      "manager_telegram": "Gramovich_Ivan"
+      "telegram_username": "Shustal_Valeria &nbsp;",
+      "team_lead": "Gramovich Ivan",
+      "manager_telegram": "Gramovich_Ivan",
+      "project": "APPS Division",
+      "department": "Product Team",
+      "position": "iOS Designer",
+      "manager_name": "Gramovich_Ivan",
+      "location": "Warsaw office"
     },
     "Shykula Artur": {
       "user_name": "Shykula Artur",
@@ -2086,8 +2582,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Shykula_Artur",
-      "team_lead": "Balaban_Iryna",
-      "manager_telegram": "Balaban_Iryna"
+      "team_lead": "Balaban Iryna",
+      "manager_telegram": "Balaban_Iryna",
+      "project": "Agency Division",
+      "department": "Tik Tok Team",
+      "position": "Media buyer Tik Tok",
+      "manager_name": "Balaban_Iryna",
+      "location": "Prague office"
     },
     "Sidielnikova Diana": {
       "user_name": "Sidielnikova Diana",
@@ -2124,8 +2625,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Smirnov_Serhiy",
-      "team_lead": "Sokolov_Mikhail",
-      "manager_telegram": "mihail_tl"
+      "team_lead": "Sokolov Mikhail",
+      "manager_telegram": "mihail_tl",
+      "project": "AdNetwork Division",
+      "department": "Lead BizDev Team",
+      "position": "BizDev Manager",
+      "manager_name": "Sokolov_Mikhail",
+      "location": "Remote Ukraine"
     },
     "Sokolov Mikhail": {
       "user_name": "Sokolov Mikhail",
@@ -2143,8 +2649,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "mihail_tl",
-      "team_lead": "Gyrych_Maria",
-      "manager_telegram": "Gyrych_Maria"
+      "team_lead": "Gyrych Maria",
+      "manager_telegram": "Gyrych_Maria",
+      "project": "AdNetwork Division",
+      "department": "Lead BizDev Team",
+      "position": "Team Lead BizDev Team",
+      "manager_name": "Gyrych_Maria",
+      "location": "Remote other countries"
     },
     "Stepanov Oleksandr": {
       "user_name": "Stepanov Oleksandr",
@@ -2162,8 +2673,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Stepanov_Oleksandr",
-      "team_lead": "Harauskaya_Maryia",
-      "manager_telegram": "Harauskaya_Maryia"
+      "team_lead": "Harauskaya Maryia",
+      "manager_telegram": "Harauskaya_Maryia",
+      "project": "Consulting Division",
+      "department": "C&B Unit",
+      "position": "Head of C&B Unit",
+      "manager_name": "Harauskaya_Maryia",
+      "location": "Remote Ukraine"
     },
     "Stopochkin Nykyta": {
       "user_name": "Stopochkin Nykyta",
@@ -2181,8 +2697,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Stopochkin_Nykyta",
-      "team_lead": "Shpak_Andriy",
-      "manager_telegram": "Shpak_Andriy"
+      "team_lead": "Shpak Andriy",
+      "manager_telegram": "Shpak_Andriy",
+      "project": "AdNetwork Division",
+      "department": "Moderation Team",
+      "position": "Moderation manager",
+      "manager_name": "Shpak_Andriy",
+      "location": "Remote Ukraine"
     },
     "Sukhanov Vlad": {
       "user_name": "Suhanov Vladislav",
@@ -2200,8 +2721,13 @@
       "start_time": "08:00",
       "control_manager": 2,
       "telegram_username": "Vlad_EvaPM",
-      "team_lead": "Panasenko_Natalya",
-      "manager_telegram": "Panasenko_Natalya"
+      "team_lead": "Panasenko Natalya",
+      "manager_telegram": "Panasenko_Natalya",
+      "project": "AdNetwork Division",
+      "department": "Product Team",
+      "position": "Chief Product Officer",
+      "manager_name": "Panasenko_Natalya",
+      "location": "Remote other countries"
     },
     "Tarasenko Polina": {
       "user_name": "Tarasenko Polina",
@@ -2219,8 +2745,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Tarasenko_Polia",
-      "team_lead": "Zhara_Lilia",
-      "manager_telegram": "Zhara_Liliia"
+      "team_lead": "Zhara Lilia",
+      "manager_telegram": "Zhara_Liliia",
+      "project": "Consulting Division",
+      "department": "Recruitment Team",
+      "position": "Recruitment Team Lead",
+      "manager_name": "Zhara_Lilia",
+      "location": "Prague office"
     },
     "Tatarchenko Oleksii": {
       "user_name": "Tatarchenko Oleksii",
@@ -2238,8 +2769,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Tatarchenko_Oleksii",
-      "team_lead": "Kazmirchuk_Roman",
-      "manager_telegram": "roman_ios"
+      "team_lead": "Kazmirchuk Roman",
+      "manager_telegram": "roman_ios",
+      "project": "APPS Division",
+      "department": "IOS Team",
+      "position": "iOS Developer",
+      "manager_name": "Kazmirchuk_Roman",
+      "location": "Remote other countries"
     },
     "Tenditnik Roman": {
       "user_name": "Tenditnik Roman",
@@ -2257,8 +2793,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "adver_roma",
-      "team_lead": "Dupenko_Valeriia",
-      "manager_telegram": "Dupenko_Valeriia"
+      "team_lead": "Dupenko Valeriia",
+      "manager_telegram": "Dupenko_Valeriia",
+      "project": "AdNetwork Division",
+      "department": "Hunter Team",
+      "position": "Team Lead Hunter Team",
+      "manager_name": "Dupenko_Valeriia",
+      "location": "Remote Ukraine"
     },
     "Tereshchenko Kirill": {
       "user_name": "Tereshchenko Kirill",
@@ -2276,8 +2817,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Tereshchenko_Kirill",
-      "team_lead": "Sluchevskyi_Gleb",
-      "manager_telegram": ""
+      "team_lead": "Sluchevskyi Gleb",
+      "manager_telegram": "gleb7315",
+      "project": "Agency Division",
+      "department": "Product Operations Unit",
+      "position": "Head of Product Operations Unit",
+      "manager_name": "Sluchevskyi_Gleb",
+      "location": "Prague office"
     },
     "Terletskaya Daria": {
       "user_name": "Terletska Daria",
@@ -2294,9 +2840,14 @@
       "user_id": "7905699",
       "start_time": "09:00",
       "control_manager": 2,
-      "telegram_username": "Daria_Researcher",
-      "team_lead": "Tarasenko_Polina",
-      "manager_telegram": "Tarasenko_Polia"
+      "telegram_username": "Daria_Researcher&nbsp;",
+      "team_lead": "Zhara Lilia",
+      "manager_telegram": "Tarasenko_Polia",
+      "project": "Consulting Division",
+      "department": "Recruitment Team",
+      "position": "Recruiter",
+      "manager_name": "Tarasenko_Polina",
+      "location": "Remote Ukraine"
     },
     "Torianyk Haiana": {
       "user_name": "Torianyk Haiana",
@@ -2314,8 +2865,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Torianyk_Haiana",
-      "team_lead": "Zhara_Lilia",
-      "manager_telegram": "Zhara_Liliia"
+      "team_lead": "Zhara Lilia",
+      "manager_telegram": "Zhara_Liliia",
+      "project": "Consulting Division",
+      "department": "Academy Team",
+      "position": "Recruitment Team Lead",
+      "manager_name": "Zhara_Lilia",
+      "location": "Prague office"
     },
     "Tuzman Mykhailo": {
       "user_name": "Tuzman Mykhailo",
@@ -2333,8 +2889,13 @@
       "start_time": "08:00",
       "control_manager": 2,
       "telegram_username": "Mykhailo_mb_RT_TL",
-      "team_lead": "Balyunov_Valentin",
-      "manager_telegram": "Balyunov_Valentin"
+      "team_lead": "Balyunov Valentin",
+      "manager_telegram": "Balyunov_Valentin",
+      "project": "AdNetwork Division",
+      "department": "CPA Team",
+      "position": "Team Lead CPA Team",
+      "manager_name": "Balyunov_Valentin",
+      "location": "Remote Ukraine"
     },
     "Unkovska Anna": {
       "user_name": "Unkovska Anna",
@@ -2352,8 +2913,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Anna_QAEvadav",
-      "team_lead": "Morkin_Serhii",
-      "manager_telegram": ""
+      "team_lead": "Morkin Serhii",
+      "manager_telegram": "sergey_morkin",
+      "project": "AdNetwork Division",
+      "department": "QA Team",
+      "position": "QA Engineer",
+      "manager_name": "Morkin_Serhii",
+      "location": "Remote Ukraine"
     },
     "Usenko Roman": {
       "user_name": "Usenko Roman",
@@ -2409,8 +2975,13 @@
       "start_time": "11:00",
       "control_manager": 2,
       "telegram_username": "Vasilev_Nikolaj",
-      "team_lead": "Tuzman_Mykhailo",
-      "manager_telegram": "Mykhailo_mb_RT_TL"
+      "team_lead": "Tuzman Mykhailo",
+      "manager_telegram": "Mykhailo_mb_RT_TL",
+      "project": "AdNetwork Division",
+      "department": "CPA Unit",
+      "position": "Media Buyer",
+      "manager_name": "Tuzman_Mykhailo",
+      "location": "Remote other countries"
     },
     "Vcherashniaya Aliaksandra": {
       "user_name": "Vcherashniaya Aliaksandra",
@@ -2428,8 +2999,13 @@
       "start_time": "09:00",
       "control_manager": 3,
       "telegram_username": "Vcherashniaya_Aliaksandra",
-      "team_lead": "Kryvytska_Olena",
-      "manager_telegram": ""
+      "team_lead": "Kryvytska Olena",
+      "manager_telegram": "Kryvytska_Alena",
+      "project": "Consulting Division",
+      "department": "Control Unit",
+      "position": "Control manager",
+      "manager_name": "Kryvytska_Olena",
+      "location": "Remote other countries"
     },
     "Vinogradov Oleg": {
       "user_name": "Vinogradov Oleg",
@@ -2447,8 +3023,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Vinogradov_Oleg",
-      "team_lead": "Ovcharenko_German",
-      "manager_telegram": ""
+      "team_lead": "Ovcharenko German",
+      "manager_telegram": "german_21",
+      "project": "APPS Division",
+      "department": "Media buying Unit",
+      "position": "Media Buyer Apps",
+      "manager_name": "Ovcharenko_German",
+      "location": "Remote other countries"
     },
     "Vladyslav Taranov": {
       "user_name": "Taranov Vladyslav",
@@ -2466,8 +3047,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Taranov_Vladyslav",
-      "team_lead": "Bratchenko_Anna",
-      "manager_telegram": "Bratchenko_Hanna"
+      "team_lead": "Rossina Tamara",
+      "manager_telegram": "Bratchenko_Hanna",
+      "project": "Agency Division",
+      "department": "MB Facebook Team 1",
+      "position": "Media buyer Facebook",
+      "manager_name": "Bratchenko_Anna",
+      "location": "Warsaw office"
     },
     "Vorozheykin Oleksii": {
       "user_name": "Vorozheykin Oleksii",
@@ -2485,8 +3071,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Vorozheykin_Oleksii",
-      "team_lead": "Panasenko_Natalya",
-      "manager_telegram": "Panasenko_Natalya"
+      "team_lead": "Panasenko Natalya",
+      "manager_telegram": "Panasenko_Natalya",
+      "project": "AdNetwork Division",
+      "department": "Analyst Team",
+      "position": "Head of Analyst Team",
+      "manager_name": "Panasenko_Natalya",
+      "location": "Remote Ukraine"
     },
     "Vykhodtseva Mariia": {
       "user_name": "Vykhodtseva Mariia",
@@ -2504,8 +3095,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Vykhodtseva_Mariia",
-      "team_lead": "Tenditnik_Roman",
-      "manager_telegram": "adver_roma"
+      "team_lead": "Tenditnik Roman",
+      "manager_telegram": "adver_roma",
+      "project": "AdNetwork Division",
+      "department": "Hunter Team",
+      "position": "Hunter Cold Manager",
+      "manager_name": "Tenditnik_Roman",
+      "location": "Remote Ukraine"
     },
     "Yekhlakov Viktor": {
       "user_name": "Yekhlakov Viktor",
@@ -2523,8 +3119,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Yekhlakov_Viktor",
-      "team_lead": "Kazmirchuk_Roman",
-      "manager_telegram": "roman_ios"
+      "team_lead": "Kazmirchuk Roman",
+      "manager_telegram": "roman_ios",
+      "project": "APPS Division",
+      "department": "IOS Team",
+      "position": "iOS Developer",
+      "manager_name": "Kazmirchuk_Roman",
+      "location": "Remote other countries"
     },
     "Yevtushenko Kyrylo": {
       "user_name": "Yevtushenko Kyrylo",
@@ -2542,8 +3143,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Yevtushenko_Kyrylo",
-      "team_lead": "Tereshchenko_Kirill",
-      "manager_telegram": "Tereshchenko_Kirill"
+      "team_lead": "Tereshchenko Kirill",
+      "manager_telegram": "Tereshchenko_Kirill",
+      "project": "Agency Division",
+      "department": "Product Operations Unit",
+      "position": "Technical Support Manager",
+      "manager_name": "Tereshchenko_Kirill",
+      "location": "Remote Ukraine"
     },
     "Yukhno Leonid": {
       "user_name": "Yukhno Leonid",
@@ -2580,8 +3186,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Yushkov_Pavel",
-      "team_lead": "Kurylionak_Aliaksandr",
-      "manager_telegram": "Kurylionak_Aliaksandr"
+      "team_lead": "Kurylionak Aliaksandr",
+      "manager_telegram": "Kurylionak_Aliaksandr",
+      "project": "APPS Division",
+      "department": "Data Team",
+      "position": "Data Engineer",
+      "manager_name": "Kurylionak_Aliaksandr",
+      "location": "Remote other countries"
     },
     "Zaprudskiy Sergey": {
       "user_name": "Zaprudskyi Serhii",
@@ -2618,8 +3229,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Zbutevych_Illia",
-      "team_lead": "Shpak_Andriy",
-      "manager_telegram": "Shpak_Andriy"
+      "team_lead": "Shpak Andriy",
+      "manager_telegram": "Shpak_Andriy",
+      "project": "AdNetwork Division",
+      "department": "Moderation Team",
+      "position": "Moderation manager",
+      "manager_name": "Shpak_Andriy",
+      "location": "Remote Ukraine"
     },
     "Zdorovets Yuliia": {
       "user_name": "Zdorovets Yuliia",
@@ -2637,8 +3253,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Yuliia_finnEva",
-      "team_lead": "Maksymchuk_Tetiana",
-      "manager_telegram": "tetiana_finn"
+      "team_lead": "Maksymchuk Tetiana",
+      "manager_telegram": "tetiana_finn",
+      "project": "Consulting Division",
+      "department": "Finance Direction",
+      "position": "Financial manager",
+      "manager_name": "Maksymchuk_Tetiana",
+      "location": "Remote Ukraine"
     },
     "Zhara Lilia": {
       "user_name": "Zhara Lilia",
@@ -2656,8 +3277,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Zhara_Liliia",
-      "team_lead": "Harauskaya_Maryia",
-      "manager_telegram": "Harauskaya_Maryia"
+      "team_lead": "Harauskaya Maryia",
+      "manager_telegram": "Harauskaya_Maryia",
+      "project": "Consulting Division",
+      "department": "Recruitment Unit",
+      "position": "Head of Recruitment Division",
+      "manager_name": "Harauskaya_Maryia",
+      "location": "Prague office"
     },
     "Ziuzin Oleksii": {
       "user_name": "Ziuzin Oleksii",
@@ -2675,8 +3301,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Ziuzin_Oleksii",
-      "team_lead": "Harauskaya_Maryia",
-      "manager_telegram": "Harauskaya_Maryia"
+      "team_lead": "Harauskaya Maryia",
+      "manager_telegram": "Harauskaya_Maryia",
+      "project": "Consulting Division",
+      "department": "System admin Team",
+      "position": "System Administration Team Lead",
+      "manager_name": "Harauskaya_Maryia",
+      "location": "Warsaw office"
     },
     "Zubkova Daryna": {
       "user_name": "Zubkova Daryna",
@@ -2694,8 +3325,13 @@
       "start_time": "12:00",
       "control_manager": 2,
       "telegram_username": "Daryna_mbCPA",
-      "team_lead": "Tuzman_Mykhailo",
-      "manager_telegram": "Mykhailo_mb_RT_TL"
+      "team_lead": "Tuzman Mykhailo",
+      "manager_telegram": "Mykhailo_mb_RT_TL",
+      "project": "AdNetwork Division",
+      "department": "CPA Team",
+      "position": "Media Buyer",
+      "manager_name": "Tuzman_Mykhailo",
+      "location": "Remote other countries"
     },
     "Veranika Masiuk": {
       "user_name": "Masiuk Veranika",
@@ -2713,8 +3349,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Masiuk_Veranika",
-      "team_lead": "Harauskaya_Maryia",
-      "manager_telegram": "Harauskaya_Maryia"
+      "team_lead": "Harauskaya Maryia",
+      "manager_telegram": "Harauskaya_Maryia",
+      "project": "Consulting Division",
+      "department": "Corporate Culture Unit",
+      "position": "Head of Corporate Culture Unit",
+      "manager_name": "Harauskaya_Maryia",
+      "location": "Remote other countries"
     },
     "Danyl Kolos": {
       "user_name": "Kolos Daniil",
@@ -2732,8 +3373,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Kolos_Danyl",
-      "team_lead": "Sarkisov_Moses",
-      "manager_telegram": "Sarkisov_Moses"
+      "team_lead": "Sarkisov Moses",
+      "manager_telegram": "Sarkisov_Moses",
+      "project": "AdNetwork Division",
+      "department": "Traffic Bizdev Team",
+      "position": "Sales manager",
+      "manager_name": "Sarkisov_Moses",
+      "location": "Remote other countries"
     },
     "Dankova Tetiana": {
       "user_name": "Dankova Tetiana",
@@ -2751,8 +3397,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Dankova_Tetiana",
-      "team_lead": "Stepanov_Oleksandr",
-      "manager_telegram": "Stepanov_Oleksandr"
+      "team_lead": "Stepanov Oleksandr",
+      "manager_telegram": "Stepanov_Oleksandr",
+      "project": "Consulting Division",
+      "department": "C&B Unit",
+      "position": "Payroll Specialist",
+      "manager_name": "Stepanov_Oleksandr",
+      "location": "Remote Ukraine"
     },
     "Anton Popovych": {
       "user_name": "Popovych Anton",
@@ -2789,8 +3440,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Alina_BizDevEva",
-      "team_lead": "Gyrych_Maria",
-      "manager_telegram": "Gyrych_Maria"
+      "team_lead": "Gyrych Maria",
+      "manager_telegram": "Gyrych_Maria",
+      "project": "AdNetwork Division",
+      "department": "Traffic Account Team",
+      "position": "Account manager",
+      "manager_name": "Gyrych_Maria",
+      "location": "Remote Ukraine"
     },
     "Kotliarenko Alina": {
       "user_name": "Kotliarenko Alina",
@@ -2808,8 +3464,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Kotliarenko_Alina",
-      "team_lead": "Kurylionak_Aliaksandr",
-      "manager_telegram": "Kurylionak_Aliaksandr"
+      "team_lead": "Kurylionak Aliaksandr",
+      "manager_telegram": "Kurylionak_Aliaksandr",
+      "project": "APPS Division",
+      "department": "IOS Unit",
+      "position": "QA Engineer",
+      "manager_name": "Kurylionak_Aliaksandr",
+      "location": "Prague office"
     },
     "Kondakov Alexander": {
       "user_name": "Kondakov Alexander",
@@ -2827,8 +3488,13 @@
       "start_time": "10:00",
       "control_manager": 2,
       "telegram_username": "Kondakov_Alexander",
-      "team_lead": "Rudenko_Bogdan",
-      "manager_telegram": "Bogdan_rudenko"
+      "team_lead": "Rudenko Bogdan",
+      "manager_telegram": "Bogdan_rudenko",
+      "project": "AdNetwork Division",
+      "department": "Demand Account Team",
+      "position": "Account manager",
+      "manager_name": "Rudenko_Bogdan",
+      "location": "Remote other countries"
     },
     "Ivasyshyn Oleksandr": {
       "user_name": "Ivasyshyn Oleksandr",
@@ -2846,8 +3512,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Ivasyshyn_Oleksandr",
-      "team_lead": "Roshchyn_Hlib",
-      "manager_telegram": ""
+      "team_lead": "Roshchyn Hlib",
+      "manager_telegram": "Roshchyn_Hlib",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Media buyer Native",
+      "manager_name": "Roshchyn_Hlib",
+      "location": "Remote other countries"
     },
     "Nikolaichuk Tamara": {
       "user_name": "Nikolaichuk Tamara",
@@ -2865,8 +3536,13 @@
       "start_time": "9:00",
       "control_manager": 2,
       "telegram_username": "Nikolaichuk_Tamara",
-      "team_lead": "Masiuk_Veranika",
-      "manager_telegram": "Masiuk_Veranika"
+      "team_lead": "Masiuk Veranika",
+      "manager_telegram": "Masiuk_Veranika",
+      "project": "Consulting Division",
+      "department": "Corporate Culture Unit",
+      "position": "SMM Specialist",
+      "manager_name": "Masiuk_Veranika",
+      "location": "Warsaw office"
     },
     "Korobiy Vladislav": {
       "user_name": "Korobiy Vladislav",
@@ -2884,8 +3560,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Korobiy_Vladislav",
-      "team_lead": "Shersheriia_Heorhii",
-      "manager_telegram": "Shersheriia_Heorhii"
+      "team_lead": "Shersheriia Heorhii",
+      "manager_telegram": "Shersheriia_Heorhii",
+      "project": "Agency Division",
+      "department": "Creative Unit",
+      "position": "Creative manager",
+      "manager_name": "Shersheriia_Heorhii",
+      "location": "Remote Ukraine"
     },
     "Cherneha Kateryna": {
       "user_name": "Cherneha Kateryna",
@@ -2903,8 +3584,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Cherneha_Kateryna",
-      "team_lead": "Kucher_Diana",
-      "manager_telegram": "Kucher_Diana_1"
+      "team_lead": "Kucher Diana",
+      "manager_telegram": "Kucher_Diana_1",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Assistant Media buyer Native",
+      "manager_name": "Kucher_Diana",
+      "location": "Remote Ukraine"
     },
     "Kravets Olena": {
       "user_name": "Kravets Olena",
@@ -2922,8 +3608,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Kravets_Olenaa",
-      "team_lead": "Kucher_Diana",
-      "manager_telegram": "Kucher_Diana_1"
+      "team_lead": "Kucher Diana",
+      "manager_telegram": "Kucher_Diana_1",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Assistant Media buyer Native",
+      "manager_name": "Kucher_Diana",
+      "location": "Remote Ukraine"
     },
     "Zakharychev Fedir": {
       "user_name": "Zakharychev Fedir",
@@ -2941,8 +3632,13 @@
       "start_time": "10:00",
       "control_manager": 1,
       "telegram_username": "Zakharychev_Fedir",
-      "team_lead": "Kucher_Diana",
-      "manager_telegram": "Kucher_Diana_1"
+      "team_lead": "Kucher Diana",
+      "manager_telegram": "Kucher_Diana_1",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Assistant Media buyer Native",
+      "manager_name": "Kucher_Diana",
+      "location": "Remote Ukraine"
     },
     "Amir Kasimov": {
       "user_name": "Kasimov Amir",
@@ -2959,8 +3655,13 @@
       "user_id": "7932371",
       "control_manager": 1,
       "telegram_username": "Kasimov_Amir",
-      "team_lead": "Roshchyn_Hlib",
-      "manager_telegram": ""
+      "team_lead": "Popovych Anton",
+      "manager_telegram": "Roshchyn_Hlib",
+      "project": "Agency Division",
+      "department": "Native Team",
+      "position": "Media buyer Native",
+      "manager_name": "Roshchyn_Hlib",
+      "location": "Remote other countries"
     },
     "Andriy Pankov": {
       "user_name": "Pankov Andriy",
@@ -2977,8 +3678,13 @@
       "user_id": "7673443",
       "control_manager": 2,
       "telegram_username": "Pankov_Andrii",
-      "team_lead": "Shpak_Andriy",
-      "manager_telegram": "Shpak_Andriy"
+      "team_lead": "Shpak Andriy",
+      "manager_telegram": "Shpak_Andriy",
+      "project": "AdNetwork Division",
+      "department": "Moderation Team",
+      "position": "Moderation manager",
+      "manager_name": "Shpak_Andriy",
+      "location": "Remote Ukraine"
     },
     "Evhen  Kiliovyi": {
       "user_name": "Kiliovyi Evhen",
@@ -2995,8 +3701,13 @@
       "user_id": "7682034",
       "control_manager": 2,
       "telegram_username": "Kiliovyi_Evhen",
-      "team_lead": "Shpak_Andriy",
-      "manager_telegram": "Shpak_Andriy"
+      "team_lead": "Shpak Andriy",
+      "manager_telegram": "Shpak_Andriy",
+      "project": "AdNetwork Division",
+      "department": "Moderation Team",
+      "position": "Moderation manager",
+      "manager_name": "Shpak_Andriy",
+      "location": "Remote Ukraine"
     },
     "Alexandr Pankov": {
       "user_name": "Pankov Oleksandr",
@@ -3008,13 +3719,17 @@
       "unit_id": 125486,
       "team_name": "",
       "team_id": null,
-      "peopleforce_id": 356654,
+      "peopleforce_id": "356654",
       "email": "o.pankov@evadav.com",
       "user_id": "7912880",
       "control_manager": 2,
       "telegram_username": "Pankov_Oleksandr",
-      "team_lead": "Shpak_Andriy",
-      "manager_telegram": "Shpak_Andriy"
+      "team_lead": "Shpak Andriy",
+      "manager_telegram": "Shpak_Andriy",
+      "project": "Adnetwork",
+      "department": "Sales",
+      "position": "Moderation manager",
+      "manager_name": "Shpak_Andriy"
     },
     "Viktor Demidov": {
       "user_name": "Demidov Viktor",
@@ -3031,8 +3746,13 @@
       "user_id": "7793894",
       "control_manager": 2,
       "telegram_username": "Demidov_Viktor",
-      "team_lead": "Iliin_Eugeniy",
-      "manager_telegram": "Iliin_Eugeniy"
+      "team_lead": "Iliin Eugeniy",
+      "manager_telegram": "Iliin_Eugeniy",
+      "project": "AdNetwork Division",
+      "department": "Support Team",
+      "position": "Support manager",
+      "manager_name": "Iliin_Eugeniy",
+      "location": "Remote Ukraine"
     },
     "Leonid Chernov": {
       "user_name": "Chernov Leonid",
@@ -3044,13 +3764,17 @@
       "unit_id": 125487,
       "team_name": "",
       "team_id": null,
-      "peopleforce_id": 297357,
+      "peopleforce_id": "297357",
       "email": "leo_sup@evadav.com",
       "user_id": "7667047",
       "control_manager": 2,
       "telegram_username": "Chernov_Leonid",
-      "team_lead": "Iliin_Eugeniy",
-      "manager_telegram": "Iliin_Eugeniy"
+      "team_lead": "Iliin Eugeniy",
+      "manager_telegram": "Iliin_Eugeniy",
+      "project": "Adnetwork",
+      "department": "Sales",
+      "position": "Support manager",
+      "manager_name": "Iliin_Eugeniy"
     },
     "Andrey Otdelnyi": {
       "user_name": "Оtdelnyi Andrey",
@@ -3067,8 +3791,13 @@
       "user_id": "7935176",
       "control_manager": 2,
       "telegram_username": "Otdelnyi_Andrey",
-      "team_lead": "Balyunov_Valentin",
-      "manager_telegram": "Balyunov_Valentin"
+      "team_lead": "Balyunov Valentin",
+      "manager_telegram": "Balyunov_Valentin",
+      "project": "AdNetwork Division",
+      "department": "RTB Team",
+      "position": "Head of RTB Team",
+      "manager_name": "Balyunov_Valentin",
+      "location": "Remote other countries"
     },
     "Arseni Tatsyn": {
       "user_name": "Tatsyn Arseni",
@@ -3086,8 +3815,13 @@
       "start_time": "11:00",
       "control_manager": 1,
       "telegram_username": "Tatsyn_Arseni",
-      "team_lead": "Klimchenya_Valeriy",
-      "manager_telegram": "Klimchenya_Valeriy"
+      "team_lead": "Klimchenya Valeriy",
+      "manager_telegram": "Klimchenya_Valeriy",
+      "project": "Agency Division",
+      "department": "Media buying Direction",
+      "position": "Media buyer Facebook",
+      "manager_name": "Klimchenya_Valeriy",
+      "location": "Remote other countries"
     },
     "Gyrych Maria": {
       "user_name": "Gyrych Maria",
@@ -3105,8 +3839,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Gyrych_Maria",
-      "team_lead": "Balyunov_Valentin",
-      "manager_telegram": "Balyunov_Valentin"
+      "team_lead": "Balyunov Valentin",
+      "manager_telegram": "Balyunov_Valentin",
+      "project": "AD NETWORK",
+      "department": "Traffic Unit",
+      "position": "Head of Traffic Unit",
+      "manager_name": "Balyunov_Valentin",
+      "location": "Remote other countries"
     },
     "Ustsilka Natallia": {
       "user_name": "Ustsilka Natallia",
@@ -3124,8 +3863,13 @@
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Ustsilka_Natallia",
-      "team_lead": "Zhara_Lilia",
-      "manager_telegram": "Zhara_Liliia"
+      "team_lead": "Zhara Lilia",
+      "manager_telegram": "Zhara_Liliia",
+      "project": "Consulting Division",
+      "department": "Recruitment Unit",
+      "position": "Talent Researcher",
+      "manager_name": "Zhara_Lilia",
+      "location": "Remote other countries"
     },
     "Brizhak Denis": {
       "user_name": "Brizhak Denis",
@@ -3143,8 +3887,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Brizhak_Denis",
-      "team_lead": "Machula_Yuliia",
-      "manager_telegram": "Machula_Yuliia"
+      "team_lead": "Machula Yuliia",
+      "manager_telegram": "Machula_Yuliia",
+      "project": "Academy",
+      "position": "Trainee Media Buyer Native",
+      "manager_name": "Machula_Yuliia",
+      "department": "L&D Unit",
+      "location": "Czech Republic remote"
     },
     "Mykyta Kapulier": {
       "user_name": "Mykyta Kapulier",
@@ -3162,8 +3911,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Kapulier_Mykyta",
-      "team_lead": "Machula_Yuliia",
-      "manager_telegram": "Machula_Yuliia"
+      "team_lead": "Polishchuk Kateryna",
+      "manager_telegram": "Machula_Yuliia",
+      "project": "Academy",
+      "position": "Trainee Media Buyer Native",
+      "manager_name": "Machula_Yuliia",
+      "department": "L&D Unit",
+      "location": "Czech Republic remote"
     },
     "Surzhykov Oleksandr": {
       "user_name": "Surzhykov Oleksandr",
@@ -3181,8 +3935,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Surzhykov_Oleksandr",
-      "team_lead": "Machula_Yuliia",
-      "manager_telegram": "Machula_Yuliia"
+      "team_lead": "Machula Yuliia",
+      "manager_telegram": "Machula_Yuliia",
+      "project": "Academy",
+      "position": "Trainee Media Buyer Native",
+      "manager_name": "Machula_Yuliia",
+      "department": "L&D Unit",
+      "location": "Czech Republic remote"
     },
     "Vladymyr Ovchar": {
       "user_name": "Vladymyr Ovchar",
@@ -3200,8 +3959,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Ovchar_Vladymyr",
-      "team_lead": "Machula_Yuliia",
-      "manager_telegram": "Machula_Yuliia"
+      "team_lead": "Machula Yuliia",
+      "manager_telegram": "Machula_Yuliia",
+      "project": "Academy",
+      "position": "Trainee Media Buyer Native",
+      "manager_name": "Machula_Yuliia",
+      "department": "L&D Unit",
+      "location": "Czech Republic remote"
     },
     "Yavorskiy Sergey": {
       "user_name": "Yavorskiy Sergey",
@@ -3219,8 +3983,16 @@
       "start_time": "09:00",
       "control_manager": 1,
       "telegram_username": "Yavorskiy_Sergey",
-      "team_lead": "Machula_Yuliia",
-      "manager_telegram": "Machula_Yuliia"
+      "team_lead": "Machula Yuliia",
+      "manager_telegram": "Machula_Yuliia",
+      "project": "Academy",
+      "position": "Trainee Media Buyer Native",
+      "manager_name": "Machula_Yuliia",
+      "department": "L&D Unit",
+      "location": "Czech Republic remote"
     }
+  },
+  "_metadata": {
+    "last_updated": "2025-11-17T02:24:41.681396"
   }
 }

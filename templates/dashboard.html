@@ -59,10 +59,10 @@
         </div>
         <div class="dashboard-card__divider"></div>
         <div class="dashboard-card__body">
-          <form id="filters-form" class="row g-4 align-items-end">
+          <form id="filters-form" class="row g-4 align-items-start">
             <div class="col-lg-4 col-md-6">
               <div class="filter-section">
-                <div class="filter-title">Отсортировать по периоду:</div>
+                <div class="filter-title"></div>
                 <div class="row g-2">
                   <div class="col">
                     <input
@@ -81,7 +81,7 @@
                 </div>
                 <div class="d-flex gap-2 mt-3">
                   <button type="submit" class="btn btn-primary flex-grow-1">
-                    Применить
+                    Отсортировать по периоду
                   </button>
                   <button
                     type="button"
@@ -95,9 +95,6 @@
             </div>
             <div class="col-lg-5 col-md-6">
               <div class="filter-section">
-                <div class="filter-title">
-                  Селектор проектов, департаментов и команд:
-                </div>
                 <div class="d-flex gap-2">
                   <button
                     type="button"
@@ -119,6 +116,15 @@
                   id="selected-filters-display"
                   class="mt-2 small text-muted"
                 ></div>
+                <div>
+                <button
+                  type="button"
+                  id="report-generate-btn"
+                  class="btn btn-outline-primary w-100 mt-3"
+                >
+                  Сформировать отчет
+                </button>
+              </div>
               </div>
             </div>
             <div class="col-lg-3">
@@ -135,15 +141,6 @@
                     Искать
                   </button>
                 </div>
-              </div>
-              <div>
-                <button
-                  type="button"
-                  id="report-generate-btn"
-                  class="btn btn-outline-primary w-100 mt-3"
-                >
-                  Сформировать отчет
-                </button>
               </div>
             </div>
           </form>

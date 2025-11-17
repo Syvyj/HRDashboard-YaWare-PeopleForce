@@ -137,13 +137,13 @@
     td.textContent = row.total_display || '';
     
     // Перевіряємо чи треба підсвітити червоним
-    const divisionName = row.division_name || '';
+    const divisionName = (row.division_name || '').toLowerCase();
     const totalMinutes = row.total_minutes || 0;
     
     let threshold = 0;
-    if (divisionName === 'Agency' || divisionName === 'Apps') {
+    if (divisionName === 'agency' || divisionName === 'apps') {
       threshold = 390; // 6.5 годин
-    } else if (divisionName === 'AdNetwork' || divisionName === 'Cons') {
+    } else if (divisionName === 'adnetwork' || divisionName === 'consulting' || divisionName === 'cons') {
       threshold = 420; // 7 годин
     }
     
@@ -914,7 +914,8 @@
 
   if (document.getElementById('clear-project-filters')) {
     document.getElementById('clear-project-filters').addEventListener('click', () => {
-      selectedFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+      selectedFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
+      renderFilterModal(); // Оновлюємо чекбокси в модальному вікні
       updateSelectedFiltersDisplay();
       submitFilters();
     });

@@ -1229,23 +1229,45 @@ def _get_filtered_items():
     records = query.order_by(AttendanceRecord.user_name.asc(), AttendanceRecord.record_date.asc()).all()
     
     # Застосовуємо фільтри по ієрархії (з user_schedules.json)
+    # Логіка: OR всередині одного рівня (projects, departments, units, teams)
+    #         AND між різними рівнями
     projects = request.args.getlist('project')
     departments = request.args.getlist('department')
     units = request.args.getlist('unit')
     teams = request.args.getlist('team')
     
-    for project in projects:
-        if project:
-            records = _filter_employee_records(records, 'project', project)
-    for department in departments:
-        if department:
-            records = _filter_employee_records(records, 'department', department)
-    for unit in units:
-        if unit:
-            records = _filter_employee_records(records, 'unit', unit)
-    for team in teams:
-        if team:
-            records = _filter_employee_records(records, 'team', team)
+    # Фільтруємо по проектах (OR)
+    if projects:
+        projects_filtered = []
+        for project in projects:
+            if project:
+                projects_filtered.extend(_filter_employee_records(records, 'project', project))
+        # Видаляємо дублікати
+        records = list({record.id: record for record in projects_filtered}.values())
+    
+    # Фільтруємо по департаментах (OR)
+    if departments:
+        departments_filtered = []
+        for department in departments:
+            if department:
+                departments_filtered.extend(_filter_employee_records(records, 'department', department))
+        records = list({record.id: record for record in departments_filtered}.values())
+    
+    # Фільтруємо по units (OR)
+    if units:
+        units_filtered = []
+        for unit in units:
+            if unit:
+                units_filtered.extend(_filter_employee_records(records, 'unit', unit))
+        records = list({record.id: record for record in units_filtered}.values())
+    
+    # Фільтруємо по командах (OR)
+    if teams:
+        teams_filtered = []
+        for team in teams:
+            if team:
+                teams_filtered.extend(_filter_employee_records(records, 'team', team))
+        records = list({record.id: record for record in teams_filtered}.values())
     
     items = _apply_schedule_overrides(_build_items(records))
     return items, len(records)

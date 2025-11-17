@@ -227,13 +227,13 @@
     td.textContent = record.total_display || '00:00';
     
     // Перевіряємо чи треба підсвітити червоним
-    const divisionName = record.division_name || '';
+    const divisionName = (record.division_name || '').toLowerCase();
     const totalMinutes = record.total_minutes || 0;
     
     let threshold = 0;
-    if (divisionName === 'Agency' || divisionName === 'Apps') {
+    if (divisionName === 'agency' || divisionName === 'apps') {
       threshold = 390; // 6.5 годин
-    } else if (divisionName === 'AdNetwork' || divisionName === 'Cons') {
+    } else if (divisionName === 'adnetwork' || divisionName === 'consulting' || divisionName === 'cons') {
       threshold = 420; // 7 годин
     }
     

@@ -2306,9 +2306,10 @@ def api_update_user_record(user_key: str, record_id: int):
     update_duration('minutes_late', 'minutes_late')
     update_duration('non_productive_minutes', 'non_productive_minutes')
     update_duration('not_categorized_minutes', 'not_categorized_minutes')
-    update_duration('productive_minutes', 'manual_productive_minutes')
-    update_duration('total_minutes', 'manual_total_minutes')
-    update_duration('corrected_total_minutes', 'manual_corrected_total_minutes')
+    update_duration('productive_minutes', 'productive_minutes')
+    # total_minutes тепер розраховується автоматично (not_categorized + productive), не зберігаємо окремо
+    # update_duration('total_minutes', 'manual_total_minutes')
+    update_duration('corrected_total_minutes', 'corrected_total_minutes')
 
     if 'status' in payload:
         status = str(payload.get('status') or '').strip()

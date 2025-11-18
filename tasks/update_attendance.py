@@ -145,6 +145,12 @@ def _apply_manual_overrides(record: AttendanceRecord, key: str, manual_map: dict
 
 
 def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absent: bool) -> None:
+    # Перевірка на вихідні дні (субота = 5, неділя = 6)
+    if target_date.weekday() in (5, 6):
+        weekdays = ['Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П\'ятниця', 'Субота', 'Неділя']
+        print(f"[INFO] Пропускаємо вихідний день: {target_date} ({weekdays[target_date.weekday()]})")
+        return
+    
     schedules_by_id: Dict[str, AttendanceMonitor.UserSchedule] = monitor.schedules
     schedules_by_email: Dict[str, AttendanceMonitor.UserSchedule] = monitor.schedules_by_email
     leaves_raw = monitor._get_leaves_for_date(target_date)  # email -> leave (with amount field)

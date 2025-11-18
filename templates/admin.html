@@ -103,7 +103,7 @@
             >
               Синхрон пользователей с PeopleForce и YaWare
             </button>
-            <div class="input-group sync-date-group" style="max-width: 340px">
+            <div class="input-group sync-date-group" style="max-width: 500px">
               <input type="date" class="form-control" id="sync-date-input" />
               <button
                 type="button"
@@ -112,6 +112,15 @@
                 data-loading-class="btn-primary text-white"
               >
                 Синхрон даты с YaWare
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-danger"
+                id="delete-date-btn"
+                data-loading-class="btn-danger text-white"
+                title="Видалити всі записи за вибрану дату"
+              >
+                <i class="bi bi-trash"></i> Видалити дату
               </button>
             </div>
             <button

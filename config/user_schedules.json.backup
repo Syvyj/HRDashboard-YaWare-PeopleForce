@@ -3650,18 +3650,18 @@
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
-      "peopleforce_id": 548674,
+      "peopleforce_id": "548674",
       "email": "a.kasimov@evadav.com",
       "user_id": "7932371",
       "control_manager": 1,
       "telegram_username": "Kasimov_Amir",
       "team_lead": "Popovych Anton",
       "manager_telegram": "Roshchyn_Hlib",
-      "project": "Agency Division",
-      "department": "Native Team",
+      "project": "Agency",
+      "department": "Media Buying",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
-      "location": "Remote other countries"
+      "team": "Native Team"
     },
     "Andriy Pankov": {
       "user_name": "Pankov Andriy",
@@ -3993,6 +3993,6 @@
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-17T02:24:41.681396"
+    "last_updated": "2025-11-17T02:28:21.020032"
   }
 }

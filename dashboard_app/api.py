@@ -2043,6 +2043,34 @@ def admin_delete_app_user(user_id: int):
     return jsonify({'status': 'deleted'})
 
 
+@api_bp.route('/admin/attendance/<date_str>', methods=['DELETE'])
+@login_required
+def admin_delete_attendance_by_date(date_str: str):
+    """Видалення всіх записів відвідуваності за конкретну дату (тільки для адмінів)"""
+    _ensure_admin()
+    
+    try:
+        target_date = date.fromisoformat(date_str)
+    except ValueError:
+        return jsonify({'error': 'Некоректний формат дати. Очікується YYYY-MM-DD'}), 400
+    
+    # Видаляємо всі записи за цю дату
+    deleted_count = AttendanceRecord.query.filter_by(record_date=target_date).delete()
+    
+    _log_admin_action('delete_attendance_date', {
+        'date': date_str,
+        'deleted_count': deleted_count
+    })
+    
+    db.session.commit()
+    
+    return jsonify({
+        'status': 'deleted',
+        'date': date_str,
+        'deleted_count': deleted_count
+    })
+
+
 def _available_control_managers() -> list[int]:
     schedules = load_user_schedules()
     values = {

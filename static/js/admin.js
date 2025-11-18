@@ -659,6 +659,43 @@
       });
   }
 
+  function performDateDelete() {
+    const deleteDateBtn = document.getElementById('delete-date-btn');
+    if (!deleteDateBtn) {
+      return;
+    }
+    const targetDate = (syncDateInput && syncDateInput.value ? syncDateInput.value : '').trim();
+    if (!targetDate) {
+      showAlert('Виберіть дату для видалення', 'warning');
+      return;
+    }
+    
+    if (!confirm(`Ви впевнені, що хочете видалити ВСІ записи за ${targetDate}?\n\nЦю дію неможливо скасувати!`)) {
+      return;
+    }
+    
+    setButtonLoading(deleteDateBtn, true);
+
+    fetch(`/api/admin/attendance/${targetDate}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          throw new Error(data.error || 'Не вдалося видалити дату');
+        }
+        showAlert(`Видалено ${data.deleted_count} записів за ${data.date}`, 'success');
+        fetchEmployees();
+      })
+      .catch((error) => showAlert(error.message))
+      .finally(() => {
+        setButtonLoading(deleteDateBtn, false);
+      });
+  }
+
   function getSelectedKeys() {
     return Array.from(selectedKeys);
   }
@@ -886,6 +923,11 @@
 
   if (syncDateBtn) {
     syncDateBtn.addEventListener('click', performDateSync);
+  }
+
+  const deleteDateBtn = document.getElementById('delete-date-btn');
+  if (deleteDateBtn) {
+    deleteDateBtn.addEventListener('click', performDateDelete);
   }
 
   if (searchBtn) {

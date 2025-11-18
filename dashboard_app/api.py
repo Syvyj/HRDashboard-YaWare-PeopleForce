@@ -1917,6 +1917,149 @@ def admin_delete_employee(user_key: str):
     })
 
 
+@api_bp.route('/admin/employees/<path:user_key>/sync', methods=['POST'])
+@login_required
+def admin_sync_employee(user_key: str):
+    """Синхронізація одного користувача з PeopleForce"""
+    _ensure_admin()
+    normalized = _normalize_user_key(user_key).strip()
+    if not normalized:
+        return jsonify({'error': 'Некоректний ідентифікатор користувача'}), 400
+    
+    try:
+        # Завантажуємо дані користувача з schedule
+        schedules = schedule_user_manager.load_users()
+        users = schedules.get('users', {}) if isinstance(schedules, dict) else {}
+        
+        user_info = None
+        user_name = None
+        email = None
+        
+        # Шукаємо користувача в schedule
+        normalized_lower = normalized.lower()
+        for name, info in users.items():
+            if not isinstance(info, dict):
+                continue
+            variants = {
+                name.strip().lower(),
+                str(info.get('email', '')).strip().lower(),
+                str(info.get('user_id', '')).strip().lower(),
+                str(info.get('peopleforce_id', '')).strip().lower(),
+            }
+            if normalized_lower in variants:
+                user_info = info
+                user_name = name
+                email = (info.get('email') or '').strip().lower()
+                break
+        
+        if not user_info or not email:
+            return jsonify({'error': 'Користувача не знайдено в системі'}), 404
+        
+        # Синхронізуємо з PeopleForce
+        client = PeopleForceClient()
+        employees = client.get_employees(force_refresh=True)
+        
+        employee = None
+        for emp in employees:
+            emp_email = (emp.get('email') or '').strip().lower()
+            if emp_email == email:
+                employee = emp
+                break
+        
+        if not employee:
+            return jsonify({'error': 'Користувача не знайдено в PeopleForce'}), 404
+        
+        updated_fields = []
+        
+        # Оновлюємо project (DIVISION)
+        project_obj = employee.get('division') or {}
+        project_name = ''
+        if isinstance(project_obj, dict):
+            project_name = (project_obj.get('name') or '').strip()
+        if project_name and user_info.get('project') != project_name:
+            user_info['project'] = project_name
+            updated_fields.append('project')
+        
+        # Оновлюємо department (DIRECTION/UNIT)
+        department_obj = employee.get('department') or {}
+        department_name = ''
+        if isinstance(department_obj, dict):
+            department_name = (department_obj.get('name') or '').strip()
+        if department_name and user_info.get('department') != department_name:
+            user_info['department'] = department_name
+            updated_fields.append('department')
+        
+        # Отримуємо детальні дані з PeopleForce
+        peopleforce_id = user_info.get('peopleforce_id')
+        if peopleforce_id:
+            try:
+                detailed_data = client.get_employee_detail(peopleforce_id)
+                if detailed_data:
+                    # Оновлюємо позицію
+                    position_obj = detailed_data.get('position') or {}
+                    position_name = ''
+                    if isinstance(position_obj, dict):
+                        position_name = (position_obj.get('name') or '').strip()
+                    if position_name and user_info.get('position') != position_name:
+                        user_info['position'] = position_name
+                        updated_fields.append('position')
+                    
+                    # Оновлюємо команду
+                    team_obj = detailed_data.get('team') or {}
+                    team_name = ''
+                    if isinstance(team_obj, dict):
+                        team_name = (team_obj.get('name') or '').strip()
+                    if team_name and user_info.get('team') != team_name:
+                        user_info['team'] = team_name
+                        updated_fields.append('team')
+                    
+                    # Оновлюємо локацію
+                    location_obj = detailed_data.get('location') or {}
+                    location_name = ''
+                    if isinstance(location_obj, dict):
+                        location_name = (location_obj.get('name') or '').strip()
+                    if location_name and user_info.get('location') != location_name:
+                        user_info['location'] = location_name
+                        updated_fields.append('location')
+            except Exception as exc:
+                logger.warning(f"Failed to fetch detailed data for {peopleforce_id}: {exc}")
+        
+        # Автопризначення control_manager
+        from dashboard_app.tasks import _auto_assign_control_manager
+        division_name = user_info.get('division_name', '')
+        auto_manager = _auto_assign_control_manager(division_name)
+        if user_info.get('control_manager') != auto_manager:
+            user_info['control_manager'] = auto_manager
+            updated_fields.append('control_manager')
+        
+        # Зберігаємо зміни
+        if updated_fields:
+            users[user_name] = user_info
+            schedules['users'] = users
+            schedule_user_manager.save_users(schedules)
+            clear_user_schedule_cache()
+        
+        _log_admin_action('sync_single_employee', {
+            'user_key': normalized,
+            'user_name': user_name,
+            'email': email,
+            'updated_fields': updated_fields,
+        })
+        
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'ok',
+            'user_name': user_name,
+            'updated_fields': updated_fields,
+            'user_info': user_info,
+        })
+        
+    except Exception as exc:
+        logger.error(f"Error syncing employee {normalized}: {exc}", exc_info=True)
+        return jsonify({'error': f'Помилка синхронізації: {str(exc)}'}), 500
+
+
 def _is_synced_employee(user: User) -> bool:
     """Перевіряє чи користувач є синхронізованим співробітником з PeopleForce."""
     names, emails, ids = _schedule_identity_sets()

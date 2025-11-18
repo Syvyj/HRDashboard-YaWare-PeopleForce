@@ -1056,6 +1056,62 @@
     });
   }
 
+  const employeeSyncBtn = document.getElementById('employee-sync-btn');
+  if (employeeSyncBtn) {
+    employeeSyncBtn.addEventListener('click', () => {
+      const key = (employeeEditKey.value || '').trim();
+      if (!key) {
+        showAlert('Користувача не вибрано', 'warning');
+        return;
+      }
+      
+      employeeSyncBtn.disabled = true;
+      const originalText = employeeSyncBtn.innerHTML;
+      employeeSyncBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Синхронізація...';
+      
+      fetch(`/api/admin/employees/${encodeURIComponent(key)}/sync`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.error || 'Не вдалося синхронізувати користувача');
+          }
+          
+          const updatedFields = data.updated_fields || [];
+          if (updatedFields.length === 0) {
+            showAlert('Дані вже актуальні, змін не потрібно', 'info');
+          } else {
+            showAlert(`Оновлено поля: ${updatedFields.join(', ')}`, 'success');
+            
+            // Оновлюємо поля в формі
+            const userInfo = data.user_info || {};
+            if (userInfo.project) document.getElementById('employee-edit-project').value = userInfo.project;
+            if (userInfo.department) document.getElementById('employee-edit-department').value = userInfo.department;
+            if (userInfo.team) document.getElementById('employee-edit-team').value = userInfo.team;
+            if (userInfo.location) document.getElementById('employee-edit-location').value = userInfo.location;
+            if (userInfo.control_manager !== undefined) {
+              const managerSelect = document.getElementById('employee-edit-manager');
+              if (managerSelect) {
+                managerSelect.value = userInfo.control_manager;
+              }
+            }
+          }
+          
+          // Оновлюємо таблицю
+          fetchEmployees();
+        })
+        .catch((error) => showAlert(error.message))
+        .finally(() => {
+          employeeSyncBtn.disabled = false;
+          employeeSyncBtn.innerHTML = originalText;
+        });
+    });
+  }
+
   if (appUserForm) {
     appUserForm.addEventListener('submit', (event) => {
       event.preventDefault();

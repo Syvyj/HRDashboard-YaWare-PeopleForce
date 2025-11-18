@@ -1360,7 +1360,7 @@ def admin_sync_attendance():
     if not target_date:
         return jsonify({'error': 'Некоректна дата. Використовуйте формат YYYY-MM-DD'}), 400
 
-    skip_weekends = payload.get('skip_weekends', True)
+    skip_weekends = payload.get('skip_weekends', False)
     include_absent = payload.get('include_absent', True)
 
     if isinstance(skip_weekends, str):

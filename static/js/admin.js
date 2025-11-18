@@ -630,7 +630,7 @@
 
     const payload = {
       date: targetDate,
-      skip_weekends: true,
+      skip_weekends: false,
       include_absent: true,
     };
 

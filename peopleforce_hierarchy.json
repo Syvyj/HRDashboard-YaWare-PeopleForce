@@ -1,254 +1,254 @@
 {
   "divisions": [
     {
-      "name": "APPS Division"
+      "name": "APPs"
     },
     {
-      "name": "Agency Division"
+      "name": "Agency"
     },
     {
-      "name": "AdNetwork Division"
+      "name": "AdNetwork"
     },
     {
-      "name": "CONSULTING Division"
+      "name": "Consulting"
     }
   ],
   "directions": [
     {
       "name": "Media buying Direction",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Product Team",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Analyst Team",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "R&D Unit AdNetwork",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Finance Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Control & Compliance Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Human Resources Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Marketing Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Legal Unit",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     }
   ],
   "units": [
     {
       "name": "IOS Unit",
       "direction": "",
-      "division": "APPS Division"
+      "division": "APPs"
     },
     {
       "name": "Web to Web Unit",
       "direction": "",
-      "division": "APPS Division"
+      "division": "APPs"
     },
     {
       "name": "Media buying Unit",
       "direction": "",
-      "division": "APPS Division"
+      "division": "APPs"
     },
     {
       "name": "Product Operations Unit",
       "direction": "",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "Creative Unit",
       "direction": "",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "MB Facebook Unit",
       "direction": "Media buying Direction",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "MB Native & TikTok Unit",
       "direction": "Media buying Direction",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "MB Leadgen Team",
       "direction": "Media buying Direction",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "Performance Team",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Demand Unit",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Traffic Unit",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "CPA Unit",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "RTB Team",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Moderation Team",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Support Team",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "QA Team",
       "direction": "R&D Unit AdNetwork",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Management Accounting Unit",
       "direction": "Finance Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Control Unit",
       "direction": "Control & Compliance Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Traffic Compliance Team",
       "direction": "Control & Compliance Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "L&D Unit",
       "direction": "Human Resources Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Recruitment Unit",
       "direction": "Human Resources Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "C&B Unit",
       "direction": "Human Resources Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Corporate Culture Unit",
       "direction": "Human Resources Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "HR Administration Unit",
       "direction": "Human Resources Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "HRBP Unit",
       "direction": "Human Resources Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "System admin Team",
       "direction": "Human Resources Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "BizDev Unit",
       "direction": "Marketing Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Marketing & PR Unit",
       "direction": "Marketing Direction",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "KLN Control Team",
       "direction": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Analytics Control Team",
       "direction": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Recruitment Team",
       "direction": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Academy Team",
       "direction": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "HR Generalist",
       "direction": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "AdNetwork Team",
       "direction": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Search Team",
       "direction": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Apps Team",
       "direction": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Brand&PR Team",
       "direction": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     },
     {
       "name": "Marketing Team",
       "direction": "Office team",
-      "division": "CONSULTING Division"
+      "division": "Consulting"
     }
   ],
   "teams": [
@@ -256,103 +256,103 @@
       "name": "IOS Team",
       "unit": "IOS Unit",
       "direction": "",
-      "division": "APPS Division"
+      "division": "APPs"
     },
     {
       "name": "Data Team",
       "unit": "IOS Unit",
       "direction": "",
-      "division": "APPS Division"
+      "division": "APPs"
     },
     {
       "name": "Product Team",
       "unit": "IOS Unit",
       "direction": "",
-      "division": "APPS Division"
+      "division": "APPs"
     },
     {
       "name": "Media Buyer SCAd Team",
       "unit": "Media buying Unit",
       "direction": "",
-      "division": "APPS Division"
+      "division": "APPs"
     },
     {
       "name": "Creative Team 1",
       "unit": "Creative Unit",
       "direction": "",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "Creative Team 2",
       "unit": "Creative Unit",
       "direction": "",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "MB Facebook Team 1",
       "unit": "MB Facebook Unit",
       "direction": "Media buying Direction",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "MB Facebook Team 2",
       "unit": "MB Facebook Unit",
       "direction": "Media buying Direction",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "Tik Tok Team",
       "unit": "MB Native & TikTok Unit",
       "direction": "Media buying Direction",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "Native Team",
       "unit": "MB Native & TikTok Unit",
       "direction": "Media buying Direction",
-      "division": "Agency Division"
+      "division": "Agency"
     },
     {
       "name": "Demand Account Team",
       "unit": "Demand Unit",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Hunter Team",
       "unit": "Demand Unit",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Traffic Bizdev Team",
       "unit": "Traffic Unit",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Traffic Account Team",
       "unit": "Traffic Unit",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "Lead BizDev Team",
       "unit": "Traffic Unit",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "CPA Team",
       "unit": "CPA Unit",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     },
     {
       "name": "BizDev Team",
       "unit": "CPA Unit",
       "direction": "Sales Direction",
-      "division": "AdNetwork Division"
+      "division": "AdNetwork"
     }
   ]
 }

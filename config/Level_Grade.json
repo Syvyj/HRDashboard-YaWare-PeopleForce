@@ -1,0 +1,562 @@
+[
+ {
+   "Division": "Apps",
+   "Direction": "-",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "Sidorov Boris",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Apps",
+   "Direction": "-",
+   "Unit": "IOS Unit",
+   "Team": "-",
+   "Manager": "Kurylionak Aliaksandr",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Apps",
+   "Direction": "-",
+   "Unit": "IOS Unit",
+   "Team": "IOS Team",
+   "Manager": "Kazmirchuk Roman",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Apps",
+   "Direction": "-",
+   "Unit": "IOS Unit",
+   "Team": "Data Team",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Apps",
+   "Direction": "-",
+   "Unit": "IOS Unit",
+   "Team": "Product Team",
+   "Manager": "Gramovich Ivan",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Apps",
+   "Direction": "-",
+   "Unit": "Web to Web Unit",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Apps",
+   "Direction": "-",
+   "Unit": "Media buying Unit",
+   "Team": "-",
+   "Manager": "Ovcharenko German",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Apps",
+   "Direction": "-",
+   "Unit": "Media buying Unit",
+   "Team": "Media Buyer SCAd Team",
+   "Manager": "Shota Artyom",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "-",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "-",
+   "Unit": "Product Operations Unit",
+   "Team": "-",
+   "Manager": "Tereshchenko Kirill",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "-",
+   "Unit": "Creative Unit",
+   "Team": "-",
+   "Manager": "Sidielnikova Diana",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "-",
+   "Unit": "Creative Unit",
+   "Team": "Creative Team 1",
+   "Manager": "Romanovich Alexey",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "-",
+   "Unit": "Creative Unit",
+   "Team": "Creative Team 2",
+   "Manager": "Shersheriia Heorhii",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "Media buying Direction",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "Media buying Direction",
+   "Unit": "MB Facebook Unit",
+   "Team": "-",
+   "Manager": "Klimchenya Valeriy",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "Media buying Direction",
+   "Unit": "MB Facebook Unit",
+   "Team": "MB Facebook Team 1",
+   "Manager": "Bratchenko Anna",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "Media buying Direction",
+   "Unit": "MB Facebook Unit",
+   "Team": "MB Facebook Team 2",
+   "Manager": "Markovskyi Mykyta",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "Media buying Direction",
+   "Unit": "MB Native & TikTok Unit",
+   "Team": "-",
+   "Manager": "Popovych Anton",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "Media buying Direction",
+   "Unit": "MB Native & TikTok Unit",
+   "Team": "Tik Tok Team",
+   "Manager": "Balaban Iryna",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "Media buying Direction",
+   "Unit": "MB Native & TikTok Unit",
+   "Team": "Native Team",
+   "Manager": "Roshchyn Hlib",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Agency",
+   "Direction": "Media buying Direction",
+   "Unit": "MB Leadgen Team",
+   "Team": "-",
+   "Manager": "Postoi Anton",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "-",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "Panasenko Natalya",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "Balyunov Valentin",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "Performance Team",
+   "Team": "-",
+   "Manager": "Ruban Mykyta",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "Demand Unit",
+   "Team": "-",
+   "Manager": "Dupenko Valeriia",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "Demand Unit",
+   "Team": "Demand Account Team",
+   "Manager": "Rudenko Bogdan",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "Demand Unit",
+   "Team": "Hunter Team",
+   "Manager": "Tenditnik Roman",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "Traffic Unit",
+   "Team": "-",
+   "Manager": "Gyrych Maria",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "Traffic Unit",
+   "Team": "Traffic Bizdev Team",
+   "Manager": "Sarkisov Moses",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "Traffic Unit",
+   "Team": "Traffic Account Team",
+   "Manager": "Olieinyk Kateryna",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "Traffic Unit",
+   "Team": "Lead BizDev Team",
+   "Manager": "Sokolov Mikhail",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "CPA Unit",
+   "Team": "-",
+   "Manager": "Balyunov Valentin",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "CPA Unit",
+   "Team": "CPA Team",
+   "Manager": "Tuzman Mykhailo",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "CPA Unit",
+   "Team": "BizDev Team",
+   "Manager": "Kucherenko Nikita",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "RTB Team",
+   "Team": "-",
+   "Manager": "Оtdelnyi Andrey",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "Moderation Team",
+   "Team": "-",
+   "Manager": "Shpak Andriy",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Sales Direction",
+   "Unit": "Support Team",
+   "Team": "-",
+   "Manager": "Iliin Eugeniy",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Product Team",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "Suhanov Vladislav",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "Analyst Team",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "Vorozheykin Oleksii",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "R&D Unit AdNetwork",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "Morkin Serhii",
+   "FIELD6": ""
+ },
+ {
+   "Division": "AdNetwork",
+   "Direction": "R&D Unit AdNetwork",
+   "Unit": "QA Team",
+   "Team": "-",
+   "Manager": "Kostina Dariia",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "-",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Finance Direction",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Finance Direction",
+   "Unit": "Management Accounting Unit",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Control & Compliance Direction",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "Tkachenko Oleksandra",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Control & Compliance Direction",
+   "Unit": "Control Unit",
+   "Team": "-",
+   "Manager": "Kryvytska Olena",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Control & Compliance Direction",
+   "Unit": "Traffic Compliance Team",
+   "Team": "-",
+   "Manager": "Osadtsa Dmytro",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Human Resources Direction",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "Harauskaya Maryia",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Human Resources Direction",
+   "Unit": "L&D Unit",
+   "Team": "-",
+   "Manager": "Polishchuk Kateryna",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Human Resources Direction",
+   "Unit": "Recruitment Unit",
+   "Team": "-",
+   "Manager": "Zhara Lilia",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Human Resources Direction",
+   "Unit": "C&B Unit",
+   "Team": "-",
+   "Manager": "Stepanov Oleksandr",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Human Resources Direction",
+   "Unit": "Corporate Culture Unit",
+   "Team": "-",
+   "Manager": "Masiuk Veranika",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Human Resources Direction",
+   "Unit": "HR Administration Unit",
+   "Team": "-",
+   "Manager": "Lebid Anastasiia",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Human Resources Direction",
+   "Unit": "HRBP Unit",
+   "Team": "-",
+   "Manager": "Khachatrian Mariia",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Human Resources Direction",
+   "Unit": "System admin Team",
+   "Team": "-",
+   "Manager": "Ziuzin Oleksii",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Marketing Direction",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "Yukhno Leonid",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Marketing Direction",
+   "Unit": "BizDev Unit",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Marketing Direction",
+   "Unit": "Marketing & PR Unit",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Legal Unit",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "-",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "KLN Control Team",
+   "Team": "-",
+   "Manager": "Yarosh Katsiaryna",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "Analytics Control Team",
+   "Team": "-",
+   "Manager": "Shkurai Marianna",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "Recruitment Team",
+   "Team": "-",
+   "Manager": "Tarasenko Polina",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "Academy Team",
+   "Team": "-",
+   "Manager": "Torianyk Haiana",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "HR Generalist",
+   "Team": "-",
+   "Manager": "Hiermiek Diana",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "AdNetwork Team",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "Search Team",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "Apps Team",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "Brand&PR Team",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ },
+ {
+   "Division": "Consulting",
+   "Direction": "Office team",
+   "Unit": "Marketing Team",
+   "Team": "-",
+   "Manager": "",
+   "FIELD6": ""
+ }
+]

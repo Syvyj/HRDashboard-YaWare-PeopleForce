@@ -25,6 +25,7 @@
   const employeeEditPeopleforceId = document.getElementById('employee-edit-peopleforce-id');
   const employeeEditProject = document.getElementById('employee-edit-project');
   const employeeEditDepartment = document.getElementById('employee-edit-department');
+  const employeeEditUnit = document.getElementById('employee-edit-unit');
   const employeeEditTeam = document.getElementById('employee-edit-team');
   const employeeEditLocation = document.getElementById('employee-edit-location');
   const employeeEditPlanStart = document.getElementById('employee-edit-plan-start');
@@ -779,6 +780,7 @@
     }
     employeeEditProject.value = payload.project || '';
     employeeEditDepartment.value = payload.department || '';
+    employeeEditUnit.value = payload.unit || '';
     employeeEditTeam.value = payload.team || '';
     employeeEditLocation.value = payload.location || '';
     employeeEditPlanStart.value = payload.plan_start || '';
@@ -996,6 +998,7 @@
         peopleforce_id: employeeEditPeopleforceId ? (employeeEditPeopleforceId.value || '').trim() : '',
         project: (employeeEditProject.value || '').trim(),
         department: (employeeEditDepartment.value || '').trim(),
+        unit: (employeeEditUnit.value || '').trim(),
         team: (employeeEditTeam.value || '').trim(),
         location: (employeeEditLocation.value || '').trim(),
         plan_start: (employeeEditPlanStart.value || '').trim(),
@@ -1082,23 +1085,25 @@
           }
           
           const updatedFields = data.updated_fields || [];
+          
+          // Завжди оновлюємо поля в формі після синхронізації
+          const userInfo = data.user_info || {};
+          if (userInfo.project !== undefined) document.getElementById('employee-edit-project').value = userInfo.project || '';
+          if (userInfo.department !== undefined) document.getElementById('employee-edit-department').value = userInfo.department || '';
+          if (userInfo.unit !== undefined) document.getElementById('employee-edit-unit').value = userInfo.unit || '';
+          if (userInfo.team !== undefined) document.getElementById('employee-edit-team').value = userInfo.team || '';
+          if (userInfo.location !== undefined) document.getElementById('employee-edit-location').value = userInfo.location || '';
+          if (userInfo.control_manager !== undefined) {
+            const managerSelect = document.getElementById('employee-edit-manager');
+            if (managerSelect) {
+              managerSelect.value = userInfo.control_manager;
+            }
+          }
+          
           if (updatedFields.length === 0) {
             showAlert('Дані вже актуальні, змін не потрібно', 'info');
           } else {
             showAlert(`Оновлено поля: ${updatedFields.join(', ')}`, 'success');
-            
-            // Оновлюємо поля в формі
-            const userInfo = data.user_info || {};
-            if (userInfo.project) document.getElementById('employee-edit-project').value = userInfo.project;
-            if (userInfo.department) document.getElementById('employee-edit-department').value = userInfo.department;
-            if (userInfo.team) document.getElementById('employee-edit-team').value = userInfo.team;
-            if (userInfo.location) document.getElementById('employee-edit-location').value = userInfo.location;
-            if (userInfo.control_manager !== undefined) {
-              const managerSelect = document.getElementById('employee-edit-manager');
-              if (managerSelect) {
-                managerSelect.value = userInfo.control_manager;
-              }
-            }
           }
           
           // Оновлюємо таблицю
@@ -1108,6 +1113,58 @@
         .finally(() => {
           employeeSyncBtn.disabled = false;
           employeeSyncBtn.innerHTML = originalText;
+        });
+    });
+  }
+
+  // Кнопка "Адаптировать запись" - адаптує дані з Level_Grade.json
+  const employeeAdaptBtn = document.getElementById('employee-adapt-btn');
+  if (employeeAdaptBtn) {
+    employeeAdaptBtn.addEventListener('click', () => {
+      const userKey = employeeEditName.value.trim();
+      if (!userKey) {
+        showAlert('Не вказано користувача для адаптації', 'warning');
+        return;
+      }
+
+      employeeAdaptBtn.disabled = true;
+      const originalText = employeeAdaptBtn.innerHTML;
+      employeeAdaptBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Адаптація...';
+
+      fetch(`/api/admin/employees/${encodeURIComponent(userKey)}/adapt`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.error || 'Не вдалося адаптувати дані');
+          }
+
+          const updatedFields = data.updated_fields || [];
+          
+          // Оновлюємо поля в формі
+          const userInfo = data.user_info || {};
+          if (userInfo.project !== undefined) document.getElementById('employee-edit-project').value = userInfo.project || '';
+          if (userInfo.department !== undefined) document.getElementById('employee-edit-department').value = userInfo.department || '';
+          if (userInfo.unit !== undefined) document.getElementById('employee-edit-unit').value = userInfo.unit || '';
+          if (userInfo.team !== undefined) document.getElementById('employee-edit-team').value = userInfo.team || '';
+
+          if (updatedFields.length === 0) {
+            showAlert('Дані вже адаптовані відповідно до Level_Grade.json', 'info');
+          } else {
+            showAlert(`Адаптовано поля: ${updatedFields.join(', ')}`, 'success');
+          }
+          
+          // Оновлюємо таблицю
+          fetchEmployees();
+        })
+        .catch((error) => showAlert(error.message))
+        .finally(() => {
+          employeeAdaptBtn.disabled = false;
+          employeeAdaptBtn.innerHTML = originalText;
         });
     });
   }

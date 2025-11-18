@@ -584,7 +584,7 @@
       "peopleforce_id": 512125,
       "email": "a.gelman@evadav.com",
       "user_id": "7928832",
-      "start_time": "09:00",
+      "start_time": "08:00",
       "control_manager": 1,
       "telegram_username": "Gelman_Amin",
       "team_lead": "Popovych Anton",
@@ -593,7 +593,10 @@
       "department": "Native Team",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
-      "location": "Remote other countries"
+      "location": "Remote other countries",
+      "_manual_overrides": {
+        "start_time": true
+      }
     },
     "Goloven Dmytro": {
       "user_name": "Goloven Dmitriy",
@@ -3637,7 +3640,11 @@
       "department": "Media Buying",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
-      "team": "Native Team"
+      "team": "Native Team",
+      "start_time": "13:00",
+      "_manual_overrides": {
+        "start_time": true
+      }
     },
     "Andriy Pankov": {
       "user_name": "Pankov Andriy",
@@ -4002,6 +4009,6 @@
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-18T11:02:17.997686"
+    "last_updated": "2025-11-18T13:48:08.010079"
   }
 }

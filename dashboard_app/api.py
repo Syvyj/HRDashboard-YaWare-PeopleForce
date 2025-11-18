@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import json
 import logging
 from collections import defaultdict
 from functools import lru_cache
@@ -26,6 +27,7 @@ from tracker_alert.services import user_manager as schedule_user_manager
 from tracker_alert.services.schedule_utils import (
     set_manual_override,
     clear_manual_override,
+    has_manual_override,
 )
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.client.peopleforce_api import PeopleForceClient
@@ -812,6 +814,7 @@ def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None =
         'email': record.user_email,
         'project': division_name,
         'department': direction_name,
+        'unit': unit_name,
         'team': team_name,
         'location': location_value if location_value is not None else record.location,
         'position': hierarchy_data.get('position', ''),
@@ -1228,6 +1231,22 @@ def _get_filtered_items():
     query = _apply_filters(AttendanceRecord.query)
     records = query.order_by(AttendanceRecord.user_name.asc(), AttendanceRecord.record_date.asc()).all()
     
+    # Фільтрація по user_key (для множинного вибору співробітників)
+    user_keys = request.args.getlist('user_key')
+    if user_keys:
+        filtered_records = []
+        for user_key in user_keys:
+            if user_key:
+                normalized = _normalize_user_key(user_key).lower()
+                for record in records:
+                    user_id_match = record.user_id and record.user_id.lower() == normalized
+                    email_match = record.user_email and record.user_email.lower() == normalized
+                    name_match = record.user_name and record.user_name.lower() == normalized
+                    if user_id_match or email_match or name_match:
+                        filtered_records.append(record)
+        # Видаляємо дублікати
+        records = list({record.id: record for record in filtered_records}.values())
+    
     # Застосовуємо фільтри по ієрархії (з user_schedules.json)
     # Логіка: OR всередині одного рівня (projects, departments, units, teams)
     #         AND між різними рівнями
@@ -1614,6 +1633,7 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
         'user_id': 'user_id',
         'project': 'project',
         'department': 'department',
+        'unit': 'unit',
         'team': 'team',
         'location': 'location',
         'plan_start': 'start_time',
@@ -1697,6 +1717,25 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
             if dest in _MANUAL_PROTECTED_FIELDS:
                 set_manual_override(target_info, dest)
 
+    # Also update canonical hierarchy fields
+    hierarchy_mapping = {
+        'project': 'division_name',
+        'department': 'direction_name',
+        'unit': 'unit_name',
+        'team': 'team_name',
+    }
+    for source_field, canonical_field in hierarchy_mapping.items():
+        if source_field in updates:
+            value = updates[source_field]
+            if value in (None, ''):
+                if canonical_field in target_info:
+                    previous = target_info.pop(canonical_field, None)
+                    if previous is not None:
+                        changed = True
+            elif target_info.get(canonical_field) != value:
+                target_info[canonical_field] = value
+                changed = True
+
     new_name = target_name
     if 'name' in updates:
         desired = (updates['name'] or '').strip()
@@ -1708,7 +1747,6 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
     
     # Автопризначення control_manager якщо змінилася division і немає явного override
     set_override = updates.get('_set_control_manager_override', False)
-    from tracker_alert.services.schedule_utils import has_manual_override
     
     if division_changed and not set_override and not has_manual_override(target_info, 'control_manager'):
         auto_manager = _auto_assign_control_manager(new_division or '')
@@ -1772,7 +1810,7 @@ def admin_update_employee(user_key: str):
         pf_raw = (payload.get('peopleforce_id') or '').strip()
         schedule_updates['peopleforce_id'] = pf_raw or None
 
-    for field in ('project', 'department', 'team', 'location', 'plan_start'):
+    for field in ('project', 'department', 'unit', 'team', 'location', 'plan_start'):
         if field in payload:
             value = (payload.get(field) or '').strip() or None
             if field == 'location' and value is not None:
@@ -1917,6 +1955,46 @@ def admin_delete_employee(user_key: str):
     })
 
 
+def _get_hierarchy_from_level_grade(user_name: str) -> dict | None:
+    """Отримати ієрархію з Level_Grade.json по імені менеджера.
+    
+    Args:
+        user_name: Ім'я користувача у форматі "Прізвище Ім'я"
+        
+    Returns:
+        Словник з полями division_name, direction_name, unit_name, team_name або None
+    """
+    from pathlib import Path
+    
+    level_grade_path = Path(__file__).parent.parent / 'config' / 'Level_Grade.json'
+    
+    if not level_grade_path.exists():
+        logger.warning(f"Level_Grade.json not found at {level_grade_path}")
+        return None
+    
+    try:
+        with open(level_grade_path, 'r', encoding='utf-8') as f:
+            level_grade_data = json.load(f)
+        
+        # Шукаємо по Manager
+        for entry in level_grade_data:
+            manager = (entry.get('Manager') or '').strip()
+            if manager.lower() == user_name.lower():
+                return {
+                    'division_name': entry.get('Division', '').strip() if entry.get('Division') != '-' else '',
+                    'direction_name': entry.get('Direction', '').strip() if entry.get('Direction') != '-' else '',
+                    'unit_name': entry.get('Unit', '').strip() if entry.get('Unit') != '-' else '',
+                    'team_name': entry.get('Team', '').strip() if entry.get('Team') != '-' else '',
+                }
+        
+        logger.debug(f"No match found in Level_Grade.json for manager: {user_name}")
+        return None
+        
+    except Exception as exc:
+        logger.error(f"Error reading Level_Grade.json: {exc}", exc_info=True)
+        return None
+
+
 @api_bp.route('/admin/employees/<path:user_key>/sync', methods=['POST'])
 @login_required
 def admin_sync_employee(user_key: str):
@@ -1971,23 +2049,48 @@ def admin_sync_employee(user_key: str):
         
         updated_fields = []
         
-        # Оновлюємо project (DIVISION)
-        project_obj = employee.get('division') or {}
-        project_name = ''
-        if isinstance(project_obj, dict):
-            project_name = (project_obj.get('name') or '').strip()
-        if project_name and user_info.get('project') != project_name:
-            user_info['project'] = project_name
-            updated_fields.append('project')
-        
-        # Оновлюємо department (DIRECTION/UNIT)
-        department_obj = employee.get('department') or {}
-        department_name = ''
-        if isinstance(department_obj, dict):
-            department_name = (department_obj.get('name') or '').strip()
-        if department_name and user_info.get('department') != department_name:
-            user_info['department'] = department_name
-            updated_fields.append('department')
+        # СПОЧАТКУ: Маппінг через Level_Grade.json для коректної 4-рівневої ієрархії
+        level_grade_hierarchy = _get_hierarchy_from_level_grade(user_name)
+        if level_grade_hierarchy:
+            logger.info(f"Found hierarchy in Level_Grade.json for {user_name}: {level_grade_hierarchy}")
+            
+            # Оновлюємо всі 4 рівні ієрархії з Level_Grade
+            for field in ['division_name', 'direction_name', 'unit_name', 'team_name']:
+                new_value = level_grade_hierarchy.get(field, '')
+                if new_value and user_info.get(field) != new_value:
+                    user_info[field] = new_value
+                    updated_fields.append(field)
+            
+            # Також оновлюємо legacy поля для сумісності
+            if level_grade_hierarchy.get('division_name'):
+                user_info['project'] = level_grade_hierarchy['division_name']
+            if level_grade_hierarchy.get('direction_name'):
+                user_info['department'] = level_grade_hierarchy['direction_name']
+            if level_grade_hierarchy.get('unit_name'):
+                user_info['unit'] = level_grade_hierarchy['unit_name']
+            if level_grade_hierarchy.get('team_name'):
+                user_info['team'] = level_grade_hierarchy['team_name']
+        else:
+            # Якщо Level_Grade не знайдено - підтягуємо з PeopleForce (але це запасний варіант)
+            logger.warning(f"No Level_Grade entry found for {user_name}, using PeopleForce data")
+            
+            # Оновлюємо project (DIVISION)
+            project_obj = employee.get('division') or {}
+            project_name = ''
+            if isinstance(project_obj, dict):
+                project_name = (project_obj.get('name') or '').strip()
+            if project_name and user_info.get('project') != project_name:
+                user_info['project'] = project_name
+                updated_fields.append('project')
+            
+            # Оновлюємо department (DIRECTION/UNIT)
+            department_obj = employee.get('department') or {}
+            department_name = ''
+            if isinstance(department_obj, dict):
+                department_name = (department_obj.get('name') or '').strip()
+            if department_name and user_info.get('department') != department_name:
+                user_info['department'] = department_name
+                updated_fields.append('department')
         
         # Отримуємо детальні дані з PeopleForce
         peopleforce_id = user_info.get('peopleforce_id')
@@ -2024,13 +2127,30 @@ def admin_sync_employee(user_key: str):
             except Exception as exc:
                 logger.warning(f"Failed to fetch detailed data for {peopleforce_id}: {exc}")
         
-        # Автопризначення control_manager
-        from dashboard_app.tasks import _auto_assign_control_manager
-        division_name = user_info.get('division_name', '')
-        auto_manager = _auto_assign_control_manager(division_name)
-        if user_info.get('control_manager') != auto_manager:
-            user_info['control_manager'] = auto_manager
-            updated_fields.append('control_manager')
+        # Маппінг через Level_Grade.json для коректної 4-рівневої ієрархії
+        # Ця частина НЕ перезаписує всі поля, а тільки додає канонічні поля якщо їх немає
+        level_grade_hierarchy = _get_hierarchy_from_level_grade(user_name)
+        if level_grade_hierarchy:
+            logger.info(f"Found hierarchy in Level_Grade.json for {user_name}: {level_grade_hierarchy}")
+            
+            # Оновлюємо всі 4 рівні ієрархії
+            for field in ['division_name', 'direction_name', 'unit_name', 'team_name']:
+                new_value = level_grade_hierarchy.get(field, '')
+                if new_value and user_info.get(field) != new_value:
+                    user_info[field] = new_value
+                    updated_fields.append(field)
+        
+        # Автопризначення control_manager - ПЕРЕВІРЯЄМО чи НЕ перезаписаний вручну
+        if not has_manual_override(user_info, 'control_manager'):
+            # Тільки якщо не було ручного перезапису - призначаємо автоматично
+            from dashboard_app.tasks import _auto_assign_control_manager
+            division_name = user_info.get('division_name', '')
+            auto_manager = _auto_assign_control_manager(division_name)
+            if user_info.get('control_manager') != auto_manager:
+                user_info['control_manager'] = auto_manager
+                updated_fields.append('control_manager (auto)')
+        else:
+            logger.info(f"Control manager for {user_name} has manual override, skipping auto-assignment")
         
         # Зберігаємо зміни
         if updated_fields:
@@ -2058,6 +2178,178 @@ def admin_sync_employee(user_key: str):
     except Exception as exc:
         logger.error(f"Error syncing employee {normalized}: {exc}", exc_info=True)
         return jsonify({'error': f'Помилка синхронізації: {str(exc)}'}), 500
+
+
+@api_bp.route('/admin/employees/<key>/adapt', methods=['POST'])
+@login_required
+def admin_adapt_employee(key: str):
+    """Адаптує дані користувача відповідно до Level_Grade.json."""
+    _ensure_admin()
+    
+    try:
+        normalized = (key or '').strip().lower()
+        if not normalized:
+            return jsonify({'error': 'Не вказано ключ користувача'}), 400
+        
+        # Завантажуємо user_schedules
+        schedules = schedule_user_manager.load_users()
+        users = schedules.get('users', {})
+        
+        # Знаходимо користувача
+        user_info = None
+        user_name = None
+        email = None
+        
+        for name, info in users.items():
+            name_norm = name.strip().lower()
+            email_norm = (info.get('email') or '').strip().lower()
+            user_id_norm = str(info.get('user_id') or '').strip().lower()
+            
+            if normalized in (name_norm, email_norm, user_id_norm):
+                user_info = info
+                user_name = name
+                email = info.get('email', '')
+                break
+        
+        if not user_info:
+            return jsonify({'error': 'Користувача не знайдено'}), 404
+        
+        updated_fields = []
+        
+        # Завантажуємо Level_Grade.json
+        level_grade_path = os.path.join(
+            current_app.config.get('BASE_DIR', os.path.dirname(os.path.dirname(__file__))),
+            'config',
+            'Level_Grade.json'
+        )
+        
+        if not os.path.exists(level_grade_path):
+            return jsonify({'error': 'Level_Grade.json не знайдено'}), 404
+        
+        with open(level_grade_path, 'r', encoding='utf-8') as f:
+            level_grade_data = json.load(f)
+        
+        # Отримуємо поточні значення з user_info (сирі дані з PeopleForce)
+        current_division = user_info.get('division_name', '') or user_info.get('project', '')
+        current_direction = user_info.get('direction_name', '') or user_info.get('department', '')
+        current_unit = user_info.get('unit_name', '') or user_info.get('unit', '')
+        current_team = user_info.get('team_name', '') or user_info.get('team', '')
+        
+        # Нормалізуємо значення (видаляємо "Division" з назви)
+        if current_division:
+            current_division = current_division.replace(' Division', '').strip()
+        
+        logger.info(f"Adapting {user_name}: Division={current_division}, Direction={current_direction}, Unit={current_unit}, Team={current_team}")
+        
+        # Шукаємо найбільш специфічне співпадіння в Level_Grade.json
+        # Пріоритет: Точне співпадіння усіх рівнів > часткове співпадіння
+        best_match = None
+        best_score = 0
+        
+        for entry in level_grade_data:
+            entry_division = entry.get('Division', '').strip()
+            entry_direction = entry.get('Direction', '').strip()
+            entry_unit = entry.get('Unit', '').strip()
+            entry_team = entry.get('Team', '').strip()
+            
+            # Рахуємо скільки рівнів співпадає
+            score = 0
+            match = True
+            
+            # Division - порівнюємо без урахування регістру
+            if entry_division and entry_division != '-':
+                if current_division and entry_division.lower() == current_division.lower():
+                    score += 10
+                elif current_division:
+                    # Не співпадає - пропускаємо цей запис
+                    continue
+            
+            # Direction - може бути і в Direction і в Team
+            if current_direction:
+                if entry_direction and entry_direction != '-' and entry_direction.lower() == current_direction.lower():
+                    score += 5
+                elif entry_team and entry_team != '-' and entry_team.lower() == current_direction.lower():
+                    # Direction з PeopleForce може бути Team у Level_Grade
+                    score += 5
+            
+            # Unit
+            if current_unit and entry_unit and entry_unit != '-':
+                if entry_unit.lower() == current_unit.lower():
+                    score += 3
+            
+            # Team
+            if current_team and entry_team and entry_team != '-':
+                if entry_team.lower() == current_team.lower():
+                    score += 2
+            
+            if score > best_score:
+                best_score = score
+                best_match = entry
+        
+        if not best_match:
+            return jsonify({'error': f'Не знайдено співпадіння в Level_Grade.json для поточної ієрархії користувача'}), 404
+        
+        logger.info(f"Found best match for {user_name}: {best_match} (score={best_score})")
+        
+        # Маппінг полів з Level_Grade.json
+        field_mapping = {
+            'Division': 'project',
+            'Direction': 'department',
+            'Unit': 'unit',
+            'Team': 'team',
+        }
+        
+        canonical_mapping = {
+            'Division': 'division_name',
+            'Direction': 'direction_name',
+            'Unit': 'unit_name',
+            'Team': 'team_name',
+        }
+        
+        # Оновлюємо поля
+        for level_key, legacy_field in field_mapping.items():
+            new_value = best_match.get(level_key, '').strip()
+            if new_value == '-':
+                new_value = ''
+            
+            # Оновлюємо legacy поле
+            if user_info.get(legacy_field) != new_value:
+                user_info[legacy_field] = new_value
+                updated_fields.append(legacy_field)
+            
+            # Оновлюємо canonical поле
+            canonical_field = canonical_mapping[level_key]
+            if user_info.get(canonical_field) != new_value:
+                user_info[canonical_field] = new_value
+                if canonical_field not in updated_fields:
+                    updated_fields.append(canonical_field)
+        
+        # Зберігаємо зміни
+        if updated_fields:
+            users[user_name] = user_info
+            schedules['users'] = users
+            schedule_user_manager.save_users(schedules)
+            clear_user_schedule_cache()
+        
+        _log_admin_action('adapt_employee', {
+            'user_key': normalized,
+            'user_name': user_name,
+            'email': email,
+            'updated_fields': updated_fields,
+        })
+        
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'ok',
+            'user_name': user_name,
+            'updated_fields': updated_fields,
+            'user_info': user_info,
+        })
+        
+    except Exception as exc:
+        logger.error(f"Error adapting employee {key}: {exc}", exc_info=True)
+        return jsonify({'error': f'Помилка адаптації: {str(exc)}'}), 500
 
 
 def _is_synced_employee(user: User) -> bool:

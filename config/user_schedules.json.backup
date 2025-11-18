@@ -48,30 +48,6 @@
       "manager_name": "Roshchyn_Hlib",
       "location": "Remote Ukraine"
     },
-    "Artomenko Andrii": {
-      "user_name": "Artomenko Andrii",
-      "division_name": "Agency",
-      "division_id": 54879,
-      "direction_name": "Media Buying",
-      "direction_id": null,
-      "unit_name": "Mb Native & Tiktok Unit",
-      "unit_id": null,
-      "team_name": "Tik Tok Team",
-      "team_id": 128018,
-      "peopleforce_id": 559301,
-      "email": "a.artomenko@evadav.com",
-      "user_id": "7933972",
-      "start_time": "10:00",
-      "control_manager": 1,
-      "telegram_username": "Artomenko_Andrii",
-      "team_lead": "Balaban Iryna",
-      "manager_telegram": "Balaban_Iryna",
-      "project": "Agency Division",
-      "department": "Tik Tok Team",
-      "position": "Media buyer Tik Tok",
-      "manager_name": "Balaban_Iryna",
-      "location": "Remote other countries"
-    },
     "Bakumova Kseniya": {
       "user_name": "Bakumova Kseniya",
       "division_name": "Apps",
@@ -3661,7 +3637,11 @@
       "department": "Media Buying",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
-      "team": "Native Team"
+      "team": "Native Team",
+      "start_time": "13:00",
+      "_manual_overrides": {
+        "start_time": true
+      }
     },
     "Andriy Pankov": {
       "user_name": "Pankov Andriy",
@@ -3990,9 +3970,42 @@
       "manager_name": "Machula_Yuliia",
       "department": "L&D Unit",
       "location": "Czech Republic remote"
+    },
+    "Khliust Pavlo": {
+      "email": "p.khliust@evadav.com",
+      "user_id": "7937355",
+      "peopleforce_id": "584787",
+      "location": "Poland remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "start_time": true
+      },
+      "project": "APPS Division",
+      "department": "APPS Division",
+      "start_time": "09:00",
+      "control_manager": 3
+    },
+    "Mishustin Kostiantyn": {
+      "email": "k.mishustin@evadav.com",
+      "user_id": "7937570",
+      "peopleforce_id": "587625",
+      "location": "UA",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "start_time": true,
+        "control_manager": true
+      },
+      "project": "Consulting Division",
+      "department": "Finance Direction",
+      "start_time": "09:00",
+      "control_manager": 3
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-17T02:28:21.020032"
+    "last_updated": "2025-11-18T12:18:56.988722"
   }
 }

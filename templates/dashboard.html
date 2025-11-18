@@ -93,7 +93,9 @@
                 </div>
               </div>
             </div>
-            <div class="col-lg-5 col-md-6">
+            <div class="col-lg-5 col-md-6" style="
+    width: 34.666667%;
+">
               <div class="filter-section">
                 <div class="d-flex gap-2">
                   <button
@@ -127,20 +129,29 @@
               </div>
               </div>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-3" style="
+    width: 32%;
+">
               <div class="filter-section">
-                <div class="filter-title">Поиск пользователя</div>
+
                 <div class="input-group">
                   <input
                     type="text"
                     id="filter-user"
                     class="form-control"
-                    placeholder="введите запрос"
+                    placeholder="Поиск пользователя"
                   />
                   <button class="btn btn-primary" id="search-btn" type="button">
                     Искать
                   </button>
                 </div>
+                <button
+                  type="button"
+                  id="open-multi-select-modal"
+                  class="btn btn-outline-primary w-100 mt-2"
+                >
+                  <i class="bi bi-people-fill"></i> Выбрать несколько сотрудников
+                </button>
               </div>
             </div>
           </form>
@@ -480,6 +491,75 @@
                 Применить
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Multi-Select Employees -->
+    <div
+      class="modal fade"
+      id="multiSelectModal"
+      tabindex="-1"
+      aria-labelledby="multiSelectModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="multiSelectModalLabel">
+              Выбрать несколько сотрудников
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <input
+                type="text"
+                id="multi-select-search"
+                class="form-control"
+                placeholder="Поиск по имени или email..."
+              />
+            </div>
+            <div class="mb-3">
+              <button
+                type="button"
+                id="select-all-employees"
+                class="btn btn-sm btn-outline-primary me-2"
+              >
+                Выбрать все
+              </button>
+              <button
+                type="button"
+                id="deselect-all-employees"
+                class="btn btn-sm btn-outline-secondary"
+              >
+                Снять все
+              </button>
+            </div>
+            <div id="multi-select-list" class="list-group" style="max-height: 400px; overflow-y: auto;">
+              <!-- Employee list will be populated here -->
+            </div>
+            <div class="mt-3">
+              <span class="badge bg-primary" id="selected-count">Выбрано: 0</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отмена
+            </button>
+            <button type="button" class="btn btn-primary" id="apply-multi-select">
+              Применить
+            </button>
           </div>
         </div>
       </div>

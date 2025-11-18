@@ -550,7 +550,7 @@
                 />
               </div>
               <div class="row g-3 mb-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <label class="form-label">Проект</label>
                   <input
                     type="text"
@@ -558,7 +558,7 @@
                     id="employee-edit-project"
                   />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <label class="form-label">Департамент</label>
                   <input
                     type="text"
@@ -566,7 +566,15 @@
                     id="employee-edit-department"
                   />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                  <label class="form-label">Юніт</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="employee-edit-unit"
+                  />
+                </div>
+                <div class="col-md-3">
                   <label class="form-label">Команда</label>
                   <input
                     type="text"
@@ -600,14 +608,24 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-outline-info me-auto"
-                id="employee-sync-btn"
-                title="Синхронізувати дані з PeopleForce"
-              >
-                <i class="bi bi-arrow-repeat"></i> Синхронізувати з PeopleForce
-              </button>
+              <div class="me-auto d-flex gap-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-info"
+                  id="employee-sync-btn"
+                  title="Синхронізувати дані з PeopleForce"
+                >
+                  <i class="bi bi-arrow-repeat"></i> Синхронізувати з PeopleForce
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-success"
+                  id="employee-adapt-btn"
+                  title="Адаптувати дані відповідно до Level_Grade.json"
+                >
+                  <i class="bi bi-magic"></i> Адаптировать запись
+                </button>
+              </div>
               <button
                 type="button"
                 class="btn btn-outline-danger"

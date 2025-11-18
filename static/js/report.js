@@ -914,10 +914,200 @@
 
   if (document.getElementById('clear-project-filters')) {
     document.getElementById('clear-project-filters').addEventListener('click', () => {
+      // Очищаємо всі фільтри (проєкти, департаменти, юніти, команди)
       selectedFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
-      renderFilterModal(); // Оновлюємо чекбокси в модальному вікні
+      
+      // Очищаємо вибраних співробітників
+      selectedEmployees.clear();
+      
+      // Очищаємо поле пошуку користувача
+      if (userInput) userInput.value = '';
+      
+      // Оновлюємо UI
+      renderFilterModal(); // Оновлюємо чекбокси в модальному вікні фільтрів
       updateSelectedFiltersDisplay();
+      
+      // Завантажуємо дані без фільтрів (але зі збереженням дат)
       submitFilters();
     });
   }
+
+  // Multi-select employees modal
+  const multiSelectModalEl = document.getElementById('multiSelectModal');
+  const multiSelectModal = multiSelectModalEl ? new bootstrap.Modal(multiSelectModalEl) : null;
+  const openMultiSelectBtn = document.getElementById('open-multi-select-modal');
+  const multiSelectSearch = document.getElementById('multi-select-search');
+  const multiSelectList = document.getElementById('multi-select-list');
+  const selectAllBtn = document.getElementById('select-all-employees');
+  const deselectAllBtn = document.getElementById('deselect-all-employees');
+  const applyMultiSelectBtn = document.getElementById('apply-multi-select');
+  const selectedCountBadge = document.getElementById('selected-count');
+
+  let allEmployees = [];
+  let selectedEmployees = new Set();
+
+  async function loadAllEmployees() {
+    try {
+      const params = new URLSearchParams();
+      
+      const response = await fetch(`/api/attendance?${params.toString()}`);
+      const data = await response.json();
+      
+      // Перевіряємо що дані прийшли правильно
+      if (!data || !data.items) {
+        console.error('Invalid data format:', data);
+        alert('Помилка: неправильний формат даних');
+        return;
+      }
+      
+      // Створюємо унікальний список співробітників з items
+      const employeesMap = new Map();
+      data.items.forEach(item => {
+        const key = item.user_email || item.user_id || item.user_name;
+        if (!employeesMap.has(key)) {
+          employeesMap.set(key, {
+            key: key,
+            name: item.user_name || '',
+            email: item.user_email || '',
+            user_id: item.user_id || '',
+            project: item.project || '',
+            department: item.department || '',
+            team: item.team || ''
+          });
+        }
+      });
+      
+      allEmployees = Array.from(employeesMap.values()).sort((a, b) => 
+        (a.name || a.email).localeCompare(b.name || b.email)
+      );
+      
+      renderEmployeeList();
+    } catch (error) {
+      console.error('Failed to load employees:', error);
+      alert('Ошибка загрузки списка сотрудников');
+    }
+  }
+
+  function renderEmployeeList(searchQuery = '') {
+    if (!multiSelectList) return;
+    
+    const query = searchQuery.toLowerCase();
+    const filteredEmployees = allEmployees.filter(emp => {
+      const searchStr = `${emp.name} ${emp.email} ${emp.project} ${emp.department}`.toLowerCase();
+      return searchStr.includes(query);
+    });
+    
+    const html = filteredEmployees.map(emp => {
+      const isSelected = selectedEmployees.has(emp.key);
+      const displayName = emp.name || emp.email || emp.user_id;
+      const subtitle = emp.email && emp.name ? emp.email : '';
+      const badge = emp.project ? `<span class="badge bg-secondary ms-2">${escapeHtml(emp.project)}</span>` : '';
+      
+      return `
+        <label class="list-group-item list-group-item-action d-flex align-items-center" style="cursor: pointer;">
+          <input 
+            type="checkbox" 
+            class="form-check-input me-3" 
+            data-employee-key="${escapeHtml(emp.key)}"
+            ${isSelected ? 'checked' : ''}
+          >
+          <div class="flex-grow-1">
+            <div class="fw-semibold">${escapeHtml(displayName)}${badge}</div>
+            ${subtitle ? `<small class="text-muted">${escapeHtml(subtitle)}</small>` : ''}
+          </div>
+        </label>
+      `;
+    }).join('');
+    
+    multiSelectList.innerHTML = html || '<div class="text-center text-muted py-3">Нет результатов</div>';
+    updateSelectedCount();
+  }
+
+  function updateSelectedCount() {
+    if (selectedCountBadge) {
+      selectedCountBadge.textContent = `Выбрано: ${selectedEmployees.size}`;
+    }
+  }
+
+  if (openMultiSelectBtn) {
+    openMultiSelectBtn.addEventListener('click', async () => {
+      if (allEmployees.length === 0) {
+        await loadAllEmployees();
+      }
+      renderEmployeeList();
+      multiSelectModal?.show();
+    });
+  }
+
+  if (multiSelectSearch) {
+    multiSelectSearch.addEventListener('input', (e) => {
+      renderEmployeeList(e.target.value);
+    });
+  }
+
+  if (multiSelectList) {
+    multiSelectList.addEventListener('change', (e) => {
+      if (e.target.type === 'checkbox') {
+        const key = e.target.dataset.employeeKey;
+        if (e.target.checked) {
+          selectedEmployees.add(key);
+        } else {
+          selectedEmployees.delete(key);
+        }
+        updateSelectedCount();
+      }
+    });
+  }
+
+  if (selectAllBtn) {
+    selectAllBtn.addEventListener('click', () => {
+      const query = multiSelectSearch?.value || '';
+      const filtered = allEmployees.filter(emp => {
+        const searchStr = `${emp.name} ${emp.email} ${emp.project} ${emp.department}`.toLowerCase();
+        return searchStr.includes(query.toLowerCase());
+      });
+      filtered.forEach(emp => selectedEmployees.add(emp.key));
+      renderEmployeeList(query);
+    });
+  }
+
+  if (deselectAllBtn) {
+    deselectAllBtn.addEventListener('click', () => {
+      selectedEmployees.clear();
+      renderEmployeeList(multiSelectSearch?.value || '');
+    });
+  }
+
+  if (applyMultiSelectBtn) {
+    applyMultiSelectBtn.addEventListener('click', async () => {
+      if (selectedEmployees.size === 0) {
+        alert('Выберите хотя бы одного сотрудника');
+        return;
+      }
+      
+      multiSelectModal?.hide();
+      
+      // Формуємо запит для вибраних співробітників
+      const params = new URLSearchParams();
+      if (dateFromInput.value) params.set('date_from', dateFromInput.value);
+      if (dateToInput.value) params.set('date_to', dateToInput.value);
+      
+      // Додаємо фільтри по вибраних користувачах
+      selectedEmployees.forEach(key => {
+        params.append('user_key', key);
+      });
+      
+      try {
+        const response = await fetch(`/api/attendance?${params.toString()}`);
+        const data = await response.json();
+        if (data && data.items) {
+          renderReport(data);
+        }
+      } catch (error) {
+        console.error('Failed to load data for selected employees:', error);
+        alert('Ошибка загрузки данных');
+      }
+    });
+  }
+
 })();

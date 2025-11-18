@@ -1303,39 +1303,51 @@ def admin_users_diff():
 @login_required
 def admin_sync_users():
     _ensure_admin()
-    payload = request.get_json(silent=True) or {}
-    force_refresh = bool(payload.get('force_refresh'))
-    sync_summary: dict[str, object] = {}
-
-    try:
-        from dashboard_app.tasks import _sync_peopleforce_metadata  # local import to avoid circular dependency
-        _sync_peopleforce_metadata(current_app)
-        sync_summary['peopleforce_metadata'] = 'updated'
-    except Exception as exc:  # pragma: no cover - filesystem/network failure
-        logger.error(f"PeopleForce sync error: {exc}", exc_info=True)
-        sync_summary['peopleforce_metadata'] = f'failed: {exc}'
-
-    try:
-        from dashboard_app.tasks import _sync_yaware_plan_start  # local import to avoid circular dependency
-        updated_count = _sync_yaware_plan_start(current_app)
-        sync_summary['yaware_schedule'] = {'updated': updated_count}
-    except Exception as exc:  # pragma: no cover - filesystem/network failure
-        logger.error(f"YaWare sync error: {exc}", exc_info=True)
-        sync_summary['yaware_schedule'] = f'failed: {exc}'
-
-    try:
-        diff_payload = _generate_user_diff(force_refresh=force_refresh)
-    except Exception as exc:
-        logger.error(f"User diff generation error: {exc}", exc_info=True)
-        return jsonify({'error': f'Помилка генерації diff: {str(exc)}'}), 500
     
-    _log_admin_action('manual_sync_users', {
-        'force_refresh': force_refresh,
-        'sync_summary': sync_summary,
-        'diff_counts': diff_payload.get('counts'),
-    })
-    db.session.commit()
-    return jsonify({'status': 'ok', 'sync': sync_summary, 'diff': diff_payload})
+    try:
+        payload = request.get_json(silent=True) or {}
+        force_refresh = bool(payload.get('force_refresh'))
+        sync_summary: dict[str, object] = {}
+
+        try:
+            from dashboard_app.tasks import _sync_peopleforce_metadata  # local import to avoid circular dependency
+            _sync_peopleforce_metadata(current_app)
+            sync_summary['peopleforce_metadata'] = 'updated'
+        except Exception as exc:  # pragma: no cover - filesystem/network failure
+            logger.error(f"PeopleForce sync error: {exc}", exc_info=True)
+            sync_summary['peopleforce_metadata'] = f'failed: {str(exc)}'
+
+        try:
+            from dashboard_app.tasks import _sync_yaware_plan_start  # local import to avoid circular dependency
+            updated_count = _sync_yaware_plan_start(current_app)
+            sync_summary['yaware_schedule'] = {'updated': updated_count}
+        except Exception as exc:  # pragma: no cover - filesystem/network failure
+            logger.error(f"YaWare sync error: {exc}", exc_info=True)
+            sync_summary['yaware_schedule'] = f'failed: {str(exc)}'
+
+        try:
+            diff_payload = _generate_user_diff(force_refresh=force_refresh)
+        except Exception as exc:
+            logger.error(f"User diff generation error: {exc}", exc_info=True)
+            return jsonify({'error': f'Помилка генерації diff: {str(exc)}'}), 500
+        
+        try:
+            _log_admin_action('manual_sync_users', {
+                'force_refresh': force_refresh,
+                'sync_summary': sync_summary,
+                'diff_counts': diff_payload.get('counts'),
+            })
+            db.session.commit()
+        except Exception as exc:
+            logger.error(f"Failed to log admin action or commit: {exc}", exc_info=True)
+            # Продовжуємо навіть якщо логування не вдалося
+        
+        return jsonify({'status': 'ok', 'sync': sync_summary, 'diff': diff_payload})
+    
+    except Exception as exc:
+        logger.error(f"Unexpected error in admin_sync_users: {exc}", exc_info=True)
+        return jsonify({'error': f'Неочікувана помилка: {str(exc)}'}), 500
+
 
 
 @api_bp.route('/admin/sync/attendance', methods=['POST'])

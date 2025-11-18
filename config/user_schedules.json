@@ -285,15 +285,12 @@
     },
     "Bylchinskiy Ilya": {
       "user_name": "Bylchinskiy Ilya",
-      "division_name": "Adnetwork",
       "division_id": 54878,
-      "direction_name": "Product Team",
       "direction_id": 125478,
       "unit_name": "",
       "unit_id": null,
-      "team_name": "",
       "team_id": null,
-      "peopleforce_id": 554820,
+      "peopleforce_id": "554820",
       "email": "i.bylchinskiy@evadav.com",
       "user_id": "7933838",
       "start_time": "11:00",
@@ -301,11 +298,18 @@
       "telegram_username": "Bylchinskiy_Ilya",
       "team_lead": "Gramovich Ivan",
       "manager_telegram": "Gramovich_Ivan",
-      "project": "APPS Division",
-      "department": "Product Team",
       "position": "Product Manager iOS",
       "manager_name": "Gramovich_Ivan",
-      "location": "Remote other countries"
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true
+      },
+      "project": "APPs",
+      "department": "Product Team",
+      "team": "Product Team",
+      "division_name": "APPs",
+      "direction_name": "Product Team",
+      "team_name": "Product Team"
     },
     "Chernyakov Andrii": {
       "user_name": "Chernyakov Andrii",
@@ -619,27 +623,29 @@
     },
     "Gramovich Ivan": {
       "user_name": "Gramovich Ivan",
-      "division_name": "Adnetwork",
+      "division_name": "Apps",
       "division_id": 54878,
       "direction_name": "Product Team",
       "direction_id": 125478,
-      "unit_name": "",
+      "unit_name": "IOS Unit",
       "unit_id": null,
-      "team_name": "",
+      "team_name": "Product Team",
       "team_id": null,
-      "peopleforce_id": 470190,
+      "peopleforce_id": "470190",
       "email": "i.gramovich@evadav.com",
-      "user_id": 7924796,
+      "user_id": "7924796",
       "start_time": "09:00",
       "control_manager": 2,
       "telegram_username": "Gramovich_Ivan",
       "team_lead": "Kurylionak Aliaksandr",
       "manager_telegram": "Kurylionak_Aliaksandr",
-      "project": "APPS Division",
+      "project": "Apps",
       "department": "Product Team",
       "position": "Team Lead of Product Team",
       "manager_name": "Kurylionak_Aliaksandr",
-      "location": "Warsaw office"
+      "location": "Warsaw office",
+      "unit": "IOS Unit",
+      "team": "Product Team"
     },
     "Harauskaya Maryia": {
       "user_name": "Harauskaya Maryia",
@@ -2523,15 +2529,12 @@
     },
     "Shustal  Valeria": {
       "user_name": "Shustal Valeryia",
-      "division_name": "Adnetwork",
       "division_id": 54878,
-      "direction_name": "Product Team",
       "direction_id": 125478,
       "unit_name": "",
       "unit_id": null,
-      "team_name": "",
       "team_id": null,
-      "peopleforce_id": 499881,
+      "peopleforce_id": "499881",
       "email": "v.shustal@evadav.com",
       "user_id": "7927891",
       "start_time": "09:00",
@@ -2539,11 +2542,18 @@
       "telegram_username": "Shustal_Valeria &nbsp;",
       "team_lead": "Gramovich Ivan",
       "manager_telegram": "Gramovich_Ivan",
-      "project": "APPS Division",
-      "department": "Product Team",
       "position": "iOS Designer",
       "manager_name": "Gramovich_Ivan",
-      "location": "Warsaw office"
+      "location": "Warsaw office",
+      "_manual_overrides": {
+        "location": true
+      },
+      "project": "Apps",
+      "department": "Product Team",
+      "team": "Product Team",
+      "division_name": "Apps",
+      "direction_name": "Product Team",
+      "team_name": "Product Team"
     },
     "Shykula Artur": {
       "user_name": "Shykula Artur",
@@ -4009,6 +4019,6 @@
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-18T13:48:08.010079"
+    "last_updated": "2025-11-18T17:26:27.195230"
   }
 }

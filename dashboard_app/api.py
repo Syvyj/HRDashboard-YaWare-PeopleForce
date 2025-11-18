@@ -2234,57 +2234,70 @@ def admin_adapt_employee(key: str):
         current_direction = user_info.get('direction_name', '') or user_info.get('department', '')
         current_unit = user_info.get('unit_name', '') or user_info.get('unit', '')
         current_team = user_info.get('team_name', '') or user_info.get('team', '')
+        manager_name = user_info.get('team_lead', '') or user_info.get('manager_name', '')
         
         # Нормалізуємо значення (видаляємо "Division" з назви)
         if current_division:
             current_division = current_division.replace(' Division', '').strip()
         
-        logger.info(f"Adapting {user_name}: Division={current_division}, Direction={current_direction}, Unit={current_unit}, Team={current_team}")
+        logger.info(f"Adapting {user_name}: Division={current_division}, Direction={current_direction}, Unit={current_unit}, Team={current_team}, Manager={manager_name}")
         
-        # Шукаємо найбільш специфічне співпадіння в Level_Grade.json
-        # Пріоритет: Точне співпадіння усіх рівнів > часткове співпадіння
+        # Спочатку шукаємо за Manager (найбільш точне співпадіння)
         best_match = None
         best_score = 0
         
         for entry in level_grade_data:
-            entry_division = entry.get('Division', '').strip()
-            entry_direction = entry.get('Direction', '').strip()
-            entry_unit = entry.get('Unit', '').strip()
-            entry_team = entry.get('Team', '').strip()
+            entry_manager = entry.get('Manager', '').strip()
             
-            # Рахуємо скільки рівнів співпадає
-            score = 0
-            match = True
-            
-            # Division - порівнюємо без урахування регістру
-            if entry_division and entry_division != '-':
-                if current_division and entry_division.lower() == current_division.lower():
-                    score += 10
-                elif current_division:
-                    # Не співпадає - пропускаємо цей запис
-                    continue
-            
-            # Direction - може бути і в Direction і в Team
-            if current_direction:
-                if entry_direction and entry_direction != '-' and entry_direction.lower() == current_direction.lower():
-                    score += 5
-                elif entry_team and entry_team != '-' and entry_team.lower() == current_direction.lower():
-                    # Direction з PeopleForce може бути Team у Level_Grade
-                    score += 5
-            
-            # Unit
-            if current_unit and entry_unit and entry_unit != '-':
-                if entry_unit.lower() == current_unit.lower():
-                    score += 3
-            
-            # Team
-            if current_team and entry_team and entry_team != '-':
-                if entry_team.lower() == current_team.lower():
-                    score += 2
-            
-            if score > best_score:
-                best_score = score
+            # ПРІОРИТЕТ 1: Пошук за Manager
+            if manager_name and entry_manager and entry_manager.lower() == manager_name.lower():
                 best_match = entry
+                best_score = 1000  # Максимальний пріоритет
+                logger.info(f"Found exact Manager match: {entry_manager}")
+                break
+        
+        # Якщо не знайдено за Manager, шукаємо за Direction/Unit/Team
+        if not best_match:
+            logger.info("No Manager match found, searching by hierarchy...")
+            
+            for entry in level_grade_data:
+                entry_division = entry.get('Division', '').strip()
+                entry_direction = entry.get('Direction', '').strip()
+                entry_unit = entry.get('Unit', '').strip()
+                entry_team = entry.get('Team', '').strip()
+                
+                # Рахуємо скільки рівнів співпадає
+                score = 0
+                
+                # Direction - може бути і в Direction і в Team у Level_Grade
+                if current_direction:
+                    if entry_direction and entry_direction != '-' and entry_direction.lower() == current_direction.lower():
+                        score += 10
+                    elif entry_team and entry_team != '-' and entry_team.lower() == current_direction.lower():
+                        # Direction з PeopleForce може бути Team у Level_Grade
+                        score += 10
+                    elif entry_unit and entry_unit != '-' and entry_unit.lower() == current_direction.lower():
+                        # Direction з PeopleForce може бути Unit у Level_Grade
+                        score += 10
+                
+                # Unit
+                if current_unit and entry_unit and entry_unit != '-':
+                    if entry_unit.lower() == current_unit.lower():
+                        score += 5
+                
+                # Team
+                if current_team and entry_team and entry_team != '-':
+                    if entry_team.lower() == current_team.lower():
+                        score += 5
+                
+                # Division - найменший пріоритет, бо може бути неточним
+                if entry_division and entry_division != '-' and current_division:
+                    if entry_division.lower() == current_division.lower():
+                        score += 1
+                
+                if score > best_score:
+                    best_score = score
+                    best_match = entry
         
         if not best_match:
             return jsonify({'error': f'Не знайдено співпадіння в Level_Grade.json для поточної ієрархії користувача'}), 404

@@ -1538,6 +1538,11 @@ def admin_create_employee():
         entry['start_time'] = start_time
         set_manual_override(entry, 'start_time')
     
+    # Handle ignored flag
+    ignored = payload.get('ignored', False)
+    if ignored:
+        entry['ignored'] = True
+    
     # Автопризначення control_manager якщо не вказано вручну
     if control_manager_value is not None:
         entry['control_manager'] = control_manager_value

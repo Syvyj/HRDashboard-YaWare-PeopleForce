@@ -311,12 +311,25 @@
       }
       li.appendChild(label);
       if (options.type === 'peopleforce' && item && typeof item === 'object') {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'btn btn-sm btn-primary diff-add-btn';
-        btn.textContent = 'Добавить';
-        btn.dataset.entry = JSON.stringify(item);
-        li.appendChild(btn);
+        const btnContainer = document.createElement('div');
+        btnContainer.className = 'd-flex gap-1';
+        
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'btn btn-sm btn-primary diff-add-btn';
+        addBtn.textContent = 'Добавить';
+        addBtn.dataset.entry = JSON.stringify(item);
+        btnContainer.appendChild(addBtn);
+        
+        const ignoreBtn = document.createElement('button');
+        ignoreBtn.type = 'button';
+        ignoreBtn.className = 'btn btn-sm btn-outline-warning diff-ignore-btn';
+        ignoreBtn.innerHTML = '<i class="bi bi-eye-slash"></i> Ignore';
+        ignoreBtn.title = 'Додати в ignore (виключити зі звітів)';
+        ignoreBtn.dataset.entry = JSON.stringify(item);
+        btnContainer.appendChild(ignoreBtn);
+        
+        li.appendChild(btnContainer);
       }
       target.appendChild(li);
     });
@@ -357,23 +370,86 @@
 
   if (diffListsWrapper) {
     diffListsWrapper.addEventListener('click', (event) => {
-      const button = event.target.closest('.diff-add-btn');
-      if (!button) {
-        return;
+      const addButton = event.target.closest('.diff-add-btn');
+      const ignoreButton = event.target.closest('.diff-ignore-btn');
+      
+      if (addButton) {
+        const raw = addButton.dataset.entry;
+        if (!raw) {
+          return;
+        }
+        let data;
+        try {
+          data = JSON.parse(raw);
+        } catch (error) {
+          console.error('Failed to parse diff entry payload', error);
+          return;
+        }
+        openDiffAddModal(data);
       }
-      const raw = button.dataset.entry;
-      if (!raw) {
-        return;
+      
+      if (ignoreButton) {
+        const raw = ignoreButton.dataset.entry;
+        if (!raw) {
+          return;
+        }
+        let data;
+        try {
+          data = JSON.parse(raw);
+        } catch (error) {
+          console.error('Failed to parse diff entry payload', error);
+          return;
+        }
+        handleDiffIgnore(data, ignoreButton);
       }
-      let data;
-      try {
-        data = JSON.parse(raw);
-      } catch (error) {
-        console.error('Failed to parse diff entry payload', error);
-        return;
-      }
-      openDiffAddModal(data);
     });
+  }
+  
+  function handleDiffIgnore(data, button) {
+    const displayName = data.name || data.display || data.email || 'користувача';
+    
+    if (!confirm(`Додати "${displayName}" в ignore?\n\nКористувач буде виключений зі звітів та diff-порівнянь.`)) {
+      return;
+    }
+    
+    button.disabled = true;
+    button.textContent = 'Обробка...';
+    
+    // Create minimal user entry with ignored flag
+    const payload = {
+      name: data.name || '',
+      email: data.email || '',
+      peopleforce_id: data.peopleforce_id || data.user_id || '',
+      project: data.project || '',
+      department: data.department || '',
+      team: data.team || '',
+      location: data.location || '',
+      ignored: true  // Mark as ignored
+    };
+    
+    fetch('/api/admin/employees', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to add ignored user');
+        }
+        return response.json();
+      })
+      .then(() => {
+        showAlert('success', `Користувача "${displayName}" додано в ignore. Оновлюємо списки...`);
+        // Refresh diff and employee list
+        fetchDiffState();
+        fetchEmployees();
+      })
+      .catch((error) => {
+        console.error('Error adding to ignore:', error);
+        showAlert('danger', 'Помилка додавання в ignore');
+        button.disabled = false;
+        button.innerHTML = '<i class="bi bi-eye-slash"></i> Ignore';
+      });
   }
 
   function setDiffState(data) {

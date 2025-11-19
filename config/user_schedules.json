@@ -2862,30 +2862,6 @@
       "manager_name": "Zhara_Lilia",
       "location": "Prague office"
     },
-    "Tuzman Mykhailo": {
-      "user_name": "Tuzman Mykhailo",
-      "division_name": "Adnetwork",
-      "division_id": 54880,
-      "direction_name": "Sales",
-      "direction_id": null,
-      "unit_name": "Cpa Unit",
-      "unit_id": null,
-      "team_name": "Cpa Team",
-      "team_id": 128354,
-      "peopleforce_id": 378343,
-      "email": "m.tuzman@evadav.com",
-      "user_id": "7911663",
-      "start_time": "08:00",
-      "control_manager": 2,
-      "telegram_username": "Mykhailo_mb_RT_TL",
-      "team_lead": "Balyunov Valentin",
-      "manager_telegram": "Balyunov_Valentin",
-      "project": "AdNetwork Division",
-      "department": "CPA Team",
-      "position": "Team Lead CPA Team",
-      "manager_name": "Balyunov_Valentin",
-      "location": "Remote Ukraine"
-    },
     "Unkovska Anna": {
       "user_name": "Unkovska Anna",
       "division_name": "Adnetwork",
@@ -3297,30 +3273,6 @@
       "position": "System Administration Team Lead",
       "manager_name": "Harauskaya_Maryia",
       "location": "Warsaw office"
-    },
-    "Zubkova Daryna": {
-      "user_name": "Zubkova Daryna",
-      "division_name": "Adnetwork",
-      "division_id": 54880,
-      "direction_name": "Sales",
-      "direction_id": null,
-      "unit_name": "Cpa Unit",
-      "unit_id": null,
-      "team_name": "Cpa Team",
-      "team_id": 128354,
-      "peopleforce_id": 396708,
-      "email": "d.zubkova@evadav.com",
-      "user_id": "7914604",
-      "start_time": "12:00",
-      "control_manager": 2,
-      "telegram_username": "Daryna_mbCPA",
-      "team_lead": "Tuzman Mykhailo",
-      "manager_telegram": "Mykhailo_mb_RT_TL",
-      "project": "AdNetwork Division",
-      "department": "CPA Team",
-      "position": "Media Buyer",
-      "manager_name": "Tuzman_Mykhailo",
-      "location": "Remote other countries"
     },
     "Veranika Masiuk": {
       "user_name": "Masiuk Veranika",
@@ -3794,9 +3746,7 @@
     },
     "Arseni Tatsyn": {
       "user_name": "Tatsyn Arseni",
-      "division_name": "Agency",
       "division_id": null,
-      "direction_name": "Media Buying",
       "direction_id": null,
       "unit_name": "Mb Leadgen Team",
       "unit_id": 126392,
@@ -3810,11 +3760,17 @@
       "telegram_username": "Tatsyn_Arseni",
       "team_lead": "Klimchenya Valeriy",
       "manager_telegram": "Klimchenya_Valeriy",
-      "project": "Agency Division",
-      "department": "Media buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Klimchenya_Valeriy",
-      "location": "Remote other countries"
+      "team": "-",
+      "project": "Agency",
+      "department": "Media buying Direction",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true
+      },
+      "division_name": "Agency",
+      "direction_name": "Media buying Direction"
     },
     "Gyrych Maria": {
       "user_name": "Gyrych Maria",
@@ -4019,6 +3975,6 @@
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-18T17:26:27.195230"
+    "last_updated": "2025-11-19T11:28:12.080126"
   }
 }

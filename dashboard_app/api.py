@@ -686,6 +686,52 @@ def api_scheduler_reschedule_job(job_id: str):
     new_trigger = CronTrigger(**defaults)
     job.modify(trigger=new_trigger)
     return jsonify({'status': 'rescheduled', 'trigger': str(new_trigger)})
+
+
+@api_bp.get('/health')
+def health_check():
+    """Health check endpoint for monitoring and load balancers."""
+    health_status = {
+        'status': 'ok',
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'version': '1.0.0',
+    }
+    
+    # Check database connection
+    try:
+        db.session.execute(db.text('SELECT 1'))
+        health_status['database'] = 'connected'
+    except Exception as exc:
+        health_status['database'] = 'error'
+        health_status['database_error'] = str(exc)
+        health_status['status'] = 'degraded'
+    
+    # Check scheduler
+    sched = _get_scheduler()
+    if sched:
+        health_status['scheduler'] = 'running'
+        health_status['scheduler_jobs'] = len(sched.get_jobs())
+    else:
+        health_status['scheduler'] = 'stopped'
+    
+    # Check schedule file
+    try:
+        schedules = load_user_schedules()
+        health_status['user_schedules'] = {
+            'loaded': True,
+            'count': len(schedules)
+        }
+    except Exception as exc:
+        health_status['user_schedules'] = {
+            'loaded': False,
+            'error': str(exc)
+        }
+        health_status['status'] = 'degraded'
+    
+    status_code = 200 if health_status['status'] == 'ok' else 503
+    return jsonify(health_status), status_code
+
+
 def _log_admin_action(action: str, details: dict) -> None:
     entry = AdminAuditLog(
         user_id=getattr(current_user, 'id', None) if hasattr(current_user, 'id') else None,
@@ -3515,6 +3561,94 @@ def _build_pdf_document(items: list[dict]) -> BytesIO:
     doc.build(story)
     buffer.seek(0)
     return buffer
+
+
+@api_bp.route('/admin/audit/logs')
+@login_required
+def admin_audit_logs():
+    """Get audit log entries with filtering and pagination."""
+    _ensure_admin()
+    
+    page = max(int(request.args.get('page', 1) or 1), 1)
+    per_page = max(min(int(request.args.get('per_page', 50) or 50), 200), 10)
+    action_filter = request.args.get('action', '').strip()
+    user_filter = request.args.get('user', '').strip()
+    date_from_str = request.args.get('date_from', '').strip()
+    date_to_str = request.args.get('date_to', '').strip()
+    
+    query = AdminAuditLog.query
+    
+    # Filter by action
+    if action_filter:
+        query = query.filter(AdminAuditLog.action == action_filter)
+    
+    # Filter by user
+    if user_filter:
+        try:
+            user_id = int(user_filter)
+            query = query.filter(AdminAuditLog.user_id == user_id)
+        except ValueError:
+            pass
+    
+    # Filter by date range
+    if date_from_str:
+        try:
+            date_from = datetime.strptime(date_from_str, '%Y-%m-%d')
+            query = query.filter(AdminAuditLog.created_at >= date_from)
+        except ValueError:
+            pass
+    
+    if date_to_str:
+        try:
+            date_to = datetime.strptime(date_to_str, '%Y-%m-%d')
+            date_to = date_to.replace(hour=23, minute=59, second=59)
+            query = query.filter(AdminAuditLog.created_at <= date_to)
+        except ValueError:
+            pass
+    
+    # Order by newest first
+    query = query.order_by(AdminAuditLog.created_at.desc())
+    
+    # Paginate
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    
+    # Serialize results
+    items = []
+    for log in pagination.items:
+        user_name = log.user.name if log.user else 'System'
+        user_email = log.user.email if log.user else ''
+        items.append({
+            'id': log.id,
+            'user_id': log.user_id,
+            'user_name': user_name,
+            'user_email': user_email,
+            'action': log.action,
+            'details': log.details,
+            'created_at': log.created_at.isoformat(),
+            'created_at_display': log.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        })
+    
+    # Get available actions for filter
+    actions_query = db.session.query(AdminAuditLog.action).distinct().all()
+    available_actions = sorted([action[0] for action in actions_query])
+    
+    # Get available users for filter
+    users_query = db.session.query(User.id, User.name).all()
+    available_users = [{'id': user_id, 'name': name} for user_id, name in users_query]
+    
+    return jsonify({
+        'items': items,
+        'total': pagination.total,
+        'page': page,
+        'per_page': per_page,
+        'pages': pagination.pages,
+        'has_prev': pagination.has_prev,
+        'has_next': pagination.has_next,
+        'filters': {
+            'actions': available_actions,
+            'users': available_users,
+        }
+    })
 
 
 @api_bp.route('/report/pdf')

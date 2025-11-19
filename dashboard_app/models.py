@@ -87,6 +87,10 @@ class AttendanceRecord(db.Model):
 
     __table_args__ = (
         db.UniqueConstraint('record_date', 'user_id', name='uq_attendance_date_user'),
+        db.Index('idx_user_date', 'user_id', 'record_date'),
+        db.Index('idx_date_status', 'record_date', 'status'),
+        db.Index('idx_control_manager_date', 'control_manager', 'record_date'),
+        db.Index('idx_user_name', 'user_name'),
     )
 
     def to_dict(self) -> dict:
@@ -130,15 +134,20 @@ class AttendanceRecord(db.Model):
 
 
 class AdminAuditLog(db.Model):
-    __tablename__ = 'admin_audit_logs'
+    __tablename__ = 'admin_audit_log'
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    action = db.Column(db.String(128), nullable=False)
+    action = db.Column(db.String(128), nullable=False, index=True)
     details = db.Column(db.JSON, nullable=False, default=dict)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, index=True)
 
     user = db.relationship('User', backref=db.backref('audit_logs', lazy='dynamic'))
+
+    __table_args__ = (
+        db.Index('idx_audit_user_action', 'user_id', 'action'),
+        db.Index('idx_audit_created', 'created_at'),
+    )
 
 
 def ensure_schema() -> None:

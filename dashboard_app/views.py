@@ -44,3 +44,16 @@ def user_detail(user_key: str):
         user_name=current_user.name,
         is_admin='1' if is_admin else '0'
     )
+
+
+@views_bp.route('/admin/audit')
+@login_required
+def admin_audit():
+    """Admin audit log viewer page."""
+    if not getattr(current_user, 'is_admin', False):
+        abort(403)
+    return render_template(
+        'admin_audit.html',
+        user_name=current_user.name,
+        is_admin=True
+    )

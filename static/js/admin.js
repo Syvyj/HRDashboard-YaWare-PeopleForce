@@ -433,10 +433,13 @@
       body: JSON.stringify(payload)
     })
       .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to add ignored user');
-        }
-        return response.json();
+        return response.json().then((data) => {
+          if (!response.ok) {
+            // Return error message from server
+            throw new Error(data.error || 'Failed to add ignored user');
+          }
+          return data;
+        });
       })
       .then(() => {
         showAlert('success', `Користувача "${displayName}" додано в ignore. Оновлюємо списки...`);
@@ -446,7 +449,7 @@
       })
       .catch((error) => {
         console.error('Error adding to ignore:', error);
-        showAlert('danger', 'Помилка додавання в ignore');
+        showAlert('danger', `Помилка: ${error.message}`);
         button.disabled = false;
         button.innerHTML = '<i class="bi bi-eye-slash"></i> Ignore';
       });

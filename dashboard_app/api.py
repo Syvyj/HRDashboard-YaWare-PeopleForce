@@ -1475,7 +1475,11 @@ def admin_create_employee():
     name = (payload.get('name') or '').strip()
     email_raw = (payload.get('email') or '').strip()
     email = email_raw.lower()
+    
+    logger.info(f"Creating employee: name='{name}', email='{email}', ignored={payload.get('ignored')}")
+    
     if not name or not email:
+        logger.warning(f"Missing name or email: name='{name}', email='{email}'")
         return jsonify({'error': 'name and email are required'}), 400
 
     schedules = schedule_user_manager.load_users()
@@ -1485,12 +1489,28 @@ def admin_create_employee():
         schedules['users'] = users
 
     if name in users:
+        logger.warning(f"User already exists: name='{name}'")
+        # If trying to add as ignored and user already exists, just set ignored flag
+        if payload.get('ignored'):
+            users[name]['ignored'] = True
+            schedule_user_manager.save_users(schedules)
+            clear_user_schedule_cache()
+            logger.info(f"Updated existing user '{name}' to ignored=True")
+            return jsonify({'status': 'ok', 'name': name, 'entry': users[name], 'updated': True})
         return jsonify({'error': 'Користувач з таким ім\'ям вже існує'}), 409
 
     normalized_email = email.strip().lower()
     for existing_name, info in users.items():
         existing_email = str(info.get('email') or '').strip().lower()
         if existing_email and existing_email == normalized_email:
+            logger.warning(f"Email conflict: '{email}' already used by '{existing_name}'")
+            # If trying to add as ignored and email exists, update that user
+            if payload.get('ignored'):
+                users[existing_name]['ignored'] = True
+                schedule_user_manager.save_users(schedules)
+                clear_user_schedule_cache()
+                logger.info(f"Updated existing user '{existing_name}' to ignored=True (by email match)")
+                return jsonify({'status': 'ok', 'name': existing_name, 'entry': users[existing_name], 'updated': True})
             return jsonify({'error': f"Email вже використовується користувачем '{existing_name}'"}), 409
 
     def _clean(value: object) -> str | None:

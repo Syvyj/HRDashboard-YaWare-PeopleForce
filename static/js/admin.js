@@ -275,27 +275,15 @@
       diffSummaryEl.textContent = '';
       return;
     }
-    const parts = [];
     const counts = data.counts || {};
+    // Show only total count in base
     if (counts.local_total != null) {
-      parts.push(`В базе: ${counts.local_total}`);
+      diffSummaryEl.textContent = `В базе: ${counts.local_total}`;
+    } else if (data.generated_at) {
+      diffSummaryEl.textContent = `Обновлено ${new Date(data.generated_at).toLocaleString()}`;
+    } else {
+      diffSummaryEl.textContent = '';
     }
-    if (counts.local_missing_yaware) {
-      parts.push(`без YaWare: ${counts.local_missing_yaware}`);
-    }
-    if (counts.local_missing_peopleforce) {
-      parts.push(`без PeopleForce: ${counts.local_missing_peopleforce}`);
-    }
-    if (counts.yaware_only) {
-      parts.push(`только в YaWare: ${counts.yaware_only}`);
-    }
-    if (counts.peopleforce_only) {
-      parts.push(`только в PeopleForce: ${counts.peopleforce_only}`);
-    }
-    if (!parts.length && data.generated_at) {
-      parts.push(`Обновлено ${new Date(data.generated_at).toLocaleString()}`);
-    }
-    diffSummaryEl.textContent = parts.join(' • ');
   }
 
   function renderDiffList(target, items, options = {}) {
@@ -485,24 +473,18 @@
       row.appendChild(nameCell);
 
       const contactCell = document.createElement('td');
-      contactCell.innerHTML = [
-        item.email || '—',
-        item.user_id ? `YaWare ID: ${item.user_id}` : '',
-        item.peopleforce_id ? `PeopleForce ID: ${item.peopleforce_id}` : ''
-      ].filter(Boolean).map((value) => `<div>${value}</div>`).join('');
+      contactCell.innerHTML = `<div>${item.email || '—'}</div>`;
       row.appendChild(contactCell);
 
-      const projectCell = document.createElement('td');
-      projectCell.textContent = item.project || '—';
-      row.appendChild(projectCell);
-
-      const departmentCell = document.createElement('td');
-      departmentCell.textContent = item.department || '—';
-      row.appendChild(departmentCell);
-
-      const teamCell = document.createElement('td');
-      teamCell.textContent = item.team || '—';
-      row.appendChild(teamCell);
+      const hierarchyCell = document.createElement('td');
+      const hierarchyParts = [
+        item.project ? `<strong>${item.project}</strong>` : null,
+        item.department || null,
+        item.unit || null,
+        item.team || null
+      ].filter(Boolean);
+      hierarchyCell.innerHTML = hierarchyParts.length ? hierarchyParts.join(' → ') : '—';
+      row.appendChild(hierarchyCell);
 
       const managerCell = document.createElement('td');
       managerCell.innerHTML = item.control_manager != null ? `#${item.control_manager}` : '—';
@@ -510,12 +492,33 @@
 
       const actionsCell = document.createElement('td');
       actionsCell.className = 'text-center';
+      actionsCell.style.whiteSpace = 'nowrap';
+      
+      // Edit button
       const editBtn = document.createElement('button');
       editBtn.type = 'button';
-      editBtn.className = 'btn btn-sm btn-outline-primary employee-edit-btn';
+      editBtn.className = 'btn btn-sm btn-outline-primary me-1';
       editBtn.dataset.userPayload = JSON.stringify(item);
+      editBtn.classList.add('employee-edit-btn');
       editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+      editBtn.title = 'Редагувати';
       actionsCell.appendChild(editBtn);
+      
+      // Ignore/Unignore button
+      const ignoreBtn = document.createElement('button');
+      ignoreBtn.type = 'button';
+      ignoreBtn.dataset.userKey = item.user_key;
+      ignoreBtn.title = item.ignored ? 'Повернути в звіти' : 'Виключити зі звітів';
+      
+      if (item.ignored) {
+        ignoreBtn.className = 'btn btn-sm btn-outline-success employee-unignore-btn';
+        ignoreBtn.innerHTML = '<i class="bi bi-eye"></i>';
+      } else {
+        ignoreBtn.className = 'btn btn-sm btn-outline-warning employee-ignore-btn';
+        ignoreBtn.innerHTML = '<i class="bi bi-eye-slash"></i>';
+      }
+      
+      actionsCell.appendChild(ignoreBtn);
       row.appendChild(actionsCell);
 
       fragment.appendChild(row);
@@ -1338,6 +1341,72 @@
       selectedEmployeeFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
       renderEmployeeFilterModal();
       updateEmployeeSelectedFiltersDisplay();
+    });
+  }
+
+  // Event delegation for Ignore/Unignore buttons
+  if (employeeTbody) {
+    employeeTbody.addEventListener('click', (event) => {
+      const ignoreBtn = event.target.closest('.employee-ignore-btn');
+      const unignoreBtn = event.target.closest('.employee-unignore-btn');
+      
+      if (ignoreBtn) {
+        const userKey = ignoreBtn.dataset.userKey;
+        if (!userKey) return;
+        
+        if (!confirm('Виключити користувача зі звітів та diff? Користувач більше не буде відображатися в порівняннях.')) {
+          return;
+        }
+        
+        ignoreBtn.disabled = true;
+        
+        fetch(`/api/admin/employees/${encodeURIComponent(userKey)}/ignore`, { method: 'POST' })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Failed to ignore employee');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            showAlert('success', `Користувача "${data.user_name}" виключено зі звітів`);
+            fetchEmployees();
+            fetchDiffState();
+          })
+          .catch((error) => {
+            console.error('Error ignoring employee:', error);
+            showAlert('danger', 'Помилка виключення користувача');
+            ignoreBtn.disabled = false;
+          });
+      }
+      
+      if (unignoreBtn) {
+        const userKey = unignoreBtn.dataset.userKey;
+        if (!userKey) return;
+        
+        if (!confirm('Повернути користувача в звіти та diff?')) {
+          return;
+        }
+        
+        unignoreBtn.disabled = true;
+        
+        fetch(`/api/admin/employees/${encodeURIComponent(userKey)}/unignore`, { method: 'POST' })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Failed to unignore employee');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            showAlert('success', `Користувача "${data.user_name}" повернуто в звіти`);
+            fetchEmployees();
+            fetchDiffState();
+          })
+          .catch((error) => {
+            console.error('Error unignoring employee:', error);
+            showAlert('danger', 'Помилка повернення користувача');
+            unignoreBtn.disabled = false;
+          });
+      }
     });
   }
 

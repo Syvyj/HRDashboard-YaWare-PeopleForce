@@ -853,6 +853,14 @@ def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None =
         }
     
     location_value = _normalize_location_label(record.location)
+    
+    # Get ignored status from user_schedule or schedule parameter
+    ignored_status = False
+    if schedule and isinstance(schedule, dict):
+        ignored_status = schedule.get('ignored', False)
+    else:
+        ignored_status = user_schedule.get('ignored', False)
+    
     return {
         'user_key': record.user_id or record.user_email or record.user_name,
         'user_id': record.user_id,
@@ -870,6 +878,7 @@ def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None =
         'control_manager': record.control_manager,
         'peopleforce_id': peopleforce_id,
         'last_date': record.record_date.strftime('%Y-%m-%d'),
+        'ignored': ignored_status,
     }
 
 
@@ -2411,6 +2420,114 @@ def admin_adapt_employee(key: str):
         return jsonify({'error': f'Помилка адаптації: {str(exc)}'}), 500
 
 
+@api_bp.route('/admin/employees/<path:user_key>/ignore', methods=['POST'])
+@login_required
+def admin_ignore_employee(user_key: str):
+    """Add employee to ignore list (exclude from reports and diff)."""
+    _ensure_admin()
+    normalized = _normalize_user_key(user_key)
+    
+    try:
+        data = schedule_user_manager.load_users()
+        users = data.get('users', {}) if isinstance(data, dict) else {}
+        
+        # Find user
+        user_name = None
+        user_info = None
+        normalized_lower = normalized.lower()
+        
+        for name, info in users.items():
+            if not isinstance(info, dict):
+                continue
+            variants = {
+                name.strip().lower(),
+                str(info.get('email', '')).strip().lower(),
+                str(info.get('user_id', '')).strip().lower(),
+            }
+            if normalized_lower in variants:
+                user_name = name
+                user_info = info
+                break
+        
+        if not user_info:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Set ignored flag
+        user_info['ignored'] = True
+        schedule_user_manager.save_users(data)
+        clear_user_schedule_cache()
+        
+        _log_admin_action('ignore_employee', {
+            'user_name': user_name,
+            'user_key': user_key,
+        })
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'ok',
+            'user_name': user_name,
+            'ignored': True
+        })
+        
+    except Exception as exc:
+        logger.error(f"Error ignoring employee {user_key}: {exc}", exc_info=True)
+        return jsonify({'error': str(exc)}), 500
+
+
+@api_bp.route('/admin/employees/<path:user_key>/unignore', methods=['POST'])
+@login_required
+def admin_unignore_employee(user_key: str):
+    """Remove employee from ignore list (include in reports and diff)."""
+    _ensure_admin()
+    normalized = _normalize_user_key(user_key)
+    
+    try:
+        data = schedule_user_manager.load_users()
+        users = data.get('users', {}) if isinstance(data, dict) else {}
+        
+        # Find user
+        user_name = None
+        user_info = None
+        normalized_lower = normalized.lower()
+        
+        for name, info in users.items():
+            if not isinstance(info, dict):
+                continue
+            variants = {
+                name.strip().lower(),
+                str(info.get('email', '')).strip().lower(),
+                str(info.get('user_id', '')).strip().lower(),
+            }
+            if normalized_lower in variants:
+                user_name = name
+                user_info = info
+                break
+        
+        if not user_info:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Remove ignored flag
+        user_info.pop('ignored', None)
+        schedule_user_manager.save_users(data)
+        clear_user_schedule_cache()
+        
+        _log_admin_action('unignore_employee', {
+            'user_name': user_name,
+            'user_key': user_key,
+        })
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'ok',
+            'user_name': user_name,
+            'ignored': False
+        })
+        
+    except Exception as exc:
+        logger.error(f"Error unignoring employee {user_key}: {exc}", exc_info=True)
+        return jsonify({'error': str(exc)}), 500
+
+
 def _is_synced_employee(user: User) -> bool:
     """Перевіряє чи користувач є синхронізованим співробітником з PeopleForce."""
     names, emails, ids = _schedule_identity_sets()
@@ -3666,45 +3783,27 @@ def export_pdf():
         download_name=filename,
         mimetype='application/pdf'
     )
-IGNORED_DIFF_PERSONS: tuple[tuple[str, str], ...] = (
-    ('bilopolska valentyna', ''),
-    ('yerushchenko oksana', ''),
-    ('tkachenko oleksandra', 'a.tkachenko@evadav.com'),
-    ('sidorov boris', 'boris@evadav.com'),
-    ('sluchevskyi gleb', 'glebslu@gmail.com'),
-    ('marcinkute ilona', 'i.marcinkute@evadav.com'),
-    ('hr evrius', 'hr_cz@evrius.com'),
-    ('hreben katsiaryna', 'administration@evadav.com'),
-    ('bochkovskyi oleksandr', 'bochkovskiy@evadav.com'),
-    ('dolhov andrii', 'a.dolgov@evadav.com'),
-    ('dubinin egor', 'e.dubinin@evadav.com'),
-    ('hrechka oksana', 'o.hrechka@evadav.com'),
-    ('kliushyn anton', 'a.kliushyn@evadav.com'),
-    ('lyukshin boris', 'b.lyukshin@evadav.com'),
-    ('morkin serhii', 'ms@evadav.com'),
-    ('perchatochnikov maksim', ''),
-    ('poniatov anton', 'ponyatov.anton@gmail.com'),
-    ('postoi anton', ''),
-    ('raeva kateryna', 'kateadler17@gmail.com'),
-    ('test anna', 'alenakriv91@gmail.com'),
-    ('tkachenko ivan', 'i.tkachenko@evadav.com'),
-    ('volodin dmitriy', 'd.volodin@evadav.com'),
-    ('ovcharenko german', 'german@evadav.com'),
-    ('gorobinska tetiana', '')
-)
-
-IGNORED_DIFF_EMAILS = {email for _, email in IGNORED_DIFF_PERSONS if email}
-
-
 def _is_ignored_person(name: str | None, email: str | None) -> bool:
+    """Check if person should be ignored in reports and diff."""
     normalized_name = (name or '').strip().lower()
     normalized_email = (email or '').strip().lower()
     if not normalized_name and not normalized_email:
         return False
-    if (normalized_name, normalized_email) in IGNORED_DIFF_PERSONS:
-        return True
-    if normalized_email and normalized_email in IGNORED_DIFF_EMAILS:
-        return True
-    if (normalized_name, '') in IGNORED_DIFF_PERSONS:
-        return True
+    
+    # Check in user_schedules.json for dynamic ignore flag
+    schedules = load_user_schedules()
+    for user_name, info in schedules.items():
+        if not isinstance(info, dict):
+            continue
+        # Check if this user is marked as ignored
+        if not info.get('ignored', False):
+            continue
+        # Match by name
+        if normalized_name and user_name.strip().lower() == normalized_name:
+            return True
+        # Match by email
+        user_email = (info.get('email') or '').strip().lower()
+        if normalized_email and user_email == normalized_email:
+            return True
+    
     return False

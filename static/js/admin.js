@@ -406,9 +406,34 @@
   }
   
   function handleDiffIgnore(data, button) {
-    const displayName = data.name || data.display || data.email || 'користувача';
+    // Extract name and email from display or direct fields
+    const displayName = data.display || data.name || data.email || 'користувача';
     
-    if (!confirm(`Додати "${displayName}" в ignore?\n\nКористувач буде виключений зі звітів та diff-порівнянь.`)) {
+    // Parse name from display field if needed (format: "Name (email)")
+    let userName = data.name || '';
+    let userEmail = data.email || '';
+    
+    if (!userName && displayName && displayName.includes('(')) {
+      // Extract name and email from "Name (email)" format
+      const match = displayName.match(/^(.+?)\s*\(([^)]+)\)$/);
+      if (match) {
+        userName = match[1].trim();
+        userEmail = match[2].trim();
+      }
+    }
+    
+    // Fallback: use display as name if still empty
+    if (!userName) {
+      userName = displayName.split('(')[0].trim();
+    }
+    
+    // Validate we have required fields
+    if (!userName || !userEmail) {
+      showAlert('danger', `Не вдалося визначити ім'я або email користувача. Дані: ${JSON.stringify(data)}`);
+      return;
+    }
+    
+    if (!confirm(`Додати "${userName}" в ignore?\n\nКористувач буде виключений зі звітів та diff-порівнянь.`)) {
       return;
     }
     
@@ -417,8 +442,8 @@
     
     // Create minimal user entry with ignored flag
     const payload = {
-      name: data.name || '',
-      email: data.email || '',
+      name: userName,
+      email: userEmail,
       peopleforce_id: data.peopleforce_id || data.user_id || '',
       project: data.project || '',
       department: data.department || '',
@@ -426,6 +451,8 @@
       location: data.location || '',
       ignored: true  // Mark as ignored
     };
+    
+    console.log('Ignore payload:', payload);
     
     fetch('/api/admin/employees', {
       method: 'POST',
@@ -442,7 +469,7 @@
         });
       })
       .then(() => {
-        showAlert('success', `Користувача "${displayName}" додано в ignore. Оновлюємо списки...`);
+        showAlert('success', `Користувача "${userName}" додано в ignore. Оновлюємо списки...`);
         // Refresh diff and employee list
         fetchDiffState();
         fetchEmployees();

@@ -90,7 +90,7 @@ class AttendanceMonitor:
             schedule = UserSchedule(
                 name=name,
                 email=user_data.get('email', ''),
-                user_id=str(user_data['user_id']),
+                user_id=str(user_data.get('user_id', '')),
                 start_time=start_time,
                 location=_normalize_location(user_data.get('location', '')),
                 project=user_data.get('project', '') or "",

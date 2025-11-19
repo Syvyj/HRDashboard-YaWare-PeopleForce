@@ -276,6 +276,15 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
             half_day_amount=leave_amount,
             notes=schedule.note if schedule else None
         )
+        
+        # Якщо відпустка або за свій рахунок (не половина дня) - обнуляємо actual_start і productive час
+        if leave_reason and leave_amount != 0.5:
+            record.actual_start = None
+            record.productive_minutes = 0
+            record.not_categorized_minutes = 0
+            record.non_productive_minutes = 0
+            record.total_minutes = 0
+        
         record_key = _record_key_from_values(record.user_id, record.user_email, record.user_name)
         _apply_manual_overrides(record, record_key, manual_overrides, manual_aliases)
         db.session.add(record)

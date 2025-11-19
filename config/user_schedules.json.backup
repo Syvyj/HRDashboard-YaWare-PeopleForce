@@ -3274,30 +3274,6 @@
       "manager_name": "Harauskaya_Maryia",
       "location": "Warsaw office"
     },
-    "Zubkova Daryna": {
-      "user_name": "Zubkova Daryna",
-      "division_name": "Adnetwork",
-      "division_id": 54880,
-      "direction_name": "Sales",
-      "direction_id": null,
-      "unit_name": "Cpa Unit",
-      "unit_id": null,
-      "team_name": "Cpa Team",
-      "team_id": 128354,
-      "peopleforce_id": 396708,
-      "email": "d.zubkova@evadav.com",
-      "user_id": "7914604",
-      "start_time": "12:00",
-      "control_manager": 2,
-      "telegram_username": "Daryna_mbCPA",
-      "team_lead": "Tuzman Mykhailo",
-      "manager_telegram": "Mykhailo_mb_RT_TL",
-      "project": "AdNetwork Division",
-      "department": "CPA Team",
-      "position": "Media Buyer",
-      "manager_name": "Tuzman_Mykhailo",
-      "location": "Remote other countries"
-    },
     "Veranika Masiuk": {
       "user_name": "Masiuk Veranika",
       "division_name": "Consulting",
@@ -3996,9 +3972,270 @@
       "department": "Finance Direction",
       "start_time": "09:00",
       "control_manager": 3
+    },
+    "Bilopolska Valentyna": {
+      "peopleforce_id": "481896",
+      "location": "Warsaw office",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "Consulting Division",
+      "department": "Office team",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Bochkovskyi Oleksandr": {
+      "email": "bochkovskiy@evadav.com",
+      "peopleforce_id": "297320",
+      "location": "UA",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "AdNetwork Division",
+      "department": "R&D Unit AdNetwork",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Dolhov Andrii": {
+      "email": "a.dolgov@evadav.com",
+      "peopleforce_id": "297324",
+      "location": "UA",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "AdNetwork Division",
+      "department": "R&D Unit AdNetwork",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Gorobinska Tetiana": {
+      "peopleforce_id": "561556",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "HR Evrius": {
+      "email": "hr_cz@evrius.com",
+      "peopleforce_id": "174945",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Hreben Katsiaryna": {
+      "email": "administration@evadav.com",
+      "peopleforce_id": "548545",
+      "location": "Warsaw office",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "Consulting Division",
+      "department": "Office team",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Hrechka Oksana": {
+      "email": "o.hrechka@evadav.com",
+      "peopleforce_id": "481899",
+      "location": "Prague office",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "Consulting Division",
+      "department": "System admin Team",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Kliushyn Anton": {
+      "email": "a.kliushyn@evadav.com",
+      "peopleforce_id": "424999",
+      "location": "UA",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "AdNetwork Division",
+      "department": "Performance Team",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Morkin Serhii": {
+      "email": "ms@evadav.com",
+      "peopleforce_id": "297319",
+      "location": "UA",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "AdNetwork Division",
+      "department": "R&D Unit AdNetwork",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Ovcharenko German": {
+      "email": "german@evadav.com",
+      "peopleforce_id": "286559",
+      "location": "Prague office",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "APPS Division",
+      "department": "Media buying Unit",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Poniatov Anton": {
+      "email": "ponyatov.anton@gmail.com",
+      "peopleforce_id": "297325",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "AdNetwork Division",
+      "department": "R&D Unit AdNetwork",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Postoi Anton": {
+      "peopleforce_id": "536662",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "Agency Division",
+      "department": "Media buying Direction",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Perchatochnikov Maksim": {
+      "peopleforce_id": "323527",
+      "location": "UA",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "AdNetwork Division",
+      "department": "Performance Team",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Volodin Dmitriy": {
+      "email": "d.volodin@evadav.com",
+      "peopleforce_id": "266239",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "Agency Division",
+      "department": "Product Operations Unit",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Sidorov Boris": {
+      "email": "boris@evadav.com",
+      "peopleforce_id": "276195",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "department": true
+      },
+      "department": "CEO",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Sluchevskyi Gleb": {
+      "email": "glebslu@gmail.com",
+      "peopleforce_id": "266276",
+      "location": "Prague office",
+      "_manual_overrides": {
+        "location": true,
+        "department": true
+      },
+      "department": "CEO",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Test Anna": {
+      "email": "alenakriv91@gmail.com",
+      "peopleforce_id": "279182",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Raeva Kateryna": {
+      "email": "kateadler17@gmail.com",
+      "peopleforce_id": "303194",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "Consulting Division",
+      "department": "Marketing Direction",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Yerushchenko Oksana": {
+      "peopleforce_id": "507484",
+      "location": "Warsaw office",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "Consulting Division",
+      "department": "Office team",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Tkachenko Oleksandra": {
+      "email": "a.tkachenko@evadav.com",
+      "peopleforce_id": "273472",
+      "location": "Prague office",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "Consulting Division",
+      "department": "Control & Compliance Direction",
+      "ignored": true,
+      "control_manager": 3
+    },
+    "Tkachenko Ivan": {
+      "email": "i.tkachenko@evadav.com",
+      "peopleforce_id": "297321",
+      "location": "UA",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true
+      },
+      "project": "AdNetwork Division",
+      "department": "R&D Unit AdNetwork",
+      "ignored": true,
+      "control_manager": 3
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-19T11:28:00.051631"
+    "last_updated": "2025-11-19T12:56:13.869080"
   }
 }

@@ -250,6 +250,17 @@ def _normalize_user_key(user_key: str) -> str:
     return unquote(user_key).strip()
 
 
+def _normalize_name(name: str) -> str:
+    """Normalize name for matching: lowercase, single spaces, sorted words."""
+    if not name:
+        return ''
+    # Remove extra spaces, lowercase
+    normalized = ' '.join(name.lower().split())
+    # Split into words and sort (so "Maksym Kudko" == "Kudko Maksym")
+    words = sorted(normalized.split())
+    return ' '.join(words)
+
+
 def _diff_key_candidates(*values) -> set[str]:
     keys: set[str] = set()
     for value in values:
@@ -258,6 +269,11 @@ def _diff_key_candidates(*values) -> set[str]:
         text = str(value).strip().lower()
         if text:
             keys.add(text)
+            # Add normalized name variant
+            if '@' not in text:  # It's a name, not email
+                normalized = _normalize_name(text)
+                if normalized:
+                    keys.add(normalized)
     return keys
 
 
@@ -340,6 +356,20 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
                 email = (info.get('email') or '').strip().lower()
                 if email:
                     schedule_by_email[email] = info
+    
+    # Get YaWare entries to match by email and name
+    yaware_entries, _ = _extract_yaware_entries()
+    yaware_by_email = {}
+    yaware_by_name = {}
+    for entry in yaware_entries:
+        email = (entry.get('email') or '').strip().lower()
+        if email:
+            yaware_by_email[email] = entry
+        name = entry.get('name', '')
+        if name:
+            normalized_name = _normalize_name(name)
+            if normalized_name:
+                yaware_by_name[normalized_name] = entry
 
     entries: list[dict] = []
     today = date.today()
@@ -379,15 +409,30 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
         if isinstance(division_obj, dict):
             division_name = (division_obj.get('name') or '').strip()
         
-        # Get position, telegram, team_lead from schedule data (cached from sync)
+        # Get position, telegram, team_lead, yaware_id, unit, control_manager from schedule data (cached from sync)
         position_name = ''
         telegram_handle = ''
         team_lead_name = ''
+        yaware_user_id = ''
+        unit_name = ''
+        control_manager_id = None
         schedule_info = schedule_by_email.get(email)
         if schedule_info:
             position_name = (schedule_info.get('position') or '').strip()
             telegram_handle = (schedule_info.get('telegram_username') or '').strip()
             team_lead_name = (schedule_info.get('team_lead') or '').strip()
+            yaware_user_id = str(schedule_info.get('user_id') or '').strip()
+            unit_name = (schedule_info.get('unit') or schedule_info.get('unit_name') or '').strip()
+            control_manager_id = schedule_info.get('control_manager')
+        
+        # If not in schedule, try to match with YaWare by email first, then by normalized name
+        if not yaware_user_id:
+            yaware_match = yaware_by_email.get(email)
+            if not yaware_match:
+                normalized_name = _normalize_name(full_name)
+                yaware_match = yaware_by_name.get(normalized_name)
+            if yaware_match:
+                yaware_user_id = str(yaware_match.get('user_id') or '').strip()
         
         keys = _diff_key_candidates(full_name, email, employee_id)
         entries.append({
@@ -395,12 +440,15 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
             'email': email,
             'user_id': employee_id,
              'peopleforce_id': employee_id,
+             'yaware_user_id': yaware_user_id,
              'department': department_name,
+             'unit': unit_name,
              'project': division_name,
              'location': location_name,
              'position': position_name,
              'telegram': telegram_handle,
              'team_lead': team_lead_name,
+             'control_manager': control_manager_id,
              'hire_date': hire_date.isoformat() if hire_date else None,
             'keys': keys,
         })
@@ -479,10 +527,13 @@ def _generate_user_diff(force_refresh: bool = False) -> dict:
                 'user_id': item['user_id'],
                 'name': item['name'],
                 'peopleforce_id': item.get('peopleforce_id'),
+                'yaware_user_id': item.get('yaware_user_id'),
                 'project': item.get('project'),
                 'department': item.get('department'),
+                'unit': item.get('unit'),
                 'team': item.get('team'),
                 'location': _normalize_location_label(item.get('location')) or (item.get('location') or ''),
+                'control_manager': item.get('control_manager'),
                 'hire_date': item.get('hire_date'),
             }
             for item in peopleforce_only
@@ -1478,9 +1529,9 @@ def admin_create_employee():
     
     logger.info(f"Creating employee: name='{name}', email='{email}', ignored={payload.get('ignored')}")
     
-    if not name or not email:
-        logger.warning(f"Missing name or email: name='{name}', email='{email}'")
-        return jsonify({'error': 'name and email are required'}), 400
+    if not name:
+        logger.warning(f"Missing name: name='{name}'")
+        return jsonify({'error': 'name is required'}), 400
 
     schedules = schedule_user_manager.load_users()
     users = schedules.get('users')
@@ -1499,19 +1550,21 @@ def admin_create_employee():
             return jsonify({'status': 'ok', 'name': name, 'entry': users[name], 'updated': True})
         return jsonify({'error': 'Користувач з таким ім\'ям вже існує'}), 409
 
-    normalized_email = email.strip().lower()
-    for existing_name, info in users.items():
-        existing_email = str(info.get('email') or '').strip().lower()
-        if existing_email and existing_email == normalized_email:
-            logger.warning(f"Email conflict: '{email}' already used by '{existing_name}'")
-            # If trying to add as ignored and email exists, update that user
-            if payload.get('ignored'):
-                users[existing_name]['ignored'] = True
-                schedule_user_manager.save_users(schedules)
-                clear_user_schedule_cache()
-                logger.info(f"Updated existing user '{existing_name}' to ignored=True (by email match)")
-                return jsonify({'status': 'ok', 'name': existing_name, 'entry': users[existing_name], 'updated': True})
-            return jsonify({'error': f"Email вже використовується користувачем '{existing_name}'"}), 409
+    # Check for email conflicts only if email is provided
+    if email:
+        normalized_email = email.strip().lower()
+        for existing_name, info in users.items():
+            existing_email = str(info.get('email') or '').strip().lower()
+            if existing_email and existing_email == normalized_email:
+                logger.warning(f"Email conflict: '{email}' already used by '{existing_name}'")
+                # If trying to add as ignored and email exists, update that user
+                if payload.get('ignored'):
+                    users[existing_name]['ignored'] = True
+                    schedule_user_manager.save_users(schedules)
+                    clear_user_schedule_cache()
+                    logger.info(f"Updated existing user '{existing_name}' to ignored=True (by email match)")
+                    return jsonify({'status': 'ok', 'name': existing_name, 'entry': users[existing_name], 'updated': True})
+                return jsonify({'error': f"Email вже використовується користувачем '{existing_name}'"}), 409
 
     def _clean(value: object) -> str | None:
         if isinstance(value, str):
@@ -1528,9 +1581,9 @@ def admin_create_employee():
         except (TypeError, ValueError):
             return jsonify({'error': 'control_manager must be integer or empty'}), 400
 
-    entry: dict[str, object] = {
-        'email': normalized_email,
-    }
+    entry: dict[str, object] = {}
+    if email:
+        entry['email'] = email.strip().lower()
     yaware_id = _clean(payload.get('user_id'))
     if yaware_id:
         entry['user_id'] = yaware_id
@@ -2445,6 +2498,113 @@ def admin_adapt_employee(key: str):
         return jsonify({'error': f'Помилка адаптації: {str(exc)}'}), 500
 
 
+@api_bp.route('/admin/adapt-hierarchy', methods=['POST'])
+@login_required
+def admin_adapt_hierarchy():
+    """Адаптує ієрархію без збереження користувача (для diff add modal)."""
+    _ensure_admin()
+    
+    try:
+        payload = request.get_json() or {}
+        
+        project = (payload.get('project') or '').strip()
+        department = (payload.get('department') or '').strip()
+        unit = (payload.get('unit') or '').strip()
+        team = (payload.get('team') or '').strip()
+        
+        if not any([project, department, unit, team]):
+            return jsonify({'error': 'Не вказано жодного поля ієрархії'}), 400
+        
+        # Завантажуємо Level_Grade.json
+        level_grade_path = os.path.join(
+            current_app.config.get('BASE_DIR', os.path.dirname(os.path.dirname(__file__))),
+            'config',
+            'Level_Grade.json'
+        )
+        
+        if not os.path.exists(level_grade_path):
+            return jsonify({'error': 'Level_Grade.json не знайдено'}), 404
+        
+        with open(level_grade_path, 'r', encoding='utf-8') as f:
+            level_grade_data = json.load(f)
+        
+        logger.info(f"Adapting hierarchy: project={project}, department={department}, unit={unit}, team={team}")
+        
+        # Шукаємо найкраще співпадіння
+        best_match = None
+        best_score = 0
+        
+        for entry in level_grade_data:
+            entry_division = entry.get('Division', '').strip()
+            entry_direction = entry.get('Direction', '').strip()
+            entry_unit = entry.get('Unit', '').strip()
+            entry_team = entry.get('Team', '').strip()
+            
+            score = 0
+            
+            # Direction (department)
+            if department:
+                if entry_direction and entry_direction != '-' and entry_direction.lower() == department.lower():
+                    score += 10
+                elif entry_team and entry_team != '-' and entry_team.lower() == department.lower():
+                    score += 10
+                elif entry_unit and entry_unit != '-' and entry_unit.lower() == department.lower():
+                    score += 10
+            
+            # Unit
+            if unit and entry_unit and entry_unit != '-':
+                if entry_unit.lower() == unit.lower():
+                    score += 5
+            
+            # Team
+            if team and entry_team and entry_team != '-':
+                if entry_team.lower() == team.lower():
+                    score += 5
+            
+            # Division (project)
+            if entry_division and entry_division != '-' and project:
+                if entry_division.lower() == project.lower():
+                    score += 1
+            
+            if score > best_score:
+                best_score = score
+                best_match = entry
+        
+        if not best_match:
+            return jsonify({'error': 'Не знайдено співпадіння в Level_Grade.json'}), 404
+        
+        logger.info(f"Found best match: {best_match} (score={best_score})")
+        
+        # Формуємо адаптовані дані
+        adapted = {
+            'project': (best_match.get('Division', '').strip() or '').replace('-', ''),
+            'department': (best_match.get('Direction', '').strip() or '').replace('-', ''),
+            'unit': (best_match.get('Unit', '').strip() or '').replace('-', ''),
+            'team': (best_match.get('Team', '').strip() or '').replace('-', ''),
+        }
+        
+        # Визначаємо які поля змінилися
+        updated_fields = []
+        if project and adapted['project'] != project:
+            updated_fields.append('project')
+        if department and adapted['department'] != department:
+            updated_fields.append('department')
+        if unit and adapted['unit'] != unit:
+            updated_fields.append('unit')
+        if team and adapted['team'] != team:
+            updated_fields.append('team')
+        
+        return jsonify({
+            'status': 'ok',
+            'adapted': adapted,
+            'updated_fields': updated_fields,
+        })
+        
+    except Exception as exc:
+        logger.error(f"Error adapting hierarchy: {exc}", exc_info=True)
+        return jsonify({'error': f'Помилка адаптації: {str(exc)}'}), 500
+
+
 @api_bp.route('/admin/employees/<path:user_key>/ignore', methods=['POST'])
 @login_required
 def admin_ignore_employee(user_key: str):
@@ -2988,9 +3148,16 @@ def api_update_user_record(user_key: str, record_id: int):
     update_duration('corrected_total_minutes', 'corrected_total_minutes')
 
     if 'status' in payload:
-        status = str(payload.get('status') or '').strip()
+        status = str(payload.get('status') or '').strip().lower()
         if status:
             record.status = status
+            # Якщо статус "отпуск" або "за свой счет" - обнуляємо actual_start і продуктивний час
+            if status in ('отпуск', 'за свой счет'):
+                record.actual_start = None
+                record.productive_minutes = 0
+                record.not_categorized_minutes = 0
+                record.non_productive_minutes = 0
+                # total_minutes залишаємо, бо може бути скоригований вручну
         else:
             record.status = ''
         set_manual_flag('status')

@@ -1,299 +1,337 @@
 <!DOCTYPE html>
 <html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Audit Log - YaWare Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
     <style>
-        .audit-action {
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            padding: 2px 6px;
-            background: #e9ecef;
-            border-radius: 4px;
-        }
-        .audit-details {
-            font-size: 0.85em;
-            max-height: 200px;
-            overflow-y: auto;
-            background: #f8f9fa;
-            padding: 8px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-        }
-        .audit-details pre {
-            margin: 0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        .filter-section {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
+      .audit-action {
+        font-family: "Courier New", monospace;
+        font-size: 0.9em;
+        padding: 2px 6px;
+        background: #e9ecef;
+        border-radius: 4px;
+      }
+      .audit-details {
+        font-size: 0.85em;
+        max-height: 200px;
+        overflow-y: auto;
+        background: #f8f9fa;
+        padding: 8px;
+        border-radius: 4px;
+        font-family: "Courier New", monospace;
+      }
+      .audit-details pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      .filter-section {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">
-                <i class="bi bi-speedometer2"></i> YaWare Dashboard
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">
-                            <i class="bi bi-house"></i> Головна
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin">
-                            <i class="bi bi-gear"></i> Адміністрування
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/admin/audit">
-                            <i class="bi bi-clock-history"></i> Audit Log
-                        </a>
-                    </li>
-                </ul>
-                <span class="navbar-text">
-                    <i class="bi bi-person-circle"></i> {{ user_name }}
-                </span>
-            </div>
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <i class="bi bi-speedometer2"></i> YaWare Dashboard
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="bi bi-house"></i> Головна
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">
+                <i class="bi bi-gear"></i> Адміністрування
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/admin/audit">
+                <i class="bi bi-clock-history"></i> Audit Log
+              </a>
+            </li>
+          </ul>
+          <span class="navbar-text">
+            <i class="bi bi-person-circle"></i> {{ user_name }}
+          </span>
         </div>
+      </div>
     </nav>
 
     <div class="container-fluid mt-4">
-        <div class="row mb-3">
-            <div class="col">
-                <h2>
-                    <i class="bi bi-clock-history"></i> Admin Audit Log
-                    <small class="text-muted">Історія адміністративних дій</small>
-                </h2>
-            </div>
+      <div class="row mb-3">
+        <div class="col">
+          <h2>
+            <i class="bi bi-clock-history"></i> Admin Audit Log
+            <small class="text-muted">Історія адміністративних дій</small>
+          </h2>
         </div>
+      </div>
 
-        <!-- Filters -->
-        <div class="filter-section">
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <label for="actionFilter" class="form-label">Тип дії:</label>
-                    <select id="actionFilter" class="form-select">
-                        <option value="">Всі дії</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="userFilter" class="form-label">Користувач:</label>
-                    <select id="userFilter" class="form-select">
-                        <option value="">Всі користувачі</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="dateFrom" class="form-label">Дата від:</label>
-                    <input type="date" id="dateFrom" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <label for="dateTo" class="form-label">Дата до:</label>
-                    <input type="date" id="dateTo" class="form-control">
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button id="applyFilters" class="btn btn-primary w-100">
-                        <i class="bi bi-funnel"></i> Фільтрувати
-                    </button>
-                </div>
-            </div>
+      <!-- Filters -->
+      <div class="filter-section">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label for="actionFilter" class="form-label">Тип дії:</label>
+            <select id="actionFilter" class="form-select">
+              <option value="">Всі дії</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="userFilter" class="form-label">Користувач:</label>
+            <select id="userFilter" class="form-select">
+              <option value="">Всі користувачі</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="dateFrom" class="form-label">Дата від:</label>
+            <input type="date" id="dateFrom" class="form-control" />
+          </div>
+          <div class="col-md-2">
+            <label for="dateTo" class="form-label">Дата до:</label>
+            <input type="date" id="dateTo" class="form-control" />
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button id="applyFilters" class="btn btn-primary w-100">
+              <i class="bi bi-funnel"></i> Фільтрувати
+            </button>
+          </div>
         </div>
+      </div>
 
-        <!-- Stats -->
-        <div class="row mb-3">
-            <div class="col">
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i>
-                    Знайдено записів: <strong id="totalRecords">0</strong>
-                    <span class="ms-3">Сторінка <strong id="currentPage">1</strong> з <strong id="totalPages">1</strong></span>
+      <!-- Stats -->
+      <div class="row mb-3">
+        <div class="col">
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Знайдено записів: <strong id="totalRecords">0</strong>
+            <span class="ms-3"
+              >Сторінка <strong id="currentPage">1</strong> з
+              <strong id="totalPages">1</strong></span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Audit log table -->
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th style="width: 150px">Дата/Час</th>
+              <th style="width: 150px">Користувач</th>
+              <th style="width: 200px">Дія</th>
+              <th>Деталі</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody">
+            <tr>
+              <td colspan="4" class="text-center">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Завантаження...</span>
                 </div>
-            </div>
-        </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        <!-- Audit log table -->
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th style="width: 150px;">Дата/Час</th>
-                        <th style="width: 150px;">Користувач</th>
-                        <th style="width: 200px;">Дія</th>
-                        <th>Деталі</th>
-                    </tr>
-                </thead>
-                <tbody id="auditTableBody">
-                    <tr>
-                        <td colspan="4" class="text-center">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Завантаження...</span>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination -->
-        <nav aria-label="Audit log pagination">
-            <ul class="pagination justify-content-center" id="pagination">
-                <!-- Pagination will be inserted here -->
-            </ul>
-        </nav>
+      <!-- Pagination -->
+      <nav aria-label="Audit log pagination">
+        <ul class="pagination justify-content-center" id="pagination">
+          <!-- Pagination will be inserted here -->
+        </ul>
+      </nav>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let currentPage = 1;
-        let currentFilters = {};
+      let currentPage = 1;
+      let currentFilters = {};
 
-        // Load audit logs
-        async function loadAuditLogs(page = 1) {
-            const params = new URLSearchParams({
-                page: page,
-                per_page: 50,
-                ...currentFilters
-            });
+      // Load audit logs
+      async function loadAuditLogs(page = 1) {
+        const params = new URLSearchParams({
+          page: page,
+          per_page: 50,
+          ...currentFilters,
+        });
 
-            try {
-                const response = await fetch(`/api/admin/audit/logs?${params}`);
-                const data = await response.json();
+        try {
+          const response = await fetch(`/api/admin/audit/logs?${params}`);
+          const data = await response.json();
 
-                // Update stats
-                document.getElementById('totalRecords').textContent = data.total;
-                document.getElementById('currentPage').textContent = data.page;
-                document.getElementById('totalPages').textContent = data.pages;
+          // Update stats
+          document.getElementById("totalRecords").textContent = data.total;
+          document.getElementById("currentPage").textContent = data.page;
+          document.getElementById("totalPages").textContent = data.pages;
 
-                // Update table
-                const tbody = document.getElementById('auditTableBody');
-                if (data.items.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Записів не знайдено</td></tr>';
-                } else {
-                    tbody.innerHTML = data.items.map(item => `
+          // Update table
+          const tbody = document.getElementById("auditTableBody");
+          if (data.items.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="4" class="text-center text-muted">Записів не знайдено</td></tr>';
+          } else {
+            tbody.innerHTML = data.items
+              .map(
+                (item) => `
                         <tr>
                             <td><small>${item.created_at_display}</small></td>
                             <td>
                                 <strong>${escapeHtml(item.user_name)}</strong>
-                                ${item.user_email ? `<br><small class="text-muted">${escapeHtml(item.user_email)}</small>` : ''}
+                                ${
+                                  item.user_email
+                                    ? `<br><small class="text-muted">${escapeHtml(
+                                        item.user_email
+                                      )}</small>`
+                                    : ""
+                                }
                             </td>
-                            <td><span class="audit-action">${escapeHtml(item.action)}</span></td>
+                            <td><span class="audit-action">${escapeHtml(
+                              item.action
+                            )}</span></td>
                             <td>
                                 <div class="audit-details">
-                                    <pre>${JSON.stringify(item.details, null, 2)}</pre>
+                                    <pre>${JSON.stringify(
+                                      item.details,
+                                      null,
+                                      2
+                                    )}</pre>
                                 </div>
                             </td>
                         </tr>
-                    `).join('');
-                }
+                    `
+              )
+              .join("");
+          }
 
-                // Update pagination
-                updatePagination(data);
+          // Update pagination
+          updatePagination(data);
 
-                // Update filters (first time only)
-                if (page === 1 && Object.keys(currentFilters).length === 0) {
-                    updateFilterOptions(data.filters);
-                }
+          // Update filters (first time only)
+          if (page === 1 && Object.keys(currentFilters).length === 0) {
+            updateFilterOptions(data.filters);
+          }
 
-                currentPage = page;
-            } catch (error) {
-                console.error('Failed to load audit logs:', error);
-                document.getElementById('auditTableBody').innerHTML = 
-                    '<tr><td colspan="4" class="text-center text-danger">Помилка завантаження даних</td></tr>';
-            }
+          currentPage = page;
+        } catch (error) {
+          console.error("Failed to load audit logs:", error);
+          document.getElementById("auditTableBody").innerHTML =
+            '<tr><td colspan="4" class="text-center text-danger">Помилка завантаження даних</td></tr>';
         }
+      }
 
-        function updateFilterOptions(filters) {
-            // Update action filter
-            const actionFilter = document.getElementById('actionFilter');
-            filters.actions.forEach(action => {
-                const option = document.createElement('option');
-                option.value = action;
-                option.textContent = action;
-                actionFilter.appendChild(option);
-            });
+      function updateFilterOptions(filters) {
+        // Update action filter
+        const actionFilter = document.getElementById("actionFilter");
+        filters.actions.forEach((action) => {
+          const option = document.createElement("option");
+          option.value = action;
+          option.textContent = action;
+          actionFilter.appendChild(option);
+        });
 
-            // Update user filter
-            const userFilter = document.getElementById('userFilter');
-            filters.users.forEach(user => {
-                const option = document.createElement('option');
-                option.value = user.id;
-                option.textContent = user.name;
-                userFilter.appendChild(option);
-            });
-        }
+        // Update user filter
+        const userFilter = document.getElementById("userFilter");
+        filters.users.forEach((user) => {
+          const option = document.createElement("option");
+          option.value = user.id;
+          option.textContent = user.name;
+          userFilter.appendChild(option);
+        });
+      }
 
-        function updatePagination(data) {
-            const pagination = document.getElementById('pagination');
-            let html = '';
+      function updatePagination(data) {
+        const pagination = document.getElementById("pagination");
+        let html = "";
 
-            // Previous button
-            html += `<li class="page-item ${!data.has_prev ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="loadAuditLogs(${data.page - 1}); return false;">
+        // Previous button
+        html += `<li class="page-item ${!data.has_prev ? "disabled" : ""}">
+                <a class="page-link" href="#" onclick="loadAuditLogs(${
+                  data.page - 1
+                }); return false;">
                     <i class="bi bi-chevron-left"></i> Попередня
                 </a>
             </li>`;
 
-            // Page numbers
-            const maxPages = 5;
-            let startPage = Math.max(1, data.page - Math.floor(maxPages / 2));
-            let endPage = Math.min(data.pages, startPage + maxPages - 1);
-            startPage = Math.max(1, endPage - maxPages + 1);
+        // Page numbers
+        const maxPages = 5;
+        let startPage = Math.max(1, data.page - Math.floor(maxPages / 2));
+        let endPage = Math.min(data.pages, startPage + maxPages - 1);
+        startPage = Math.max(1, endPage - maxPages + 1);
 
-            for (let i = startPage; i <= endPage; i++) {
-                html += `<li class="page-item ${i === data.page ? 'active' : ''}">
+        for (let i = startPage; i <= endPage; i++) {
+          html += `<li class="page-item ${i === data.page ? "active" : ""}">
                     <a class="page-link" href="#" onclick="loadAuditLogs(${i}); return false;">${i}</a>
                 </li>`;
-            }
+        }
 
-            // Next button
-            html += `<li class="page-item ${!data.has_next ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="loadAuditLogs(${data.page + 1}); return false;">
+        // Next button
+        html += `<li class="page-item ${!data.has_next ? "disabled" : ""}">
+                <a class="page-link" href="#" onclick="loadAuditLogs(${
+                  data.page + 1
+                }); return false;">
                     Наступна <i class="bi bi-chevron-right"></i>
                 </a>
             </li>`;
 
-            pagination.innerHTML = html;
-        }
+        pagination.innerHTML = html;
+      }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
 
-        // Apply filters
-        document.getElementById('applyFilters').addEventListener('click', () => {
-            currentFilters = {};
-            
-            const action = document.getElementById('actionFilter').value;
-            if (action) currentFilters.action = action;
-            
-            const user = document.getElementById('userFilter').value;
-            if (user) currentFilters.user = user;
-            
-            const dateFrom = document.getElementById('dateFrom').value;
-            if (dateFrom) currentFilters.date_from = dateFrom;
-            
-            const dateTo = document.getElementById('dateTo').value;
-            if (dateTo) currentFilters.date_to = dateTo;
-            
-            loadAuditLogs(1);
-        });
+      // Apply filters
+      document.getElementById("applyFilters").addEventListener("click", () => {
+        currentFilters = {};
 
-        // Initial load
+        const action = document.getElementById("actionFilter").value;
+        if (action) currentFilters.action = action;
+
+        const user = document.getElementById("userFilter").value;
+        if (user) currentFilters.user = user;
+
+        const dateFrom = document.getElementById("dateFrom").value;
+        if (dateFrom) currentFilters.date_from = dateFrom;
+
+        const dateTo = document.getElementById("dateTo").value;
+        if (dateTo) currentFilters.date_to = dateTo;
+
         loadAuditLogs(1);
+      });
+
+      // Initial load
+      loadAuditLogs(1);
     </script>
-</body>
+  </body>
 </html>

@@ -52,6 +52,7 @@
   const diffAddPeopleforce = document.getElementById('diff-add-peopleforce');
   const diffAddProject = document.getElementById('diff-add-project');
   const diffAddDepartment = document.getElementById('diff-add-department');
+  const diffAddUnit = document.getElementById('diff-add-unit');
   const diffAddTeam = document.getElementById('diff-add-team');
   const diffAddLocation = document.getElementById('diff-add-location');
   const diffAddPlanStart = document.getElementById('diff-add-plan-start');
@@ -406,12 +407,16 @@
   }
   
   function handleDiffIgnore(data, button) {
+    console.log('handleDiffIgnore called with data:', data);
+    
     // Extract name and email from display or direct fields
     const displayName = data.display || data.name || data.email || 'користувача';
     
     // Parse name from display field if needed (format: "Name (email)")
     let userName = data.name || '';
     let userEmail = data.email || '';
+    
+    console.log('Initial values - userName:', userName, 'userEmail:', userEmail, 'displayName:', displayName);
     
     if (!userName && displayName && displayName.includes('(')) {
       // Extract name and email from "Name (email)" format
@@ -427,9 +432,9 @@
       userName = displayName.split('(')[0].trim();
     }
     
-    // Validate we have required fields
-    if (!userName || !userEmail) {
-      showAlert('danger', `Не вдалося визначити ім'я або email користувача. Дані: ${JSON.stringify(data)}`);
+    // Validate we have at least name
+    if (!userName) {
+      showAlert('danger', `Не вдалося визначити ім'я користувача. Дані: ${JSON.stringify(data)}`);
       return;
     }
     
@@ -443,7 +448,6 @@
     // Create minimal user entry with ignored flag
     const payload = {
       name: userName,
-      email: userEmail,
       peopleforce_id: data.peopleforce_id || data.user_id || '',
       project: data.project || '',
       department: data.department || '',
@@ -451,6 +455,11 @@
       location: data.location || '',
       ignored: true  // Mark as ignored
     };
+    
+    // Add email only if present
+    if (userEmail) {
+      payload.email = userEmail;
+    }
     
     console.log('Ignore payload:', payload);
     
@@ -510,9 +519,11 @@
     diffAddName.value = (data && data.name) || (data && data.display) || '';
     diffAddEmail.value = (data && data.email) || '';
     diffAddPeopleforce.value = (data && (data.peopleforce_id || data.user_id)) || '';
-    diffAddYaware.value = (data && (data.yaware_user_id || data.yaware_id)) || '';
+    // Populate YaWare ID from multiple possible fields
+    diffAddYaware.value = (data && (data.yaware_user_id || data.yaware_id || data.user_id_yaware)) || '';
     diffAddProject.value = (data && data.project) || '';
     diffAddDepartment.value = (data && data.department) || '';
+    diffAddUnit.value = (data && data.unit) || '';
     diffAddTeam.value = (data && data.team) || '';
     diffAddLocation.value = (data && data.location) || '';
     diffAddPlanStart.value = (data && (data.plan_start || data.start_time)) || '09:00';
@@ -980,6 +991,7 @@
         peopleforce_id: (diffAddPeopleforce ? diffAddPeopleforce.value : '').trim(),
         project: (diffAddProject ? diffAddProject.value : '').trim(),
         department: (diffAddDepartment ? diffAddDepartment.value : '').trim(),
+        unit: (diffAddUnit ? diffAddUnit.value : '').trim(),
         team: (diffAddTeam ? diffAddTeam.value : '').trim(),
         location: (diffAddLocation ? diffAddLocation.value : '').trim(),
         plan_start: (diffAddPlanStart ? diffAddPlanStart.value : '').trim(),
@@ -1011,6 +1023,67 @@
         })
         .finally(() => {
           setButtonLoading(diffAddSubmit, false);
+        });
+    });
+  }
+
+  const diffAddAdaptBtn = document.getElementById('diff-add-adapt-btn');
+  if (diffAddAdaptBtn) {
+    diffAddAdaptBtn.addEventListener('click', () => {
+      const project = (diffAddProject ? diffAddProject.value : '').trim();
+      const department = (diffAddDepartment ? diffAddDepartment.value : '').trim();
+      const unit = (diffAddUnit ? diffAddUnit.value : '').trim();
+      const team = (diffAddTeam ? diffAddTeam.value : '').trim();
+
+      if (!project && !department && !unit && !team) {
+        showAlert('Заповніть хоча б одне поле ієрархії для адаптації', 'warning');
+        return;
+      }
+
+      diffAddAdaptBtn.disabled = true;
+      const originalText = diffAddAdaptBtn.innerHTML;
+      diffAddAdaptBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Адаптація...';
+
+      // Use the same adapt endpoint with temporary data
+      const tempPayload = {
+        project: project,
+        department: department,
+        unit: unit,
+        team: team
+      };
+
+      fetch('/api/admin/adapt-hierarchy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(tempPayload),
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.error || 'Не вдалося адаптувати дані');
+          }
+
+          const adapted = data.adapted || {};
+          
+          // Оновлюємо поля в формі
+          if (adapted.project !== undefined) diffAddProject.value = adapted.project || '';
+          if (adapted.department !== undefined) diffAddDepartment.value = adapted.department || '';
+          if (adapted.unit !== undefined) diffAddUnit.value = adapted.unit || '';
+          if (adapted.team !== undefined) diffAddTeam.value = adapted.team || '';
+
+          const updatedFields = data.updated_fields || [];
+          if (updatedFields.length === 0) {
+            showAlert('Дані вже адаптовані відповідно до Level_Grade.json', 'info');
+          } else {
+            showAlert(`Адаптовано поля: ${updatedFields.join(', ')}`, 'success');
+          }
+        })
+        .catch((error) => showAlert(error.message))
+        .finally(() => {
+          diffAddAdaptBtn.disabled = false;
+          diffAddAdaptBtn.innerHTML = originalText;
         });
     });
   }

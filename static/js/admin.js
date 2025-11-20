@@ -1049,7 +1049,8 @@
         project: project,
         department: department,
         unit: unit,
-        team: team
+        team: team,
+        location: (diffAddLocation ? diffAddLocation.value : '').trim()
       };
 
       fetch('/api/admin/adapt-hierarchy', {
@@ -1072,6 +1073,10 @@
           if (adapted.department !== undefined) diffAddDepartment.value = adapted.department || '';
           if (adapted.unit !== undefined) diffAddUnit.value = adapted.unit || '';
           if (adapted.team !== undefined) diffAddTeam.value = adapted.team || '';
+          if (adapted.location !== undefined) diffAddLocation.value = adapted.location || '';
+          if (adapted.control_manager !== undefined && adapted.control_manager !== null) {
+            diffAddManager.value = String(adapted.control_manager);
+          }
 
           const updatedFields = data.updated_fields || [];
           if (updatedFields.length === 0) {

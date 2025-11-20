@@ -399,7 +399,10 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
             location_name = (location_obj.get('name') or '').strip()
         elif isinstance(location_obj, str):
             location_name = location_obj.strip()
-        location_name = _normalize_location_label(location_name) or ''
+        # Don't normalize yet - keep original value for diff modal
+        # Normalize only if there's a replacement, otherwise keep original
+        normalized = _normalize_location_label(location_name)
+        location_name = normalized if normalized is not None else location_name
         department_obj = item.get('department') or {}
         department_name = ''
         if isinstance(department_obj, dict):
@@ -2576,12 +2579,32 @@ def admin_adapt_hierarchy():
         logger.info(f"Found best match: {best_match} (score={best_score})")
         
         # Формуємо адаптовані дані
+        adapted_division = (best_match.get('Division', '').strip() or '').replace('-', '')
         adapted = {
-            'project': (best_match.get('Division', '').strip() or '').replace('-', ''),
+            'project': adapted_division,
             'department': (best_match.get('Direction', '').strip() or '').replace('-', ''),
             'unit': (best_match.get('Unit', '').strip() or '').replace('-', ''),
             'team': (best_match.get('Team', '').strip() or '').replace('-', ''),
         }
+        
+        # Адаптуємо location на основі Level_Grade Location
+        location_from_grade = (best_match.get('Location', '').strip() or '')
+        if location_from_grade and location_from_grade != '-':
+            adapted['location'] = location_from_grade
+        else:
+            adapted['location'] = payload.get('location', '')
+        
+        # Визначаємо control_manager на основі Division
+        control_manager = None
+        if adapted_division:
+            division_lower = adapted_division.lower()
+            if division_lower == 'agency':
+                control_manager = 1
+            elif division_lower in ('apps', 'adnetwork', 'consulting'):
+                control_manager = 2
+            else:
+                control_manager = 3
+        adapted['control_manager'] = control_manager
         
         # Визначаємо які поля змінилися
         updated_fields = []
@@ -2593,6 +2616,10 @@ def admin_adapt_hierarchy():
             updated_fields.append('unit')
         if team and adapted['team'] != team:
             updated_fields.append('team')
+        if location_from_grade and location_from_grade != '-':
+            updated_fields.append('location')
+        if control_manager is not None:
+            updated_fields.append('control_manager')
         
         return jsonify({
             'status': 'ok',

@@ -819,6 +819,46 @@ def _gather_employee_records(search: str | None) -> list[AttendanceRecord]:
     return records
 
 
+def _gather_ignored_users(search: str | None) -> list[dict]:
+    """Gather ignored users from user_schedules.json"""
+    data = schedule_user_manager.load_users()
+    users = data.get('users', {}) if isinstance(data, dict) else {}
+    
+    ignored_users = []
+    for name, info in users.items():
+        if not isinstance(info, dict):
+            continue
+        if not info.get('ignored'):
+            continue
+        
+        # Apply search filter
+        if search:
+            search_lower = search.lower()
+            name_match = search_lower in name.lower()
+            email_match = search_lower in (info.get('email') or '').lower()
+            project_match = search_lower in (info.get('project') or '').lower()
+            department_match = search_lower in (info.get('department') or '').lower()
+            if not (name_match or email_match or project_match or department_match):
+                continue
+        
+        # Create pseudo-record dict
+        ignored_users.append({
+            'user_key': name,
+            'name': name,
+            'email': info.get('email', ''),
+            'user_id': info.get('user_id', ''),
+            'project': info.get('project', ''),
+            'department': info.get('department', ''),
+            'unit': info.get('unit', ''),
+            'team': info.get('team', ''),
+            'location': info.get('location', ''),
+            'control_manager': info.get('control_manager'),
+            'ignored': True
+        })
+    
+    return ignored_users
+
+
 def _collect_employee_filters(records: list[AttendanceRecord]) -> dict[str, list[str]]:
     divisions: set[str] = set()
     directions: set[str] = set()
@@ -1650,14 +1690,20 @@ def admin_create_employee():
 def admin_employees():
     _ensure_admin()
     search = request.args.get('search', '').strip()
+    ignored_only = request.args.get('ignored', '').lower() == 'true'
     project_filters = request.args.getlist('project')
     department_filters = request.args.getlist('department')
     team_filters = request.args.getlist('team')
     page = max(int(request.args.get('page', 1) or 1), 1)
     per_page = max(min(int(request.args.get('per_page', 25) or 25), 100), 1)
 
-    records = _gather_employee_records(search)
-    filter_options = _collect_employee_filters(records)
+    if ignored_only:
+        # Load ignored users from user_schedules.json
+        records = _gather_ignored_users(search)
+        filter_options = {}
+    else:
+        records = _gather_employee_records(search)
+        filter_options = _collect_employee_filters(records)
     
     # Support multiple filters for each category
     if project_filters:
@@ -1677,10 +1723,15 @@ def admin_employees():
     page_records = records[start:start + per_page]
 
     items: list[dict] = []
-    for record in page_records:
-        identifier = record.user_id or record.user_email or record.user_name or ''
-        schedule = _load_user_schedule_variants(identifier, [record]) if identifier else None
-        items.append(_serialize_employee_record(record, schedule))
+    if ignored_only:
+        # For ignored users, records are already dicts
+        for record in page_records:
+            items.append(record)
+    else:
+        for record in page_records:
+            identifier = record.user_id or record.user_email or record.user_name or ''
+            schedule = _load_user_schedule_variants(identifier, [record]) if identifier else None
+            items.append(_serialize_employee_record(record, schedule))
 
     return jsonify({
         'items': items,
@@ -3355,8 +3406,7 @@ def api_update_user_plan_start(user_key: str):
             
             # Оновлюємо тільки записи БЕЗ ручних змін scheduled_start
             for record in records:
-                manual_flags = record.manual_flags or {}
-                if not manual_flags.get('scheduled_start'):
+                if not record.manual_scheduled_start:
                     record.scheduled_start = plan_start
                     updated_days += 1
             
@@ -4026,3 +4076,525 @@ def _is_ignored_person(name: str | None, email: str | None) -> bool:
             return True
     
     return False
+
+
+# List of PeopleForce IDs for employees with 7-day work week (including weekends)
+SEVEN_DAY_WORK_WEEK_IDS = {
+    297356,  # Iliin Eugeniy
+    297357,  # Chernov Leonid
+    297358,  # Demidov Viktor
+    297365,  # Shpak Andrew
+    551929,  # Zbutevich Illia
+    297362,  # Andriy Pankov
+    297363,  # Kiliovyi Evhen
+    297364,  # Larina Olena
+    356654,  # Pankov Oleksandr
+    374722,  # Stopochkin Nykyta
+    433837,  # Alina Serdiuk
+    406860,  # Zdorovets Yuliia
+    372364,  # Shubska Oleksandra
+}
+
+
+def _get_peopleforce_id_for_user(user_key: str) -> int | None:
+    """Get PeopleForce ID for a user from user_schedules.json"""
+    schedules = load_user_schedules()
+    for user_name, info in schedules.items():
+        if not isinstance(info, dict):
+            continue
+        if info.get('email', '').lower() == user_key.lower():
+            pf_id = info.get('peopleforce_id')
+            if pf_id:
+                try:
+                    return int(pf_id)
+                except (ValueError, TypeError):
+                    pass
+    return None
+
+
+def _count_work_days_in_month(year: int, month: int, include_weekends: bool = False) -> int:
+    """
+    Count work days in a month.
+    
+    Args:
+        year: Year
+        month: Month (1-12)
+        include_weekends: If True, count all days including Sat/Sun
+    
+    Returns:
+        Number of work days
+    """
+    from calendar import monthrange
+    
+    _, num_days = monthrange(year, month)
+    
+    if include_weekends:
+        return num_days
+    
+    work_days = 0
+    for day in range(1, num_days + 1):
+        day_date = date(year, month, day)
+        # 0 = Monday, 6 = Sunday
+        if day_date.weekday() < 5:  # Monday to Friday
+            work_days += 1
+    
+    return work_days
+
+
+@api_bp.route('/monthly-report', methods=['GET'])
+@login_required
+def get_monthly_report():
+    """
+    Get monthly report data for all employees.
+    
+    Query parameters:
+        - month: YYYY-MM format (default: current month)
+        - manager: Control manager ID filter
+        - department: Department filter
+        - team: Team filter
+        - project: Project filter
+        - location: Location filter
+        - user: User search term
+        - selected_users: Comma-separated user keys
+    """
+    try:
+        # Parse month parameter
+        month_str = request.args.get('month', datetime.now().strftime('%Y-%m'))
+        try:
+            year, month = map(int, month_str.split('-'))
+            first_day = date(year, month, 1)
+            from calendar import monthrange
+            _, last_day_num = monthrange(year, month)
+            last_day = date(year, month, last_day_num)
+        except (ValueError, AttributeError):
+            return jsonify({'error': 'Invalid month format'}), 400
+        
+        # Build base query (don't use _apply_filters - it adds its own date filters)
+        query = AttendanceRecord.query.filter(
+            AttendanceRecord.record_date >= first_day,
+            AttendanceRecord.record_date <= last_day
+        )
+        
+        # Apply filters
+        manager_id = request.args.get('manager')
+        if manager_id:
+            query = query.filter(AttendanceRecord.control_manager == int(manager_id))
+        
+        department = request.args.get('department')
+        if department:
+            query = query.filter(AttendanceRecord.department == department)
+        
+        team = request.args.get('team')
+        if team:
+            query = query.filter(AttendanceRecord.team == team)
+        
+        project = request.args.get('project')
+        if project:
+            query = query.filter(AttendanceRecord.project == project)
+        
+        location = request.args.get('location')
+        if location:
+            query = query.filter(AttendanceRecord.location == location)
+        
+        user_search = request.args.get('user', '').strip()
+        if user_search:
+            query = query.filter(
+                or_(
+                    AttendanceRecord.user_name.ilike(f'%{user_search}%'),
+                    AttendanceRecord.user_email.ilike(f'%{user_search}%')
+                )
+            )
+        
+        selected_users = request.args.get('selected_users', '').strip()
+        if selected_users:
+            user_keys = [uk.strip() for uk in selected_users.split(',') if uk.strip()]
+            if user_keys:
+                query = query.filter(AttendanceRecord.user_email.in_(user_keys))
+        
+        # Get all records for the month
+        records = query.all()
+        
+        # Group by user
+        user_data = defaultdict(lambda: {
+            'user_key': '',
+            'user_name': '',
+            'user_email': '',
+            'project': '',
+            'department': '',
+            'unit': '',
+            'team': '',
+            'records': [],
+            'total_minutes': 0,
+            'corrected_total_minutes': 0,
+            'delay_count': 0,
+        })
+        
+        for record in records:
+            user_key = record.user_email or record.user_id
+            user_data[user_key]['user_key'] = user_key
+            user_data[user_key]['user_name'] = record.user_name
+            user_data[user_key]['user_email'] = record.user_email
+            user_data[user_key]['project'] = record.project
+            user_data[user_key]['department'] = record.department
+            user_data[user_key]['unit'] = record.team  # unit is stored in team field
+            user_data[user_key]['team'] = record.team
+            user_data[user_key]['records'].append(record)
+            
+            # Sum ALL tracked hours (Total from our database)
+            user_data[user_key]['total_minutes'] += record.total_minutes or 0
+            
+            # Sum corrected hours (Total cor.) - ONLY where corrected_total_minutes is NOT None
+            # Don't substitute with total_minutes if it's None
+            if record.corrected_total_minutes is not None:
+                user_data[user_key]['corrected_total_minutes'] += record.corrected_total_minutes
+            
+            # Count delays > 10 minutes
+            if record.minutes_late > 10:
+                user_data[user_key]['delay_count'] += 1
+        
+        # Calculate leave days from our database (not from PeopleForce API)
+        leave_data = {}
+        for user_key, data in user_data.items():
+            vacation_days = 0.0
+            day_off_days = 0.0
+            sick_days = 0.0
+            
+            for record in data['records']:
+                if record.status != 'leave':
+                    continue
+                
+                # Get leave amount (1.0 for full day, 0.5 for half day)
+                leave_amount = record.half_day_amount if record.half_day_amount else 1.0
+                
+                # Categorize by leave_reason from our database
+                leave_reason = (record.leave_reason or '').lower()
+                if 'vacation' in leave_reason or 'отпуск' in leave_reason or 'відпустка' in leave_reason:
+                    vacation_days += leave_amount
+                elif 'sick' in leave_reason or 'больничный' in leave_reason or 'лікарняний' in leave_reason:
+                    sick_days += leave_amount
+                elif 'day off' in leave_reason or 'выходной' in leave_reason or 'вихідний' in leave_reason or 'за свій рахунок' in leave_reason:
+                    day_off_days += leave_amount
+                else:
+                    # If no specific reason, count as vacation by default
+                    vacation_days += leave_amount
+            
+            leave_data[user_key] = {
+                'vacation_days': vacation_days,
+                'day_off_days': day_off_days,
+                'sick_days': sick_days,
+            }
+        
+        # Build result
+        employees = []
+        for user_key, data in user_data.items():
+            pf_id = _get_peopleforce_id_for_user(user_key)
+            include_weekends = pf_id in SEVEN_DAY_WORK_WEEK_IDS if pf_id else False
+            
+            plan_days = _count_work_days_in_month(year, month, include_weekends)
+            
+            leaves = leave_data.get(user_key, {})
+            vacation_days = leaves.get('vacation_days', 0)
+            day_off_days = leaves.get('day_off_days', 0)
+            sick_days = leaves.get('sick_days', 0)
+            
+            fact_days = plan_days - vacation_days - day_off_days - sick_days
+            
+            # Calculate minimum hours based on project
+            project = data['project'] or ''
+            if 'agency' in project.lower() or 'apps' in project.lower():
+                min_hours_per_day = 6.5
+            elif 'adnetwork' in project.lower() or 'cons' in project.lower():
+                min_hours_per_day = 7.0
+            else:
+                min_hours_per_day = 7.0  # Default
+            
+            minimum_hours = fact_days * min_hours_per_day
+            
+            # Format hours
+            def format_hours(minutes):
+                hours = minutes // 60
+                mins = minutes % 60
+                return f"{hours}:{mins:02d}"
+            
+            employees.append({
+                'user_key': user_key,
+                'user_name': data['user_name'],
+                'user_email': data['user_email'],
+                'division': data.get('project', ''),
+                'department': data.get('department', ''),
+                'unit': data.get('unit', ''),
+                'team': data.get('team', ''),
+                'plan_days': plan_days,
+                'vacation_days': vacation_days,
+                'day_off_days': day_off_days,
+                'sick_days': sick_days,
+                'fact_days': fact_days,
+                'minimum_hours': format_hours(int(minimum_hours * 60)),
+                'tracked_hours': format_hours(data['total_minutes']),
+                'delay_count': data['delay_count'],
+                'corrected_hours': format_hours(data['corrected_total_minutes']),
+                'notes': '',  # Will be loaded from separate storage
+            })
+        
+        # Sort by user name
+        employees.sort(key=lambda x: x['user_name'])
+        
+        return jsonify({
+            'month': month_str,
+            'employees': employees
+        })
+        
+    except Exception as e:
+        logger.exception('Error generating monthly report')
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/monthly-notes', methods=['GET', 'POST'])
+@login_required
+def monthly_notes():
+    """
+    GET: Load all notes for a month
+    POST: Save notes for a user in monthly report.
+    
+    GET Query params:
+        - month: YYYY-MM format
+    
+    POST Request body:
+        - user_key: User email/key
+        - month: YYYY-MM format
+        - notes: Notes text
+    """
+    notes_file = os.path.join(current_app.instance_path, 'monthly_notes.json')
+    
+    if request.method == 'GET':
+        try:
+            month = request.args.get('month', datetime.now().strftime('%Y-%m'))
+            
+            if not os.path.exists(notes_file):
+                return jsonify({'notes': {}})
+            
+            with open(notes_file, 'r', encoding='utf-8') as f:
+                all_notes = json.load(f)
+            
+            # Filter notes for this month
+            month_notes = {}
+            for key, value in all_notes.items():
+                if key.endswith(f'_{month}'):
+                    user_key = key.rsplit('_', 2)[0]  # Remove _YYYY-MM
+                    month_notes[user_key] = value
+            
+            return jsonify({'notes': month_notes})
+            
+        except Exception as e:
+            logger.exception('Error loading monthly notes')
+            return jsonify({'error': str(e)}), 500
+    
+    else:  # POST
+        try:
+            data = request.get_json()
+            user_key = data.get('user_key')
+            month = data.get('month')
+            notes = data.get('notes', '')
+            
+            if not user_key or not month:
+                return jsonify({'error': 'Missing required fields'}), 400
+            
+            # Load existing notes
+            if os.path.exists(notes_file):
+                with open(notes_file, 'r', encoding='utf-8') as f:
+                    all_notes = json.load(f)
+            else:
+                all_notes = {}
+            
+            # Create key for this user+month
+            key = f"{user_key}_{month}"
+            all_notes[key] = notes
+            
+            # Save back
+            os.makedirs(os.path.dirname(notes_file), exist_ok=True)
+            with open(notes_file, 'w', encoding='utf-8') as f:
+                json.dump(all_notes, f, ensure_ascii=False, indent=2)
+            
+            return jsonify({'success': True})
+            
+        except Exception as e:
+            logger.exception('Error saving monthly notes')
+            return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/monthly-report/excel', methods=['GET'])
+@login_required
+def export_monthly_report_excel():
+    """Export monthly report as Excel file."""
+    try:
+        # Reuse get_monthly_report logic
+        month_str = request.args.get('month', datetime.now().strftime('%Y-%m'))
+        
+        # Call internal function to get data
+        with current_app.test_request_context('?' + request.query_string.decode()):
+            response = get_monthly_report()
+            if response.status_code != 200:
+                return response
+            data = response.get_json()
+        
+        # Create Excel workbook
+        wb = Workbook()
+        ws = wb.active
+        ws.title = f"Monthly Report {month_str}"
+        
+        # Headers
+        headers = ['Сотрудник', 'Plan Days', 'Vacation', 'Day Off', 'Sick', 'Fact Days', 'Notes']
+        ws.append(headers)
+        
+        # Style header row
+        header_fill = PatternFill(start_color='4472C4', end_color='4472C4', fill_type='solid')
+        header_font = Font(bold=True, color='FFFFFF')
+        for cell in ws[1]:
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+        
+        # Add data rows
+        for emp in data.get('employees', []):
+            user_info = f"{emp['user_name']}\n{emp['user_email']}"
+            if emp.get('division'):
+                user_info += f"\nDivision: {emp['division']}"
+            if emp.get('department'):
+                user_info += f"\nDepartment: {emp['department']}"
+            if emp.get('unit'):
+                user_info += f"\nUnit: {emp['unit']}"
+            if emp.get('team'):
+                user_info += f"\nTeam: {emp['team']}"
+            
+            plan_info = f"{emp['plan_days']}\nMinimum per month\n{emp['minimum_hours']}"
+            vacation_info = f"{emp['vacation_days']}\nTracked Hours\n{emp['tracked_hours']}"
+            day_off_info = f"{emp['day_off_days']}\nDelay >10\n{emp['delay_count']}"
+            sick_info = f"{emp['sick_days']}\nCorrected Hours\n{emp['corrected_hours']}"
+            
+            ws.append([
+                user_info,
+                plan_info,
+                vacation_info,
+                day_off_info,
+                sick_info,
+                emp['fact_days'],
+                emp.get('notes', '')
+            ])
+        
+        # Adjust column widths
+        ws.column_dimensions['A'].width = 40
+        for col in ['B', 'C', 'D', 'E']:
+            ws.column_dimensions[col].width = 20
+        ws.column_dimensions['F'].width = 15
+        ws.column_dimensions['G'].width = 30
+        
+        # Apply wrap text to all cells
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+            for cell in row:
+                cell.alignment = Alignment(wrap_text=True, vertical='top')
+        
+        # Save to BytesIO
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+        
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=f'monthly_report_{month_str}.xlsx'
+        )
+        
+    except Exception as e:
+        logger.exception('Error exporting monthly report to Excel')
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/monthly-report/pdf', methods=['GET'])
+@login_required
+def export_monthly_report_pdf():
+    """Export monthly report as PDF file."""
+    try:
+        if not SimpleDocTemplate:
+            return jsonify({'error': 'PDF export not available'}), 500
+        
+        # Reuse get_monthly_report logic
+        month_str = request.args.get('month', datetime.now().strftime('%Y-%m'))
+        
+        # Call internal function to get data
+        with current_app.test_request_context('?' + request.query_string.decode()):
+            response = get_monthly_report()
+            if response.status_code != 200:
+                return response
+            data = response.get_json()
+        
+        # Create PDF
+        output = BytesIO()
+        doc = SimpleDocTemplate(output, pagesize=A4)
+        elements = []
+        
+        # Title
+        from reportlab.lib.styles import getSampleStyleSheet
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=16,
+            textColor=colors.HexColor('#1a1a1a'),
+            spaceAfter=12,
+        )
+        elements.append(Paragraph(f"Monthly Report: {month_str}", title_style))
+        elements.append(Spacer(1, 12))
+        
+        # Table data
+        table_data = [['Employee', 'Plan Days', 'Vacation', 'Day Off', 'Sick', 'Fact Days']]
+        
+        for emp in data.get('employees', []):
+            user_info = f"{emp['user_name']}<br/>{emp['user_email']}"
+            if emp.get('division'):
+                user_info += f"<br/>Div: {emp['division']}"
+            if emp.get('department'):
+                user_info += f"<br/>Dept: {emp['department']}"
+            
+            plan_col = Paragraph(f"<b>{emp['plan_days']}</b><br/>Min: {emp['minimum_hours']}", styles['Normal'])
+            vacation_col = Paragraph(f"<b>{emp['vacation_days']}</b><br/>Tracked: {emp['tracked_hours']}", styles['Normal'])
+            day_off_col = Paragraph(f"<b>{emp['day_off_days']}</b><br/>Delay: {emp['delay_count']}", styles['Normal'])
+            sick_col = Paragraph(f"<b>{emp['sick_days']}</b><br/>Corr: {emp['corrected_hours']}", styles['Normal'])
+            
+            table_data.append([
+                Paragraph(user_info, styles['Normal']),
+                plan_col,
+                vacation_col,
+                day_off_col,
+                sick_col,
+                str(emp['fact_days'])
+            ])
+        
+        # Create table
+        table = Table(table_data, colWidths=[100, 70, 70, 70, 70, 50])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4472C4')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        
+        elements.append(table)
+        doc.build(elements)
+        
+        output.seek(0)
+        return send_file(
+            output,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=f'monthly_report_{month_str}.pdf'
+        )
+        
+    except Exception as e:
+        logger.exception('Error exporting monthly report to PDF')
+        return jsonify({'error': str(e)}), 500

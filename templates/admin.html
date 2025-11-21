@@ -2,6 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Панель администратора</title>
     <link
       rel="stylesheet"
@@ -362,6 +363,42 @@
                   <th>Роли</th>
                   <th>Control managers</th>
                   <th style="width: 80px"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">
+                    Загружаю данные…
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ignored Users Section -->
+    <div class="container-fluid mt-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="card-title mb-0">🚫 Ignored Users</h5>
+              <small class="text-muted">Користувачі виключені зі звітів та diff-порівнянь</small>
+            </div>
+            <span class="badge bg-secondary" id="ignored-count">0</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered align-middle" id="ignored-users-table">
+              <thead class="table-light">
+                <tr>
+                  <th>Ім'я</th>
+                  <th>Email</th>
+                  <th>Проект</th>
+                  <th>Департамент</th>
+                  <th style="width: 80px">Дії</th>
                 </tr>
               </thead>
               <tbody>

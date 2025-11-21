@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Отчет за месяц - ControlBot</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body
+    class="bg-light"
+    data-is-admin="{{ 1 if is_admin else 0 }}"
+    data-can-edit="{{ 1 if can_edit else 0 }}"
+  >
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <div class="d-flex align-items-center">
+          <a
+            class="btn btn-outline-light btn-sm me-3"
+            href="{{ url_for('views.dashboard') }}"
+          >
+            <i class="bi bi-arrow-left"></i> Назад
+          </a>
+          <span class="navbar-brand mb-0">Отчет за месяц</span>
+        </div>
+        <div class="d-flex">
+          {% if is_admin %}
+          <a
+            class="navbar-text me-3 text-decoration-none link-light"
+            href="{{ url_for('admin.admin_index') }}"
+            >открыть панель администратора {{ user_name }}</a
+          >
+          {% else %}
+          <span class="navbar-text me-3">{{ user_name }}</span>
+          {% endif %}
+          <a class="btn btn-outline-light" href="/logout">Выйти</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+      <div class="dashboard-card shadow-sm mb-4">
+        <form id="filters-form" class="row g-4 align-items-start">
+          <div class="col-lg-4 col-md-6">
+            <div class="filter-section">
+              <div class="filter-title">Выберите месяц</div>
+              <input
+                type="month"
+                id="filter-month"
+                class="form-control"
+                value="{{ current_month }}"
+              />
+              <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                  Применить фильтры
+                </button>
+                <button
+                  type="button"
+                  id="reset-filters"
+                  class="btn btn-outline-secondary"
+                >
+                  Сбросить
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5 col-md-6">
+            <div class="filter-section">
+              <div class="d-flex gap-2">
+                <button
+                  type="button"
+                  id="open-filters-modal"
+                  class="btn btn-primary flex-grow-1"
+                >
+                  Выбрать фильтры
+                </button>
+                <button
+                  type="button"
+                  id="clear-project-filters"
+                  class="btn btn-outline-secondary"
+                  title="Очистить выбранные фильтры"
+                >
+                  Очистить
+                </button>
+              </div>
+              <div
+                id="selected-filters-display"
+                class="mt-2 small text-muted"
+              ></div>
+              <button
+                type="button"
+                id="export-monthly-report-btn"
+                class="btn btn-outline-success w-100 mt-3"
+              >
+                <i class="bi bi-download"></i> Сформировать отчет
+              </button>
+            </div>
+          </div>
+          <div class="col-lg-3">
+            <div class="filter-section">
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="filter-user"
+                  class="form-control"
+                  placeholder="Поиск пользователя"
+                />
+                <button class="btn btn-primary" id="search-btn" type="button">
+                  Искать
+                </button>
+              </div>
+              <button
+                type="button"
+                id="open-multi-select-modal"
+                class="btn btn-outline-primary w-100 mt-2"
+              >
+                <i class="bi bi-people-fill"></i> Выбрать несколько сотрудников
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div id="monthly-report-container" class="dashboard-card shadow-sm">
+        <div class="table-responsive">
+          <table
+            class="table table-bordered table-hover"
+            id="monthly-report-table"
+          >
+            <tbody id="monthly-report-body">
+              <!-- Data will be loaded here via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <div id="loading-spinner" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for filters -->
+    <div
+      class="modal fade"
+      id="filtersModal"
+      tabindex="-1"
+      aria-labelledby="filtersModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="filtersModalLabel">Выбрать фильтры</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-3">
+                <h6 class="mb-3">Проекты (Division)</h6>
+                <div
+                  id="filter-projects-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h6 class="mb-3">Департаменты (Direction)</h6>
+                <div
+                  id="filter-departments-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h6 class="mb-3">Подразделения (Unit)</h6>
+                <div
+                  id="filter-units-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h6 class="mb-3">Команды (Team)</h6>
+                <div
+                  id="filter-teams-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              id="filter-modal-clear"
+            >
+              Очистить все
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="filter-modal-apply"
+              data-bs-dismiss="modal"
+            >
+              Применить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Multi-Select Users -->
+    <div
+      class="modal fade"
+      id="multiSelectModal"
+      tabindex="-1"
+      aria-labelledby="multiSelectModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="multiSelectModalLabel">
+              Выбрать несколько сотрудников
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="multi-select-search"
+                placeholder="Поиск сотрудника..."
+              />
+            </div>
+            <div class="mb-2">
+              <button
+                type="button"
+                id="select-all-employees"
+                class="btn btn-sm btn-outline-primary me-2"
+              >
+                Выбрать все
+              </button>
+              <button
+                type="button"
+                id="deselect-all-employees"
+                class="btn btn-sm btn-outline-secondary"
+              >
+                Снять все
+              </button>
+            </div>
+            <div
+              id="multi-select-list"
+              class="list-group"
+              style="max-height: 400px; overflow-y: auto"
+            >
+              <!-- Employee list will be populated here -->
+            </div>
+            <div class="mt-3">
+              <span class="badge bg-primary" id="selected-count"
+                >Выбрано: 0</span
+              >
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отмена
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="apply-multi-select"
+            >
+              Применить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Export Format -->
+    <div
+      class="modal fade"
+      id="exportModal"
+      tabindex="-1"
+      aria-labelledby="exportModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exportModalLabel">Выберите формат:</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body d-flex justify-content-center gap-3">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-export-format="pdf"
+            >
+              PDF
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-export-format="excel"
+            >
+              Excel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for editing Notes -->
+    <div
+      class="modal fade"
+      id="notesModal"
+      tabindex="-1"
+      aria-labelledby="notesModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="notesModalLabel">
+              Редактировать заметку
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="notes-user-key" />
+            <textarea
+              class="form-control"
+              id="notes-text"
+              rows="4"
+              placeholder="Введите заметку..."
+            ></textarea>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отмена
+            </button>
+            <button type="button" class="btn btn-primary" id="save-notes">
+              Сохранить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script>
+      // Initialize report.js variables for monthly report page
+      window.isMonthlyReportPage = true;
+    </script>
+    <script src="{{ url_for('static', filename='js/report.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/monthly_report.js') }}"></script>
+  </body>
+</html>

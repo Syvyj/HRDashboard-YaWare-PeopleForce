@@ -70,7 +70,8 @@
 }
 
 .filter-section .input-group button {
-  white-space: nowrap;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .modal-body [data-report-format] {
@@ -488,5 +489,325 @@
 
   a[href]:after {
     content: none !important;
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Table responsive - always enable horizontal scroll */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  display: block;
+}
+
+.reports-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+/* Container with 10% padding on sides */
+.container-fluid {
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+/* Mobile: tablets and below (< 768px) */
+@media (max-width: 767px) {
+  /* Reduce padding on mobile to 3% for more space */
+  .container-fluid {
+    padding-left: 3%;
+    padding-right: 3%;
+  }
+
+  /* Dashboard cards */
+  .dashboard-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .dashboard-card__header {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .dashboard-card__hello {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-card__stats {
+    font-size: 1rem;
+  }
+
+  .dashboard-card__clock-time {
+    font-size: 1.5rem;
+  }
+
+  /* Tables - force minimum width on mobile */
+  .table {
+    min-width: 800px; /* Minimum width to force scroll */
+    width: auto !important;
+  }
+
+  .report-table {
+    min-width: 1000px !important; /* Reports need more width */
+  } /* Smaller table text */
+  .table td,
+  .table th {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+
+  /* Buttons - larger touch targets, smaller text */
+  .btn {
+    min-height: 44px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  .btn-sm {
+    min-height: 38px;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .btn-lg {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.9rem;
+  }
+
+  /* Modal - full screen on mobile */
+  .modal-dialog {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+
+  .modal-dialog-lg {
+    max-width: calc(100% - 1rem);
+  }
+
+  /* Modal form fields - vertical layout */
+  .modal .row.g-3 {
+    row-gap: 0.75rem !important;
+  }
+
+  .modal .col-md-6,
+  .modal .col-md-4,
+  .modal .col-md-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Stats cards in column */
+  .row > [class*="col-"] {
+    margin-bottom: 1rem;
+  }
+
+  /* Navbar buttons wrap and smaller text */
+  .navbar .d-flex {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .navbar .btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .navbar-brand {
+    font-size: 1rem;
+  }
+
+  /* Filter badges */
+  .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+  }
+
+  /* Diff lists */
+  #diff-lists {
+    font-size: 0.9rem;
+  }
+
+  /* Selected filters display */
+  #employee-selected-filters-display .badge {
+    margin: 0.25rem;
+  }
+
+  /* Report controls - stack vertically */
+  .row.g-3.mb-3 {
+    row-gap: 0.75rem;
+  }
+
+  .row.g-3.mb-3 > .col-auto {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Search inputs full width */
+  input[type="date"],
+  input[type="text"].form-control {
+    width: 100%;
+  }
+
+  /* Button groups */
+  .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .btn-group .btn {
+    flex: 1 1 auto;
+    min-width: auto;
+  }
+
+  /* Action buttons (Очистить, Поиск, etc) - stack on mobile */
+  .row.g-3.mb-3 .btn:not(.btn-primary) {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  /* User block - smaller sidebar on mobile */
+  .user-block {
+    grid-template-columns: 160px 1fr !important;
+  }
+
+  /* Make flex containers vertical on mobile */
+  .d-flex {
+    flex-direction: column !important;
+  }
+
+  /* Allow text wrapping in buttons */
+  button,
+  .btn {
+    white-space: normal !important;
+    word-wrap: break-word;
+    text-align: center;
+  }
+  .input-group {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* Small tablets: 600px - 767px */
+@media (min-width: 600px) and (max-width: 767px) {
+  .container-fluid {
+    padding-left: 4%;
+    padding-right: 4%;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+  }
+
+  /* User block - slightly bigger on small tablets */
+  .user-block {
+    grid-template-columns: 200px 1fr !important;
+  }
+} /* Tablet: medium screens (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+  .container-fluid {
+    padding-left: 6%;
+    padding-right: 6%;
+  }
+
+  .dashboard-card {
+    padding: 1.5rem;
+  }
+
+  /* Modal slightly smaller */
+  .modal-dialog-lg {
+    max-width: 700px;
+  }
+
+  /* 2 columns for form fields */
+  .modal .col-md-4 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+/* Desktop: large screens (992px+) */
+@media (min-width: 992px) {
+  .container-fluid {
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Extra large screens (1400px+) */
+@media (min-width: 1400px) {
+  .container-fluid {
+    max-width: 1600px;
+  }
+}
+
+/* Override Bootstrap container widths */
+@media (min-width: 576px) {
+  .container,
+  .container-sm {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container,
+  .container-md,
+  .container-sm {
+    max-width: 1400px;
+  }
+}
+
+/* Monthly report styles */
+#monthly-report-table {
+  min-width: 1200px;
+}
+
+#monthly-report-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 12px 8px;
+}
+
+#monthly-report-table td {
+  vertical-align: middle;
+  padding: 10px 8px;
+}
+
+#monthly-report-table .small {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+#monthly-report-table .edit-notes-btn {
+  flex-shrink: 0;
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger click targets for touch */
+  .btn,
+  .form-check-input,
+  .form-select,
+  .form-control {
+    min-height: 44px;
+  }
+
+  /* Remove hover effects on touch devices */
+  .btn:hover,
+  .table tbody tr:hover {
+    opacity: 1;
   }
 }

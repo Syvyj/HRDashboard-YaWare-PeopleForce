@@ -44,6 +44,9 @@
   let currentFilterOptions = { projects: [], departments: [], units: [], teams: [] };
   let selectedFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
   
+  // Export selectedFilters to window for monthly report page
+  window.selectedFilters = selectedFilters;
+  
   const recordEditModalEl = document.getElementById('recordEditModal');
   const recordEditModal = recordEditModalEl ? new bootstrap.Modal(recordEditModalEl) : null;
   
@@ -533,6 +536,10 @@
       reportWrapper.className = 'reports-wrapper';
       card.appendChild(reportWrapper);
 
+      // Wrapper for horizontal scroll on mobile
+      const tableResponsive = document.createElement('div');
+      tableResponsive.className = 'table-responsive';
+      
       const table = document.createElement('table');
       table.className = 'table table-sm table-bordered report-table';
       const thead = document.createElement('thead');
@@ -588,7 +595,8 @@
       }
 
       table.appendChild(tbody);
-      reportWrapper.appendChild(table);
+      tableResponsive.appendChild(table);
+      reportWrapper.appendChild(tableResponsive);
       container.appendChild(card);
     });
   }
@@ -654,16 +662,23 @@
 
     reportModalEl.addEventListener('click', (event) => {
       const target = event.target.closest('[data-report-format]');
-      if (!target) {
+      if (target) {
+        const format = target.getAttribute('data-report-format');
+        const params = buildParams();
+        const url = format === 'pdf'
+          ? `/api/report/pdf?${params.toString()}`
+          : `/api/export?${params.toString()}`;
+        window.open(url, '_blank');
+        reportModal.hide();
         return;
       }
-      const format = target.getAttribute('data-report-format');
-      const params = buildParams();
-      const url = format === 'pdf'
-        ? `/api/report/pdf?${params.toString()}`
-        : `/api/export?${params.toString()}`;
-      window.open(url, '_blank');
-      reportModal.hide();
+      
+      // Handle monthly report button
+      const monthlyBtn = event.target.closest('#monthly-report-btn');
+      if (monthlyBtn) {
+        window.location.href = '/monthly-report';
+        reportModal.hide();
+      }
     });
   }
 

@@ -4233,9 +4233,22 @@
       "department": "R&D Unit AdNetwork",
       "ignored": true,
       "control_manager": 3
+    },
+    "Kudko Maksym": {
+      "email": "m.kudko@evadav.com",
+      "user_id": "7937631",
+      "peopleforce_id": "588555",
+      "project": "Apps",
+      "_manual_overrides": {
+        "project": true,
+        "start_time": true,
+        "control_manager": true
+      },
+      "start_time": "09:00",
+      "control_manager": 2
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-19T12:56:13.869080"
+    "last_updated": "2025-11-19T13:49:43.862505"
   }
 }

@@ -1019,7 +1019,7 @@
       "peopleforce_id": 544477,
       "email": "v.klimchenya@evadav.com",
       "user_id": "7931903",
-      "start_time": "10:00",
+      "start_time": "11:00",
       "control_manager": 1,
       "telegram_username": "Klimchenya_Valeriy",
       "team_lead": "Sluchevskyi Gleb",
@@ -1028,7 +1028,10 @@
       "department": "MB Facebook Unit",
       "position": "Head of Facebook Media Buying Unit",
       "manager_name": "Sluchevskyi_Gleb",
-      "location": "Remote other countries"
+      "location": "Remote other countries",
+      "_manual_overrides": {
+        "start_time": true
+      }
     },
     "Koba Bogdan": {
       "user_name": "Koba Bogdan",
@@ -3748,9 +3751,7 @@
       "user_name": "Tatsyn Arseni",
       "division_id": null,
       "direction_id": null,
-      "unit_name": "Mb Leadgen Team",
       "unit_id": 126392,
-      "team_name": "-",
       "team_id": 126392,
       "peopleforce_id": "573355",
       "email": "a.tatsyn@evadav.com",
@@ -3762,7 +3763,6 @@
       "manager_telegram": "Klimchenya_Valeriy",
       "position": "Media buyer Facebook",
       "manager_name": "Klimchenya_Valeriy",
-      "team": "-",
       "project": "Agency",
       "department": "Media buying Direction",
       "location": "Remote",
@@ -3770,7 +3770,9 @@
         "location": true
       },
       "division_name": "Agency",
-      "direction_name": "Media buying Direction"
+      "direction_name": "Media buying Direction",
+      "unit": "MB Facebook Unit",
+      "unit_name": "MB Facebook Unit"
     },
     "Gyrych Maria": {
       "user_name": "Gyrych Maria",
@@ -3944,23 +3946,24 @@
       "email": "p.khliust@evadav.com",
       "user_id": "7937355",
       "peopleforce_id": "584787",
-      "location": "Poland remote",
+      "location": "Remote, PL",
       "_manual_overrides": {
         "location": true,
         "project": true,
         "department": true,
         "start_time": true
       },
-      "project": "APPS Division",
-      "department": "APPS Division",
+      "project": "Apps",
       "start_time": "09:00",
-      "control_manager": 3
+      "control_manager": 2,
+      "position": "Chief Operating Officer APPs",
+      "division_name": "Apps"
     },
     "Mishustin Kostiantyn": {
       "email": "k.mishustin@evadav.com",
       "user_id": "7937570",
       "peopleforce_id": "587625",
-      "location": "UA",
+      "location": "Remote, UA",
       "_manual_overrides": {
         "location": true,
         "project": true,
@@ -3968,10 +3971,13 @@
         "start_time": true,
         "control_manager": true
       },
-      "project": "Consulting Division",
+      "project": "Consulting",
       "department": "Finance Direction",
       "start_time": "09:00",
-      "control_manager": 3
+      "control_manager": 3,
+      "position": "Chief Financial Officer",
+      "division_name": "Consulting",
+      "direction_name": "Finance Direction"
     },
     "Bilopolska Valentyna": {
       "peopleforce_id": "481896",
@@ -4245,10 +4251,15 @@
         "control_manager": true
       },
       "start_time": "09:00",
-      "control_manager": 2
+      "control_manager": 2,
+      "position": "Operations Assistant",
+      "location": "Czech Republic remote",
+      "division_name": "Apps",
+      "unit": "IOS Unit",
+      "unit_name": "IOS Unit"
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-19T13:49:43.862505"
+    "last_updated": "2025-11-20T16:20:57.334549"
   }
 }

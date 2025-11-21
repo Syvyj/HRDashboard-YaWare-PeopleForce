@@ -57,3 +57,63 @@ def admin_audit():
         user_name=current_user.name,
         is_admin=True
     )
+
+
+@views_bp.route('/monthly-report')
+@login_required
+def monthly_report():
+    """Monthly report page."""
+    from dashboard_app.models import AttendanceRecord
+    from sqlalchemy import func
+    
+    can_edit = getattr(current_user, 'is_admin', False) or getattr(current_user, 'is_control_manager', False)
+    
+    # Get current month for default value
+    current_month = datetime.now().strftime('%Y-%m')
+    
+    # Get unique values for filters
+    managers = []
+    if getattr(current_user, 'is_admin', False):
+        from dashboard_app.models import User
+        managers = User.query.filter_by(is_control_manager=True).all()
+    
+    departments = [d[0] for d in AttendanceRecord.query.with_entities(
+        AttendanceRecord.department
+    ).filter(
+        AttendanceRecord.department.isnot(None),
+        AttendanceRecord.department != ''
+    ).distinct().order_by(AttendanceRecord.department).all()]
+    
+    teams = [t[0] for t in AttendanceRecord.query.with_entities(
+        AttendanceRecord.team
+    ).filter(
+        AttendanceRecord.team.isnot(None),
+        AttendanceRecord.team != ''
+    ).distinct().order_by(AttendanceRecord.team).all()]
+    
+    projects = [p[0] for p in AttendanceRecord.query.with_entities(
+        AttendanceRecord.project
+    ).filter(
+        AttendanceRecord.project.isnot(None),
+        AttendanceRecord.project != ''
+    ).distinct().order_by(AttendanceRecord.project).all()]
+    
+    locations = [l[0] for l in AttendanceRecord.query.with_entities(
+        AttendanceRecord.location
+    ).filter(
+        AttendanceRecord.location.isnot(None),
+        AttendanceRecord.location != ''
+    ).distinct().order_by(AttendanceRecord.location).all()]
+    
+    return render_template(
+        'monthly_report.html',
+        user_name=current_user.name,
+        is_admin=getattr(current_user, 'is_admin', False),
+        can_edit=can_edit,
+        current_month=current_month,
+        managers=managers,
+        departments=departments,
+        teams=teams,
+        projects=projects,
+        locations=locations
+    )

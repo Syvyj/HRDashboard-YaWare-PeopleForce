@@ -34,6 +34,8 @@
   const appUsersTable = document.getElementById('app-users-table');
   const appUserModalEl = document.getElementById('appUserModal');
   const appUserEditForm = document.getElementById('app-user-edit-form');
+  const ignoredUsersTable = document.getElementById('ignored-users-table');
+  const ignoredCountBadge = document.getElementById('ignored-count');
   const syncUsersBtn = document.getElementById('sync-users-btn');
   const syncDateInput = document.getElementById('sync-date-input');
   const syncDateBtn = document.getElementById('sync-date-btn');
@@ -971,6 +973,97 @@
       });
   }
 
+  function fetchIgnoredUsers() {
+    if (!ignoredUsersTable) return;
+    
+    const tbody = ignoredUsersTable.querySelector('tbody');
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Загрузка...</td></tr>';
+    
+    fetch('/api/admin/employees?ignored=true&per_page=1000')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Не удалось получить ignored користувачів');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const items = data.items || [];
+        
+        if (ignoredCountBadge) {
+          ignoredCountBadge.textContent = items.length;
+        }
+        
+        if (!items.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Немає ignored користувачів</td></tr>';
+          return;
+        }
+        
+        const fragment = document.createDocumentFragment();
+        items.forEach((user) => {
+          const row = document.createElement('tr');
+          row.className = 'table-secondary';
+          row.dataset.userKey = user.user_key;
+          
+          row.innerHTML = `
+            <td><strong>${user.name || '—'}</strong></td>
+            <td>${user.email || '—'}</td>
+            <td>${user.project || '—'}</td>
+            <td>${user.department || '—'}</td>
+            <td class="text-center"></td>
+          `;
+          
+          const actionsCell = row.lastElementChild;
+          const unignoreBtn = document.createElement('button');
+          unignoreBtn.type = 'button';
+          unignoreBtn.className = 'btn btn-sm btn-success';
+          unignoreBtn.innerHTML = '<i class="bi bi-eye"></i> Unignore';
+          unignoreBtn.title = 'Повернути в звіти';
+          unignoreBtn.dataset.userKey = user.user_key;
+          unignoreBtn.addEventListener('click', () => {
+            handleUnignore(user.user_key, unignoreBtn);
+          });
+          actionsCell.appendChild(unignoreBtn);
+          
+          fragment.appendChild(row);
+        });
+        
+        tbody.innerHTML = '';
+        tbody.appendChild(fragment);
+      })
+      .catch((error) => {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Помилка завантаження</td></tr>';
+        showAlert(error.message);
+      });
+  }
+  
+  function handleUnignore(userKey, button) {
+    if (!confirm(`Повернути користувача в звіти?`)) {
+      return;
+    }
+    
+    button.disabled = true;
+    button.innerHTML = '<i class="bi bi-hourglass-split"></i> Обробка...';
+    
+    fetch(`/api/admin/employees/${encodeURIComponent(userKey)}/unignore`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          throw new Error(data.error || 'Помилка');
+        }
+        showAlert('Користувача повернено в звіти', 'success');
+        fetchIgnoredUsers();
+        fetchEmployees();
+      })
+      .catch((error) => {
+        showAlert(error.message);
+        button.disabled = false;
+        button.innerHTML = '<i class="bi bi-eye"></i> Unignore';
+      });
+  }
+
   // Event bindings
   employeeTable.addEventListener('change', handleTableChange);
   employeeTable.addEventListener('click', handleEmployeeTableClick);
@@ -1597,5 +1690,6 @@
   // Initial load
   fetchEmployees();
   fetchAppUsers();
+  fetchIgnoredUsers();
   fetchDiffState().catch(() => {});
 })();

@@ -2,6 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Планировщик задач</title>
     <link
       rel="stylesheet"
@@ -11,7 +12,9 @@
   <body class="bg-light">
     <nav class="navbar navbar-dark bg-dark mb-4">
       <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url_for('admin.admin_index') }}">⬅ Назад</a>
+        <a class="navbar-brand" href="{{ url_for('admin.admin_index') }}"
+          >⬅ Назад</a
+        >
         <span class="navbar-text text-white">{{ user_name }}</span>
       </div>
     </nav>
@@ -21,10 +24,15 @@
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between mb-3">
             <h4 class="mb-0">Планировщик задач</h4>
-            <button id="scheduler-refresh" class="btn btn-primary btn-sm">Обновить</button>
+            <button id="scheduler-refresh" class="btn btn-primary btn-sm">
+              Обновить
+            </button>
           </div>
           <div class="table-responsive">
-            <table class="table table-sm table-bordered align-middle" id="scheduler-table">
+            <table
+              class="table table-sm table-bordered align-middle"
+              id="scheduler-table"
+            >
               <thead class="table-light">
                 <tr>
                   <th>ID</th>
@@ -97,7 +105,12 @@
                   />
                 </div>
                 <div class="col-md-1 d-grid">
-                  <button class="btn btn-outline-secondary btn-sm" type="submit">Применить</button>
+                  <button
+                    class="btn btn-outline-secondary btn-sm"
+                    type="submit"
+                  >
+                    Применить
+                  </button>
                 </div>
               </form>
             </div>

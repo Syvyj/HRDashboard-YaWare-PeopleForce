@@ -123,7 +123,7 @@
   }
 
   function buildParams() {
-    return buildFilterParams(dateFromInput.value, dateToInput.value, userInput.value, selectedFilters);
+    return buildFilterParams(dateFromInput.value, dateToInput.value, userInput.value, selectedFilters, selectedEmployees);
   }
 
   function createCell(text, className) {
@@ -494,7 +494,7 @@
         .map((line) => `<span class="meta-link-line">${line}</span>`)
         .join('');
       const userKeyRaw = schedule.email || item.user_id || item.user_name;
-      userRecordsMap.set(userKeyRaw, { rows: item.rows || [], name: item.user_name });
+      userRecordsMap.set(userKeyRaw, { rows: item.rows || [], name: item.user_name, week_total: item.week_total });
       const userKey = encodeURIComponent(userKeyRaw);
       
       // Build logo links HTML
@@ -819,27 +819,39 @@
     }
     
     try {
-      // Тут потрібно створити API endpoint для збереження week notes
-      // Поки що просто закриваємо модалку - API буде додано далі
-      alert('Функція збереження коментарів до тижня буде реалізована найближчим часом');
+      // Get week_start from the first date in the data
+      const dateFrom = dateFromInput ? dateFromInput.value : '';
+      let weekStart = dateFrom;
+      
+      // If no date specified, calculate Monday of current week
+      if (!weekStart) {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const monday = new Date(today);
+        monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+        weekStart = formatISO(monday);
+      }
+      
+      const response = await fetch('/api/week-notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          user_key: userKey, 
+          week_start: weekStart,
+          notes: notes 
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save week notes');
+      }
+      
+      // Reload data to show updated notes
+      await loadData();
       
       if (weekNotesModal) {
         weekNotesModal.hide();
       }
-      
-      // Після додання API розкоментувати:
-      // const response = await fetch(`/api/users/${encodeURIComponent(userKey)}/week-notes`, {
-      //   method: 'PATCH',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ notes: notes })
-      // });
-      // if (!response.ok) {
-      //   throw new Error('Failed to save week notes');
-      // }
-      // await loadData(); // Перезавантажити дані
-      // if (weekNotesModal) {
-      //   weekNotesModal.hide();
-      // }
     } catch (error) {
       console.error(error);
       alert('Не удалось сохранить комментарий: ' + error.message);

@@ -1533,30 +1533,6 @@
       "manager_name": "Harauskaya_Maryia",
       "location": "Warsaw office"
     },
-    "Lemeshchenko Vladislava": {
-      "user_name": "Lemeshchenko Vladislava",
-      "division_name": "Agency",
-      "division_id": 54879,
-      "direction_name": "",
-      "direction_id": null,
-      "unit_name": "Creative Unit",
-      "unit_id": null,
-      "team_name": "Creative Team 1",
-      "team_id": 128376,
-      "peopleforce_id": 428232,
-      "email": "v.lemeshchenko@evadav.com",
-      "user_id": "7918352",
-      "start_time": "10:00",
-      "control_manager": 1,
-      "telegram_username": "Lemeshchenko_Vladislava",
-      "team_lead": "Sidielnikova Diana",
-      "manager_telegram": "Romanovich_Aleksey",
-      "project": "Agency Division",
-      "department": "Creative Team 1",
-      "position": "Creative manager",
-      "manager_name": "Romanovich_Alexey",
-      "location": "Remote Ukraine"
-    },
     "Likhobaba Daniil": {
       "user_name": "Likhobaba Daniil",
       "division_name": "Adnetwork",
@@ -1960,30 +1936,6 @@
       "manager_name": "Sluchevskyi_Gleb",
       "location": "Remote other countries"
     },
-    "Pirogov Savva": {
-      "user_name": "Pirogov Savva",
-      "division_name": "Adnetwork",
-      "division_id": 54880,
-      "direction_name": "Sales",
-      "direction_id": null,
-      "unit_name": "Demand Unit",
-      "unit_id": null,
-      "team_name": "Hunter Team",
-      "team_id": 128366,
-      "peopleforce_id": 533331,
-      "email": "s.pirogov@evadav.com",
-      "user_id": "7930901",
-      "start_time": "10:00",
-      "control_manager": 2,
-      "telegram_username": "Pirogov_Savva",
-      "team_lead": "Tenditnik Roman",
-      "manager_telegram": "adver_roma",
-      "project": "AdNetwork Division",
-      "department": "Hunter Team",
-      "position": "Hunter Cold Manager",
-      "manager_name": "Tenditnik_Roman",
-      "location": "Remote other countries"
-    },
     "Pitukh Daryna": {
       "user_name": "Pitukh Daryna",
       "division_name": "Consulting",
@@ -2361,30 +2313,6 @@
       "department": "BizDev Team",
       "position": "BizDev Manager",
       "manager_name": "Kucherenko_Nikita",
-      "location": "Remote other countries"
-    },
-    "Shilko Alexandra": {
-      "user_name": "Shilko Alexandra",
-      "division_name": "Agency",
-      "division_id": 54879,
-      "direction_name": "",
-      "direction_id": null,
-      "unit_name": "Creative Unit",
-      "unit_id": 125472,
-      "team_name": "",
-      "team_id": null,
-      "peopleforce_id": 558738,
-      "email": "a.shilko@evadav.com",
-      "user_id": "7933891",
-      "start_time": "11:00",
-      "control_manager": 1,
-      "telegram_username": "Shilko_Alexandra",
-      "team_lead": "Sidielnikova Diana",
-      "manager_telegram": "Sidielnikova_Diana",
-      "project": "Agency Division",
-      "department": "Creative Unit",
-      "position": "Designer",
-      "manager_name": "Sidielnikova_Diana",
       "location": "Remote other countries"
     },
     "Shinkus Aleksandr": {
@@ -4255,6 +4183,6 @@
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-21T11:03:45.039971"
+    "last_updated": "2025-11-23T21:30:29.430416"
   }
 }

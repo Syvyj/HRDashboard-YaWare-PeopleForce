@@ -32,7 +32,7 @@ function formatISO(date) {
 }
 
 // Shared filter utilities for multi-select modals
-function buildFilterParams(dateFromValue, dateToValue, userValue, selectedFilters) {
+function buildFilterParams(dateFromValue, dateToValue, userValue, selectedFilters, selectedEmployees) {
   const params = new URLSearchParams();
   if (dateFromValue) {
     params.set('date_from', dateFromValue);
@@ -42,6 +42,12 @@ function buildFilterParams(dateFromValue, dateToValue, userValue, selectedFilter
   }
   if (userValue) {
     params.set('user', userValue);
+  }
+  // Support multiple selected employees
+  if (selectedEmployees && selectedEmployees.size > 0) {
+    Array.from(selectedEmployees).forEach(key => {
+      params.append('user_key', key);
+    });
   }
   // Support multiple filter values
   if (selectedFilters && selectedFilters.projects && selectedFilters.projects.size > 0) {

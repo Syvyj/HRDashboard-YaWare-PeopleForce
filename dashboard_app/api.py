@@ -1174,6 +1174,16 @@ def _build_items(records):
         key = record.user_id or record.user_email or record.user_name
         grouped[key].append(record)
 
+    # Load week notes
+    week_notes_file = os.path.join(current_app.instance_path, 'week_notes.json')
+    week_notes = {}
+    if os.path.exists(week_notes_file):
+        try:
+            with open(week_notes_file, 'r', encoding='utf-8') as f:
+                week_notes = json.load(f)
+        except Exception as e:
+            logger.warning(f'Failed to load week notes: {e}')
+
     # Load schedule data to get position, telegram, team_lead
     schedule_data = schedule_user_manager.load_users() if schedule_user_manager else {}
     schedule_by_email = {}
@@ -1291,6 +1301,17 @@ def _build_items(records):
             if note_value:
                 notes_aggregated.append(note_value)
 
+        # Get week start date (Monday of the week containing the first record)
+        week_start = recs[0].record_date
+        days_since_monday = week_start.weekday()  # 0 = Monday, 6 = Sunday
+        week_start = week_start - timedelta(days=days_since_monday)
+        week_start_str = week_start.isoformat()
+        
+        # Get week notes for this user and week
+        user_key = first.user_email or first.user_id or first.user_name
+        note_key = f"{user_key}_{week_start_str}"
+        week_note = week_notes.get(note_key, '')
+        
         location_display = _normalize_location_label(first.location)
         items.append({
             'user_name': first.user_name,
@@ -1320,7 +1341,7 @@ def _build_items(records):
                 'corrected_total_minutes': total_corrected if has_corrected else None,
                 'corrected_total_display': _minutes_to_str(total_corrected) if has_corrected else '',
                 'corrected_total_hm': _minutes_to_hm(total_corrected) if has_corrected else '',
-                'notes': ''
+                'notes': week_note
             }
         })
 
@@ -4389,6 +4410,79 @@ def get_monthly_report():
         
     except Exception as e:
         logger.exception('Error generating monthly report')
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/week-notes', methods=['GET', 'POST'])
+@login_required
+def week_notes():
+    """
+    GET: Load all week notes
+    POST: Save week notes for a user.
+    
+    GET Query params:
+        - date_from: YYYY-MM-DD format (optional, for filtering)
+        - date_to: YYYY-MM-DD format (optional, for filtering)
+    
+    POST Request body:
+        - user_key: User email/key
+        - week_start: YYYY-MM-DD format (Monday of the week)
+        - notes: Notes text
+    """
+    notes_file = os.path.join(current_app.instance_path, 'week_notes.json')
+    
+    if request.method == 'GET':
+        try:
+            if not os.path.exists(notes_file):
+                return jsonify({'notes': {}})
+            
+            with open(notes_file, 'r', encoding='utf-8') as f:
+                all_notes = json.load(f)
+            
+            return jsonify({'notes': all_notes})
+            
+        except Exception as e:
+            logger.exception('Error loading week notes')
+            return jsonify({'error': str(e)}), 500
+    
+    # POST - save notes
+    if not getattr(current_user, 'is_admin', False) and not getattr(current_user, 'is_control_manager', False):
+        return jsonify({'error': 'Forbidden'}), 403
+    
+    try:
+        payload = request.get_json(silent=True) or {}
+        user_key = payload.get('user_key', '').strip()
+        week_start = payload.get('week_start', '').strip()
+        notes = payload.get('notes', '').strip()
+        
+        if not user_key or not week_start:
+            return jsonify({'error': 'user_key and week_start required'}), 400
+        
+        # Load existing notes
+        all_notes = {}
+        if os.path.exists(notes_file):
+            with open(notes_file, 'r', encoding='utf-8') as f:
+                all_notes = json.load(f)
+        
+        # Create key: user_key_week_start
+        note_key = f"{user_key}_{week_start}"
+        
+        # Update notes
+        if notes:
+            all_notes[note_key] = notes
+        elif note_key in all_notes:
+            # Delete if empty
+            del all_notes[note_key]
+        
+        # Save back
+        os.makedirs(current_app.instance_path, exist_ok=True)
+        with open(notes_file, 'w', encoding='utf-8') as f:
+            json.dump(all_notes, f, ensure_ascii=False, indent=2)
+        
+        return jsonify({'success': True, 'notes': notes})
+        
+    except Exception as e:
+        logger.exception('Error saving week notes')
         return jsonify({'error': str(e)}), 500
 
 

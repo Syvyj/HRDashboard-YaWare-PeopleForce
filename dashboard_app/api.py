@@ -31,7 +31,7 @@ from tracker_alert.services.schedule_utils import (
 )
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.client.peopleforce_api import PeopleForceClient
-from dashboard_app.tasks import _auto_assign_control_manager
+from tracker_alert.services.control_manager import auto_assign_control_manager
 
 logger = logging.getLogger(__name__)
 from tracker_alert.client.yaware_v2_api import YaWareV2Client
@@ -39,14 +39,14 @@ from tasks.update_attendance import update_for_date
 
 try:
     from reportlab.lib import colors  # type: ignore[import]
-    from reportlab.lib.pagesizes import A4  # type: ignore[import]
+    from reportlab.lib.pagesizes import A4, landscape  # type: ignore[import]
     from reportlab.lib.units import mm  # type: ignore[import]
     from reportlab.pdfbase import pdfmetrics  # type: ignore[import]
     from reportlab.pdfbase.ttfonts import TTFont  # type: ignore[import]
     from reportlab.platypus import SimpleDocTemplate, Spacer, Table, TableStyle, Paragraph  # type: ignore[import]
     from reportlab.lib.styles import ParagraphStyle  # type: ignore[import]
 except ImportError:  # pragma: no cover
-    colors = A4 = mm = None
+    colors = A4 = landscape = mm = None
     SimpleDocTemplate = Spacer = Table = TableStyle = Paragraph = None
     ParagraphStyle = None
     pdfmetrics = TTFont = None
@@ -127,12 +127,48 @@ def _schedule_identity_sets() -> tuple[set[str], set[str], set[str]]:
 
 
 def _get_scheduler():
-    """Lazy import to avoid circular dependencies."""
+    """Дістати активний APScheduler."""
+    try:
+        sched = current_app.config.get('SCHEDULER')
+        if sched:
+            return sched
+    except Exception:
+        pass
     try:
         module = import_module('dashboard_app.tasks')
-        return getattr(module, 'SCHEDULER', None)
+        sched = getattr(module, 'SCHEDULER', None)
+        if not sched and current_app:
+            register_fn = getattr(module, 'register_tasks', None)
+            if register_fn and current_app.config.get("ENABLE_SCHEDULER"):
+                register_fn(current_app)
+                sched = getattr(module, 'SCHEDULER', None)
+        return sched
     except Exception:
         return None
+
+
+def _get_scheduler_logs():
+    try:
+        logs = current_app.config.get('SCHEDULER_LOG')
+        if logs is not None:
+            return logs
+    except Exception:
+        pass
+    try:
+        module = import_module('dashboard_app.tasks')
+        return getattr(module, 'SCHEDULER_LOG', [])
+    except Exception:
+        return []
+
+
+def _append_scheduler_log(job_id: str, status: str, message: str = "") -> None:
+    try:
+        module = import_module('dashboard_app.tasks')
+        append_fn = getattr(module, 'append_scheduler_log', None)
+        if append_fn:
+            append_fn(job_id, status, message)
+    except Exception:
+        pass
 
 
 def _job_to_dict(job):
@@ -646,6 +682,14 @@ def api_scheduler_list_jobs():
     return jsonify({'jobs': jobs})
 
 
+@api_bp.get('/admin/scheduler/logs')
+@login_required
+def api_scheduler_logs():
+    _ensure_admin()
+    logs = list(_get_scheduler_logs())
+    return jsonify({'logs': logs})
+
+
 @api_bp.post('/admin/scheduler/jobs/<job_id>/run')
 @login_required
 def api_scheduler_run_job(job_id: str):
@@ -660,8 +704,9 @@ def api_scheduler_run_job(job_id: str):
     def _call():
         try:
             job.func(*job.args, **job.kwargs)
-        except Exception:
-            pass
+            _append_scheduler_log(job_id, "success", "Manual run")
+        except Exception as exc:
+            _append_scheduler_log(job_id, "error", f"Manual run failed: {exc}")
 
     threading.Thread(target=_call, daemon=True).start()
     return jsonify({'status': 'triggered'})
@@ -1668,7 +1713,7 @@ def admin_create_employee():
         division_name = _clean(payload.get('division_name'))
         if division_name:
             entry['division_name'] = division_name
-        auto_manager = _auto_assign_control_manager(entry.get('division_name', ''))
+        auto_manager = auto_assign_control_manager(entry.get('division_name', ''))
         entry['control_manager'] = auto_manager
 
     users[name] = entry
@@ -1936,7 +1981,7 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
     set_override = updates.get('_set_control_manager_override', False)
     
     if division_changed and not set_override and not has_manual_override(target_info, 'control_manager'):
-        auto_manager = _auto_assign_control_manager(new_division or '')
+        auto_manager = auto_assign_control_manager(new_division or '')
         if target_info.get('control_manager') != auto_manager:
             target_info['control_manager'] = auto_manager
             changed = True
@@ -2329,10 +2374,8 @@ def admin_sync_employee(user_key: str):
         
         # Автопризначення control_manager - ПЕРЕВІРЯЄМО чи НЕ перезаписаний вручну
         if not has_manual_override(user_info, 'control_manager'):
-            # Тільки якщо не було ручного перезапису - призначаємо автоматично
-            from dashboard_app.tasks import _auto_assign_control_manager
             division_name = user_info.get('division_name', '')
-            auto_manager = _auto_assign_control_manager(division_name)
+            auto_manager = auto_assign_control_manager(division_name)
             if user_info.get('control_manager') != auto_manager:
                 user_info['control_manager'] = auto_manager
                 updated_fields.append('control_manager (auto)')
@@ -4425,7 +4468,7 @@ def monthly_notes():
 @api_bp.route('/monthly-report/excel', methods=['GET'])
 @login_required
 def export_monthly_report_excel():
-    """Export monthly report as Excel file."""
+    """Export monthly report as Excel file matching web design."""
     try:
         # Reuse get_monthly_report logic
         month_str = request.args.get('month', datetime.now().strftime('%Y-%m'))
@@ -4440,58 +4483,111 @@ def export_monthly_report_excel():
         # Create Excel workbook
         wb = Workbook()
         ws = wb.active
-        ws.title = f"Monthly Report {month_str}"
+        ws.title = f"Report {month_str}"
         
-        # Headers
-        headers = ['Сотрудник', 'Plan Days', 'Vacation', 'Day Off', 'Sick', 'Fact Days', 'Notes']
-        ws.append(headers)
-        
-        # Style header row
+        # Define styles
         header_fill = PatternFill(start_color='4472C4', end_color='4472C4', fill_type='solid')
-        header_font = Font(bold=True, color='FFFFFF')
-        for cell in ws[1]:
-            cell.fill = header_fill
-            cell.font = header_font
-            cell.alignment = Alignment(horizontal='center', vertical='center')
+        header_font = Font(bold=True, color='FFFFFF', size=11)
+        label_font = Font(bold=True, size=10)
+        value_font = Font(size=10)
+        small_font = Font(size=9, color='6C757D')
+        border = Border(
+            left=Side(style='thin'),
+            right=Side(style='thin'),
+            top=Side(style='thin'),
+            bottom=Side(style='thin')
+        )
         
-        # Add data rows
+        # Add title
+        ws.merge_cells('A1:G1')
+        title_cell = ws['A1']
+        title_cell.value = f'Monthly Report: {month_str}'
+        title_cell.font = Font(bold=True, size=14)
+        title_cell.alignment = Alignment(horizontal='center', vertical='center')
+        
+        # Add data rows (no header row, labels under each user)
+        current_row = 3
+        
         for emp in data.get('employees', []):
-            user_info = f"{emp['user_name']}\n{emp['user_email']}"
+            # User info with badges
+            user_name = emp['user_name']
+            user_email = emp['user_email']
+            badges = []
             if emp.get('division'):
-                user_info += f"\nDivision: {emp['division']}"
+                badges.append(emp['division'])
             if emp.get('department'):
-                user_info += f"\nDepartment: {emp['department']}"
+                badges.append(emp['department'])
             if emp.get('unit'):
-                user_info += f"\nUnit: {emp['unit']}"
+                badges.append(emp['unit'])
             if emp.get('team'):
-                user_info += f"\nTeam: {emp['team']}"
+                badges.append(emp['team'])
             
-            plan_info = f"{emp['plan_days']}\nMinimum per month\n{emp['minimum_hours']}"
-            vacation_info = f"{emp['vacation_days']}\nTracked Hours\n{emp['tracked_hours']}"
-            day_off_info = f"{emp['day_off_days']}\nDelay >10\n{emp['delay_count']}"
-            sick_info = f"{emp['sick_days']}\nCorrected Hours\n{emp['corrected_hours']}"
+            user_info = f"{user_name}\n{user_email}\n{' | '.join(badges)}"
             
-            ws.append([
-                user_info,
-                plan_info,
-                vacation_info,
-                day_off_info,
-                sick_info,
-                emp['fact_days'],
-                emp.get('notes', '')
-            ])
+            # Add user row
+            ws.merge_cells(f'A{current_row}:G{current_row}')
+            user_cell = ws[f'A{current_row}']
+            user_cell.value = user_info
+            user_cell.font = label_font
+            user_cell.alignment = Alignment(wrap_text=True, vertical='top')
+            user_cell.border = border
+            
+            current_row += 1
+            
+            # Add data row
+            ws[f'A{current_row}'] = 'Plan Days'
+            ws[f'B{current_row}'] = 'Vacation'
+            ws[f'C{current_row}'] = 'Day Off'
+            ws[f'D{current_row}'] = 'Sick'
+            ws[f'E{current_row}'] = 'Fact Days'
+            ws[f'F{current_row}'] = 'Notes'
+            
+            for col in ['A', 'B', 'C', 'D', 'E', 'F']:
+                cell = ws[f'{col}{current_row}']
+                cell.font = label_font
+                cell.border = border
+                cell.alignment = Alignment(horizontal='center')
+            
+            current_row += 1
+            
+            # Add values
+            ws[f'A{current_row}'] = emp['plan_days']
+            ws[f'B{current_row}'] = emp['vacation_days']
+            ws[f'C{current_row}'] = emp['day_off_days']
+            ws[f'D{current_row}'] = emp['sick_days']
+            ws[f'E{current_row}'] = emp['fact_days']
+            ws[f'F{current_row}'] = emp.get('notes', '')
+            
+            for col in ['A', 'B', 'C', 'D', 'E', 'F']:
+                cell = ws[f'{col}{current_row}']
+                cell.font = value_font
+                cell.border = border
+                cell.alignment = Alignment(horizontal='center', vertical='top')
+            
+            current_row += 1
+            
+            # Add sub-labels
+            ws[f'A{current_row}'] = f"Minimum per month\n{emp['minimum_hours']}"
+            ws[f'B{current_row}'] = f"Tracked Hours\n{emp['tracked_hours']}"
+            ws[f'C{current_row}'] = f"Delay >10\n{emp['delay_count']}"
+            ws[f'D{current_row}'] = f"Corrected Hours\n{emp['corrected_hours']}"
+            
+            for col in ['A', 'B', 'C', 'D']:
+                cell = ws[f'{col}{current_row}']
+                cell.font = small_font
+                cell.border = border
+                cell.alignment = Alignment(horizontal='center', vertical='top', wrap_text=True)
+            
+            current_row += 2  # Add spacing
         
         # Adjust column widths
-        ws.column_dimensions['A'].width = 40
-        for col in ['B', 'C', 'D', 'E']:
-            ws.column_dimensions[col].width = 20
-        ws.column_dimensions['F'].width = 15
-        ws.column_dimensions['G'].width = 30
-        
-        # Apply wrap text to all cells
-        for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-            for cell in row:
-                cell.alignment = Alignment(wrap_text=True, vertical='top')
+        ws.column_dimensions['A'].width = 25
+        ws.column_dimensions['B'].width = 20
+        ws.column_dimensions['C'].width = 18
+        ws.column_dimensions['D'].width = 18
+        ws.column_dimensions['E'].width = 15
+        ws.column_dimensions['F'].width = 30
+        ws.column_dimensions['G'].width = 15
         
         # Save to BytesIO
         output = BytesIO()
@@ -4513,7 +4609,7 @@ def export_monthly_report_excel():
 @api_bp.route('/monthly-report/pdf', methods=['GET'])
 @login_required
 def export_monthly_report_pdf():
-    """Export monthly report as PDF file."""
+    """Export monthly report as PDF file with layout matching web design."""
     try:
         if not SimpleDocTemplate:
             return jsonify({'error': 'PDF export not available'}), 500
@@ -4530,61 +4626,191 @@ def export_monthly_report_pdf():
         
         # Create PDF
         output = BytesIO()
-        doc = SimpleDocTemplate(output, pagesize=A4)
+        doc = SimpleDocTemplate(output, pagesize=landscape(A4), rightMargin=20, leftMargin=20, topMargin=30, bottomMargin=20)
         elements = []
         
-        # Title
-        from reportlab.lib.styles import getSampleStyleSheet
+        # Styles
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.enums import TA_CENTER, TA_LEFT
         styles = getSampleStyleSheet()
+        
         title_style = ParagraphStyle(
             'CustomTitle',
             parent=styles['Heading1'],
-            fontSize=16,
+            fontSize=18,
             textColor=colors.HexColor('#1a1a1a'),
-            spaceAfter=12,
+            spaceAfter=20,
+            alignment=TA_CENTER,
+            fontName='Helvetica-Bold'
         )
+        
+        user_name_style = ParagraphStyle(
+            'UserName',
+            parent=styles['Normal'],
+            fontSize=11,
+            textColor=colors.HexColor('#1a1a1a'),
+            fontName='Helvetica-Bold',
+            alignment=TA_LEFT
+        )
+        
+        user_email_style = ParagraphStyle(
+            'UserEmail',
+            parent=styles['Normal'],
+            fontSize=9,
+            textColor=colors.HexColor('#666666'),
+            alignment=TA_LEFT
+        )
+        
+        badge_style = ParagraphStyle(
+            'Badge',
+            parent=styles['Normal'],
+            fontSize=8,
+            textColor=colors.HexColor('#0d6efd'),
+            alignment=TA_LEFT
+        )
+        
+        label_style = ParagraphStyle(
+            'Label',
+            parent=styles['Normal'],
+            fontSize=9,
+            textColor=colors.HexColor('#666666'),
+            alignment=TA_CENTER,
+            fontName='Helvetica'
+        )
+        
+        value_style = ParagraphStyle(
+            'Value',
+            parent=styles['Normal'],
+            fontSize=11,
+            textColor=colors.HexColor('#1a1a1a'),
+            alignment=TA_CENTER,
+            fontName='Helvetica-Bold'
+        )
+        
+        small_label_style = ParagraphStyle(
+            'SmallLabel',
+            parent=styles['Normal'],
+            fontSize=8,
+            textColor=colors.HexColor('#666666'),
+            alignment=TA_CENTER
+        )
+        
+        small_value_style = ParagraphStyle(
+            'SmallValue',
+            parent=styles['Normal'],
+            fontSize=9,
+            textColor=colors.HexColor('#1a1a1a'),
+            alignment=TA_CENTER
+        )
+        
+        # Title
         elements.append(Paragraph(f"Monthly Report: {month_str}", title_style))
-        elements.append(Spacer(1, 12))
+        elements.append(Spacer(1, 20))
         
-        # Table data
-        table_data = [['Employee', 'Plan Days', 'Vacation', 'Day Off', 'Sick', 'Fact Days']]
-        
+        # Process each employee
         for emp in data.get('employees', []):
-            user_info = f"{emp['user_name']}<br/>{emp['user_email']}"
+            # User info section
+            user_name = emp['user_name']
+            user_email = emp['user_email']
+            
+            # Build badges
+            badges = []
             if emp.get('division'):
-                user_info += f"<br/>Div: {emp['division']}"
+                badges.append(emp['division'])
             if emp.get('department'):
-                user_info += f"<br/>Dept: {emp['department']}"
+                badges.append(emp['department'])
+            if emp.get('unit'):
+                badges.append(emp['unit'])
+            if emp.get('team'):
+                badges.append(emp['team'])
             
-            plan_col = Paragraph(f"<b>{emp['plan_days']}</b><br/>Min: {emp['minimum_hours']}", styles['Normal'])
-            vacation_col = Paragraph(f"<b>{emp['vacation_days']}</b><br/>Tracked: {emp['tracked_hours']}", styles['Normal'])
-            day_off_col = Paragraph(f"<b>{emp['day_off_days']}</b><br/>Delay: {emp['delay_count']}", styles['Normal'])
-            sick_col = Paragraph(f"<b>{emp['sick_days']}</b><br/>Corr: {emp['corrected_hours']}", styles['Normal'])
+            # User info table (single row spanning all columns)
+            user_info_text = f"<b>{user_name}</b><br/><font size=8 color='#666666'>{user_email}</font>"
+            if badges:
+                user_info_text += f"<br/><font size=7 color='#0d6efd'>{' | '.join(badges)}</font>"
             
-            table_data.append([
-                Paragraph(user_info, styles['Normal']),
-                plan_col,
-                vacation_col,
-                day_off_col,
-                sick_col,
-                str(emp['fact_days'])
-            ])
+            user_table = Table([[Paragraph(user_info_text, user_name_style)]], colWidths=[750])
+            user_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 10),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+                ('TOPPADDING', (0, 0), (-1, -1), 8),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+                ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#dee2e6')),
+            ]))
+            elements.append(user_table)
+            
+            # Data table - labels row
+            labels_data = [[
+                Paragraph('Plan Days', label_style),
+                Paragraph('Vacation', label_style),
+                Paragraph('Day Off', label_style),
+                Paragraph('Sick', label_style),
+                Paragraph('Fact Days', label_style),
+                Paragraph('Notes', label_style)
+            ]]
+            
+            # Data table - values row
+            notes_text = emp.get('notes', '') or ''
+            if len(notes_text) > 40:
+                notes_text = notes_text[:37] + '...'
+            
+            values_data = [[
+                Paragraph(str(emp['plan_days']), value_style),
+                Paragraph(str(emp['vacation_days']), value_style),
+                Paragraph(str(emp['day_off_days']), value_style),
+                Paragraph(str(emp['sick_days']), value_style),
+                Paragraph(str(emp['fact_days']), value_style),
+                Paragraph(notes_text, value_style)
+            ]]
+            
+            # Data table - sub-labels row
+            sub_labels_data = [[
+                Paragraph(f"Minimum per month<br/>{emp['minimum_hours']}", small_label_style),
+                Paragraph(f"Tracked Hours<br/>{emp['tracked_hours']}", small_label_style),
+                Paragraph(f"Delay &gt;10<br/>{emp['delay_count']}", small_label_style),
+                Paragraph(f"Corrected Hours<br/>{emp['corrected_hours']}", small_label_style),
+                Paragraph('', small_label_style),
+                Paragraph('', small_label_style)
+            ]]
+            
+            # Combine all data rows
+            data_table = Table(labels_data + values_data + sub_labels_data, 
+                             colWidths=[125, 125, 125, 125, 125, 125])
+            data_table.setStyle(TableStyle([
+                # Labels row styling
+                ('BACKGROUND', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+                ('VALIGN', (0, 0), (-1, 0), 'TOP'),
+                ('TOPPADDING', (0, 0), (-1, 0), 5),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 3),
+                
+                # Values row styling
+                ('BACKGROUND', (0, 1), (-1, 1), colors.white),
+                ('ALIGN', (0, 1), (-1, 1), 'CENTER'),
+                ('VALIGN', (0, 1), (-1, 1), 'MIDDLE'),
+                ('TOPPADDING', (0, 1), (-1, 1), 5),
+                ('BOTTOMPADDING', (0, 1), (-1, 1), 5),
+                
+                # Sub-labels row styling
+                ('BACKGROUND', (0, 2), (-1, 2), colors.white),
+                ('ALIGN', (0, 2), (-1, 2), 'CENTER'),
+                ('VALIGN', (0, 2), (-1, 2), 'TOP'),
+                ('TOPPADDING', (0, 2), (-1, 2), 3),
+                ('BOTTOMPADDING', (0, 2), (-1, 2), 5),
+                
+                # All borders
+                ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#dee2e6')),
+                ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#dee2e6')),
+            ]))
+            elements.append(data_table)
+            
+            # Add spacing between employees
+            elements.append(Spacer(1, 15))
         
-        # Create table
-        table = Table(table_data, colWidths=[100, 70, 70, 70, 70, 50])
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4472C4')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ]))
-        
-        elements.append(table)
+        # Build PDF
         doc.build(elements)
         
         output.seek(0)

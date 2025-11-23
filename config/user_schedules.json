@@ -287,7 +287,7 @@
       "user_name": "Bylchinskiy Ilya",
       "division_id": 54878,
       "direction_id": 125478,
-      "unit_name": "",
+      "unit_name": "IOS Unit",
       "unit_id": null,
       "team_id": null,
       "peopleforce_id": "554820",
@@ -304,12 +304,13 @@
       "_manual_overrides": {
         "location": true
       },
-      "project": "APPs",
-      "department": "Product Team",
+      "project": "Apps",
+      "department": "",
       "team": "Product Team",
-      "division_name": "APPs",
-      "direction_name": "Product Team",
-      "team_name": "Product Team"
+      "division_name": "Apps",
+      "direction_name": "",
+      "team_name": "Product Team",
+      "unit": "IOS Unit"
     },
     "Chernyakov Andrii": {
       "user_name": "Chernyakov Andrii",
@@ -625,11 +626,11 @@
       "user_name": "Gramovich Ivan",
       "division_name": "Apps",
       "division_id": 54878,
-      "direction_name": "Product Team",
+      "direction_name": "",
       "direction_id": 125478,
       "unit_name": "IOS Unit",
       "unit_id": null,
-      "team_name": "Product Team",
+      "team_name": "",
       "team_id": null,
       "peopleforce_id": "470190",
       "email": "i.gramovich@evadav.com",
@@ -640,12 +641,12 @@
       "team_lead": "Kurylionak Aliaksandr",
       "manager_telegram": "Kurylionak_Aliaksandr",
       "project": "Apps",
-      "department": "Product Team",
+      "department": "",
       "position": "Team Lead of Product Team",
       "manager_name": "Kurylionak_Aliaksandr",
       "location": "Warsaw office",
       "unit": "IOS Unit",
-      "team": "Product Team"
+      "team": ""
     },
     "Harauskaya Maryia": {
       "user_name": "Harauskaya Maryia",
@@ -2434,30 +2435,6 @@
       "manager_name": "Kryvytska_Olena",
       "location": "Remote other countries"
     },
-    "Shoshina Karina": {
-      "user_name": "Shoshina Karina",
-      "division_name": "Agency",
-      "division_id": 54879,
-      "direction_name": "Media Buying",
-      "direction_id": null,
-      "unit_name": "Mb Native & Tiktok Unit",
-      "unit_id": null,
-      "team_name": "Tik Tok Team",
-      "team_id": 128018,
-      "peopleforce_id": 555642,
-      "email": "k.shoshina@evadav.com",
-      "user_id": "7933579",
-      "start_time": "12:00",
-      "control_manager": 1,
-      "telegram_username": "Shoshina_Karina",
-      "team_lead": "Balaban Iryna",
-      "manager_telegram": "Balaban_Iryna",
-      "project": "Agency Division",
-      "department": "Tik Tok Team",
-      "position": "Media buyer Tik Tok",
-      "manager_name": "Balaban_Iryna",
-      "location": "Remote other countries"
-    },
     "Shota Artyom": {
       "user_name": "Shota Artyom",
       "division_name": "Apps",
@@ -2534,7 +2511,7 @@
       "user_name": "Shustal Valeryia",
       "division_id": 54878,
       "direction_id": 125478,
-      "unit_name": "",
+      "unit_name": "IOS Unit",
       "unit_id": null,
       "team_id": null,
       "peopleforce_id": "499881",
@@ -2552,11 +2529,10 @@
         "location": true
       },
       "project": "Apps",
-      "department": "Product Team",
       "team": "Product Team",
       "division_name": "Apps",
-      "direction_name": "Product Team",
-      "team_name": "Product Team"
+      "team_name": "Product Team",
+      "unit": "IOS Unit"
     },
     "Shykula Artur": {
       "user_name": "Shykula Artur",
@@ -4257,9 +4233,28 @@
       "division_name": "Apps",
       "unit": "IOS Unit",
       "unit_name": "IOS Unit"
+    },
+    "Munteanu Valeria": {
+      "email": "v.munteanu@evadav.com",
+      "user_id": "7937701",
+      "peopleforce_id": "588604",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "start_time": true,
+        "control_manager": true
+      },
+      "project": "Agency",
+      "start_time": "09:00",
+      "control_manager": 1,
+      "position": "Account Farming Team Lead",
+      "division_name": "Agency",
+      "unit": "Product Operations Unit",
+      "unit_name": "Product Operations Unit"
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-20T16:20:57.334549"
+    "last_updated": "2025-11-21T11:03:45.039971"
   }
 }

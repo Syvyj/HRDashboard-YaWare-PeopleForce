@@ -37,6 +37,47 @@ async function schedulerLoadJobs() {
   }
 }
 
+async function schedulerLoadLogs() {
+  const tableBody = document.querySelector('#scheduler-log-table tbody');
+  if (!tableBody) {
+    return;
+  }
+  tableBody.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-3">Загрузка…</td></tr>';
+  try {
+    const res = await fetch('/api/admin/scheduler/logs');
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || 'Не удалось получить лог задач');
+    }
+    const logs = data.logs || [];
+    if (!logs.length) {
+      tableBody.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-3">Пока пусто</td></tr>';
+      return;
+    }
+    tableBody.innerHTML = '';
+    logs.forEach((entry) => {
+      const tr = document.createElement('tr');
+      const dateStr = entry.finished_at ? new Date(entry.finished_at).toLocaleString() : '—';
+      const statusClass = entry.status === 'success' ? 'bg-success' : 'bg-danger';
+      const message = entry.message || '';
+      const duration =
+        typeof entry.duration_seconds === 'number'
+          ? entry.duration_seconds.toFixed(1)
+          : '—';
+      tr.innerHTML = `
+        <td><small>${dateStr}</small></td>
+        <td><code>${entry.job_id || ''}</code></td>
+        <td><span class="badge ${statusClass}">${entry.status}</span></td>
+        <td>${message}</td>
+        <td>${duration}</td>
+      `;
+      tableBody.appendChild(tr);
+    });
+  } catch (error) {
+    tableBody.innerHTML = `<tr><td colspan="5" class="text-danger text-center py-3">${error.message}</td></tr>`;
+  }
+}
+
 async function schedulerPost(url, payload) {
   const res = await fetch(url, {
     method: 'POST',
@@ -73,6 +114,11 @@ document.addEventListener('click', async (event) => {
 
 document.getElementById('scheduler-refresh')?.addEventListener('click', () => {
   schedulerLoadJobs();
+  schedulerLoadLogs();
+});
+
+document.getElementById('scheduler-log-refresh')?.addEventListener('click', () => {
+  schedulerLoadLogs();
 });
 
 document.getElementById('scheduler-reschedule')?.addEventListener('submit', async (event) => {
@@ -101,4 +147,5 @@ document.getElementById('scheduler-reschedule')?.addEventListener('submit', asyn
 
 document.addEventListener('DOMContentLoaded', () => {
   schedulerLoadJobs();
+  schedulerLoadLogs();
 });

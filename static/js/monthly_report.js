@@ -51,7 +51,10 @@
   if (filterModalApplyBtn) {
     filterModalApplyBtn.addEventListener('click', function () {
       // Delay to let report.js update selectedFilters first
-      setTimeout(() => loadMonthlyReport(), 100);
+      setTimeout(() => {
+        console.log('Filter modal applied, reloading...', window.selectedFilters);
+        loadMonthlyReport();
+      }, 150);
     });
   }
   
@@ -59,7 +62,10 @@
   const multiSelectApplyBtn = document.getElementById('multi-select-apply');
   if (multiSelectApplyBtn) {
     multiSelectApplyBtn.addEventListener('click', function () {
-      setTimeout(() => loadMonthlyReport(), 100);
+      setTimeout(() => {
+        console.log('Multi-select applied, reloading...');
+        loadMonthlyReport();
+      }, 150);
     });
   }
 
@@ -159,10 +165,8 @@
       }
     }
 
-    // Get selected employees from multi-select
-    if (typeof window.selectedEmployeeKeys !== 'undefined' && window.selectedEmployeeKeys.length > 0) {
-      filters.selected_users = window.selectedEmployeeKeys.join(',');
-    }
+    // Get selected employees from multi-select (if implemented)
+    // TODO: Integrate with actual multi-select modal from report.js
 
     return filters;
   }

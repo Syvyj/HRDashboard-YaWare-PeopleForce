@@ -3,11 +3,13 @@ from __future__ import annotations
 import atexit
 import logging
 import re
-from calendar import monthrange
 from datetime import date, datetime, timedelta, time
+from collections import deque
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
+import pytz
 
 from flask import current_app
 
@@ -25,23 +27,8 @@ logger = logging.getLogger(__name__)
 
 _scheduler: BackgroundScheduler | None = None
 SCHEDULER: BackgroundScheduler | None = None
-
-
-def _auto_assign_control_manager(division_name: str) -> int:
-    """
-    Автоматичне призначення control_manager на основі division_name:
-    - Agency → 1
-    - Apps, Adnetwork, Consulting → 2
-    - Інші → 2 (за замовчуванням)
-    """
-    division_normalized = (division_name or "").strip().lower()
-    
-    if division_normalized == "agency":
-        return 1
-    elif division_normalized in ("apps", "adnetwork", "consulting"):
-        return 2
-    else:
-        return 3  # За замовчуванням
+LOCAL_TZ = pytz.timezone("Europe/Warsaw")
+SCHEDULER_LOG = deque(maxlen=200)
 
 
 def _with_app_context(app, func, *args, **kwargs):
@@ -55,21 +42,6 @@ def _run_daily_attendance(app):
     monitor = AttendanceMonitor()
     update_for_date(monitor, target, include_absent=True)
     logger.info("[scheduler] Attendance sync completed for %s", target)
-
-
-def _run_prev_month_resync(app):
-    today = date.today()
-    prev_month_last_day = today.replace(day=1) - timedelta(days=1)
-    year, month = prev_month_last_day.year, prev_month_last_day.month
-    start_day = date(year, month, 1)
-    days = monthrange(year, month)[1]
-
-    logger.info("[scheduler] Re-sync previous month %04d-%02d", year, month)
-    monitor = AttendanceMonitor()
-    for offset in range(days):
-        target = start_day + timedelta(days=offset)
-        update_for_date(monitor, target, include_absent=True)
-    logger.info("[scheduler] Previous month sync finished")
 
 
 def _cleanup_old_records(app):
@@ -107,6 +79,35 @@ def _clean_telegram_username(value: str) -> str:
     value = value.lstrip('@')
     
     return value
+
+
+def append_scheduler_log(job_id: str, status: str, message: str = "", scheduled_time: datetime | None = None) -> None:
+    """Додати запис у журнал виконання задач."""
+    finished_at = datetime.now(LOCAL_TZ)
+    scheduled_local = scheduled_time.astimezone(LOCAL_TZ) if scheduled_time else None
+    duration = None
+    if scheduled_local:
+        duration = (finished_at - scheduled_local).total_seconds()
+        if duration < 0:
+            duration = None
+    entry = {
+        "job_id": job_id,
+        "status": status,
+        "message": (message or "")[:500],
+        "scheduled_time": scheduled_local.isoformat() if scheduled_local else None,
+        "finished_at": finished_at.isoformat(),
+        "duration_seconds": duration,
+    }
+    SCHEDULER_LOG.appendleft(entry)
+
+
+def _scheduler_event_listener(event):
+    status = "success"
+    message = ""
+    if event.code == EVENT_JOB_ERROR:
+        status = "error"
+        message = str(getattr(event, "exception", ""))[:500]
+    append_scheduler_log(event.job_id, status, message, getattr(event, "scheduled_run_time", None))
 
 
 def _sync_organizational_hierarchy(app):
@@ -204,179 +205,87 @@ def _sync_organizational_hierarchy(app):
 
 
 def _sync_peopleforce_metadata(app):
-    logger.info("[scheduler] Running PeopleForce metadata sync")
+    """Синхронізувати лише статуси PeopleForce (відпустка/лікарняний)."""
+    logger.info("[scheduler] Running PeopleForce leave status sync")
     client = PeopleForceClient()
-    employees = client.get_employees(force_refresh=True)
+    today = date.today()
+    try:
+        leaves = client.get_leave_requests(start_date=today, end_date=today)
+    except Exception as exc:
+        logger.error("[scheduler] Failed to fetch leave requests: %s", exc, exc_info=True)
+        return
+
+    leave_by_email: dict[str, dict] = {}
+    for leave in leaves or []:
+        employee = leave.get("employee") or {}
+        email = (employee.get("email") or "").strip().lower()
+        if not email:
+            continue
+        leave_type = leave.get("leave_type")
+        if isinstance(leave_type, dict):
+            leave_name = (leave_type.get("name") or "").strip()
+        else:
+            leave_name = str(leave_type or "").strip()
+        entries = leave.get("entries") or []
+        amount = 1.0
+        for entry in entries:
+            if entry.get("date") == today.isoformat():
+                try:
+                    amount = float(entry.get("amount", amount))
+                except (TypeError, ValueError):
+                    amount = 1.0
+                break
+        leave_by_email[email] = {
+            "status": leave_name or "Leave",
+            "amount": amount,
+            "starts_on": leave.get("starts_on"),
+            "ends_on": leave.get("ends_on"),
+            "state": leave.get("state"),
+        }
+
     data = schedule_user_manager.load_users()
     users = data.get("users", {}) if isinstance(data, dict) else {}
-
-    employees_by_email = {}
-    for emp in employees:
-        email = (emp.get("email") or "").strip().lower()
-        if email:
-            employees_by_email[email] = emp
+    leave_fields = [
+        "peopleforce_leave_status",
+        "peopleforce_leave_amount",
+        "peopleforce_leave_start",
+        "peopleforce_leave_end",
+        "peopleforce_leave_state",
+        "peopleforce_leave_updated_at",
+    ]
 
     updated = False
-    new_employees: list[str] = []
-    
-    # Створюємо словник менеджерів для швидкого доступу
-    managers_cache = {}
-    
-    # Перший проход - синхронізуємо всі дані
-    for name, info in users.items():
+    for info in users.values():
         if not isinstance(info, dict):
             continue
         email = (info.get("email") or "").strip().lower()
-        if not email:
-            continue
-        employee = employees_by_email.get(email)
-        if not employee:
-            continue
+        leave_info = leave_by_email.get(email)
 
-        # Оновлюємо project (DIVISION)
-        project_obj = employee.get("division") or {}
-        project_name = ""
-        if isinstance(project_obj, dict):
-            project_name = (project_obj.get("name") or "").strip()
-        if project_name and not has_manual_override(info, "project") and info.get("project") != project_name:
-            info["project"] = project_name
-            updated = True
-            logger.debug(f"Оновлено project (DIVISION) для {name}: {project_name}")
-        
-        # Автопризначення control_manager на основі division_name
-        division_name = info.get("division_name", "")
-        auto_manager = _auto_assign_control_manager(division_name)
-        current_manager = info.get("control_manager")
-        
-        # Призначаємо автоматично тільки якщо немає ручного override або якщо поточне значення None
-        if not has_manual_override(info, "control_manager") and current_manager != auto_manager:
-            info["control_manager"] = auto_manager
-            updated = True
-            logger.debug(f"Автопризначено control_manager={auto_manager} для {name} (division: {division_name})")
-
-        # Оновлюємо department (DIRECTION/UNIT)
-        department_obj = employee.get("department") or {}
-        department_name = ""
-        if isinstance(department_obj, dict):
-            department_name = (department_obj.get("name") or "").strip()
-        if department_name and not has_manual_override(info, "department") and info.get("department") != department_name:
-            info["department"] = department_name
-            updated = True
-            logger.debug(f"Оновлено department (DIRECTION/UNIT) для {name}: {department_name}")
-        
-        # Синхронізуємо додаткові дані з PeopleForce (детальний запит)
-        peopleforce_id = info.get("peopleforce_id")
-        if peopleforce_id:
-            try:
-                detailed_data = client.get_employee_detail(peopleforce_id)
-                if detailed_data:
-                    # Отримуємо позицію
-                    position_obj = detailed_data.get("position") or {}
-                    position_name = ""
-                    if isinstance(position_obj, dict):
-                        position_name = (position_obj.get("name") or "").strip()
-                    if position_name and info.get("position") != position_name:
-                        info["position"] = position_name
-                        updated = True
-                        logger.debug(f"Оновлено position для {name}: {position_name}")
-                    
-                    # Отримуємо локацію
-                    location_obj = detailed_data.get("location") or {}
-                    location_name = ""
-                    if isinstance(location_obj, dict):
-                        location_name = (location_obj.get("name") or "").strip()
-                    if location_name and info.get("location") != location_name:
-                        info["location"] = location_name
-                        updated = True
-                        logger.debug(f"Оновлено location для {name}: {location_name}")
-                    
-                    # Отримуємо робочий телеграм з custom fields
-                    fields = detailed_data.get("fields", {})
-                    work_telegram_raw = fields.get("1", {}).get("value", "").strip() if isinstance(fields.get("1"), dict) else ""
-                    work_telegram = _clean_telegram_username(work_telegram_raw)
-                    
-                    # Якщо знайдено робочий телеграм і він відрізняється
-                    if work_telegram and info.get("telegram_username") != work_telegram:
-                        info["telegram_username"] = work_telegram
-                        updated = True
-                        logger.debug(f"Оновлено telegram для {name}: {work_telegram}")
-                    
-                    # Отримуємо team_lead з custom fields
-                    team_lead_field = fields.get("team_lead") or {}
-                    team_lead_name = ""
-                    if isinstance(team_lead_field, dict):
-                        team_lead_name = (team_lead_field.get("value") or "").strip()
-                    if team_lead_name and info.get("team_lead") != team_lead_name:
-                        info["team_lead"] = team_lead_name
-                        updated = True
-                        logger.debug(f"Оновлено team_lead для {name}: {team_lead_name}")
-                    
-                    # Отримуємо дані про керівника
-                    reporting_to = detailed_data.get("reporting_to")
-                    if reporting_to and isinstance(reporting_to, dict):
-                        manager_id = reporting_to.get("id")
-                        
-                        # Отримуємо детальні дані про керівника (використовуємо кеш)
-                        if manager_id not in managers_cache:
-                            manager_detail = client.get_employee_detail(manager_id)
-                            if manager_detail:
-                                manager_fields = manager_detail.get("fields", {})
-                                manager_tg_raw = manager_fields.get("1", {}).get("value", "").strip() if isinstance(manager_fields.get("1"), dict) else ""
-                                manager_tg = _clean_telegram_username(manager_tg_raw)
-                                # Зберігаємо всі дані про керівника в кеш
-                                managers_cache[manager_id] = {
-                                    "first_name": reporting_to.get("first_name", ""),
-                                    "last_name": reporting_to.get("last_name", ""),
-                                    "telegram": manager_tg,
-                                    "division": manager_detail.get("division", {}).get("name") if isinstance(manager_detail.get("division"), dict) else manager_detail.get("division"),
-                                    "department": manager_detail.get("department", {}).get("name") if isinstance(manager_detail.get("department"), dict) else manager_detail.get("department"),
-                                }
-                        
-                        manager_info = managers_cache.get(manager_id)
-                        if manager_info:
-                            # Формуємо ім'я керівника у форматі Прізвище_Ім'я
-                            manager_name = f"{manager_info['last_name']}_{manager_info['first_name']}"
-                            manager_telegram = manager_info['telegram']
-                            
-                            # Оновлюємо дані керівника якщо змінилися
-                            if info.get("manager_name") != manager_name:
-                                info["manager_name"] = manager_name
-                                updated = True
-                                logger.debug(f"Оновлено manager_name для {name}: {manager_name}")
-                            
-                            if manager_telegram and info.get("manager_telegram") != manager_telegram:
-                                info["manager_telegram"] = manager_telegram
-                                updated = True
-                                logger.debug(f"Оновлено manager_telegram для {name}: {manager_telegram}")
-                            
-                            # Якщо у користувача нема DIRECTION/UNIT, беремо від team lead'а
-                            if not info.get("department") and manager_info.get("department"):
-                                info["department"] = manager_info["department"]
-                                updated = True
-                                logger.debug(f"Оновлено department для {name} (з team lead): {manager_info['department']}")
-                    
-            except Exception as e:
-                logger.error(f"Помилка при синхронізації telegram/manager для {name}: {e}")
-                continue
-
-    for email, employee in employees_by_email.items():
-        existing = None
-        for info in users.values():
-            if isinstance(info, dict) and (info.get("email") or "").strip().lower() == email:
-                existing = info
-                break
-        if existing:
-            continue
-        full_name = employee.get("full_name") or f"{employee.get('first_name', '')} {employee.get('last_name', '')}".strip()
-        if full_name:
-            new_employees.append(full_name)
+        if leave_info:
+            new_values = {
+                "peopleforce_leave_status": leave_info["status"],
+                "peopleforce_leave_amount": leave_info["amount"],
+                "peopleforce_leave_start": leave_info["starts_on"],
+                "peopleforce_leave_end": leave_info["ends_on"],
+                "peopleforce_leave_state": leave_info["state"],
+                "peopleforce_leave_updated_at": today.isoformat(),
+            }
+            for key, value in new_values.items():
+                if info.get(key) != value:
+                    info[key] = value
+                    updated = True
+        else:
+            for key in leave_fields:
+                if key in info:
+                    info.pop(key)
+                    updated = True
 
     if updated:
-        schedule_user_manager.save_users(data)
-        logger.info("[scheduler] Updated schedule metadata from PeopleForce (including hierarchy and manager)")
+        if not schedule_user_manager.save_users(data):
+            raise RuntimeError("Не вдалося зберегти user_schedules.json після синхронізації PeopleForce")
+        clear_user_schedule_cache()
+        logger.info("[scheduler] Updated leave statuses from PeopleForce")
 
-    if new_employees:
-        logger.info("[scheduler] Нові співробітники в PeopleForce (потрібно додати вручну): %s", ", ".join(new_employees[:10]))
 
 
 def _normalize_time(value: object | None) -> str | None:
@@ -634,35 +543,29 @@ def register_tasks(app):
     if _scheduler:
         return
 
-    scheduler = BackgroundScheduler(timezone='UTC')
-    # 10:15 UTC (12:15 Warsaw) - Синхронізація з YaWare за минулу добу (Mon-Fri)
+    scheduler = BackgroundScheduler(timezone=LOCAL_TZ)
+    # 09:15 Warsaw - синхронізація з YaWare за минулу добу (щодня)
     scheduler.add_job(lambda: _with_app_context(app, _run_daily_attendance), 
-                      CronTrigger(hour=10, minute=15, day_of_week='mon-fri', timezone='UTC'),
+                      CronTrigger(hour=9, minute=15, timezone=LOCAL_TZ),
                       id='daily_attendance_sync', replace_existing=True)
-    # 10:17 UTC (12:17 Warsaw) - Синхронізація з PeopleForce + ієрархія (Mon-Fri)
+    # 09:17 Warsaw - PeopleForce leave statuses (щодня)
     def sync_peopleforce_with_hierarchy():
-        _sync_organizational_hierarchy(app)
         _sync_peopleforce_metadata(app)
     scheduler.add_job(lambda: _with_app_context(app, sync_peopleforce_with_hierarchy), 
-                      CronTrigger(hour=10, minute=17, day_of_week='mon-fri', timezone='UTC'),
+                      CronTrigger(hour=9, minute=17, timezone=LOCAL_TZ),
                       id='peopleforce_metadata_sync', replace_existing=True)
-    # 1-го числа місяця о 03:15 UTC (05:15 Warsaw) - Ресинхронізація минулого місяця
-    scheduler.add_job(lambda: _with_app_context(app, _run_prev_month_resync), 
-                      CronTrigger(day="1", hour=3, minute=15, timezone='UTC'),
-                      id='prev_month_resync', replace_existing=True)
-    # Automatic cleanup disabled - keep all records indefinitely
-    # scheduler.add_job(lambda: _with_app_context(app, _cleanup_old_records), CronTrigger(day="1", hour=5, minute=45),
-    #                   id='cleanup_old_records', replace_existing=True)
+    scheduler.add_listener(_scheduler_event_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
     scheduler.start()
 
     _scheduler = scheduler
     global SCHEDULER
     SCHEDULER = scheduler
+    app.config['SCHEDULER'] = scheduler
+    app.config['SCHEDULER_LOG'] = SCHEDULER_LOG
     atexit.register(lambda: scheduler.shutdown(wait=False))
 
     logger.info(
-        "[scheduler] Background scheduler started (timezone: UTC):\n"
-        "  - 10:15 UTC (12:15 Warsaw) - YaWare attendance sync (Mon-Fri)\n"
-        "  - 10:17 UTC (12:17 Warsaw) - PeopleForce metadata + hierarchy sync (Mon-Fri)\n"
-        "  - 03:15 UTC (05:15 Warsaw) on 1st day of month - Previous month resync"
+        "[scheduler] Background scheduler started (timezone: Europe/Warsaw):\n"
+        "  - 09:15 Warsaw - YaWare attendance sync (Mon-Fri)\n"
+        "  - 09:17 Warsaw - PeopleForce leave status sync (Mon-Fri)"
     )

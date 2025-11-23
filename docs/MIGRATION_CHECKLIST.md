@@ -109,8 +109,7 @@
 ✅ YAWARE_API_GUIDE.md - Справка по YaWare API
 ✅ PEOPLEFORCE_API_GUIDE.md - Справка по PeopleForce API
 ✅ AVAILABLE_DATA.md - Доступные данные
-✅ WEEKLY_EXPORT_GUIDE.md - Еженедельный экспорт
-✅ AUTO_EXPORT_GUIDE.md - Автоматический экспорт
+✅ AUTO_EXPORT_GUIDE.md - Автоматический та тижневий експорт
 ✅ PROJECT_STRUCTURE.md - Структура проекта
 ```
 

@@ -50,6 +50,7 @@ def main():
         
         # Start scheduler
         scheduler.start()
+        bot.application.bot_data['report_service'] = scheduler.report_service
         logger.info("✅ Scheduler started")
         
         # Run bot (blocking)

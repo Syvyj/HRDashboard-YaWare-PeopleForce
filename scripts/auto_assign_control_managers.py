@@ -19,20 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from tracker_alert.services import user_manager as schedule_user_manager
 from tracker_alert.services.schedule_utils import has_manual_override
-
-
-def auto_assign_control_manager(division_name: str) -> int:
-    """
-    Автоматичне призначення control_manager на основі division_name.
-    """
-    division_normalized = (division_name or "").strip().lower()
-    
-    if division_normalized == "agency":
-        return 1
-    elif division_normalized in ("apps", "adnetwork", "consulting"):
-        return 2
-    else:
-        return 2  # За замовчуванням
+from tracker_alert.services.control_manager import auto_assign_control_manager
 
 
 def main():

@@ -915,7 +915,10 @@
   if (filterModalApplyBtn) {
     filterModalApplyBtn.addEventListener('click', () => {
       updateSelectedFiltersDisplay();
-      submitFilters();
+      // Only call submitFilters if we're on the dashboard, not monthly report
+      if (window.location.pathname !== '/monthly-report') {
+        submitFilters();
+      }
     });
   }
 

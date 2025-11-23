@@ -30,7 +30,6 @@ YaWare_Bot/
 │   ├── DEPLOYMENT.md             # Інструкція з деплою
 │   ├── YAWARE_API_GUIDE.md       # YaWare API документація
 │   ├── PEOPLEFORCE_API_GUIDE.md  # PeopleForce API документація
-│   ├── WEEKLY_EXPORT_GUIDE.md    # Експорт у Google Sheets
 │   ├── AUTO_EXPORT_GUIDE.md      # Автоматизація експорту
 │   ├── TELEGRAM_BOT_GUIDE.md     # Telegram бот
 │   ├── AVAILABLE_DATA.md         # Опис доступних даних

@@ -997,10 +997,14 @@ def _filter_employee_records(records: list[AttendanceRecord], attr: str, value: 
 def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None = None) -> dict:
     user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
     
-    division_name = canonicalize_label(user_schedule.get('division_name') or record.project)
-    direction_name = canonicalize_label(user_schedule.get('direction_name') or record.department)
-    unit_name = canonicalize_label(user_schedule.get('unit_name') or record.team)
-    team_name = canonicalize_label(user_schedule.get('team_name') or record.team)
+    division_raw = user_schedule.get('division_name') or record.project or ''
+    direction_raw = user_schedule.get('direction_name') or record.department or ''
+    unit_raw = user_schedule.get('unit_name') or user_schedule.get('unit') or record.team or ''
+    team_raw = user_schedule.get('team_name') or user_schedule.get('team') or record.team or ''
+    division_name = canonicalize_label(division_raw)
+    direction_name = canonicalize_label(direction_raw)
+    unit_name = canonicalize_label(unit_raw)
+    team_name = canonicalize_label(team_raw)
     
     peopleforce_id = user_schedule.get('peopleforce_id')
     hierarchy_data = {
@@ -1021,10 +1025,10 @@ def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None =
             peopleforce_id = str(candidate).strip()
         # Get all data from schedule (newly synced from PeopleForce)
         hierarchy_data = {
-            'division_name': canonicalize_label(schedule.get('division_name') or ''),
-            'direction_name': canonicalize_label(schedule.get('direction_name') or ''),
-            'unit_name': canonicalize_label(schedule.get('unit_name') or ''),
-            'team_name': canonicalize_label(schedule.get('team_name') or ''),
+            'division_name': canonicalize_label(schedule.get('division_name') or division_raw),
+            'direction_name': canonicalize_label(schedule.get('direction_name') or direction_raw),
+            'unit_name': canonicalize_label(schedule.get('unit_name') or unit_raw),
+            'team_name': canonicalize_label(schedule.get('team_name') or team_raw),
             'position': (schedule.get('position') or '').strip(),
             'telegram': (schedule.get('telegram_username') or '').strip(),
             'team_lead': (schedule.get('team_lead') or '').strip(),
@@ -1240,9 +1244,9 @@ def _build_items(records):
         recs.sort(key=lambda r: r.record_date)
         first = recs[0]
         user_schedule_first = get_user_schedule(first.user_name) or get_user_schedule(first.user_id) or {}
-        first_division = user_schedule_first.get('division_name', '')
-        first_direction = user_schedule_first.get('direction_name', '')
-        first_team = user_schedule_first.get('team_name', '')
+        first_division = canonicalize_label(user_schedule_first.get('division_name') or first.project)
+        first_direction = canonicalize_label(user_schedule_first.get('direction_name') or first.department)
+        first_team = canonicalize_label(user_schedule_first.get('team_name') or first.team)
         
         # Get hierarchy data from schedule (cached from PeopleForce sync)
         hierarchy_data = {
@@ -1260,16 +1264,26 @@ def _build_items(records):
         schedule_info = schedule_by_email.get(email)
         if schedule_info:
             hierarchy_data = {
-                'division_name': (schedule_info.get('division_name') or '').strip(),
-                'direction_name': (schedule_info.get('direction_name') or '').strip(),
-                'unit_name': (schedule_info.get('unit_name') or '').strip(),
-                'team_name': (schedule_info.get('team_name') or '').strip(),
+                'division_name': canonicalize_label(schedule_info.get('division_name')),
+                'direction_name': canonicalize_label(schedule_info.get('direction_name')),
+                'unit_name': canonicalize_label(schedule_info.get('unit_name')),
+                'team_name': canonicalize_label(schedule_info.get('team_name')),
                 'position': (schedule_info.get('position') or '').strip(),
                 'telegram': (schedule_info.get('telegram_username') or '').strip(),
                 'team_lead': (schedule_info.get('team_lead') or '').strip(),
                 'manager_name': (schedule_info.get('manager_name') or '').strip(),
                 'manager_telegram': (schedule_info.get('manager_telegram') or '').strip(),
             }
+        include_weekends = False
+        peopleforce_id = None
+        if schedule_info and schedule_info.get('peopleforce_id'):
+            peopleforce_id = schedule_info.get('peopleforce_id')
+        if not peopleforce_id:
+            peopleforce_id = user_schedule_first.get('peopleforce_id') or _get_peopleforce_id_for_user(first.user_email or first.user_id or first.user_name)
+        try:
+            include_weekends = int(peopleforce_id) in SEVEN_DAY_WORK_WEEK_IDS if peopleforce_id else False
+        except (TypeError, ValueError):
+            include_weekends = False
         
         rows = []
         total_non = 0
@@ -1281,10 +1295,12 @@ def _build_items(records):
         notes_aggregated = []
 
         for rec in recs:
+            if rec.record_date.weekday() >= 5 and not include_weekends:
+                continue
             rec_schedule = get_user_schedule(rec.user_name) or get_user_schedule(rec.user_id) or {}
-            division_name = rec_schedule.get('division_name', '')
-            direction_name = rec_schedule.get('direction_name', '')
-            team_name = rec_schedule.get('team_name', '')
+            division_name = canonicalize_label(rec_schedule.get('division_name') or rec.project)
+            direction_name = canonicalize_label(rec_schedule.get('direction_name') or rec.department)
+            team_name = canonicalize_label(rec_schedule.get('team_name') or rec.team)
             
             scheduled_start = rec.scheduled_start or ''
             actual_start = rec.actual_start or ''
@@ -1354,6 +1370,9 @@ def _build_items(records):
         week_note = week_notes.get(note_key, '')
         
         location_display = _normalize_location_label(first.location)
+        if not rows:
+            continue
+
         items.append({
             'user_name': first.user_name,
             'user_id': first.user_id,
@@ -1405,17 +1424,17 @@ def _apply_schedule_overrides(items: list[dict]) -> list[dict]:
                 item['location'] = normalized_schedule_location if normalized_schedule_location is not None else schedule_location
             # Додаємо нові поля ієрархії
             if schedule.get('division_name'):
-                item['division_name'] = schedule['division_name']
+                item['division_name'] = canonicalize_label(schedule['division_name'])
             if schedule.get('direction_name'):
-                item['direction_name'] = schedule['direction_name']
+                item['direction_name'] = canonicalize_label(schedule['direction_name'])
             if schedule.get('unit_name'):
-                item['unit_name'] = schedule['unit_name']
+                item['unit_name'] = canonicalize_label(schedule['unit_name'])
             if schedule.get('team_name'):
-                item['team_name'] = schedule['team_name']
+                item['team_name'] = canonicalize_label(schedule['team_name'])
             # Для зворотної сумісності
-            item['project'] = schedule.get('division_name', '')
-            item['department'] = schedule.get('direction_name', '')
-            item['team'] = schedule.get('team_name', '')
+            item['project'] = item.get('division_name', item.get('project', ''))
+            item['department'] = item.get('direction_name', item.get('department', ''))
+            item['team'] = item.get('team_name', item.get('team', ''))
         if schedule and schedule.get('location') in (None, ''):
             normalized_item_location = _normalize_location_label(item.get('location'))
             if normalized_item_location is not None:
@@ -1443,10 +1462,10 @@ def _get_schedule_filters(selected: dict[str, str] | None = None) -> dict[str, d
             continue
         # Використовуємо нові поля ієрархії
         entry = {
-            'project': normalize(info.get('division_name')),
-            'department': normalize(info.get('direction_name')),
-            'unit': normalize(info.get('unit_name')),
-            'team': normalize(info.get('team_name')),
+            'project': canonicalize_label(info.get('division_name')),
+            'department': canonicalize_label(info.get('direction_name')),
+            'unit': canonicalize_label(info.get('unit_name')),
+            'team': canonicalize_label(info.get('team_name')),
         }
         if any(entry.values()):
             entries.append(entry)
@@ -4199,9 +4218,9 @@ def get_monthly_report():
             user_data[user_key]['user_email'] = record.user_email
             user_data[user_key]['project'] = canonicalize_label(record.project)
             user_data[user_key]['department'] = canonicalize_label(record.department)
-            unit_value = canonicalize_label(record.team)
-            user_data[user_key]['unit'] = unit_value
-            user_data[user_key]['team'] = canonicalize_label(record.team)
+            canonical_team = canonicalize_label(record.team)
+            user_data[user_key]['unit'] = canonical_team
+            user_data[user_key]['team'] = canonical_team
             include_weekends = user_data[user_key]['include_weekends']
             if not user_data[user_key]['include_weekends']:
                 if user_key not in weekend_cache:
@@ -4295,10 +4314,10 @@ def get_monthly_report():
                 or get_user_schedule(data['user_name'])
                 or {}
             )
-            division = schedule.get('division_name') or data.get('project', '')
-            department = schedule.get('direction_name') or data.get('department', '')
-            unit = schedule.get('unit_name') or data.get('unit', '')
-            team = schedule.get('team_name') or data.get('team', '')
+            division = canonicalize_label(schedule.get('division_name') or data.get('project', ''))
+            department = canonicalize_label(schedule.get('direction_name') or data.get('department', ''))
+            unit = canonicalize_label(schedule.get('unit_name') or data.get('unit', ''))
+            team = canonicalize_label(schedule.get('team_name') or data.get('team', ''))
             
             # Format hours
             def format_hours(minutes):

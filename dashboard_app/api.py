@@ -32,6 +32,14 @@ from tracker_alert.services.schedule_utils import (
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.client.peopleforce_api import PeopleForceClient
 from tracker_alert.services.control_manager import auto_assign_control_manager
+from .hierarchy_adapter import (
+    load_level_grade_data,
+    find_level_grade_match,
+    build_adapted_hierarchy,
+    apply_adapted_hierarchy,
+    get_adapted_hierarchy_for_user,
+    canonicalize_label,
+)
 
 logger = logging.getLogger(__name__)
 from tracker_alert.client.yaware_v2_api import YaWareV2Client
@@ -840,68 +848,101 @@ def _log_admin_action(action: str, details: dict) -> None:
     db.session.add(entry)
 
 
-def _gather_employee_records(search: str | None) -> list[AttendanceRecord]:
-    query = AttendanceRecord.query
-    if search:
-        search_value = f"%{search.lower()}%"
-        query = query.filter(or_(
-            db.func.lower(AttendanceRecord.user_name).like(search_value),
-            db.func.lower(AttendanceRecord.user_email).like(search_value),
-            db.func.lower(AttendanceRecord.project).like(search_value),
-            db.func.lower(AttendanceRecord.department).like(search_value),
-            db.func.lower(AttendanceRecord.team).like(search_value)
-        ))
-    query = query.order_by(AttendanceRecord.record_date.asc())
+def _serialize_schedule_user_entry(name: str, info: dict) -> dict:
+    email = (info.get('email') or '').strip().lower()
+    user_id = str(info.get('user_id') or '').strip()
+    peopleforce_id = str(info.get('peopleforce_id') or '').strip()
+    division = canonicalize_label(info.get('division_name') or info.get('project'))
+    department = canonicalize_label(info.get('direction_name') or info.get('department'))
+    unit = canonicalize_label(info.get('unit_name') or info.get('unit'))
+    team = canonicalize_label(info.get('team_name') or info.get('team'))
+    location_value = canonicalize_label(info.get('location'))
+    normalized_location = _normalize_location_label(location_value)
+    plan_start = (info.get('start_time') or info.get('plan_start') or '').strip()
 
-    seen = set()
-    records: list[AttendanceRecord] = []
-    for record in query:
-        key = (record.user_id or record.user_email or record.user_name or '').lower()
-        if not key or key in seen:
+    return {
+        'user_key': user_id or email or name,
+        'user_id': user_id,
+        'name': name,
+        'email': email,
+        'project': division,
+        'department': department,
+        'unit': unit,
+        'team': team,
+        'location': normalized_location if normalized_location is not None else location_value,
+        'plan_start': plan_start,
+        'control_manager': info.get('control_manager'),
+        'peopleforce_id': peopleforce_id,
+        'position': (info.get('position') or '').strip(),
+        'telegram': (info.get('telegram_username') or '').strip(),
+        'team_lead': (info.get('team_lead') or '').strip(),
+        'ignored': bool(info.get('ignored')),
+        'last_date': '',
+    }
+
+
+def _gather_schedule_users(search: str | None, ignored_only: bool = False) -> list[dict]:
+    data = schedule_user_manager.load_users()
+    users = data.get('users', {}) if isinstance(data, dict) else {}
+    if not isinstance(users, dict):
+        return []
+
+    search_lower = (search or '').strip().lower()
+    entries: list[dict] = []
+    for name, info in users.items():
+        if not isinstance(info, dict):
             continue
-        seen.add(key)
-        records.append(record)
-    return records
+        ignored = bool(info.get('ignored'))
+        if ignored_only and not ignored:
+            continue
+        if not ignored_only and ignored:
+            continue
+
+        entry = _serialize_schedule_user_entry(name, info)
+        if search_lower:
+            haystack = ' '.join(filter(None, [
+                entry['name'],
+                entry['email'],
+                entry.get('project') or '',
+                entry.get('department') or '',
+                entry.get('unit') or '',
+                entry.get('team') or '',
+            ])).lower()
+            if search_lower not in haystack:
+                continue
+        entries.append(entry)
+
+    entries.sort(key=lambda item: (item.get('name') or '').lower())
+    return entries
+
+
+def _collect_schedule_filters(entries: list[dict]) -> dict[str, list[str]]:
+    projects: set[str] = set()
+    departments: set[str] = set()
+    units: set[str] = set()
+    teams: set[str] = set()
+
+    for entry in entries:
+        if entry.get('project'):
+            projects.add(canonicalize_label(entry['project']))
+        if entry.get('department'):
+            departments.add(canonicalize_label(entry['department']))
+        if entry.get('unit'):
+            units.add(canonicalize_label(entry['unit']))
+        if entry.get('team'):
+            teams.add(canonicalize_label(entry['team']))
+
+    return {
+        'project': sorted(projects),
+        'department': sorted(departments),
+        'unit': sorted(units),
+        'team': sorted(teams),
+    }
 
 
 def _gather_ignored_users(search: str | None) -> list[dict]:
     """Gather ignored users from user_schedules.json"""
-    data = schedule_user_manager.load_users()
-    users = data.get('users', {}) if isinstance(data, dict) else {}
-    
-    ignored_users = []
-    for name, info in users.items():
-        if not isinstance(info, dict):
-            continue
-        if not info.get('ignored'):
-            continue
-        
-        # Apply search filter
-        if search:
-            search_lower = search.lower()
-            name_match = search_lower in name.lower()
-            email_match = search_lower in (info.get('email') or '').lower()
-            project_match = search_lower in (info.get('project') or '').lower()
-            department_match = search_lower in (info.get('department') or '').lower()
-            if not (name_match or email_match or project_match or department_match):
-                continue
-        
-        # Create pseudo-record dict
-        ignored_users.append({
-            'user_key': name,
-            'name': name,
-            'email': info.get('email', ''),
-            'user_id': info.get('user_id', ''),
-            'project': info.get('project', ''),
-            'department': info.get('department', ''),
-            'unit': info.get('unit', ''),
-            'team': info.get('team', ''),
-            'location': info.get('location', ''),
-            'control_manager': info.get('control_manager'),
-            'ignored': True
-        })
-    
-    return ignored_users
+    return _gather_schedule_users(search, ignored_only=True)
 
 
 def _collect_employee_filters(records: list[AttendanceRecord]) -> dict[str, list[str]]:
@@ -911,10 +952,10 @@ def _collect_employee_filters(records: list[AttendanceRecord]) -> dict[str, list
     teams: set[str] = set()
     for record in records:
         user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
-        division_name = user_schedule.get('division_name')
-        direction_name = user_schedule.get('direction_name')
-        unit_name = user_schedule.get('unit_name')
-        team_name = user_schedule.get('team_name')
+        division_name = canonicalize_label(user_schedule.get('division_name'))
+        direction_name = canonicalize_label(user_schedule.get('direction_name'))
+        unit_name = canonicalize_label(user_schedule.get('unit_name'))
+        team_name = canonicalize_label(user_schedule.get('team_name'))
         
         if division_name:
             divisions.add(division_name)
@@ -956,10 +997,10 @@ def _filter_employee_records(records: list[AttendanceRecord], attr: str, value: 
 def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None = None) -> dict:
     user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
     
-    division_name = user_schedule.get('division_name', '')
-    direction_name = user_schedule.get('direction_name', '')
-    unit_name = user_schedule.get('unit_name', '')
-    team_name = user_schedule.get('team_name', '')
+    division_name = canonicalize_label(user_schedule.get('division_name') or record.project)
+    direction_name = canonicalize_label(user_schedule.get('direction_name') or record.department)
+    unit_name = canonicalize_label(user_schedule.get('unit_name') or record.team)
+    team_name = canonicalize_label(user_schedule.get('team_name') or record.team)
     
     peopleforce_id = user_schedule.get('peopleforce_id')
     hierarchy_data = {
@@ -980,10 +1021,10 @@ def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None =
             peopleforce_id = str(candidate).strip()
         # Get all data from schedule (newly synced from PeopleForce)
         hierarchy_data = {
-            'division_name': (schedule.get('division_name') or '').strip(),
-            'direction_name': (schedule.get('direction_name') or '').strip(),
-            'unit_name': (schedule.get('unit_name') or '').strip(),
-            'team_name': (schedule.get('team_name') or '').strip(),
+            'division_name': canonicalize_label(schedule.get('division_name') or ''),
+            'direction_name': canonicalize_label(schedule.get('direction_name') or ''),
+            'unit_name': canonicalize_label(schedule.get('unit_name') or ''),
+            'team_name': canonicalize_label(schedule.get('team_name') or ''),
             'position': (schedule.get('position') or '').strip(),
             'telegram': (schedule.get('telegram_username') or '').strip(),
             'team_lead': (schedule.get('team_lead') or '').strip(),
@@ -1759,45 +1800,42 @@ def admin_employees():
     ignored_only = request.args.get('ignored', '').lower() == 'true'
     project_filters = request.args.getlist('project')
     department_filters = request.args.getlist('department')
+    unit_filters = request.args.getlist('unit')
     team_filters = request.args.getlist('team')
     page = max(int(request.args.get('page', 1) or 1), 1)
     per_page = max(min(int(request.args.get('per_page', 25) or 25), 100), 1)
 
     if ignored_only:
-        # Load ignored users from user_schedules.json
-        records = _gather_ignored_users(search)
+        records = _gather_schedule_users(search, ignored_only=True)
         filter_options = {}
     else:
-        records = _gather_employee_records(search)
-        filter_options = _collect_employee_filters(records)
+        records = _gather_schedule_users(search, ignored_only=False)
+        filter_options = _collect_schedule_filters(records)
     
     # Support multiple filters for each category
     if project_filters:
         project_filters_lower = {p.lower() for p in project_filters if p}
-        records = [r for r in records if (r.project or '').lower() in project_filters_lower]
+        records = [r for r in records if (r.get('project') or '').lower() in project_filters_lower]
     
     if department_filters:
         department_filters_lower = {d.lower() for d in department_filters if d}
-        records = [r for r in records if (r.department or '').lower() in department_filters_lower]
+        records = [r for r in records if (r.get('department') or '').lower() in department_filters_lower]
+    
+    if unit_filters:
+        unit_filters_lower = {u.lower() for u in unit_filters if u}
+        records = [r for r in records if (r.get('unit') or '').lower() in unit_filters_lower]
     
     if team_filters:
         team_filters_lower = {t.lower() for t in team_filters if t}
-        records = [r for r in records if (r.team or '').lower() in team_filters_lower]
+        records = [r for r in records if (r.get('team') or '').lower() in team_filters_lower]
     
     total = len(records)
     start = (page - 1) * per_page
     page_records = records[start:start + per_page]
 
     items: list[dict] = []
-    if ignored_only:
-        # For ignored users, records are already dicts
-        for record in page_records:
-            items.append(record)
-    else:
-        for record in page_records:
-            identifier = record.user_id or record.user_email or record.user_name or ''
-            schedule = _load_user_schedule_variants(identifier, [record]) if identifier else None
-            items.append(_serialize_employee_record(record, schedule))
+    for record in page_records:
+        items.append(record)
 
     return jsonify({
         'items': items,
@@ -2465,134 +2503,20 @@ def admin_adapt_employee(key: str):
         if not user_info:
             return jsonify({'error': 'Користувача не знайдено'}), 404
         
-        updated_fields = []
-        
-        # Завантажуємо Level_Grade.json
-        level_grade_path = os.path.join(
-            current_app.config.get('BASE_DIR', os.path.dirname(os.path.dirname(__file__))),
-            'config',
-            'Level_Grade.json'
-        )
-        
-        if not os.path.exists(level_grade_path):
+        base_dir = current_app.config.get('BASE_DIR', os.path.dirname(os.path.dirname(__file__)))
+        level_grade_data = load_level_grade_data(base_dir)
+        if not level_grade_data:
             return jsonify({'error': 'Level_Grade.json не знайдено'}), 404
-        
-        with open(level_grade_path, 'r', encoding='utf-8') as f:
-            level_grade_data = json.load(f)
-        
-        # Отримуємо поточні значення з user_info (сирі дані з PeopleForce)
-        current_division = user_info.get('division_name', '') or user_info.get('project', '')
-        current_direction = user_info.get('direction_name', '') or user_info.get('department', '')
-        current_unit = user_info.get('unit_name', '') or user_info.get('unit', '')
-        current_team = user_info.get('team_name', '') or user_info.get('team', '')
-        manager_name = user_info.get('team_lead', '') or user_info.get('manager_name', '')
-        
-        # Нормалізуємо значення (видаляємо "Division" з назви)
-        if current_division:
-            current_division = current_division.replace(' Division', '').strip()
-        
-        logger.info(f"Adapting {user_name}: Division={current_division}, Direction={current_direction}, Unit={current_unit}, Team={current_team}, Manager={manager_name}")
-        
-        # Спочатку шукаємо за Manager (найбільш точне співпадіння)
-        best_match = None
-        best_score = 0
-        
-        for entry in level_grade_data:
-            entry_manager = entry.get('Manager', '').strip()
-            
-            # ПРІОРИТЕТ 1: Пошук за Manager
-            if manager_name and entry_manager and entry_manager.lower() == manager_name.lower():
-                best_match = entry
-                best_score = 1000  # Максимальний пріоритет
-                logger.info(f"Found exact Manager match: {entry_manager}")
-                break
-        
-        # Якщо не знайдено за Manager, шукаємо за Direction/Unit/Team
-        if not best_match:
-            logger.info("No Manager match found, searching by hierarchy...")
-            
-            for entry in level_grade_data:
-                entry_division = entry.get('Division', '').strip()
-                entry_direction = entry.get('Direction', '').strip()
-                entry_unit = entry.get('Unit', '').strip()
-                entry_team = entry.get('Team', '').strip()
-                
-                # Рахуємо скільки рівнів співпадає
-                score = 0
-                
-                # Direction - може бути і в Direction і в Team у Level_Grade
-                if current_direction:
-                    if entry_direction and entry_direction != '-' and entry_direction.lower() == current_direction.lower():
-                        score += 10
-                    elif entry_team and entry_team != '-' and entry_team.lower() == current_direction.lower():
-                        # Direction з PeopleForce може бути Team у Level_Grade
-                        score += 10
-                    elif entry_unit and entry_unit != '-' and entry_unit.lower() == current_direction.lower():
-                        # Direction з PeopleForce може бути Unit у Level_Grade
-                        score += 10
-                
-                # Unit
-                if current_unit and entry_unit and entry_unit != '-':
-                    if entry_unit.lower() == current_unit.lower():
-                        score += 5
-                
-                # Team
-                if current_team and entry_team and entry_team != '-':
-                    if entry_team.lower() == current_team.lower():
-                        score += 5
-                
-                # Division - найменший пріоритет, бо може бути неточним
-                if entry_division and entry_division != '-' and current_division:
-                    if entry_division.lower() == current_division.lower():
-                        score += 1
-                
-                if score > best_score:
-                    best_score = score
-                    best_match = entry
-        
-        if not best_match:
-            return jsonify({'error': f'Не знайдено співпадіння в Level_Grade.json для поточної ієрархії користувача'}), 404
-        
-        logger.info(f"Found best match for {user_name}: {best_match} (score={best_score})")
-        
-        # Маппінг полів з Level_Grade.json
-        field_mapping = {
-            'Division': 'project',
-            'Direction': 'department',
-            'Unit': 'unit',
-            'Team': 'team',
-        }
-        
-        canonical_mapping = {
-            'Division': 'division_name',
-            'Direction': 'direction_name',
-            'Unit': 'unit_name',
-            'Team': 'team_name',
-        }
-        
-        # Оновлюємо поля
-        for level_key, legacy_field in field_mapping.items():
-            new_value = best_match.get(level_key, '').strip()
-            if new_value == '-':
-                new_value = ''
-            
-            # Оновлюємо legacy поле
-            if user_info.get(legacy_field) != new_value:
-                user_info[legacy_field] = new_value
-                updated_fields.append(legacy_field)
-            
-            # Оновлюємо canonical поле
-            canonical_field = canonical_mapping[level_key]
-            if user_info.get(canonical_field) != new_value:
-                user_info[canonical_field] = new_value
-                if canonical_field not in updated_fields:
-                    updated_fields.append(canonical_field)
-        
-        # Зберігаємо зміни
+
+        adapted = get_adapted_hierarchy_for_user(user_name, user_info, level_grade_data)
+        if not adapted:
+            return jsonify({'error': 'Не знайдено співпадіння в Level_Grade.json'}), 404
+
+        updated_fields = apply_adapted_hierarchy(user_info, adapted)
+        users[user_name] = user_info
         if updated_fields:
-            users[user_name] = user_info
-            schedules['users'] = users
-            schedule_user_manager.save_users(schedules)
+            if not schedule_user_manager.save_users(schedules):
+                return jsonify({'error': 'Не вдалося зберегти оновлені дані'}), 500
             clear_user_schedule_cache()
         
         _log_admin_action('adapt_employee', {
@@ -2633,107 +2557,30 @@ def admin_adapt_hierarchy():
         if not any([project, department, unit, team]):
             return jsonify({'error': 'Не вказано жодного поля ієрархії'}), 400
         
-        # Завантажуємо Level_Grade.json
-        level_grade_path = os.path.join(
-            current_app.config.get('BASE_DIR', os.path.dirname(os.path.dirname(__file__))),
-            'config',
-            'Level_Grade.json'
-        )
-        
-        if not os.path.exists(level_grade_path):
+        base_dir = current_app.config.get('BASE_DIR', os.path.dirname(os.path.dirname(__file__)))
+        level_grade_data = load_level_grade_data(base_dir)
+        if not level_grade_data:
             return jsonify({'error': 'Level_Grade.json не знайдено'}), 404
-        
-        with open(level_grade_path, 'r', encoding='utf-8') as f:
-            level_grade_data = json.load(f)
         
         logger.info(f"Adapting hierarchy: project={project}, department={department}, unit={unit}, team={team}")
         
-        # Шукаємо найкраще співпадіння
-        best_match = None
-        best_score = 0
-        
-        for entry in level_grade_data:
-            entry_division = entry.get('Division', '').strip()
-            entry_direction = entry.get('Direction', '').strip()
-            entry_unit = entry.get('Unit', '').strip()
-            entry_team = entry.get('Team', '').strip()
-            
-            score = 0
-            
-            # Direction (department)
-            if department:
-                if entry_direction and entry_direction != '-' and entry_direction.lower() == department.lower():
-                    score += 10
-                elif entry_team and entry_team != '-' and entry_team.lower() == department.lower():
-                    score += 10
-                elif entry_unit and entry_unit != '-' and entry_unit.lower() == department.lower():
-                    score += 10
-            
-            # Unit
-            if unit and entry_unit and entry_unit != '-':
-                if entry_unit.lower() == unit.lower():
-                    score += 5
-            
-            # Team
-            if team and entry_team and entry_team != '-':
-                if entry_team.lower() == team.lower():
-                    score += 5
-            
-            # Division (project)
-            if entry_division and entry_division != '-' and project:
-                if entry_division.lower() == project.lower():
-                    score += 1
-            
-            if score > best_score:
-                best_score = score
-                best_match = entry
-        
-        if not best_match:
+        match = find_level_grade_match(None, project, department, unit, team, level_grade_data)
+        if not match:
             return jsonify({'error': 'Не знайдено співпадіння в Level_Grade.json'}), 404
         
-        logger.info(f"Found best match: {best_match} (score={best_score})")
-        
-        # Формуємо адаптовані дані
-        adapted_division = (best_match.get('Division', '').strip() or '').replace('-', '')
-        adapted = {
-            'project': adapted_division,
-            'department': (best_match.get('Direction', '').strip() or '').replace('-', ''),
-            'unit': (best_match.get('Unit', '').strip() or '').replace('-', ''),
-            'team': (best_match.get('Team', '').strip() or '').replace('-', ''),
-        }
-        
-        # Адаптуємо location на основі Level_Grade Location
-        location_from_grade = (best_match.get('Location', '').strip() or '')
-        if location_from_grade and location_from_grade != '-':
-            adapted['location'] = location_from_grade
-        else:
-            adapted['location'] = payload.get('location', '')
-        
-        # Визначаємо control_manager на основі Division
-        control_manager = None
-        if adapted_division:
-            division_lower = adapted_division.lower()
-            if division_lower == 'agency':
-                control_manager = 1
-            elif division_lower in ('apps', 'adnetwork', 'consulting'):
-                control_manager = 2
-            else:
-                control_manager = 3
-        adapted['control_manager'] = control_manager
-        
-        # Визначаємо які поля змінилися
+        adapted = build_adapted_hierarchy(match, fallback_location=payload.get('location', ''))
         updated_fields = []
-        if project and adapted['project'] != project:
+        if project and adapted.get('project') != project:
             updated_fields.append('project')
-        if department and adapted['department'] != department:
+        if department and adapted.get('department') != department:
             updated_fields.append('department')
-        if unit and adapted['unit'] != unit:
+        if unit and adapted.get('unit') != unit:
             updated_fields.append('unit')
-        if team and adapted['team'] != team:
+        if team and adapted.get('team') != team:
             updated_fields.append('team')
-        if location_from_grade and location_from_grade != '-':
+        if adapted.get('location') and adapted.get('location') != payload.get('location'):
             updated_fields.append('location')
-        if control_manager is not None:
+        if adapted.get('control_manager') is not None:
             updated_fields.append('control_manager')
         
         return jsonify({
@@ -2745,6 +2592,37 @@ def admin_adapt_hierarchy():
     except Exception as exc:
         logger.error(f"Error adapting hierarchy: {exc}", exc_info=True)
         return jsonify({'error': f'Помилка адаптації: {str(exc)}'}), 500
+
+
+@api_bp.route('/admin/adapt-hierarchy/bulk', methods=['POST'])
+@login_required
+def admin_adapt_hierarchy_bulk():
+    """Перезаписати ієрархію всіх користувачів за Level_Grade.json."""
+    _ensure_admin()
+    payload = request.get_json(silent=True) or {}
+    force_reset = bool(payload.get('force_reset_overrides'))
+    try:
+        from dashboard_app.tasks import run_level_grade_adaptation
+        stats = run_level_grade_adaptation(current_app, force=True or force_reset)
+    except FileNotFoundError:
+        return jsonify({'error': 'Level_Grade.json не знайдено'}), 404
+    except Exception as exc:
+        logger.error("Bulk hierarchy adaptation failed: %s", exc, exc_info=True)
+        return jsonify({'error': f'Не вдалося адаптувати ієрархію: {str(exc)}'}), 500
+
+    _log_admin_action('bulk_adapt_hierarchy', {
+        'force_reset': force_reset,
+        'updated': stats.get('updated'),
+        'total': stats.get('total'),
+    })
+    db.session.commit()
+
+    return jsonify({
+        'status': 'ok',
+        'updated': stats.get('updated'),
+        'total': stats.get('total'),
+        'force_reset_overrides': force_reset,
+    })
 
 
 @api_bp.route('/admin/employees/<path:user_key>/ignore', methods=['POST'])
@@ -4244,21 +4122,23 @@ def get_monthly_report():
         if manager_id:
             query = query.filter(AttendanceRecord.control_manager == int(manager_id))
         
-        department = request.args.get('department')
-        if department:
-            query = query.filter(AttendanceRecord.department == department)
+        projects = [p for p in request.args.getlist('project') if p]
+        if projects:
+            query = query.filter(AttendanceRecord.project.in_(projects))
         
-        team = request.args.get('team')
-        if team:
-            query = query.filter(AttendanceRecord.team == team)
+        departments = [d for d in request.args.getlist('department') if d]
+        if departments:
+            query = query.filter(AttendanceRecord.department.in_(departments))
         
-        project = request.args.get('project')
-        if project:
-            query = query.filter(AttendanceRecord.project == project)
+        units = [u for u in request.args.getlist('unit') if u]
+        teams = [t for t in request.args.getlist('team') if t]
+        team_filters = list({*units, *teams})
+        if team_filters:
+            query = query.filter(AttendanceRecord.team.in_(team_filters))
         
-        location = request.args.get('location')
-        if location:
-            query = query.filter(AttendanceRecord.location == location)
+        locations = [loc for loc in request.args.getlist('location') if loc]
+        if locations:
+            query = query.filter(AttendanceRecord.location.in_(locations))
         
         user_search = request.args.get('user', '').strip()
         if user_search:
@@ -4269,14 +4149,21 @@ def get_monthly_report():
                 )
             )
         
-        selected_users = request.args.get('selected_users', '').strip()
-        if selected_users:
-            user_keys = [uk.strip() for uk in selected_users.split(',') if uk.strip()]
-            if user_keys:
-                query = query.filter(AttendanceRecord.user_email.in_(user_keys))
+        selected_user_keys = [uk.strip().lower() for uk in request.args.getlist('user_key') if uk.strip()]
+        legacy_selected = request.args.get('selected_users', '').strip()
+        if legacy_selected:
+            selected_user_keys.extend(uk.strip().lower() for uk in legacy_selected.split(',') if uk.strip())
+        if selected_user_keys:
+            query = query.filter(db.func.lower(AttendanceRecord.user_email).in_(selected_user_keys))
         
         # Get all records for the month
         records = query.all()
+
+        # Limit records to users that exist in user_schedules.json (не показуємо автоматично імпортованих з YaWare)
+        schedule_entries = _gather_schedule_users(search=None, ignored_only=False)
+        allowed_names = { (entry.get('name') or '').strip().lower() for entry in schedule_entries if entry.get('name') }
+        allowed_emails = { (entry.get('email') or '').strip().lower() for entry in schedule_entries if entry.get('email') }
+        allowed_ids = { (entry.get('user_id') or '').strip().lower() for entry in schedule_entries if entry.get('user_id') }
         
         # Group by user
         user_data = defaultdict(lambda: {
@@ -4291,18 +4178,42 @@ def get_monthly_report():
             'total_minutes': 0,
             'corrected_total_minutes': 0,
             'delay_count': 0,
+            'include_weekends': False,
         })
+        weekend_cache: dict[str, bool] = {}
         
         for record in records:
+            email_key = (record.user_email or '').strip().lower()
+            user_id_key = (record.user_id or '').strip().lower()
+            name_key = (record.user_name or '').strip().lower()
+            if (
+                email_key not in allowed_emails
+                and user_id_key not in allowed_ids
+                and name_key not in allowed_names
+            ):
+                continue
+            
             user_key = record.user_email or record.user_id
             user_data[user_key]['user_key'] = user_key
             user_data[user_key]['user_name'] = record.user_name
             user_data[user_key]['user_email'] = record.user_email
-            user_data[user_key]['project'] = record.project
-            user_data[user_key]['department'] = record.department
-            user_data[user_key]['unit'] = record.team  # unit is stored in team field
-            user_data[user_key]['team'] = record.team
+            user_data[user_key]['project'] = canonicalize_label(record.project)
+            user_data[user_key]['department'] = canonicalize_label(record.department)
+            unit_value = canonicalize_label(record.team)
+            user_data[user_key]['unit'] = unit_value
+            user_data[user_key]['team'] = canonicalize_label(record.team)
+            include_weekends = user_data[user_key]['include_weekends']
+            if not user_data[user_key]['include_weekends']:
+                if user_key not in weekend_cache:
+                    pf_id = _get_peopleforce_id_for_user(user_key)
+                    weekend_cache[user_key] = bool(pf_id and pf_id in SEVEN_DAY_WORK_WEEK_IDS)
+                include_weekends = weekend_cache[user_key]
+                user_data[user_key]['include_weekends'] = include_weekends
             user_data[user_key]['records'].append(record)
+            
+            # Skip weekend records for users without 7-day work week
+            if not include_weekends and record.record_date.weekday() >= 5:
+                continue
             
             # Sum ALL tracked hours (Total from our database)
             user_data[user_key]['total_minutes'] += record.total_minutes or 0
@@ -4323,8 +4234,15 @@ def get_monthly_report():
             day_off_days = 0.0
             sick_days = 0.0
             
+            has_seven_day_week = data.get('include_weekends', False)
+            
             for record in data['records']:
                 if record.status != 'leave':
+                    continue
+                
+                # Skip weekend days for users without 7-day work week
+                # 5 = Saturday, 6 = Sunday (weekday() returns 0=Mon, 6=Sun)
+                if not has_seven_day_week and record.record_date.weekday() >= 5:
                     continue
                 
                 # Get leave amount (1.0 for full day, 0.5 for half day)
@@ -4351,9 +4269,7 @@ def get_monthly_report():
         # Build result
         employees = []
         for user_key, data in user_data.items():
-            pf_id = _get_peopleforce_id_for_user(user_key)
-            include_weekends = pf_id in SEVEN_DAY_WORK_WEEK_IDS if pf_id else False
-            
+            include_weekends = data.get('include_weekends', False)
             plan_days = _count_work_days_in_month(year, month, include_weekends)
             
             leaves = leave_data.get(user_key, {})
@@ -4373,6 +4289,16 @@ def get_monthly_report():
                 min_hours_per_day = 7.0  # Default
             
             minimum_hours = fact_days * min_hours_per_day
+
+            schedule = (
+                get_user_schedule(user_key)
+                or get_user_schedule(data['user_name'])
+                or {}
+            )
+            division = schedule.get('division_name') or data.get('project', '')
+            department = schedule.get('direction_name') or data.get('department', '')
+            unit = schedule.get('unit_name') or data.get('unit', '')
+            team = schedule.get('team_name') or data.get('team', '')
             
             # Format hours
             def format_hours(minutes):
@@ -4384,10 +4310,10 @@ def get_monthly_report():
                 'user_key': user_key,
                 'user_name': data['user_name'],
                 'user_email': data['user_email'],
-                'division': data.get('project', ''),
-                'department': data.get('department', ''),
-                'unit': data.get('unit', ''),
-                'team': data.get('team', ''),
+                'division': division,
+                'department': department,
+                'unit': unit,
+                'team': team,
                 'plan_days': plan_days,
                 'vacation_days': vacation_days,
                 'day_off_days': day_off_days,
@@ -4403,9 +4329,19 @@ def get_monthly_report():
         # Sort by user name
         employees.sort(key=lambda x: x['user_name'])
         
+        filter_options = {
+            'projects': sorted({emp['division'] for emp in employees if emp.get('division')}),
+            'departments': sorted({emp['department'] for emp in employees if emp.get('department')}),
+            'units': sorted({emp['unit'] for emp in employees if emp.get('unit')}),
+            'teams': sorted({emp['team'] for emp in employees if emp.get('team')}),
+        }
+        
         return jsonify({
             'month': month_str,
-            'employees': employees
+            'employees': employees,
+            'filters': {
+                'options': filter_options
+            }
         })
         
     except Exception as e:

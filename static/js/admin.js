@@ -1192,6 +1192,38 @@
     });
   }
 
+  const bulkAdaptBtn = document.getElementById('bulk-adapt-btn');
+  if (bulkAdaptBtn) {
+    bulkAdaptBtn.addEventListener('click', () => {
+      if (!confirm('Перезаписати ієрархію для всіх користувачів за даними Level_Grade.json? Всі ручні зміни будуть замінені.')) {
+        return;
+      }
+      setButtonLoading(bulkAdaptBtn, true);
+      fetch('/api/admin/adapt-hierarchy/bulk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ force_reset_overrides: true }),
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.error || 'Не вдалося адаптувати ієрархію');
+          }
+          showAlert(`Адаптовано ${data.updated} з ${data.total} користувачів`, 'success', 8000);
+          fetchEmployees();
+          fetchDiffState({ force: true }).catch(() => {});
+        })
+        .catch((error) => {
+          showAlert(error.message || 'Сталася помилка');
+        })
+        .finally(() => {
+          setButtonLoading(bulkAdaptBtn, false);
+        });
+    });
+  }
+
   if (refreshDiffBtn) {
     refreshDiffBtn.addEventListener('click', () => {
       setButtonLoading(refreshDiffBtn, true);

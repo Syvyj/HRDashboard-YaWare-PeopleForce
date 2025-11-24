@@ -46,28 +46,9 @@
     });
   }
   
-  // Listen for filter modal apply button (from report.js)
-  const filterModalApplyBtn = document.getElementById('filter-modal-apply');
-  if (filterModalApplyBtn) {
-    filterModalApplyBtn.addEventListener('click', function () {
-      // Delay to let report.js update selectedFilters first
-      setTimeout(() => {
-        console.log('Filter modal applied, reloading...', window.selectedFilters);
-        loadMonthlyReport();
-      }, 150);
-    });
-  }
-  
-  // Listen for multi-select apply button (from report.js)
-  const multiSelectApplyBtn = document.getElementById('multi-select-apply');
-  if (multiSelectApplyBtn) {
-    multiSelectApplyBtn.addEventListener('click', function () {
-      setTimeout(() => {
-        console.log('Multi-select applied, reloading...');
-        loadMonthlyReport();
-      }, 150);
-    });
-  }
+  window.addEventListener('monthly-filters-updated', () => {
+    loadMonthlyReport();
+  });
 
   if (saveNotesBtn) {
     saveNotesBtn.addEventListener('click', function () {
@@ -102,12 +83,46 @@
     loadingSpinner.style.display = 'block';
     reportBody.innerHTML = '';
 
+    // Build params with multiple filter support
+    const params = new URLSearchParams();
+    params.set('month', filters.month);
+    if (filters.user) {
+      params.set('user', filters.user);
+    }
+
+    // Add selected filters from report.js
+    if (typeof window.selectedFilters !== 'undefined') {
+      const sf = window.selectedFilters;
+      if (sf.projects && sf.projects.size > 0) {
+        Array.from(sf.projects).forEach(p => params.append('project', p));
+      }
+      if (sf.departments && sf.departments.size > 0) {
+        Array.from(sf.departments).forEach(d => params.append('department', d));
+      }
+      if (sf.units && sf.units.size > 0) {
+        Array.from(sf.units).forEach(u => params.append('unit', u));
+      }
+      if (sf.teams && sf.teams.size > 0) {
+        Array.from(sf.teams).forEach(t => params.append('team', t));
+      }
+    }
+
+    // Add selected employees from multi-select
+    if (typeof window.selectedEmployees !== 'undefined' && window.selectedEmployees && window.selectedEmployees.size > 0) {
+      Array.from(window.selectedEmployees).forEach(key => {
+        params.append('user_key', key);
+      });
+    }
+
     // Load notes first
     loadMonthlyNotes(filters.month).then(() => {
-      fetch('/api/monthly-report?' + new URLSearchParams(filters))
+      fetch('/api/monthly-report?' + params.toString())
         .then(response => response.json())
         .then(data => {
           loadingSpinner.style.display = 'none';
+          if (data.filters && data.filters.options) {
+            window.dispatchEvent(new CustomEvent('monthly-filter-options', { detail: data.filters.options }));
+          }
           renderMonthlyReport(data);
         })
         .catch(error => {
@@ -145,29 +160,6 @@
       user: document.getElementById('filter-user') ? document.getElementById('filter-user').value : '',
     };
 
-    // Get selected filters from report.js if available
-    if (typeof window.selectedFilters !== 'undefined') {
-      const sf = window.selectedFilters;
-      if (sf.projects && sf.projects.size > 0) {
-        filters.project = Array.from(sf.projects)[0];  // Backend expects single project
-      }
-      if (sf.departments && sf.departments.size > 0) {
-        filters.department = Array.from(sf.departments)[0];
-      }
-      if (sf.units && sf.units.size > 0) {
-        filters.team = Array.from(sf.units)[0];  // Backend maps unit to team
-      }
-      if (sf.teams && sf.teams.size > 0) {
-        filters.team = Array.from(sf.teams)[0];
-      }
-      if (sf.controlManager) {
-        filters.manager = sf.controlManager;
-      }
-    }
-
-    // Get selected employees from multi-select (if implemented)
-    // TODO: Integrate with actual multi-select modal from report.js
-
     return filters;
   }
 
@@ -193,7 +185,6 @@
             <div class="row g-0">
               <div class="col-12 mb-2">
                 <strong>${escapeHtml(emp.user_name)}</strong>
-                <span class="text-muted ms-2">${escapeHtml(emp.user_email)}</span>
                 ${emp.division ? `<span class="badge bg-secondary ms-2">${escapeHtml(emp.division)}</span>` : ''}
                 ${emp.department ? `<span class="badge bg-info ms-1">${escapeHtml(emp.department)}</span>` : ''}
                 ${emp.unit ? `<span class="badge bg-light text-dark ms-1">${escapeHtml(emp.unit)}</span>` : ''}
@@ -260,13 +251,12 @@
       `;
     }).join('');
 
-    // Add event listeners for edit buttons
     if (canEdit) {
       document.querySelectorAll('.edit-notes-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-          const userKey = this.getAttribute('data-user-key');
-          const notes = this.getAttribute('data-notes');
-          openNotesModal(userKey, notes);
+          const userKey = this.dataset.userKey;
+          const noteValue = this.dataset.notes || '';
+          openNotesModal(userKey, noteValue);
         });
       });
     }

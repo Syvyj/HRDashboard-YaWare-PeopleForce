@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import atexit
 import logging
+import os
 import re
 from datetime import date, datetime, timedelta, time
 from collections import deque
@@ -22,6 +23,11 @@ from tracker_alert.services import user_manager as schedule_user_manager
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.services.schedule_utils import has_manual_override
 from dashboard_app.user_data import clear_user_schedule_cache
+from dashboard_app.hierarchy_adapter import (
+    load_level_grade_data,
+    get_adapted_hierarchy_for_user,
+    apply_adapted_hierarchy,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -285,7 +291,55 @@ def _sync_peopleforce_metadata(app):
             raise RuntimeError("Не вдалося зберегти user_schedules.json після синхронізації PeopleForce")
         clear_user_schedule_cache()
         logger.info("[scheduler] Updated leave statuses from PeopleForce")
+    
+    try:
+        stats = _run_level_grade_adaptation(app, force=True)
+        if stats['updated']:
+            logger.info("[scheduler] Level_Grade adaptation applied to %s/%s users", stats['updated'], stats['total'])
+    except FileNotFoundError:
+        logger.warning("[scheduler] Level_Grade.json not found, skipping hierarchy adaptation")
+    except Exception as exc:
+        logger.error("[scheduler] Failed to auto-adapt hierarchy: %s", exc, exc_info=True)
 
+
+def _run_level_grade_adaptation(app, force: bool = False) -> dict:
+    """Run Level_Grade adaptation over all schedule users."""
+    base_dir = app.config.get('BASE_DIR', os.path.dirname(os.path.dirname(__file__)))
+    level_grade_data = load_level_grade_data(base_dir)
+    if not level_grade_data:
+        raise FileNotFoundError("Level_Grade.json not found")
+
+    data = schedule_user_manager.load_users()
+    users = data.get("users", {}) if isinstance(data, dict) else {}
+    if not isinstance(users, dict):
+        return {'total': 0, 'updated': 0}
+
+    adapted_count = 0
+    changed = False
+    total = 0
+    for name, info in users.items():
+        if not isinstance(info, dict):
+            continue
+        total += 1
+        adapted = get_adapted_hierarchy_for_user(name, info, level_grade_data)
+        if not adapted:
+            continue
+        changed_fields = apply_adapted_hierarchy(info, adapted, force=force)
+        if changed_fields:
+            adapted_count += 1
+            changed = True
+
+    if changed:
+        if not schedule_user_manager.save_users(data):
+            raise RuntimeError("Не вдалося зберегти user_schedules.json після автозастосування Level_Grade")
+        clear_user_schedule_cache()
+
+    return {'total': total, 'updated': adapted_count}
+
+
+def run_level_grade_adaptation(app, *, force: bool = False) -> dict:
+    """Public helper for API/manual triggers."""
+    return _run_level_grade_adaptation(app, force=force)
 
 
 def _normalize_time(value: object | None) -> str | None:

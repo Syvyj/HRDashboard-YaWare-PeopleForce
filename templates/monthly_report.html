@@ -49,98 +49,91 @@
     </nav>
 
     <div class="container-fluid py-4">
-      <div class="dashboard-card shadow-sm mb-4">
-        <form id="filters-form" class="row g-4 align-items-start">
-          <div class="col-lg-4 col-md-6">
-            <div class="filter-section">
-              <div class="filter-title">Выберите месяц</div>
-              <input
-                type="month"
-                id="filter-month"
-                class="form-control"
-                value="{{ current_month }}"
-              />
-              <div class="d-flex gap-2 mt-3">
-                <button type="submit" class="btn btn-primary flex-grow-1">
-                  Применить фильтры
-                </button>
-                <button
-                  type="button"
-                  id="reset-filters"
-                  class="btn btn-outline-secondary"
-                >
-                  Сбросить
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-5 col-md-6">
-            <div class="filter-section">
-              <div class="d-flex gap-2">
-                <button
-                  type="button"
-                  id="open-filters-modal"
-                  class="btn btn-primary flex-grow-1"
-                >
-                  Выбрать фильтры
-                </button>
-                <button
-                  type="button"
-                  id="clear-project-filters"
-                  class="btn btn-outline-secondary"
-                  title="Очистить выбранные фильтры"
-                >
-                  Очистить
-                </button>
-              </div>
-              <div
-                id="selected-filters-display"
-                class="mt-2 small text-muted"
-              ></div>
-              <button
-                type="button"
-                id="export-monthly-report-btn"
-                class="btn btn-outline-success w-100 mt-3"
-              >
-                <i class="bi bi-download"></i> Сформировать отчет
-              </button>
-            </div>
-          </div>
-          <div class="col-lg-3">
-            <div class="filter-section">
-              <div class="input-group">
-                <input
-                  type="text"
-                  id="filter-user"
-                  class="form-control"
-                  placeholder="Поиск пользователя"
-                />
-                <button class="btn btn-primary" id="search-btn" type="button">
-                  Искать
-                </button>
-              </div>
-              <button
-                type="button"
-                id="open-multi-select-modal"
-                class="btn btn-outline-primary w-100 mt-2"
-              >
-                <i class="bi bi-people-fill"></i> Выбрать несколько сотрудников
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-
       <div id="monthly-report-container" class="dashboard-card shadow-sm">
-        <div class="table-responsive">
-          <table
-            class="table table-bordered table-hover"
-            id="monthly-report-table"
-          >
-            <tbody id="monthly-report-body">
-              <!-- Data will be loaded here via JavaScript -->
-            </tbody>
-          </table>
+        <div class="monthly-report-filters mb-4">
+          <form id="filters-form" class="row g-4 align-items-start">
+            <div class="col-lg-4 col-md-6">
+              <div class="filter-section">
+                <div class="filter-title">Выберите месяц</div>
+                <input
+                  type="month"
+                  id="filter-month"
+                  class="form-control"
+                  value="{{ current_month }}"
+                />
+                <div class="d-flex gap-2 mt-3">
+                  <button type="submit" class="btn btn-primary flex-grow-1">
+                    Применить фильтры
+                  </button>
+                  <button
+                    type="button"
+                    id="reset-filters"
+                    class="btn btn-outline-secondary"
+                  >
+                    Сбросить
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-5 col-md-6">
+              <div class="filter-section">
+                <div class="d-flex gap-2">
+                  <button
+                    type="button"
+                    id="open-filters-modal"
+                    class="btn btn-primary flex-grow-1"
+                  >
+                    Выбрать фильтры
+                  </button>
+                  <button
+                    type="button"
+                    id="clear-project-filters"
+                    class="btn btn-outline-secondary"
+                    title="Очистить выбранные фильтры"
+                  >
+                    Очистить
+                  </button>
+                </div>
+                <div
+                  id="selected-filters-display"
+                  class="mt-2 small text-muted"
+                ></div>
+                <button
+                  type="button"
+                  id="export-monthly-report-btn"
+                  class="btn btn-outline-success w-100 mt-3"
+                >
+                  <i class="bi bi-download"></i> Сформировать отчет
+                </button>
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="filter-section">
+                <div class="input-group">
+                  <input
+                    type="text"
+                    id="filter-user"
+                    class="form-control"
+                    placeholder="Поиск пользователя"
+                  />
+                  <button class="btn btn-primary" id="search-btn" type="button">
+                    Искать
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  id="open-multi-select-modal"
+                  class="btn btn-outline-primary w-100 mt-2"
+                >
+                  <i class="bi bi-people-fill"></i> Выбрать несколько сотрудников
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="dashboard-card__divider"></div>
+        <div id="monthly-report-body" class="d-flex flex-column gap-3">
+          <!-- User blocks inserted by JS -->
         </div>
         <div id="loading-spinner" class="text-center py-5">
           <div class="spinner-border text-primary" role="status">

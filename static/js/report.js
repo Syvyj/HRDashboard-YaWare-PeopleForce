@@ -1,6 +1,8 @@
 (function () {
+  const isMonthlyPage = window.isMonthlyReportPage === true;
   const container = document.getElementById('report-container');
-  if (!container) {
+  const monthlyContainer = document.getElementById('monthly-report-body');
+  if (!container && !monthlyContainer) {
     return;
   }
 
@@ -43,9 +45,23 @@
   
   let currentFilterOptions = { projects: [], departments: [], units: [], teams: [] };
   let selectedFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
+  let selectedEmployees = new Set();
   
-  // Export selectedFilters to window for monthly report page
+  // Export selectedFilters and selectedEmployees to window for monthly report page
   window.selectedFilters = selectedFilters;
+  window.selectedEmployees = selectedEmployees;
+
+  window.addEventListener('monthly-filter-options', (event) => {
+    const options = event.detail || {};
+    currentFilterOptions = {
+      projects: options.projects || [],
+      departments: options.departments || [],
+      units: options.units || [],
+      teams: options.teams || []
+    };
+    renderFilterModal();
+    updateSelectedFiltersDisplay();
+  });
   
   const recordEditModalEl = document.getElementById('recordEditModal');
   const recordEditModal = recordEditModalEl ? new bootstrap.Modal(recordEditModalEl) : null;
@@ -602,6 +618,9 @@
   }
 
   async function loadData() {
+    if (!container && !monthlyContainer) {
+      return;
+    }
     const params = buildParams();
     try {
       const response = await fetch(`/api/attendance?${params.toString()}`);
@@ -609,10 +628,29 @@
         throw new Error('Не удалось получить данные');
       }
       const payload = await response.json();
-      renderReport(payload);
+
+      // Оновлюємо опції фільтрів навіть для сторінки місячного звіту
+      const filterMeta = payload.filters || {};
+      const filterOptions = filterMeta.options || {};
+      currentFilterOptions = {
+        projects: filterOptions.projects || [],
+        departments: filterOptions.departments || [],
+        units: filterOptions.units || [],
+        teams: filterOptions.teams || []
+      };
+      updateSelectedFiltersDisplay();
+      renderFilterModal();
+
+      if (container) {
+        renderReport(payload);
+      } else if (monthlyContainer) {
+        window.dispatchEvent(new CustomEvent('report-data-loaded', { detail: payload }));
+      }
     } catch (error) {
       console.error(error);
-      container.innerHTML = '<div class="alert alert-danger">Не удалось загрузить данные.</div>';
+      if (container) {
+        container.innerHTML = '<div class="alert alert-danger">Не удалось загрузить данные.</div>';
+      }
     }
   }
 
@@ -621,6 +659,14 @@
       event.preventDefault();
     }
     loadData();
+  }
+
+  function notifyFiltersUpdated() {
+    if (isMonthlyPage) {
+      window.dispatchEvent(new CustomEvent('monthly-filters-updated'));
+    } else {
+      loadData();
+    }
   }
 
   function resetFilters() {
@@ -633,13 +679,15 @@
     ensureDefaultWeekRange();
   }
 
-  form.addEventListener('submit', submitFilters);
+  if (form && !isMonthlyPage) {
+    form.addEventListener('submit', submitFilters);
+  }
 
-  if (searchBtn) {
+  if (searchBtn && !isMonthlyPage) {
     searchBtn.addEventListener('click', submitFilters);
   }
 
-  if (applySecondaryBtn) {
+  if (applySecondaryBtn && !isMonthlyPage) {
     applySecondaryBtn.addEventListener('click', submitFilters);
   }
 
@@ -649,9 +697,11 @@
     loadData();
   }
 
-  resetBtn.addEventListener('click', handleReset);
+  if (resetBtn && !isMonthlyPage) {
+    resetBtn.addEventListener('click', handleReset);
+  }
 
-  if (resetSecondaryBtn) {
+  if (resetSecondaryBtn && !isMonthlyPage) {
     resetSecondaryBtn.addEventListener('click', handleReset);
   }
 
@@ -682,7 +732,7 @@
     });
   }
 
-  if (canEdit) {
+  if (canEdit && container) {
     // Обробка кліку по звичайних рядках (окремі дні)
     container.addEventListener('click', (event) => {
       const btn = event.target.closest('[data-week-edit]');
@@ -745,7 +795,7 @@
     
     // Оновлюємо візуальне відображення та завантажуємо дані
     updateSelectedFiltersDisplay();
-    loadData();
+    notifyFiltersUpdated();
   });
 
   // Не підставляємо дати за замовчуванням - backend покаже останні 5 робочих днів
@@ -927,16 +977,14 @@
   if (filterModalApplyBtn) {
     filterModalApplyBtn.addEventListener('click', () => {
       updateSelectedFiltersDisplay();
-      // Only call submitFilters if we're on the dashboard, not monthly report
-      if (window.location.pathname !== '/monthly-report') {
-        submitFilters();
-      }
+      notifyFiltersUpdated();
     });
   }
 
   if (filterModalClearBtn) {
     filterModalClearBtn.addEventListener('click', () => {
       selectedFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+      window.selectedFilters = selectedFilters;
       renderFilterModal();
       updateSelectedFiltersDisplay();
     });
@@ -946,6 +994,7 @@
     document.getElementById('clear-project-filters').addEventListener('click', () => {
       // Очищаємо всі фільтри (проєкти, департаменти, юніти, команди)
       selectedFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
+      window.selectedFilters = selectedFilters;
       
       // Очищаємо вибраних співробітників
       selectedEmployees.clear();
@@ -958,7 +1007,7 @@
       updateSelectedFiltersDisplay();
       
       // Завантажуємо дані без фільтрів (але зі збереженням дат)
-      submitFilters();
+      notifyFiltersUpdated();
     });
   }
 
@@ -974,7 +1023,6 @@
   const selectedCountBadge = document.getElementById('selected-count');
 
   let allEmployees = [];
-  let selectedEmployees = new Set();
 
   async function loadAllEmployees() {
     try {
@@ -1116,6 +1164,10 @@
       }
       
       multiSelectModal?.hide();
+      if (isMonthlyPage) {
+        window.dispatchEvent(new CustomEvent('monthly-filters-updated'));
+        return;
+      }
       
       // Формуємо запит для вибраних співробітників
       const params = new URLSearchParams();

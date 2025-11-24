@@ -74,6 +74,10 @@
   word-wrap: break-word;
 }
 
+.monthly-report-filters {
+  margin-bottom: 1.5rem;
+}
+
 .modal-body [data-report-format] {
   min-width: 120px;
 }
@@ -794,6 +798,7 @@
 #monthly-report-table .edit-notes-btn {
   flex-shrink: 0;
 }
+
 
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {

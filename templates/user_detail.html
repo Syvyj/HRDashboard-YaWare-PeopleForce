@@ -14,14 +14,18 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   </head>
-  <body class="bg-light" data-user-key="{{ user_key|e }}" data-is-admin="{{ is_admin }}">
+  <body
+    class="bg-light"
+    data-user-key="{{ user_key|e }}"
+    data-is-admin="{{ is_admin }}"
+  >
     <nav class="navbar navbar-dark bg-dark">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">⬅ Назад</a>
         <span class="navbar-text text-white">{{ user_name }}</span>
       </div>
     </nav>
-    <div class="container py-4">
+    <div class="container-fluid py-4" style="max-width: 80%; margin: 0 auto">
       <div id="alert-container"></div>
 
       <div class="card shadow-sm mb-4">
@@ -43,14 +47,13 @@
           <div class="row" id="profile-details">
             <div class="col-md-6">
               <dl class="row mb-0">
-
                 <dt class="col-sm-5">Position</dt>
                 <dd class="col-sm-7" id="profile-position">—</dd>
                 <dt class="col-sm-5">Division</dt>
                 <dd class="col-sm-7" id="profile-division">—</dd>
                 <dt class="col-sm-5">Direction</dt>
                 <dd class="col-sm-7" id="profile-direction">—</dd>
-              <dt class="col-sm-5">Unit</dt>
+                <dt class="col-sm-5">Unit</dt>
                 <dd class="col-sm-7" id="profile-unit">—</dd>
                 <dt class="col-sm-5">Team</dt>
                 <dd class="col-sm-7" id="profile-team">—</dd>
@@ -60,15 +63,15 @@
             </div>
             <div class="col-md-6">
               <dl class="row mb-0">
-                                <dt class="col-sm-5">Email</dt>
+                <dt class="col-sm-5">Email</dt>
                 <dd class="col-sm-7" id="profile-email">—</dd>
-                                <dt class="col-sm-5">YaWare ID</dt>
+                <dt class="col-sm-5">YaWare ID</dt>
                 <dd class="col-sm-7" id="profile-yaware">—</dd>
                 <dt class="col-sm-5">PeopleForce ID</dt>
                 <dd class="col-sm-7" id="profile-peopleforce">—</dd>
                 <dt class="col-sm-5">Telegram рабочий</dt>
                 <dd class="col-sm-7" id="profile-telegram">—</dd>
-              <dt class="col-sm-5">Плановый старт</dt>
+                <dt class="col-sm-5">Плановый старт</dt>
                 <dd class="col-sm-7 d-flex align-items-center gap-2">
                   <span id="profile-plan-start">—</span>
                   <button
@@ -95,164 +98,203 @@
                     <i class="bi bi-pencil"></i>
                   </button>
                 </dd>
-
-
               </dl>
             </div>
           </div>
         </div>
       </div>
-      
-        <div class="card shadow-sm mb-4" style="
-    margin-bottom: 0.2rem !important;
-">
-          <div class="card-body" style="
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: flex-start;
-">
-<div style="width: 370px; border-right: 2px solid #dee2e6; padding-right: 20px;">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h5 class="card-title mb-0">Опоздания на этой неделе</h5>
-            </div>
-          <div id="lateness-grid" class="d-flex flex-wrap" style="flex-direction: column;"></div>
-          
-          <!-- Всего за месяц -->
-          <div class="mt-3">
-            <div id="monthly-lateness-bar" style="
-              position: relative;
-              height: 40px;
-              background: linear-gradient(to right, #dc3545 0%, #dc3545 0%, #28a745 0%, #28a745 100%);
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              padding: 0 15px;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            ">
-              <span style="font-weight: 600; color: white; z-index: 1;">Всего за месяц</span>
-              <span id="monthly-lateness-time" style="font-weight: bold; color: white; z-index: 1;">00:00</span>
-            </div>
-          </div>
-          </div>
-          <!-- Місячна статистика по категоріях -->
-          <div class="mt-4 w-100" style="
-    margin-top: 0rem!important;
-    padding-left: 20px;
-">
-            <h5 class="text-center mb-3" id="monthly-stats-title">Статистика за месяц</h5>
-            <div class="d-flex flex-wrap justify-content-around gap-4">
-              <div class="text-center" style="width: 150px;">
-                <canvas id="notCategorizedChart"></canvas>
-                <p class="mt-2 mb-0 small text-muted">Not Categorized</p>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row">
+            <div style="width: 14.333333%">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h5 class="card-title mb-0">Опоздания на этой неделе</h5>
               </div>
-              <div class="text-center" style="width: 150px;">
-                <canvas id="productiveChart"></canvas>
-                <p class="mt-2 mb-0 small text-muted">Productive</p>
-              </div>
-              <div class="text-center" style="width: 150px;">
-                <canvas id="nonProductiveChart"></canvas>
-                <p class="mt-2 mb-0 small text-muted">Non Productive</p>
-              </div>
-              <div class="text-center" style="width: 150px;">
-                <canvas id="totalChart"></canvas>
-                <p class="mt-2 mb-0 small text-muted">Total</p>
-              </div>
-            </div>
-          </div>
-          </div>
-        </div>
-      </div>
-          </div>
-        </div>
-      </div>
-      <div class="container py-4" style="
-    padding-top: 0.2rem !important;">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <div class="d-flex flex-wrap align-items-end gap-2 mb-3">
-              <div>
-                <h5 class="card-title mb-1">В этом месяце:</h5>
-                <span class="badge bg-secondary" id="records-count">0 записей</span>
-              </div>
-              <div class="d-flex flex-wrap align-items-end gap-2 ms-auto">
-                <div style="
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-around;
-    align-items: center;
-">
-                  <label class="form-label mb-1" for="range-date-from">С: </label>
-                  <input type="date" class="form-control" id="range-date-from" />
-                </div>
-                <div style="
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-around;
-    align-items: center;
-">
-                  <label class="form-label mb-1" for="range-date-to">По: </label>
-                  <input type="date" class="form-control" id="range-date-to" />
-                </div>
-                <div class="d-flex gap-2">
-                  <button type="button" class="btn btn-primary" id="range-apply">
-                    Показать
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    id="range-reset"
+              <div
+                id="lateness-grid"
+                class="d-flex flex-wrap"
+                style="flex-direction: column"
+              ></div>
+
+              <!-- Всего за месяц -->
+              <div class="mt-3">
+                <div
+                  id="monthly-lateness-bar"
+                  style="
+                    position: relative;
+                    height: 40px;
+                    background: linear-gradient(
+                      to right,
+                      #dc3545 0%,
+                      #dc3545 0%,
+                      #28a745 0%,
+                      #28a745 100%
+                    );
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 0 15px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                  "
+                >
+                  <span style="font-weight: 600; color: white; z-index: 1"
+                    >Всего за месяц</span
                   >
-                    Сбросить
-                  </button>
+                  <span
+                    id="monthly-lateness-time"
+                    style="font-weight: bold; color: white; z-index: 1"
+                    >00:00</span
+                  >
                 </div>
+              </div>
+            </div>
+            <!-- Місячна статистика по категоріях -->
+            <div style="width: 85.666667%">
+              <h5 class="text-center mb-3" id="monthly-stats-title">
+                Статистика за месяц
+              </h5>
+              <div class="d-flex flex-wrap justify-content-around gap-4">
+                <div class="text-center" style="width: 150px">
+                  <canvas id="notCategorizedChart"></canvas>
+                  <p class="mt-2 mb-0 small text-muted">Not Categorized</p>
+                </div>
+                <div class="text-center" style="width: 150px">
+                  <canvas id="productiveChart"></canvas>
+                  <p class="mt-2 mb-0 small text-muted">Productive</p>
+                </div>
+                <div class="text-center" style="width: 150px">
+                  <canvas id="nonProductiveChart"></canvas>
+                  <p class="mt-2 mb-0 small text-muted">Non Productive</p>
+                </div>
+                <div class="text-center" style="width: 150px">
+                  <canvas id="totalChart"></canvas>
+                  <p class="mt-2 mb-0 small text-muted">Total</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4" id="user-monthly-summary-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Отчет за месяц</h5>
+            <div class="d-flex gap-2 align-items-center">
+              <input
+                type="month"
+                class="form-control form-control-sm"
+                id="user-summary-month"
+                value="{{ current_month }}"
+                style="width: auto"
+              />
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-primary"
+                id="user-summary-refresh"
+              >
+                Показать
+              </button>
+            </div>
+          </div>
+          <div class="row g-0" id="user-monthly-summary-content">
+            <div class="col-12 text-muted text-center py-2 small">
+              Нет данных
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="d-flex flex-wrap align-items-end gap-2 mb-3">
+            <div>
+              <h5 class="card-title mb-1">В этом месяце:</h5>
+              <span class="badge bg-secondary" id="records-count"
+                >0 записей</span
+              >
+            </div>
+            <div class="d-flex flex-wrap align-items-end gap-2 ms-auto">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  flex-wrap: nowrap;
+                  justify-content: space-around;
+                  align-items: center;
+                "
+              >
+                <label class="form-label mb-1" for="range-date-from">С: </label>
+                <input type="date" class="form-control" id="range-date-from" />
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  flex-wrap: nowrap;
+                  justify-content: space-around;
+                  align-items: center;
+                "
+              >
+                <label class="form-label mb-1" for="range-date-to">По: </label>
+                <input type="date" class="form-control" id="range-date-to" />
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary" id="range-apply">
+                  Показать
+                </button>
                 <button
                   type="button"
-                  class="btn btn-outline-primary"
-                  id="report-btn"
+                  class="btn btn-outline-secondary"
+                  id="range-reset"
                 >
-                  Сформировать отчет
+                  Сбросить
                 </button>
               </div>
-            </div>
-            <div class="table-responsive">
-              <table
-                class="table table-sm table-bordered align-middle"
-                id="records-table" style="
-    text-align: center;
-"
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                id="report-btn"
               >
-                <thead class="table-light">
-                  <tr>
-                    <th>Дата</th>
-                    <th>План</th>
-                    <th>Факт</th>
-                    <th>Non Productive</th>
-                    <th>Not Categorized</th>
-                    <th>Productive</th>
-                    <th>Total</th>
-                    <th>Total corrected</th>
-                    <th style="
-    width: 350px;
-">Notes</th>
-                    <th style="width: 40px"></th>
-                  </tr>
-                </thead>
-                <tbody id="records-body">
-                  <tr>
-                    <td colspan="10" class="text-center text-muted py-4">
-                      Данные загружаются…
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                Сформировать отчет
+              </button>
             </div>
           </div>
+          <div class="table-responsive">
+            <table
+              class="table table-sm table-bordered align-middle"
+              id="records-table"
+              style="text-align: center"
+            >
+              <thead class="table-light">
+                <tr>
+                  <th>Дата</th>
+                  <th>План</th>
+                  <th>Факт</th>
+                  <th>Non Productive</th>
+                  <th>Not Categorized</th>
+                  <th>Productive</th>
+                  <th>Total</th>
+                  <th>Total corrected</th>
+                  <th style="width: 350px">Notes</th>
+                  <th style="width: 40px"></th>
+                </tr>
+              </thead>
+              <tbody id="records-body">
+                <tr>
+                  <td colspan="10" class="text-center text-muted py-4">
+                    Данные загружаются…
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>    
+      </div>
     </div>
 
     <div class="modal fade" id="recordModal" tabindex="-1" aria-hidden="true">
@@ -347,7 +389,7 @@
                     placeholder="08:00"
                   />
                 </div>
-                <div class="col-md-9" >
+                <div class="col-md-9">
                   <label class="form-label">Notes</label>
                   <textarea
                     class="form-control"
@@ -397,12 +439,21 @@
               <div class="mb-3">
                 <label class="form-label">Control manager</label>
                 <select class="form-select" id="manager-modal-select"></select>
-                <small class="text-muted">Применяется ко всем записям пользователя.</small>
+                <small class="text-muted"
+                  >Применяется ко всем записям пользователя.</small
+                >
               </div>
               <div class="mb-3 d-none" id="telegram-edit-group">
                 <label class="form-label">Telegram username</label>
-                <input type="text" class="form-control" id="telegram-modal-input" placeholder="Прізвище_Імʼя">
-                <small class="text-muted">Формат: Фамилия_Имя (например: Kutkovskyi_Mykhailo)</small>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="telegram-modal-input"
+                  placeholder="Прізвище_Імʼя"
+                />
+                <small class="text-muted"
+                  >Формат: Фамилия_Имя (например: Kutkovskyi_Mykhailo)</small
+                >
               </div>
             </div>
             <div class="modal-footer">
@@ -420,7 +471,12 @@
       </div>
     </div>
 
-    <div class="modal fade" id="planStartModal" tabindex="-1" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="planStartModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -436,14 +492,36 @@
             <div class="modal-body">
               <div class="mb-3">
                 <label class="form-label">Плановый старт</label>
-                <input type="text" class="form-control" id="plan-start-modal-input" placeholder="09:00">
-                <small class="text-muted">Применяется ко всем будущим записям пользователя в расписании.</small>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="plan-start-modal-input"
+                  placeholder="09:00"
+                />
+                <small class="text-muted"
+                  >Применяется ко всем будущим записям пользователя в
+                  расписании.</small
+                >
               </div>
             </div>
             <div class="modal-footer">
-              <button type="submit" class="btn btn-primary" name="action" value="global">Сохранить</button>
-              <button type="submit" class="btn btn-success" name="action" value="apply_month">Сохранить и применить к месяцу</button>
-                          <button
+              <button
+                type="submit"
+                class="btn btn-primary"
+                name="action"
+                value="global"
+              >
+                Сохранить
+              </button>
+              <button
+                type="submit"
+                class="btn btn-success"
+                name="action"
+                value="apply_month"
+              >
+                Сохранить и применить к месяцу
+              </button>
+              <button
                 type="button"
                 class="btn btn-outline-secondary"
                 data-bs-dismiss="modal"

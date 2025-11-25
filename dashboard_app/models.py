@@ -52,6 +52,7 @@ class AttendanceRecord(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     record_date = db.Column(db.Date, nullable=False, index=True)
+    internal_user_id = db.Column(db.Integer, nullable=True, index=True)
     user_id = db.Column(db.String(64), nullable=False, index=True)
     user_name = db.Column(db.String(255), nullable=False)
     user_email = db.Column(db.String(255), nullable=True, index=True)

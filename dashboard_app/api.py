@@ -1563,6 +1563,23 @@ def _get_filtered_items():
                 teams_filtered.extend(_filter_employee_records(records, 'team', team))
         records = list({record.id: record for record in teams_filtered}.values())
     
+    # Фільтруємо вихідні дні для користувачів без 7-денного робочого тижня
+    filtered_records = []
+    weekend_cache = {}
+    for record in records:
+        user_key = record.user_email or record.user_id
+        if user_key not in weekend_cache:
+            pf_id = _get_peopleforce_id_for_user(user_key)
+            weekend_cache[user_key] = bool(pf_id and pf_id in SEVEN_DAY_WORK_WEEK_IDS)
+        
+        # Якщо користувач не має 7-денного тижня і це вихідний - пропускаємо
+        if not weekend_cache[user_key] and record.record_date.weekday() >= 5:
+            continue
+        
+        filtered_records.append(record)
+    
+    records = filtered_records
+    
     items = _apply_schedule_overrides(_build_items(records))
     return items, len(records)
 
@@ -2901,12 +2918,41 @@ def admin_delete_attendance_by_date(date_str: str):
     except ValueError:
         return jsonify({'error': 'Некоректний формат дати. Очікується YYYY-MM-DD'}), 400
     
-    # Видаляємо всі записи за цю дату
-    deleted_count = AttendanceRecord.query.filter_by(record_date=target_date).delete()
+    exclude_247 = request.args.get('exclude_247', 'false').lower() == 'true'
+    
+    # Видаляємо записи за цю дату
+    query = AttendanceRecord.query.filter_by(record_date=target_date)
+    
+    if exclude_247:
+        # Фільтруємо, щоб виключити користувачів з графіком 24/7
+        # Отримуємо internal_id користувачів з графіком 24/7
+        schedules = load_user_schedules()
+        seven_day_internal_ids = set()
+        for user_name, info in schedules.items():
+            if isinstance(info, dict):
+                pf_id = info.get('peopleforce_id')
+                if pf_id and int(pf_id) in SEVEN_DAY_WORK_WEEK_IDS:
+                    internal_id = info.get('internal_id')
+                    if internal_id:
+                        seven_day_internal_ids.add(int(internal_id))
+        
+        records_to_delete = []
+        for record in query.all():
+            # Видаляємо якщо internal_user_id НЕ в списку 24/7 або якщо internal_user_id == None
+            if record.internal_user_id is None or record.internal_user_id not in seven_day_internal_ids:
+                records_to_delete.append(record)
+        
+        deleted_count = len(records_to_delete)
+        for record in records_to_delete:
+            db.session.delete(record)
+    else:
+        # Видаляємо всі записи
+        deleted_count = query.delete()
     
     _log_admin_action('delete_attendance_date', {
         'date': date_str,
-        'deleted_count': deleted_count
+        'deleted_count': deleted_count,
+        'exclude_247': exclude_247
     })
     
     db.session.commit()
@@ -2924,7 +2970,7 @@ def _available_control_managers() -> list[int]:
        
         info.get('control_manager')
         for info in schedules.values()
-        if info.get('control_manager') not in (None, '')
+        if isinstance(info, dict) and info.get('control_manager') not in (None, '')
     }
     result: set[int] = set()
     for value in values:
@@ -3387,6 +3433,8 @@ def api_update_user_plan_start(user_key: str):
 @login_required
 def api_user_monthly_category_stats(user_key: str):
     """Отримати статистику по категоріях за місяць для конкретного користувача."""
+    logger.info(f"=== Monthly stats request for user_key: {user_key} ===")
+    
     # Отримуємо параметри року та місяця
     year = request.args.get('year', type=int)
     month = request.args.get('month', type=int)
@@ -3433,12 +3481,29 @@ def api_user_monthly_category_stats(user_key: str):
             'month': month
         })
     
-    # Підраховуємо суми
-    not_categorized_total = sum(r.not_categorized_minutes or 0 for r in records)
-    productive_total = sum(r.productive_minutes or 0 for r in records)
-    non_productive_total = sum(r.non_productive_minutes or 0 for r in records)
-    total_minutes = sum(r.total_minutes or 0 for r in records)
-    monthly_lateness_total = sum(r.minutes_late or 0 for r in records)
+    # Визначаємо чи користувач має 7-денний робочий тиждень
+    has_seven_day_week = False
+    if records:
+        pf_id = _get_peopleforce_id_for_user(normalized_key)
+        has_seven_day_week = bool(pf_id and pf_id in SEVEN_DAY_WORK_WEEK_IDS)
+    
+    # Підраховуємо суми, враховуючи тільки робочі дні для звичайних користувачів
+    not_categorized_total = 0
+    productive_total = 0
+    non_productive_total = 0
+    total_minutes = 0
+    monthly_lateness_total = 0
+    
+    for r in records:
+        # Пропускаємо вихідні для користувачів без 7-денного робочого тижня
+        if not has_seven_day_week and r.record_date.weekday() >= 5:  # 5=субота, 6=неділя
+            continue
+        
+        not_categorized_total += (r.not_categorized_minutes or 0)
+        productive_total += (r.productive_minutes or 0)
+        non_productive_total += (r.non_productive_minutes or 0)
+        total_minutes += (r.total_minutes or 0)
+        monthly_lateness_total += (r.minutes_late or 0)
     
     return jsonify({
         'not_categorized': not_categorized_total,
@@ -4141,20 +4206,11 @@ def get_monthly_report():
         if manager_id:
             query = query.filter(AttendanceRecord.control_manager == int(manager_id))
         
-        projects = [p for p in request.args.getlist('project') if p]
-        if projects:
-            query = query.filter(AttendanceRecord.project.in_(projects))
-        
-        departments = [d for d in request.args.getlist('department') if d]
-        if departments:
-            query = query.filter(AttendanceRecord.department.in_(departments))
-        
-        units = [u for u in request.args.getlist('unit') if u]
-        teams = [t for t in request.args.getlist('team') if t]
-        team_filters = list({*units, *teams})
-        if team_filters:
-            query = query.filter(AttendanceRecord.team.in_(team_filters))
-        
+        project_filters = {canonicalize_label(p).lower() for p in request.args.getlist('project') if p}
+        department_filters = {canonicalize_label(d).lower() for d in request.args.getlist('department') if d}
+        unit_filters = {canonicalize_label(u).lower() for u in request.args.getlist('unit') if u}
+        team_filters = {canonicalize_label(t).lower() for t in request.args.getlist('team') if t}
+
         locations = [loc for loc in request.args.getlist('location') if loc]
         if locations:
             query = query.filter(AttendanceRecord.location.in_(locations))
@@ -4216,11 +4272,17 @@ def get_monthly_report():
             user_data[user_key]['user_key'] = user_key
             user_data[user_key]['user_name'] = record.user_name
             user_data[user_key]['user_email'] = record.user_email
-            user_data[user_key]['project'] = canonicalize_label(record.project)
-            user_data[user_key]['department'] = canonicalize_label(record.department)
-            canonical_team = canonicalize_label(record.team)
-            user_data[user_key]['unit'] = canonical_team
-            user_data[user_key]['team'] = canonical_team
+
+            schedule_info = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
+            division_value = schedule_info.get('division_name') or record.project
+            direction_value = schedule_info.get('direction_name') or record.department
+            unit_value = schedule_info.get('unit_name') or record.team
+            team_value = schedule_info.get('team_name') or record.team
+
+            user_data[user_key]['project'] = canonicalize_label(division_value)
+            user_data[user_key]['department'] = canonicalize_label(direction_value)
+            user_data[user_key]['unit'] = canonicalize_label(unit_value)
+            user_data[user_key]['team'] = canonicalize_label(team_value)
             include_weekends = user_data[user_key]['include_weekends']
             if not user_data[user_key]['include_weekends']:
                 if user_key not in weekend_cache:
@@ -4248,7 +4310,24 @@ def get_monthly_report():
         
         # Calculate leave days from our database (not from PeopleForce API)
         leave_data = {}
+        def matches_filters(data):
+            project_value = canonicalize_label(data.get('project') or '').lower()
+            department_value = canonicalize_label(data.get('department') or '').lower()
+            unit_value = canonicalize_label(data.get('unit') or '').lower()
+            team_value = canonicalize_label(data.get('team') or '').lower()
+            if project_filters and (not project_value or project_value not in project_filters):
+                return False
+            if department_filters and (not department_value or department_value not in department_filters):
+                return False
+            if unit_filters and (not unit_value or unit_value not in unit_filters):
+                return False
+            if team_filters and (not team_value or team_value not in team_filters):
+                return False
+            return True
+
         for user_key, data in user_data.items():
+            if not matches_filters(data):
+                continue
             vacation_days = 0.0
             day_off_days = 0.0
             sick_days = 0.0
@@ -4288,6 +4367,10 @@ def get_monthly_report():
         # Build result
         employees = []
         for user_key, data in user_data.items():
+            # Apply filters
+            if not matches_filters(data):
+                continue
+            
             include_weekends = data.get('include_weekends', False)
             plan_days = _count_work_days_in_month(year, month, include_weekends)
             

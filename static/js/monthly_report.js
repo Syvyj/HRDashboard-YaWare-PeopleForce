@@ -179,16 +179,19 @@
     reportBody.innerHTML = data.employees.map(emp => {
       const notes = monthlyNotesCache[emp.user_key] || emp.notes || '';
       
+      const userLink = emp.user_email || emp.user_key || emp.user_name;
       return `
         <tr>
           <td colspan="100%">
             <div class="row g-0">
               <div class="col-12 mb-2">
-                <strong>${escapeHtml(emp.user_name)}</strong>
-                ${emp.division ? `<span class="badge bg-secondary ms-2">${escapeHtml(emp.division)}</span>` : ''}
-                ${emp.department ? `<span class="badge bg-info ms-1">${escapeHtml(emp.department)}</span>` : ''}
-                ${emp.unit ? `<span class="badge bg-light text-dark ms-1">${escapeHtml(emp.unit)}</span>` : ''}
-                ${emp.team ? `<span class="badge bg-light text-dark ms-1">${escapeHtml(emp.team)}</span>` : ''}
+                <strong>
+                  <a href="/users/${encodeURIComponent(userLink)}">${escapeHtml(emp.user_name)}</a>
+                </strong>
+                ${emp.division ? `<a href="#" class="badge bg-secondary ms-2 meta-link text-decoration-none" data-filter="project" data-value="${encodeURIComponent(emp.division)}">${escapeHtml(emp.division)}</a>` : ''}
+                ${emp.department ? `<a href="#" class="badge bg-info ms-1 meta-link text-decoration-none" data-filter="department" data-value="${encodeURIComponent(emp.department)}">${escapeHtml(emp.department)}</a>` : ''}
+                ${emp.unit ? `<a href="#" class="badge bg-light text-dark ms-1 meta-link text-decoration-none" data-filter="unit" data-value="${encodeURIComponent(emp.unit)}">${escapeHtml(emp.unit)}</a>` : ''}
+                ${emp.team ? `<a href="#" class="badge bg-light text-dark ms-1 meta-link text-decoration-none" data-filter="team" data-value="${encodeURIComponent(emp.team)}">${escapeHtml(emp.team)}</a>` : ''}
               </div>
               <div class="col">
                 <div class="text-center p-2 border-end">
@@ -307,7 +310,35 @@
   // Export monthly report
   function exportMonthlyReport(format) {
     const filters = getFilters();
-    const params = new URLSearchParams(filters);
+    const params = new URLSearchParams();
+    params.set('month', filters.month);
+    if (filters.user) {
+      params.set('user', filters.user);
+    }
+
+    // Add selected filters
+    if (typeof window.selectedFilters !== 'undefined') {
+      const sf = window.selectedFilters;
+      if (sf.projects && sf.projects.size > 0) {
+        Array.from(sf.projects).forEach(p => params.append('project', p));
+      }
+      if (sf.departments && sf.departments.size > 0) {
+        Array.from(sf.departments).forEach(d => params.append('department', d));
+      }
+      if (sf.units && sf.units.size > 0) {
+        Array.from(sf.units).forEach(u => params.append('unit', u));
+      }
+      if (sf.teams && sf.teams.size > 0) {
+        Array.from(sf.teams).forEach(t => params.append('team', t));
+      }
+    }
+
+    // Add selected employees
+    if (typeof window.selectedEmployees !== 'undefined' && window.selectedEmployees && window.selectedEmployees.size > 0) {
+      Array.from(window.selectedEmployees).forEach(key => {
+        params.append('user_key', key);
+      });
+    }
     
     const url = format === 'pdf'
       ? `/api/monthly-report/pdf?${params.toString()}`

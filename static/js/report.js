@@ -139,7 +139,10 @@
   }
 
   function buildParams() {
-    return buildFilterParams(dateFromInput.value, dateToInput.value, userInput.value, selectedFilters, selectedEmployees);
+    const dateFrom = dateFromInput ? dateFromInput.value : '';
+    const dateTo = dateToInput ? dateToInput.value : '';
+    const user = userInput ? userInput.value : '';
+    return buildFilterParams(dateFrom, dateTo, user, selectedFilters, selectedEmployees);
   }
 
   function createCell(text, className) {
@@ -392,13 +395,32 @@
     fillStatusOptions(recordEditStatus, options, row.status);
   }
 
-  function openWeekNotesModal(userKey, userName, currentNotes) {
+  function calculateWeekStart(rows) {
+    if (!rows || !rows.length) {
+      return null;
+    }
+    const rawDate = rows[0].date_iso || rows[0].date || rows[0].date_display;
+    if (!rawDate) {
+      return null;
+    }
+    const dateObj = new Date(rawDate);
+    if (Number.isNaN(dateObj.getTime())) {
+      return null;
+    }
+    const day = dateObj.getDay();
+    const monday = new Date(dateObj);
+    monday.setDate(dateObj.getDate() - (day === 0 ? 6 : day - 1));
+    return formatISO(monday);
+  }
+
+  function openWeekNotesModal(userKey, userName, currentNotes, weekStart) {
     if (!weekNotesModal || !weekNotesForm) {
       return;
     }
     weekNotesContext = {
       userKey: userKey,
-      userName: userName || userKey
+      userName: userName || userKey,
+      weekStart: weekStart || null
     };
     weekNotesUserLabel.textContent = userName || userKey;
     weekNotesText.value = currentNotes || '';
@@ -510,7 +532,12 @@
         .map((line) => `<span class="meta-link-line">${line}</span>`)
         .join('');
       const userKeyRaw = schedule.email || item.user_id || item.user_name;
-      userRecordsMap.set(userKeyRaw, { rows: item.rows || [], name: item.user_name, week_total: item.week_total });
+      userRecordsMap.set(userKeyRaw, {
+        rows: item.rows || [],
+        name: item.user_name,
+        week_total: item.week_total,
+        week_start: calculateWeekStart(item.rows || [])
+      });
       const userKey = encodeURIComponent(userKeyRaw);
       
       // Build logo links HTML
@@ -619,6 +646,10 @@
 
   async function loadData() {
     if (!container && !monthlyContainer) {
+      return;
+    }
+    if (isMonthlyPage) {
+      // On monthly page, don't call loadData - monthly_report.js handles it
       return;
     }
     const params = buildParams();
@@ -765,7 +796,7 @@
         alert('Нет данных пользователя.');
         return;
       }
-      openWeekNotesModal(userKey, info.name, info.week_total?.notes || '');
+      openWeekNotesModal(userKey, info.name, info.week_total?.notes || '', info.week_start);
     });
   }
 
@@ -799,7 +830,10 @@
   });
 
   // Не підставляємо дати за замовчуванням - backend покаже останні 5 робочих днів
-  loadData();
+  // Only load data on dashboard page, not on monthly report page
+  if (!isMonthlyPage) {
+    loadData();
+  }
 
   async function submitRecordEdit(event) {
     event.preventDefault();
@@ -871,7 +905,7 @@
     try {
       // Get week_start from the first date in the data
       const dateFrom = dateFromInput ? dateFromInput.value : '';
-      let weekStart = dateFrom;
+      let weekStart = weekNotesContext.weekStart || dateFrom;
       
       // If no date specified, calculate Monday of current week
       if (!weekStart) {
@@ -879,7 +913,7 @@
         const dayOfWeek = today.getDay();
         const monday = new Date(today);
         monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-        weekStart = formatISO(monday);
+        weekStart = weekNotesContext.weekStart || formatISO(monday);
       }
       
       const response = await fetch('/api/week-notes', {
@@ -950,23 +984,15 @@
   // Modal filter handlers
   if (openFiltersModalBtn) {
     openFiltersModalBtn.addEventListener('click', () => {
-      console.log('=== Opening filters modal ===');
-      console.log('Modal element exists:', !!filtersModalEl);
-      console.log('Modal element:', filtersModalEl);
-      
       renderFilterModal();
       
       // Initialize modal if not already done
       if (!filtersModal && filtersModalEl) {
-        console.log('Initializing new bootstrap Modal...');
         filtersModal = new bootstrap.Modal(filtersModalEl);
-        console.log('Modal initialized:', !!filtersModal);
       }
       
       if (filtersModal) {
-        console.log('Calling modal.show()...');
         filtersModal.show();
-        console.log('Modal show() called');
       } else {
         console.error('ERROR: Could not initialize modal');
         alert('Ошибка: не удалось открыть модальное окно');
@@ -983,10 +1009,11 @@
 
   if (filterModalClearBtn) {
     filterModalClearBtn.addEventListener('click', () => {
-      selectedFilters = { projects: new Set(), departments: new Set(), teams: new Set() };
+      selectedFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
       window.selectedFilters = selectedFilters;
       renderFilterModal();
       updateSelectedFiltersDisplay();
+      // Don't call notifyFiltersUpdated here - wait for Apply button
     });
   }
 
@@ -1028,27 +1055,37 @@
     try {
       const params = new URLSearchParams();
       
-      const response = await fetch(`/api/attendance?${params.toString()}`);
+      // Use different endpoint for monthly page
+      let endpoint = '/api/attendance';
+      if (isMonthlyPage) {
+        const filterMonth = document.getElementById('filter-month');
+        const month = filterMonth ? filterMonth.value : new Date().toISOString().slice(0, 7);
+        endpoint = '/api/monthly-report';
+        params.set('month', month);
+      }
+      
+      const response = await fetch(`${endpoint}?${params.toString()}`);
       const data = await response.json();
       
       // Перевіряємо що дані прийшли правильно
-      if (!data || !data.items) {
-        console.error('Invalid data format:', data);
-        alert('Помилка: неправильний формат даних');
+      const items = data.items || data.employees || [];
+      if (!items || items.length === 0) {
+        console.error('No employees found:', data);
+        alert('Помилка: не знайдено співробітників');
         return;
       }
       
-      // Створюємо унікальний список співробітників з items
+      // Створюємо унікальний список співробітників
       const employeesMap = new Map();
-      data.items.forEach(item => {
-        const key = item.user_email || item.user_id || item.user_name;
+      items.forEach(item => {
+        const key = item.user_email || item.user_key || item.user_id || item.user_name;
         if (!employeesMap.has(key)) {
           employeesMap.set(key, {
             key: key,
             name: item.user_name || '',
             email: item.user_email || '',
             user_id: item.user_id || '',
-            project: item.project || '',
+            project: item.division || item.project || '',
             department: item.department || '',
             team: item.team || ''
           });

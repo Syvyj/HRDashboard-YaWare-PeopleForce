@@ -14,6 +14,16 @@
   }
 
   const alertContainer = document.getElementById('alert-container');
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
   const profileNameEl = document.getElementById('profile-name');
   const profileIdentifierEl = document.getElementById('profile-identifier');
   const profileEmailEl = document.getElementById('profile-email');
@@ -50,6 +60,9 @@
   const rangeResetBtn = document.getElementById('range-reset');
   const reportBtn = document.getElementById('report-btn');
   const reportModalEl = document.getElementById('reportModal');
+  const summaryMonthInput = document.getElementById('user-summary-month');
+  const summaryRefreshBtn = document.getElementById('user-summary-refresh');
+  const summaryContent = document.getElementById('user-monthly-summary-content');
 
   const formScheduledStart = document.getElementById('form-scheduled-start');
   const formActualStart = document.getElementById('form-actual-start');
@@ -361,6 +374,79 @@
     });
 
     latenessContainer.appendChild(fragment);
+  }
+
+  function renderMonthlySummary(summary) {
+    if (!summaryContent) {
+      return;
+    }
+    if (!summary) {
+      summaryContent.innerHTML = '<div class="col-12 text-center text-muted py-3">Нет данных за выбранный месяц</div>';
+      return;
+    }
+
+    summaryContent.innerHTML = `
+      <div class="col">
+        <div class="text-center p-2 border-end">
+          <div class="fw-bold">Plan Days</div>
+          <div class="fs-4">${summary.plan_days}</div>
+          <div class="small text-muted">Minimum per month</div>
+          <div>${escapeHtml(summary.minimum_hours)}</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="text-center p-2 border-end">
+          <div class="fw-bold">Vacation</div>
+          <div class="fs-4">${summary.vacation_days}</div>
+          <div class="small text-muted">Tracked Hours</div>
+          <div>${escapeHtml(summary.tracked_hours || '0:00')}</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="text-center p-2 border-end">
+          <div class="fw-bold">Day Off</div>
+          <div class="fs-4">${summary.day_off_days}</div>
+          <div class="small text-muted">Delay >10</div>
+          <div>${summary.delay_count}</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="text-center p-2 border-end">
+          <div class="fw-bold">Sick</div>
+          <div class="fs-4">${summary.sick_days}</div>
+          <div class="small text-muted">Corrected Hours</div>
+          <div>${escapeHtml(summary.corrected_hours || '0:00')}</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="text-center p-2">
+          <div class="fw-bold">Fact Days</div>
+          <div class="fs-4">${summary.fact_days}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  async function loadUserMonthlySummary() {
+    if (!summaryContent) {
+      return;
+    }
+    const monthValue = summaryMonthInput?.value || new Date().toISOString().slice(0, 7);
+    const params = new URLSearchParams({ month: monthValue });
+    params.append('user_key', userKey);
+    summaryContent.innerHTML = '<div class="col-12 text-center text-muted py-3">Загрузка...</div>';
+    try {
+      const response = await fetch(`/api/monthly-report?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error('Не удалось получить месячную статистику');
+      }
+      const data = await response.json();
+      const summary = data.employees && data.employees.length ? data.employees[0] : null;
+      renderMonthlySummary(summary);
+    } catch (error) {
+      console.error('Failed to load monthly summary:', error);
+      summaryContent.innerHTML = `<div class="col-12 text-center text-danger py-3">${error.message}</div>`;
+    }
   }
 
   function fillStatusOptions(currentStatus) {
@@ -684,6 +770,18 @@
     });
   }
 
+  if (summaryRefreshBtn) {
+    summaryRefreshBtn.addEventListener('click', () => {
+      loadUserMonthlySummary();
+    });
+  }
+
+  if (summaryMonthInput) {
+    summaryMonthInput.addEventListener('change', () => {
+      loadUserMonthlySummary();
+    });
+  }
+
   if (reportBtn && reportModal && reportModalEl) {
     reportBtn.addEventListener('click', () => {
       reportModal.show();
@@ -866,5 +964,6 @@
   }
 
   loadData();
+  loadUserMonthlySummary();
   loadMonthlyStats();
 })();

@@ -35,14 +35,16 @@ def user_detail(user_key: str):
         # якщо немає графіка і користувач без адмін прав — відмовити
         abort(404)
     display_name = schedule.get('name') if schedule else decoded_key
+    body_user_key = (schedule.get('email') if schedule else None) or decoded_key
     is_admin = getattr(current_user, 'is_admin', False)
     return render_template(
         'user_detail.html',
-        user_key=decoded_key,
+        user_key=body_user_key,
         schedule=schedule,
         display_name=display_name,
         user_name=current_user.name,
-        is_admin='1' if is_admin else '0'
+        is_admin='1' if is_admin else '0',
+        current_month=datetime.now().strftime('%Y-%m')
     )
 
 

@@ -793,13 +793,22 @@
       return;
     }
     
-    if (!confirm(`Ви впевнені, що хочете видалити ВСІ записи за ${targetDate}?\n\nЦю дію неможливо скасувати!`)) {
+    const exclude247Checkbox = document.getElementById('exclude-247-checkbox');
+    const exclude247 = exclude247Checkbox && exclude247Checkbox.checked;
+    
+    const confirmMessage = exclude247 
+      ? `Ви впевнені, що хочете видалити записи за ${targetDate} (окрім користувачів з графіком 24/7)?\n\nЦю дію неможливо скасувати!`
+      : `Ви впевнені, що хочете видалити ВСІ записи за ${targetDate}?\n\nЦю дію неможливо скасувати!`;
+    
+    if (!confirm(confirmMessage)) {
       return;
     }
     
     setButtonLoading(deleteDateBtn, true);
 
-    fetch(`/api/admin/attendance/${targetDate}`, {
+    const url = `/api/admin/attendance/${targetDate}${exclude247 ? '?exclude_247=true' : ''}`;
+    
+    fetch(url, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

@@ -245,6 +245,9 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         leave_reason = leaves_reason.get(email) if email else None
         leave_amount = leaves_amount.get(email) if email else None
         
+        # Отримуємо internal_id зі schedule
+        internal_user_id = schedule.internal_id if schedule and hasattr(schedule, 'internal_id') else None
+        
         # Якщо є половина дня відпустки (0.5) - дозволяємо YaWare дані для іншої половини
         # Статус буде визначено як "present" або "late" незалежно від leave
         if leave_amount == 0.5:
@@ -256,6 +259,7 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
 
         record = AttendanceRecord(
             record_date=target_date,
+            internal_user_id=internal_user_id,
             user_id=user_id or email or entry.get('user', ''),
             user_name=(schedule.name if schedule else entry.get('user', '').split(',')[0].strip()),
             user_email=email or (schedule.email.lower() if schedule and schedule.email else None),
@@ -303,10 +307,14 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         
         leave_amount = leaves_amount.get(email, 1.0)
         
+        # Отримуємо internal_id зі schedule
+        internal_user_id = schedule.internal_id if hasattr(schedule, 'internal_id') else None
+        
         # Якщо половина дня відпустки і немає YaWare даних - все одно створюємо запис
         # (можливо людина взяла відпустку на другу половину дня і не працювала)
         record = AttendanceRecord(
             record_date=target_date,
+            internal_user_id=internal_user_id,
             user_id=schedule.user_id,
             user_name=schedule.name,
             user_email=schedule.email,
@@ -338,8 +346,13 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
                 continue
             if schedule.email and schedule.email.lower() in leaves_reason:
                 continue
+            
+            # Отримуємо internal_id зі schedule
+            internal_user_id = schedule.internal_id if hasattr(schedule, 'internal_id') else None
+            
             record = AttendanceRecord(
                 record_date=target_date,
+                internal_user_id=internal_user_id,
                 user_id=schedule.user_id,
                 user_name=schedule.name,
                 user_email=schedule.email,

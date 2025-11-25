@@ -315,7 +315,7 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         record = AttendanceRecord(
             record_date=target_date,
             internal_user_id=internal_user_id,
-            user_id=schedule.user_id,
+            user_id=schedule.user_id or schedule.email,
             user_name=schedule.name,
             user_email=schedule.email,
             project=schedule.project,
@@ -353,7 +353,7 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
             record = AttendanceRecord(
                 record_date=target_date,
                 internal_user_id=internal_user_id,
-                user_id=schedule.user_id,
+                user_id=schedule.user_id or schedule.email,
                 user_name=schedule.name,
                 user_email=schedule.email,
                 project=schedule.project,

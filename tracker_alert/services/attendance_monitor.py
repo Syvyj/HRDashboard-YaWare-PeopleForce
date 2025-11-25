@@ -45,6 +45,8 @@ class UserSchedule:
     control_manager: Optional[int] = None
     exclude_from_reports: bool = False
     note: Optional[str] = None
+    internal_id: Optional[int] = None
+    peopleforce_id: Optional[int] = None
 
 
 @dataclass
@@ -86,6 +88,20 @@ class AttendanceMonitor:
                     control_manager = int(control_manager)
                 except (TypeError, ValueError):
                     control_manager = None
+            
+            internal_id = user_data.get('internal_id')
+            if internal_id is not None:
+                try:
+                    internal_id = int(internal_id)
+                except (TypeError, ValueError):
+                    internal_id = None
+            
+            peopleforce_id = user_data.get('peopleforce_id')
+            if peopleforce_id is not None:
+                try:
+                    peopleforce_id = int(peopleforce_id)
+                except (TypeError, ValueError):
+                    peopleforce_id = None
 
             schedule = UserSchedule(
                 name=name,
@@ -98,7 +114,9 @@ class AttendanceMonitor:
                 team=user_data.get('team', '') or "",
                 control_manager=control_manager,
                 exclude_from_reports=user_data.get('exclude_from_reports', False),
-                note=user_data.get('note')
+                note=user_data.get('note'),
+                internal_id=internal_id,
+                peopleforce_id=peopleforce_id
             )
             
             # Фільтруємо виключених і нічні зміни

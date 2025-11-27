@@ -22,8 +22,8 @@ class AttendanceScheduler:
     """Scheduler for automated attendance reports."""
     
     REPORT_TIMEZONE = "Europe/Warsaw"
-    REPORT_TIME = time(9, 20)            # 09:20 Warsaw – основний звіт
-    MORNING_MESSAGE_TIME = time(9, 0)    # 09:00 Warsaw – ранкове нагадування
+    REPORT_TIME = time(10, 0)            # 10:00 Warsaw – основний звіт (після синків БД)
+    MORNING_MESSAGE_TIME = time(9, 20)   # 09:20 Warsaw – ранкове нагадування
     
     def __init__(self, bot):
         """Initialize scheduler.
@@ -121,9 +121,10 @@ class AttendanceScheduler:
                 return
             
             for chat_id in self.bot.admin_chat_ids:
-                reply_markup = InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("🌐 Открыть сайт", url=DASHBOARD_URL)]]
-                )
+                reply_markup = InlineKeyboardMarkup([
+                    [InlineKeyboardButton("🌐 Открыть сайт", url=DASHBOARD_URL)],
+                    [InlineKeyboardButton("📄 Сформировать отчет за сегодня", callback_data="report_today")]
+                ])
                 try:
                     await self.bot.application.bot.send_message(
                         chat_id=chat_id,

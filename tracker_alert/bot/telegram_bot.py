@@ -2,7 +2,7 @@
 import logging
 from typing import Optional, Dict, List
 from telegram import Update
-from telegram.ext import Application, CommandHandler
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
 from tracker_alert.config.settings import Settings
 
@@ -90,6 +90,7 @@ class AttendanceBot:
             help_command,
             status_command,
             report_today_command,
+            report_today_callback,
         )
         
         application = Application.builder().token(self.settings.telegram_bot_token).build()
@@ -97,6 +98,7 @@ class AttendanceBot:
         application.add_handler(CommandHandler("help", help_command))
         application.add_handler(CommandHandler("status", status_command))
         application.add_handler(CommandHandler("report_today", report_today_command))
+        application.add_handler(CallbackQueryHandler(report_today_callback, pattern="^report_today$"))
         
         application.bot_data['attendance_bot'] = self
         application.bot_data['admin_chat_ids'] = self.admin_chat_ids

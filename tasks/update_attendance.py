@@ -208,6 +208,9 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
 
     processed_ids = set()
     processed_emails = set()
+    
+    # Лічильник пропущених користувачів (показуються в адмін-панелі "Тільки в YaWare")
+    skipped_count = 0
 
     for entry in summary:
         user_id = str(entry.get('user_id', ''))
@@ -222,6 +225,12 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
 
         if not schedule and email:
             schedule = schedules_by_email.get(email)
+        
+        # ❌ КРИТИЧНО: Якщо користувача НЕМАЄ в нашій базі - пропускаємо!
+        if not schedule:
+            user_name = entry.get('user', '').split(',')[0].strip()
+            skipped_count += 1
+            continue  # Пропускаємо - НЕ ДОДАЄМО в БД автоматично!
 
         schedule_raw = entry.get('schedule')
         yaware_schedule = schedule_raw if isinstance(schedule_raw, dict) else {}
@@ -260,13 +269,13 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         record = AttendanceRecord(
             record_date=target_date,
             internal_user_id=internal_user_id,
-            user_id=user_id or email or entry.get('user', ''),
-            user_name=(schedule.name if schedule else entry.get('user', '').split(',')[0].strip()),
-            user_email=email or (schedule.email.lower() if schedule and schedule.email else None),
-            project=schedule.project if schedule else entry.get('group', ''),
-            department=schedule.department if schedule else '',
-            team=schedule.team if schedule else '',
-            location=schedule.location if schedule else '',
+            user_id=user_id or email,
+            user_name=schedule.name,
+            user_email=schedule.email.lower() if schedule.email else None,
+            project=schedule.project,
+            department=schedule.department,
+            team=schedule.team,
+            location=schedule.location,
             scheduled_start=scheduled_start,
             actual_start=actual_start,
             minutes_late=max(minutes_late, 0),
@@ -275,10 +284,10 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
             productive_minutes=productive,
             total_minutes=total_minutes or (non_productive + not_categorized + productive),
             status=status,
-            control_manager=schedule.control_manager if schedule else None,
+            control_manager=schedule.control_manager,
             leave_reason=leave_reason,
             half_day_amount=leave_amount,
-            notes=schedule.note if schedule else None
+            notes=schedule.note
         )
         
         # Якщо відпустка або за свій рахунок (не половина дня) - обнуляємо actual_start і productive час
@@ -389,6 +398,10 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
 
     db.session.commit()
     print(f"[INFO] Сохранено за {target_date}")
+    
+    # Статистика пропущених користувачів (показуються в адмін-панелі "Тільки в YaWare")
+    if skipped_count > 0:
+        print(f"[WARN] Пропущено {skipped_count} користувачів з YaWare (немає в нашій базі)")
 
 
 def main():

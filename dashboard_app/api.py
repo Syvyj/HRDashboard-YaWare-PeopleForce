@@ -1619,6 +1619,9 @@ def _get_filtered_items():
     ))
     records = query.order_by(AttendanceRecord.user_name.asc(), AttendanceRecord.record_date.asc()).all()
     
+    # Skip ignored users (із user_schedules.json)
+    records = [rec for rec in records if not _is_ignored_person(rec.user_name, rec.user_email)]
+    
     # Фільтрація по user_key (для множинного вибору співробітників)
     user_keys = request.args.getlist('user_key')
     if user_keys:

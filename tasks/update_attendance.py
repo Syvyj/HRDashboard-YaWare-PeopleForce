@@ -250,8 +250,8 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         if not schedule and email:
             schedule = schedules_by_email.get(email)
         
-        # ❌ КРИТИЧНО: Якщо користувача НЕМАЄ в нашій базі - пропускаємо!
-        if not schedule:
+        # ❌ КРИТИЧНО: Якщо користувача НЕМАЄ в нашій базі або він в ignored - пропускаємо!
+        if not schedule or getattr(schedule, 'ignored', False):
             user_name = entry.get('user', '').split(',')[0].strip()
             skipped_count += 1
             continue  # Пропускаємо - НЕ ДОДАЄМО в БД автоматично!

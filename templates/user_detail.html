@@ -211,11 +211,38 @@
 
       <div class="card shadow-sm mb-4">
         <div class="card-body">
+          <!-- Week navigation -->
+          <div
+            class="mb-3 d-flex justify-content-center align-items-center gap-3"
+          >
+            <button
+              type="button"
+              id="user-prev-week-btn"
+              class="btn btn-outline-primary"
+            >
+              <i class="bi bi-chevron-left"></i> Попередній тиждень
+            </button>
+            <button
+              type="button"
+              id="user-current-week-btn"
+              class="btn btn-primary"
+            >
+              Поточний тиждень
+            </button>
+            <button
+              type="button"
+              id="user-next-week-btn"
+              class="btn btn-outline-primary"
+            >
+              Наступний тиждень <i class="bi bi-chevron-right"></i>
+            </button>
+            <span id="user-week-display" class="ms-3 text-muted"></span>
+          </div>
+
           <div class="d-flex flex-wrap align-items-end gap-2 mb-3">
             <div>
-              <h5 class="card-title mb-1">В этом месяце:</h5>
               <span class="badge bg-secondary" id="records-count"
-                >0 записей</span
+                >0 записів</span
               >
             </div>
             <div class="d-flex flex-wrap align-items-end gap-2 ms-auto">

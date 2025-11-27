@@ -12,7 +12,7 @@ from urllib.parse import unquote
 from importlib import import_module
 import threading
 
-from flask import Blueprint, request, jsonify, send_file, abort, current_app
+from flask import Blueprint, request, jsonify, send_file, abort, current_app, g
 from flask_login import login_required, current_user
 from werkzeug.security import check_password_hash
 from sqlalchemy import or_
@@ -1157,23 +1157,28 @@ def _apply_filters(query):
     date_from = _parse_date(request.args.get('date_from'))
     date_to = _parse_date(request.args.get('date_to'))
     single_date = _parse_date(request.args.get('date'))
+    week_offset = request.args.get('week_offset', type=int, default=0)
 
     if single_date:
         query = query.filter(AttendanceRecord.record_date == single_date)
+        g.week_start = None  # No week context for single date
     else:
-        # Якщо дати не задані - показуємо останні 5 робочих днів
+        # Якщо дати не задані - показуємо тиждень з урахуванням offset
         if not date_from and not date_to:
             today = date.today()
-            # Шукаємо останні 5 робочих днів (пн-пт)
-            workdays = []
-            current_day = today
-            while len(workdays) < 5:
-                if current_day.weekday() < 5:  # 0-4 = пн-пт
-                    workdays.append(current_day)
-                current_day -= timedelta(days=1)
-            if workdays:
-                date_from = min(workdays)
-                date_to = max(workdays)
+            # Знаходимо понеділок поточного тижня
+            week_start = today - timedelta(days=today.weekday())  # 0 = понеділок
+            # Додаємо offset (в тижнях)
+            week_start = week_start + timedelta(weeks=week_offset)
+            # П'ятниця = понеділок + 4 дні (для 5/2)
+            # Для відображення включаємо також week_total записи (можуть бути в неділю для 24/7)
+            week_end = week_start + timedelta(days=6)  # Неділя
+            date_from = week_start
+            date_to = week_end
+            # Store week_start in flask.g for use in _build_items
+            g.week_start = week_start
+        else:
+            g.week_start = None  # Custom date range, no week context
         
         if date_from:
             query = query.filter(AttendanceRecord.record_date >= date_from)
@@ -1293,8 +1298,14 @@ def _build_items(records):
         total_corrected = 0
         has_corrected = False
         notes_aggregated = []
+        week_total_from_db = None
 
         for rec in recs:
+            # Check if this is a week_total record from database
+            if rec.record_type == 'week_total':
+                week_total_from_db = rec
+                continue
+            
             if rec.record_date.weekday() >= 5 and not include_weekends:
                 continue
             rec_schedule = get_user_schedule(rec.user_name) or get_user_schedule(rec.user_id) or {}
@@ -1373,19 +1384,29 @@ def _build_items(records):
         if not rows:
             continue
 
-        items.append({
-            'user_name': first.user_name,
-            'user_id': first.user_id,
-            'project': first_division,
-            'department': first_direction,
-            'team': first_team,
-            'location': location_display if location_display is not None else first.location,
-            'position': hierarchy_data.get('position', ''),
-            'telegram': hierarchy_data.get('telegram', ''),
-            'team_lead': hierarchy_data.get('team_lead', ''),
-            'plan_start': first.scheduled_start,
-            'rows': rows,
-            'week_total': {
+        # Use week_total from DB if exists, otherwise use calculated totals
+        if week_total_from_db:
+            week_total_data = {
+                'non_productive_minutes': week_total_from_db.non_productive_minutes or 0,
+                'non_productive_display': _minutes_to_str(week_total_from_db.non_productive_minutes or 0),
+                'non_productive_hm': _minutes_to_hm(week_total_from_db.non_productive_minutes or 0),
+                'not_categorized_minutes': week_total_from_db.not_categorized_minutes or 0,
+                'not_categorized_display': _minutes_to_str(week_total_from_db.not_categorized_minutes or 0),
+                'not_categorized_hm': _minutes_to_hm(week_total_from_db.not_categorized_minutes or 0),
+                'productive_minutes': week_total_from_db.productive_minutes or 0,
+                'productive_display': _minutes_to_str(week_total_from_db.productive_minutes or 0),
+                'productive_hm': _minutes_to_hm(week_total_from_db.productive_minutes or 0),
+                'total_minutes': week_total_from_db.total_minutes or 0,
+                'total_display': _minutes_to_str(week_total_from_db.total_minutes or 0),
+                'total_hm': _minutes_to_hm(week_total_from_db.total_minutes or 0),
+                'corrected_total_minutes': week_total_from_db.corrected_total_minutes,
+                'corrected_total_display': _minutes_to_str(week_total_from_db.corrected_total_minutes) if week_total_from_db.corrected_total_minutes is not None else '',
+                'corrected_total_hm': _minutes_to_hm(week_total_from_db.corrected_total_minutes) if week_total_from_db.corrected_total_minutes is not None else '',
+                'notes': week_total_from_db.notes or week_note,
+                'from_db': True
+            }
+        else:
+            week_total_data = {
                 'non_productive_minutes': total_non,
                 'non_productive_display': _minutes_to_str(total_non),
                 'non_productive_hm': _minutes_to_hm(total_non),
@@ -1401,8 +1422,24 @@ def _build_items(records):
                 'corrected_total_minutes': total_corrected if has_corrected else None,
                 'corrected_total_display': _minutes_to_str(total_corrected) if has_corrected else '',
                 'corrected_total_hm': _minutes_to_hm(total_corrected) if has_corrected else '',
-                'notes': week_note
+                'notes': week_note,
+                'from_db': False
             }
+
+        items.append({
+            'user_name': first.user_name,
+            'user_id': first.user_id,
+            'project': first_division,
+            'department': first_direction,
+            'team': first_team,
+            'location': location_display if location_display is not None else first.location,
+            'position': hierarchy_data.get('position', ''),
+            'telegram': hierarchy_data.get('telegram', ''),
+            'team_lead': hierarchy_data.get('team_lead', ''),
+            'plan_start': first.scheduled_start,
+            'rows': rows,
+            'week_total': week_total_data,
+            'week_start': g.get('week_start').isoformat() if g.get('week_start') else None
         })
 
     items.sort(key=lambda item: item['user_name'])
@@ -1503,7 +1540,12 @@ def _get_schedule_filters(selected: dict[str, str] | None = None) -> dict[str, d
 
 
 def _get_filtered_items():
+    # Filter only daily records (exclude week_total)
     query = _apply_filters(AttendanceRecord.query)
+    query = query.filter(or_(
+        AttendanceRecord.record_type == 'daily',
+        AttendanceRecord.record_type.is_(None)  # для старих записів без record_type
+    ))
     records = query.order_by(AttendanceRecord.user_name.asc(), AttendanceRecord.record_date.asc()).all()
     
     # Фільтрація по user_key (для множинного вибору співробітників)
@@ -3017,10 +3059,107 @@ def _collect_recent_records(records: list[AttendanceRecord], start: date | None,
         filtered = [rec for rec in filtered if rec.record_date >= start]
     if end:
         filtered = [rec for rec in filtered if rec.record_date <= end]
-    filtered.sort(key=lambda rec: rec.record_date, reverse=True)
+    
+    # Separate daily records from week_total - EXACTLY like _build_items()
+    daily_records = []
+    week_total_from_db = None
+    
+    for rec in filtered:
+        # Check if this is a week_total record from database
+        if rec.record_type == 'week_total':
+            week_total_from_db = rec
+            continue
+        daily_records.append(rec)
+    
+    # Don't filter weekends or limit records when date range is specified
     if not start and not end:
-        filtered = [rec for rec in filtered if rec.record_date.weekday() < 5][:5]
-    return [_serialize_attendance_record(rec) for rec in filtered]
+        daily_records = [rec for rec in daily_records if rec.record_date.weekday() < 5][:5]
+    
+    # Sort daily records by date ASCENDING (Monday -> Friday)
+    daily_records.sort(key=lambda rec: rec.record_date, reverse=False)
+    result = [_serialize_attendance_record(rec) for rec in daily_records]
+    
+    # Add week_total: COPY EXACT LOGIC FROM _build_items()
+    if start and end and daily_records:
+        # Calculate totals from daily records
+        total_non = sum(rec.non_productive_minutes or 0 for rec in daily_records)
+        total_not = sum(rec.not_categorized_minutes or 0 for rec in daily_records)
+        total_prod = sum(rec.productive_minutes or 0 for rec in daily_records)
+        total_total = sum((rec.not_categorized_minutes or 0) + (rec.productive_minutes or 0) for rec in daily_records)
+        total_corrected = sum(rec.corrected_total_minutes or 0 for rec in daily_records if rec.corrected_total_minutes is not None)
+        has_corrected = any(rec.corrected_total_minutes is not None for rec in daily_records)
+        
+        # Get week notes - same as _build_items()
+        week_notes_file = os.path.join(current_app.instance_path, 'week_notes.json')
+        week_notes = {}
+        if os.path.exists(week_notes_file):
+            try:
+                with open(week_notes_file, 'r', encoding='utf-8') as f:
+                    week_notes = json.load(f)
+            except:
+                pass
+        
+        # Get week start
+        week_start = daily_records[0].record_date
+        days_since_monday = week_start.weekday()
+        week_start = week_start - timedelta(days=days_since_monday)
+        week_start_str = week_start.isoformat()
+        
+        # Get week note
+        first_rec = daily_records[0]
+        user_key = first_rec.user_email or first_rec.user_id or first_rec.user_name
+        note_key = f"{user_key}_{week_start_str}"
+        week_note = week_notes.get(note_key, '')
+        
+        # Use week_total from DB if exists, otherwise use calculated totals - EXACT SAME LOGIC
+        if week_total_from_db:
+            week_total_data = {
+                'record_type': 'week_total',
+                'record_date': week_total_from_db.record_date.isoformat(),
+                'non_productive_minutes': week_total_from_db.non_productive_minutes or 0,
+                'non_productive_display': _minutes_to_str(week_total_from_db.non_productive_minutes or 0),
+                'non_productive_hm': _minutes_to_hm(week_total_from_db.non_productive_minutes or 0),
+                'not_categorized_minutes': week_total_from_db.not_categorized_minutes or 0,
+                'not_categorized_display': _minutes_to_str(week_total_from_db.not_categorized_minutes or 0),
+                'not_categorized_hm': _minutes_to_hm(week_total_from_db.not_categorized_minutes or 0),
+                'productive_minutes': week_total_from_db.productive_minutes or 0,
+                'productive_display': _minutes_to_str(week_total_from_db.productive_minutes or 0),
+                'productive_hm': _minutes_to_hm(week_total_from_db.productive_minutes or 0),
+                'total_minutes': week_total_from_db.total_minutes or 0,
+                'total_display': _minutes_to_str(week_total_from_db.total_minutes or 0),
+                'total_hm': _minutes_to_hm(week_total_from_db.total_minutes or 0),
+                'corrected_total_minutes': week_total_from_db.corrected_total_minutes,
+                'corrected_total_display': _minutes_to_str(week_total_from_db.corrected_total_minutes) if week_total_from_db.corrected_total_minutes is not None else '',
+                'corrected_total_hm': _minutes_to_hm(week_total_from_db.corrected_total_minutes) if week_total_from_db.corrected_total_minutes is not None else '',
+                'notes': week_total_from_db.notes or week_note,
+                'from_db': True
+            }
+        else:
+            week_total_data = {
+                'record_type': 'week_total',
+                'record_date': None,  # Will not be displayed, just for structure
+                'non_productive_minutes': total_non,
+                'non_productive_display': _minutes_to_str(total_non),
+                'non_productive_hm': _minutes_to_hm(total_non),
+                'not_categorized_minutes': total_not,
+                'not_categorized_display': _minutes_to_str(total_not),
+                'not_categorized_hm': _minutes_to_hm(total_not),
+                'productive_minutes': total_prod,
+                'productive_display': _minutes_to_str(total_prod),
+                'productive_hm': _minutes_to_hm(total_prod),
+                'total_minutes': total_total,
+                'total_display': _minutes_to_str(total_total),
+                'total_hm': _minutes_to_hm(total_total),
+                'corrected_total_minutes': total_corrected if has_corrected else None,
+                'corrected_total_display': _minutes_to_str(total_corrected) if has_corrected else '',
+                'corrected_total_hm': _minutes_to_hm(total_corrected) if has_corrected else '',
+                'notes': week_note,
+                'from_db': False
+            }
+        
+        result.append(week_total_data)
+    
+    return result
 
 
 def _build_week_lateness(records: list[AttendanceRecord]) -> dict:
@@ -3097,13 +3236,16 @@ def _serialize_profile(schedule: dict | None, record: AttendanceRecord | None) -
 @login_required
 def api_user_detail(user_key: str):
     base_query = _apply_filters(AttendanceRecord.query)
-    date_from = _parse_date(request.args.get('date_from'))
-    date_to = _parse_date(request.args.get('date_to'))
+    # Use week_start from g if available (set by _apply_filters with week_offset)
+    if hasattr(g, 'week_start') and g.week_start:
+        date_from = g.week_start
+        date_to = g.week_start + timedelta(days=6)
+    else:
+        date_from = _parse_date(request.args.get('date_from'))
+        date_to = _parse_date(request.args.get('date_to'))
+    
     query, normalized_key = _apply_user_key_filter(base_query, user_key)
-    if date_from:
-        query = query.filter(AttendanceRecord.record_date >= date_from)
-    if date_to:
-        query = query.filter(AttendanceRecord.record_date <= date_to)
+    # Don't re-filter by date - already done in _apply_filters
     records = query.order_by(AttendanceRecord.record_date.asc()).all()
 
     schedule = _load_user_schedule_variants(normalized_key, records)
@@ -4490,11 +4632,17 @@ def week_notes():
     try:
         payload = request.get_json(silent=True) or {}
         user_key = payload.get('user_key', '').strip()
-        week_start = payload.get('week_start', '').strip()
+        week_start_str = payload.get('week_start', '').strip()
         notes = payload.get('notes', '').strip()
         
-        if not user_key or not week_start:
+        if not user_key or not week_start_str:
             return jsonify({'error': 'user_key and week_start required'}), 400
+        
+        # Parse week_start date
+        try:
+            week_start = datetime.strptime(week_start_str, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({'error': 'Invalid week_start format'}), 400
         
         # Load existing notes
         all_notes = {}
@@ -4503,19 +4651,133 @@ def week_notes():
                 all_notes = json.load(f)
         
         # Create key: user_key_week_start
-        note_key = f"{user_key}_{week_start}"
+        note_key = f"{user_key}_{week_start_str}"
         
-        # Update notes
+        # Update notes in JSON file
         if notes:
             all_notes[note_key] = notes
         elif note_key in all_notes:
-            # Delete if empty
             del all_notes[note_key]
         
-        # Save back
         os.makedirs(current_app.instance_path, exist_ok=True)
         with open(notes_file, 'w', encoding='utf-8') as f:
             json.dump(all_notes, f, ensure_ascii=False, indent=2)
+        
+        # Create/update Week Total record in database
+        # Get user's schedule to determine if 24/7
+        schedule = get_user_schedule(user_key)
+        peopleforce_id = None
+        if schedule:
+            peopleforce_id = schedule.get('peopleforce_id')
+        if not peopleforce_id:
+            peopleforce_id = _get_peopleforce_id_for_user(user_key)
+        
+        include_weekends = False
+        try:
+            include_weekends = int(peopleforce_id) in SEVEN_DAY_WORK_WEEK_IDS if peopleforce_id else False
+        except (TypeError, ValueError):
+            pass
+        
+        # Calculate week_total date - use Saturday (always weekend for 5/2) or Monday of next week (for 24/7)
+        # This avoids conflicts with daily records
+        week_total_date = week_start + timedelta(days=5 if not include_weekends else 7)  # Saturday for 5/2, next Monday for 24/7
+        week_end = week_start + timedelta(days=6 if include_weekends else 4)  # For filtering daily records
+        
+        # Get all records for this user for this week
+        week_records = AttendanceRecord.query.filter(
+            AttendanceRecord.record_date >= week_start,
+            AttendanceRecord.record_date <= week_end,
+            or_(
+                AttendanceRecord.record_type == 'daily',
+                AttendanceRecord.record_type.is_(None)
+            )
+        ).filter(
+            or_(
+                AttendanceRecord.user_email == user_key,
+                AttendanceRecord.user_id == user_key,
+                AttendanceRecord.user_name == user_key
+            )
+        ).all()
+        
+        # Calculate totals
+        total_minutes_late = 0
+        total_non_productive = 0
+        total_not_categorized = 0
+        total_productive = 0
+        total_minutes = 0
+        total_corrected = 0
+        has_corrected = False
+        
+        first_record = None
+        for rec in week_records:
+            if not first_record:
+                first_record = rec
+            
+            # Skip weekends for non-24/7 users
+            if not include_weekends and rec.record_date.weekday() >= 5:
+                continue
+            
+            total_minutes_late += rec.minutes_late or 0
+            total_non_productive += rec.non_productive_minutes or 0
+            total_not_categorized += rec.not_categorized_minutes or 0
+            total_productive += rec.productive_minutes or 0
+            total_minutes += (rec.not_categorized_minutes or 0) + (rec.productive_minutes or 0)
+            
+            if rec.corrected_total_minutes is not None:
+                total_corrected += rec.corrected_total_minutes
+                has_corrected = True
+        
+        # Find or create week_total record (only if we have records for this week)
+        if first_record:
+            week_total_record = AttendanceRecord.query.filter(
+                AttendanceRecord.record_date == week_total_date,
+                AttendanceRecord.record_type == 'week_total'
+            ).filter(
+                or_(
+                    AttendanceRecord.user_email == user_key,
+                    AttendanceRecord.user_id == user_key,
+                    AttendanceRecord.user_name == user_key
+                )
+            ).first()
+            
+            if week_total_record:
+                # Update existing
+                week_total_record.minutes_late = total_minutes_late
+                week_total_record.non_productive_minutes = total_non_productive
+                week_total_record.not_categorized_minutes = total_not_categorized
+                week_total_record.productive_minutes = total_productive
+                week_total_record.total_minutes = total_minutes
+                week_total_record.corrected_total_minutes = total_corrected if has_corrected else None
+                week_total_record.notes = notes
+                week_total_record.control_manager = current_user.id if getattr(current_user, 'is_control_manager', False) else None
+            else:
+                # Create new based on first record of the week
+                week_total_record = AttendanceRecord(
+                    record_date=week_total_date,
+                    record_type='week_total',
+                    internal_user_id=first_record.internal_user_id,
+                    user_id=first_record.user_id,
+                    user_name=first_record.user_name,
+                    user_email=first_record.user_email,
+                    project=first_record.project,
+                    department=first_record.department,
+                    team=first_record.team,
+                    location=first_record.location,
+                    scheduled_start=None,
+                    actual_start=None,
+                    minutes_late=total_minutes_late,
+                    non_productive_minutes=total_non_productive,
+                    not_categorized_minutes=total_not_categorized,
+                    productive_minutes=total_productive,
+                    total_minutes=total_minutes,
+                    corrected_total_minutes=total_corrected if has_corrected else None,
+                    status='present',
+                    notes=notes,
+                    control_manager=current_user.id if getattr(current_user, 'is_control_manager', False) else None
+                )
+                db.session.add(week_total_record)
+            
+            db.session.commit()
         
         return jsonify({'success': True, 'notes': notes})
         

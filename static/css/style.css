@@ -2,7 +2,7 @@
   background: #fff;
   border: 1px solid #d0d0d0;
   border-radius: 18px;
-  padding: 2rem;
+  padding: 2rem 2rem 1rem 2rem;
 }
 
 .dashboard-card__header {
@@ -798,7 +798,6 @@
 #monthly-report-table .edit-notes-btn {
   flex-shrink: 0;
 }
-
 
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {

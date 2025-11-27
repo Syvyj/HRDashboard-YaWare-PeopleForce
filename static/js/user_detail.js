@@ -63,6 +63,13 @@
   const summaryMonthInput = document.getElementById('user-summary-month');
   const summaryRefreshBtn = document.getElementById('user-summary-refresh');
   const summaryContent = document.getElementById('user-monthly-summary-content');
+  
+  // Week navigation
+  let currentWeekOffset = 0;
+  const userPrevWeekBtn = document.getElementById('user-prev-week-btn');
+  const userCurrentWeekBtn = document.getElementById('user-current-week-btn');
+  const userNextWeekBtn = document.getElementById('user-next-week-btn');
+  const userWeekDisplay = document.getElementById('user-week-display');
 
   const formScheduledStart = document.getElementById('form-scheduled-start');
   const formActualStart = document.getElementById('form-actual-start');
@@ -280,9 +287,15 @@
   function renderRecords(records, canEdit, statusOptions) {
     currentStatusOptions = statusOptions || [];
     recordsBody.innerHTML = '';
-  recordsCountEl.textContent = `${records.length} записей`;
+    
+    // Separate daily records from week_total (unused, just to be compatible with data structure)
+    const dailyRecords = records.filter(r => !r.record_type || r.record_type === 'daily');
+    const weekTotalRecords = records.filter(r => r.record_type === 'week_total');
+    const weekTotal = weekTotalRecords.length > 0 ? weekTotalRecords[0] : null;
+    
+    recordsCountEl.textContent = `${dailyRecords.length} записів`;
 
-    if (!records.length) {
+    if (!dailyRecords.length && !weekTotal) {
       const row = document.createElement('tr');
       const cell = document.createElement('td');
       cell.colSpan = 10;
@@ -293,7 +306,7 @@
       return;
     }
 
-    records.forEach((record) => {
+    dailyRecords.forEach((record) => {
       const row = document.createElement('tr');
       row.appendChild(createCell(`${record.date_display}`));
       row.appendChild(createCell(record.scheduled_start_hm || record.scheduled_start || '—'));
@@ -318,6 +331,39 @@
 
       recordsBody.appendChild(row);
     });
+    
+    // Add week total row if exists
+    if (weekTotal) {
+      const row = document.createElement('tr');
+      row.style.backgroundColor = '#f8f9fa';
+      row.style.fontWeight = 'bold';
+      
+      const dateCell = document.createElement('td');
+      dateCell.textContent = 'Week total';
+      row.appendChild(dateCell);
+      
+      row.appendChild(createCell('—')); // Plan
+      row.appendChild(createCell('—')); // Fact
+      row.appendChild(createCell(weekTotal.non_productive_display || '00:00'));
+      row.appendChild(createCell(weekTotal.not_categorized_display || '00:00'));
+      row.appendChild(createCell(weekTotal.productive_display || '00:00'));
+      row.appendChild(createCell(weekTotal.total_display || '00:00'));
+      row.appendChild(createCell(weekTotal.corrected_total_display || ''));
+      row.appendChild(createNotesCell(weekTotal));
+      
+      const actions = document.createElement('td');
+      actions.className = 'text-center';
+      if (canEdit) {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-sm btn-outline-primary';
+        btn.innerHTML = '<i class="bi bi-pencil"></i>';
+        btn.addEventListener('click', () => openRecordModal(weekTotal));
+        actions.appendChild(btn);
+      }
+      row.appendChild(actions);
+      
+      recordsBody.appendChild(row);
+    }
   }
 
   function renderLateness(data) {
@@ -490,28 +536,50 @@
     recordModal.show();
   }
 
+  function getWeekDates(offset) {
+    const today = new Date();
+    const weekday = today.getDay(); // 0=Sun
+    const diffToMonday = weekday === 0 ? -6 : 1 - weekday;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diffToMonday + (offset * 7));
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    return { monday, sunday };
+  }
+  
+  function updateUserWeekDisplay() {
+    if (!userWeekDisplay) return;
+    
+    if (currentWeekOffset === 0) {
+      userWeekDisplay.textContent = '';
+    } else {
+      const { monday, sunday } = getWeekDates(currentWeekOffset);
+      const formatDate = (d) => `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()}`;
+      userWeekDisplay.textContent = `${formatDate(monday)} - ${formatDate(sunday)}`;
+    }
+  }
+  
+  function navigateUserWeek(offset) {
+    currentWeekOffset = offset;
+    // Clear date filters when navigating by weeks
+    if (dateFromInput) dateFromInput.value = '';
+    if (dateToInput) dateToInput.value = '';
+    updateUserWeekDisplay();
+    loadData();
+  }
+
   function buildRangeParams() {
     const params = new URLSearchParams();
     
-    // Якщо поля дат порожні, використовуємо поточний місяць
+    // Якщо поля дат порожні, використовуємо week_offset
     const hasDateFrom = dateFromInput && dateFromInput.value;
     const hasDateTo = dateToInput && dateToInput.value;
     
     if (!hasDateFrom && !hasDateTo) {
-      // За замовчуванням: з 1-го числа поточного місяця до сьогодні
-      const now = new Date();
-      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      
-      const formatDate = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-      
-      params.set('date_from', formatDate(firstDay));
-      params.set('date_to', formatDate(today));
+      // Use week_offset parameter
+      if (currentWeekOffset !== 0) {
+        params.set('week_offset', currentWeekOffset);
+      }
     } else {
       if (hasDateFrom) {
         params.set('date_from', dateFromInput.value);
@@ -754,6 +822,8 @@
 
   if (rangeApplyBtn) {
     rangeApplyBtn.addEventListener('click', () => {
+      currentWeekOffset = 0;
+      updateUserWeekDisplay();
       loadData();
     });
   }
@@ -766,8 +836,23 @@
       if (dateToInput) {
         dateToInput.value = '';
       }
+      currentWeekOffset = 0;
+      updateUserWeekDisplay();
       loadData();
     });
+  }
+  
+  // Week navigation event listeners
+  if (userPrevWeekBtn) {
+    userPrevWeekBtn.addEventListener('click', () => navigateUserWeek(currentWeekOffset - 1));
+  }
+  
+  if (userCurrentWeekBtn) {
+    userCurrentWeekBtn.addEventListener('click', () => navigateUserWeek(0));
+  }
+  
+  if (userNextWeekBtn) {
+    userNextWeekBtn.addEventListener('click', () => navigateUserWeek(currentWeekOffset + 1));
   }
 
   if (summaryRefreshBtn) {
@@ -963,6 +1048,9 @@
     bar.style.background = `linear-gradient(to right, #dc3545 0%, #dc3545 ${percentage}%, #28a745 ${percentage}%, #28a745 100%)`;
   }
 
+  // Initialize week display
+  updateUserWeekDisplay();
+  
   loadData();
   loadUserMonthlySummary();
   loadMonthlyStats();

@@ -95,6 +95,13 @@
   const userRecordsMap = new Map();
   const isAdmin = document.body.dataset.isAdmin === '1';
   const canEdit = document.body.dataset.canEdit === '1';
+  
+  // Week navigation
+  let currentWeekOffset = 0;
+  const prevWeekBtn = document.getElementById('prev-week-btn');
+  const currentWeekBtn = document.getElementById('current-week-btn');
+  const nextWeekBtn = document.getElementById('next-week-btn');
+  const weekDisplay = document.getElementById('week-display');
 
   function ensureDefaultWeekRange() {
     if (dateFromInput.value && dateToInput.value) {
@@ -142,7 +149,46 @@
     const dateFrom = dateFromInput ? dateFromInput.value : '';
     const dateTo = dateToInput ? dateToInput.value : '';
     const user = userInput ? userInput.value : '';
-    return buildFilterParams(dateFrom, dateTo, user, selectedFilters, selectedEmployees);
+    const params = buildFilterParams(dateFrom, dateTo, user, selectedFilters, selectedEmployees);
+    
+    // Add week_offset if no date filters are set and we're navigating weeks
+    if (!dateFrom && !dateTo && currentWeekOffset !== 0) {
+      params.set('week_offset', currentWeekOffset);
+    }
+    
+    return params;
+  }
+  
+  function getWeekDates(offset) {
+    const today = new Date();
+    const weekday = today.getDay(); // 0=Sun
+    const diffToMonday = weekday === 0 ? -6 : 1 - weekday;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diffToMonday + (offset * 7));
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+    return { monday, friday };
+  }
+  
+  function updateWeekDisplay() {
+    if (!weekDisplay) return;
+    
+    if (currentWeekOffset === 0) {
+      weekDisplay.textContent = '';
+    } else {
+      const { monday, friday } = getWeekDates(currentWeekOffset);
+      const formatDate = (d) => `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()}`;
+      weekDisplay.textContent = `${formatDate(monday)} - ${formatDate(friday)}`;
+    }
+  }
+  
+  function navigateWeek(offset) {
+    currentWeekOffset = offset;
+    // Clear date filters when navigating by weeks
+    if (dateFromInput) dateFromInput.value = '';
+    if (dateToInput) dateToInput.value = '';
+    updateWeekDisplay();
+    loadData();
   }
 
   function createCell(text, className) {
@@ -731,6 +777,19 @@
   if (resetBtn && !isMonthlyPage) {
     resetBtn.addEventListener('click', handleReset);
   }
+  
+  // Week navigation event listeners
+  if (prevWeekBtn && !isMonthlyPage) {
+    prevWeekBtn.addEventListener('click', () => navigateWeek(currentWeekOffset - 1));
+  }
+  
+  if (currentWeekBtn && !isMonthlyPage) {
+    currentWeekBtn.addEventListener('click', () => navigateWeek(0));
+  }
+  
+  if (nextWeekBtn && !isMonthlyPage) {
+    nextWeekBtn.addEventListener('click', () => navigateWeek(currentWeekOffset + 1));
+  }
 
   if (resetSecondaryBtn && !isMonthlyPage) {
     resetSecondaryBtn.addEventListener('click', handleReset);
@@ -1227,6 +1286,11 @@
         alert('Ошибка загрузки данных');
       }
     });
+  }
+  
+  // Initialize week display on page load
+  if (!isMonthlyPage) {
+    updateWeekDisplay();
   }
 
 })();

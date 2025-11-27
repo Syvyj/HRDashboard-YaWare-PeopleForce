@@ -60,6 +60,8 @@
         </div>
         <div class="dashboard-card__divider"></div>
         <div class="dashboard-card__body">
+          
+
           <form id="filters-form" class="row g-4 align-items-start">
             <div class="col-lg-4 col-md-6">
               <div class="filter-section">
@@ -152,6 +154,19 @@
               </div>
             </div>
           </form>
+          <!-- Week navigation -->
+          <div class="d-flex justify-content-start align-items-center gap-3" style="margin-top: 10px;">
+            <button type="button" id="prev-week-btn" class="btn btn-outline-primary">
+              <i class="bi bi-chevron-left"></i> Прошлая неделя
+            </button>
+            <button type="button" id="current-week-btn" class="btn btn-primary">
+              Текущая неделя
+            </button>
+            <button type="button" id="next-week-btn" class="btn btn-outline-primary">
+              Следующая неделя <i class="bi bi-chevron-right"></i>
+            </button>
+            <span id="week-display" class="ms-3 text-muted"></span>
+          </div>
         </div>
       </div>
 

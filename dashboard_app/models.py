@@ -56,6 +56,7 @@ class AttendanceRecord(db.Model):
     user_id = db.Column(db.String(64), nullable=False, index=True)
     user_name = db.Column(db.String(255), nullable=False)
     user_email = db.Column(db.String(255), nullable=True, index=True)
+    record_type = db.Column(db.String(16), nullable=True, default='daily', index=True)  # 'daily', 'week_total', 'leave', 'absent'
     project = db.Column(db.String(255), nullable=True)
     department = db.Column(db.String(255), nullable=True)
     team = db.Column(db.String(255), nullable=True)

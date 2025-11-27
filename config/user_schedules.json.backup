@@ -2,7 +2,7 @@
   "users": {
     "Abdurazzakov Abdulaziz": {
       "user_name": "Abdurazzakov Abdulaziz",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -18,20 +18,21 @@
       "telegram_username": "DesperatePain",
       "team_lead": "Оtdelnyi Andrey",
       "manager_telegram": "Otdelnyi_Andrey",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "AdEx Process Owner",
       "manager_name": "Оtdelnyi_Andrey",
       "location": "Remote Ukraine",
-      "unit": "RTB Team"
+      "unit": "RTB Team",
+      "internal_id": 100
     },
     "Artemchuk Dmytro": {
       "user_name": "Artemchuk Dmytro",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -44,12 +45,13 @@
       "team_lead": "Roshchyn Hlib",
       "manager_telegram": "Roshchyn_Hlib",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Assistant Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
       "location": "Remote Ukraine",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Native Team"
+      "unit": "MB Native & Tiktok Unit",
+      "team": "Native Team",
+      "internal_id": 101
     },
     "Bakumova Kseniya": {
       "user_name": "Bakumova Kseniya",
@@ -70,13 +72,14 @@
       "team_lead": "Kurylionak_Aliaksandr",
       "manager_telegram": "Kurylionak_Aliaksandr",
       "project": "Apps",
-      "unit": "IOS Unit"
+      "unit": "IOS Unit",
+      "internal_id": 102
     },
     "Balaban Iryna": {
       "user_name": "Balaban Iryna",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -91,15 +94,16 @@
       "team_lead": "Klimchenya Valeriy",
       "manager_telegram": "Popovych_Anton",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Team Lead Tik Tok",
       "manager_name": "Popovych_Anton",
-      "location": "Prague office",
-      "unit": "MB Facebook Unit"
+      "location": "Prague Office",
+      "unit": "MB Facebook Unit",
+      "internal_id": 103
     },
     "Balyunov Valentyn": {
       "user_name": "Balyunov Valentin",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales",
       "direction_id": 125473,
@@ -115,17 +119,18 @@
       "telegram_username": "Balyunov_Valentin",
       "team_lead": "Panasenko Natalya",
       "manager_telegram": "Panasenko_Natalya",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Chief Revenue Officer",
       "manager_name": "Panasenko_Natalya",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 104
     },
     "Bazdyrev Viktor": {
       "user_name": "Bazdyrev Viktor",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -140,12 +145,13 @@
       "team_lead": "Markovskyi Mykyta",
       "manager_telegram": "Markovskyi_Mykyta",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Markovskyi_Mykyta",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 2"
+      "team": "MB Facebook Team 2",
+      "internal_id": 105
     },
     "Belkevich Valentina": {
       "user_name": "Belkevich Valiantsina",
@@ -169,12 +175,13 @@
       "department": "Control & Compliance Direction",
       "position": "Control manager",
       "manager_name": "Kryvytska_Olena",
-      "location": "Remote other countries",
-      "unit": "Control Unit"
+      "location": "Remote Other Countries",
+      "unit": "Control Unit",
+      "internal_id": 106
     },
     "Berezhnoy Mykola": {
       "user_name": "Berezhnyi Mykola",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -190,13 +197,14 @@
       "telegram_username": "Berezhnoy_Mykola",
       "team_lead": "Tenditnik Roman",
       "manager_telegram": "adver_roma",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Demand Hunter Hot",
       "manager_name": "Tenditnik_Roman",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "Demand Unit",
-      "team": "Hunter Team"
+      "team": "Hunter Team",
+      "internal_id": 107
     },
     "Bondarenko Vladyslav": {
       "user_name": "Bondarenko Vladyslav",
@@ -220,13 +228,14 @@
       "position": "Creative manager",
       "manager_name": "Shersheriia_Heorhii",
       "location": "UA",
-      "unit": "Creative Unit"
+      "unit": "Creative Unit",
+      "internal_id": 108
     },
     "Bratchenko Anna": {
       "user_name": "Bratchenko Anna",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -241,11 +250,12 @@
       "team_lead": "Klimchenya Valeriy",
       "manager_telegram": "Klimchenya_Valeriy",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Team Lead Facebook 1",
       "manager_name": "Klimchenya_Valeriy",
-      "location": "Warsaw office",
-      "unit": "MB Facebook Unit"
+      "location": "Warsaw Office",
+      "unit": "MB Facebook Unit",
+      "internal_id": 109
     },
     "Budaev Ilya": {
       "user_name": "Budaev Ilya",
@@ -270,13 +280,14 @@
       "position": "Creative manager",
       "manager_name": "Romanovich_Alexey",
       "location": "Remote Ukraine",
-      "unit": "Creative Unit"
+      "unit": "Creative Unit",
+      "internal_id": 110
     },
     "Bushliakova Daria": {
       "user_name": "Bushliakova Daria",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -291,12 +302,13 @@
       "team_lead": "Rossina Tamara",
       "manager_telegram": "Bratchenko_Hanna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Bratchenko_Anna",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 1"
+      "team": "MB Facebook Team 1",
+      "internal_id": 111
     },
     "Bylchinskiy Ilya": {
       "user_name": "Bylchinskiy Ilya",
@@ -322,7 +334,8 @@
       "division_name": "Apps",
       "direction_name": "",
       "team_name": "Product Team",
-      "unit": "IOS Unit"
+      "unit": "IOS Unit",
+      "internal_id": 112
     },
     "Chernyakov Andrii": {
       "user_name": "Chernyakov Andrii",
@@ -347,13 +360,14 @@
       "position": "Technical Support Manager",
       "manager_name": "Tereshchenko_Kirill",
       "location": "Remote Ukraine",
-      "unit": "Product Operations Unit"
+      "unit": "Product Operations Unit",
+      "internal_id": 113
     },
     "Dedovich Elena": {
       "user_name": "Dziadovich Alena",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -368,22 +382,23 @@
       "team_lead": "Rossina Tamara",
       "manager_telegram": "Bratchenko_Hanna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Bratchenko_Anna",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 1"
+      "team": "MB Facebook Team 1",
+      "internal_id": 114
     },
     "Diakonov Dmytro": {
       "user_name": "Diakonov Dmitrii",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
-      "team_name": "Tik Tok Team",
+      "team_name": "TIK TOK Team",
       "team_id": 128018,
       "peopleforce_id": 557798,
       "email": "d.diakonov@evadav.com",
@@ -394,12 +409,19 @@
       "team_lead": "Balaban Iryna",
       "manager_telegram": "Balaban_Iryna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Tik Tok",
       "manager_name": "Balaban_Iryna",
-      "location": "Remote other countries",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Tik Tok Team"
+      "location": "Remote Other Countries",
+      "unit": "MB Native & Tiktok Unit",
+      "team": "TIK TOK Team",
+      "internal_id": 115,
+      "peopleforce_leave_status": "За свой счет",
+      "peopleforce_leave_amount": 1.0,
+      "peopleforce_leave_start": "2025-11-26",
+      "peopleforce_leave_end": "2025-11-26",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-26"
     },
     "Dmytrenko Anna": {
       "user_name": "Dmytrenko Anna",
@@ -423,11 +445,12 @@
       "department": "Finance Direction",
       "position": "Financial manager",
       "manager_name": "Maksymchuk_Tetiana",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 116
     },
     "Dubovytskyi  Denys": {
       "user_name": "Dubovytskyi Denys",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -443,16 +466,17 @@
       "telegram_username": "manager_dav_1",
       "team_lead": "Оtdelnyi Andrey",
       "manager_telegram": "Otdelnyi_Andrey",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "SSP manager",
       "manager_name": "Оtdelnyi_Andrey",
       "location": "Remote Ukraine",
-      "unit": "RTB Team"
+      "unit": "RTB Team",
+      "internal_id": 117
     },
     "Dupenko Valeria": {
       "user_name": "Dupenko Valeriia",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -468,15 +492,16 @@
       "telegram_username": "Dupenko_Valeriia",
       "team_lead": "Balyunov Valentin",
       "manager_telegram": "Balyunov_Valentin",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Head of Demand Unit",
       "manager_name": "Balyunov_Valentin",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 118
     },
     "Efimov Dmitrii": {
       "user_name": "Efimov Dmitrii",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": 125473,
@@ -492,21 +517,22 @@
       "telegram_username": "Efimov_Dmytrii",
       "team_lead": "Balyunov Valentin",
       "manager_telegram": "Balyunov_Valentin",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Deputy CRO",
       "manager_name": "Balyunov_Valentin",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 119
     },
     "Fedorenko Tetiana": {
       "user_name": "Fedorenko Tetiana",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
-      "team_name": "Tik Tok Team",
+      "team_name": "TIK TOK Team",
       "team_id": 128018,
       "peopleforce_id": 293121,
       "email": "t.fedorenko@evadav.com",
@@ -517,16 +543,17 @@
       "team_lead": "Balaban Iryna",
       "manager_telegram": "Balaban_Iryna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Tik Tok",
       "manager_name": "Balaban_Iryna",
-      "location": "Prague office",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Tik Tok Team"
+      "location": "Prague Office",
+      "unit": "MB Native & Tiktok Unit",
+      "team": "TIK TOK Team",
+      "internal_id": 120
     },
     "Fedorenko Yurii": {
       "user_name": "Fedorenko Yurii",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -542,23 +569,24 @@
       "telegram_username": "YuriiAMEvadav&nbsp;",
       "team_lead": "Rudenko Bogdan",
       "manager_telegram": "Bogdan_rudenko",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Account manager",
       "manager_name": "Rudenko_Bogdan",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "Demand Unit",
-      "team": "Demand Account Team"
+      "team": "Demand Account Team",
+      "internal_id": 121
     },
     "Fomenko Taras": {
       "user_name": "Fomenko Taras",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
-      "team_name": "Tik Tok Team",
+      "team_name": "TIK TOK Team",
       "team_id": 128018,
       "peopleforce_id": 558697,
       "email": "t.fomenko@evadav.com",
@@ -569,16 +597,17 @@
       "team_lead": "Balaban Iryna",
       "manager_telegram": "Balaban_Iryna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Tik Tok",
       "manager_name": "Balaban_Iryna",
-      "location": "Remote other countries",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Tik Tok Team"
+      "location": "Remote Other Countries",
+      "unit": "MB Native & Tiktok Unit",
+      "team": "TIK TOK Team",
+      "internal_id": 122
     },
     "Galeev Daniel": {
       "user_name": "Galeev Danil",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -594,21 +623,22 @@
       "telegram_username": "Galeev_Danil",
       "team_lead": "Rudenko Bogdan",
       "manager_telegram": "Bogdan_rudenko",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Account manager",
       "manager_name": "Rudenko_Bogdan",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "Demand Unit",
-      "team": "Demand Account Team"
+      "team": "Demand Account Team",
+      "internal_id": 123
     },
     "Gelman Amin": {
       "user_name": "Helman Amin",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -621,22 +651,23 @@
       "team_lead": "Popovych Anton",
       "manager_telegram": "Roshchyn_Hlib",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "_manual_overrides": {
         "start_time": true
       },
-      "unit": "MB Native & TikTok Unit"
+      "unit": "MB Native & Tiktok Unit",
+      "internal_id": 124
     },
     "Goloven Dmytro": {
       "user_name": "Goloven Dmitriy",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -649,9 +680,10 @@
       "team_lead": "Roshchyn_Hlib",
       "manager_telegram": "",
       "project": "Agency",
-      "department": "Media buying Direction",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Native Team"
+      "department": "Media Buying Direction",
+      "unit": "MB Native & Tiktok Unit",
+      "team": "Native Team",
+      "internal_id": 125
     },
     "Gramovich Ivan": {
       "user_name": "Gramovich Ivan",
@@ -675,9 +707,10 @@
       "department": "",
       "position": "Team Lead of Product Team",
       "manager_name": "Kurylionak_Aliaksandr",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "IOS Unit",
-      "team": ""
+      "team": "",
+      "internal_id": 126
     },
     "Harauskaya Maryia": {
       "user_name": "Harauskaya Maryia",
@@ -700,14 +733,9 @@
       "department": "Human Resources Direction",
       "position": "Chief Human Resources Officer",
       "manager_name": "Sluchevskyi_Gleb",
-      "location": "Warsaw office",
-      "peopleforce_leave_status": "Отпуск",
-      "peopleforce_leave_amount": 0.5,
-      "peopleforce_leave_start": "2025-11-24",
-      "peopleforce_leave_end": "2025-11-24",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-24",
-      "control_manager": 2
+      "location": "Warsaw Office",
+      "control_manager": 2,
+      "internal_id": 127
     },
     "Hiermiek Diana": {
       "user_name": "Hiermiek Diana",
@@ -731,7 +759,8 @@
       "department": "Human Resources Direction",
       "position": "HR Generalist",
       "manager_name": "Harauskaya_Maryia",
-      "location": "Warsaw office"
+      "location": "Warsaw Office",
+      "internal_id": 128
     },
     "Hlukhovskyi Dmytro": {
       "user_name": "Hlukhovskyi Dmytro",
@@ -756,13 +785,14 @@
       "position": "Creative manager",
       "manager_name": "Shersheriia_Heorhii",
       "location": "Remote Ukraine",
-      "unit": "Creative Unit"
+      "unit": "Creative Unit",
+      "internal_id": 129
     },
     "Honcharuk Maksym": {
       "user_name": "Honcharuk Maksym",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -777,12 +807,13 @@
       "team_lead": "Bratchenko Anna",
       "manager_telegram": "Bratchenko_Hanna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Bratchenko_Anna",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 1"
+      "team": "MB Facebook Team 1",
+      "internal_id": 130
     },
     "Hryvtsova Anastasiia": {
       "user_name": "Hryvtsova Anastasiia",
@@ -806,18 +837,19 @@
       "department": "Human Resources Direction",
       "position": "Recruiter",
       "manager_name": "Torianyk_Haiana",
-      "location": "Prague office",
-      "unit": "Recruitment Unit"
+      "location": "Prague Office",
+      "unit": "Recruitment Unit",
+      "internal_id": 131
     },
     "Hynkaliuk Yana": {
       "user_name": "Hynkaliuk Yana",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
-      "team_name": "Tik Tok Team",
+      "team_name": "TIK TOK Team",
       "team_id": 128018,
       "peopleforce_id": 409141,
       "email": "y.hynkaliuk@evadav.com",
@@ -828,16 +860,17 @@
       "team_lead": "Balaban Iryna",
       "manager_telegram": "Balaban_Iryna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Tik Tok",
       "manager_name": "Balaban_Iryna",
-      "location": "Prague office",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Tik Tok Team"
+      "location": "Prague Office",
+      "unit": "MB Native & Tiktok Unit",
+      "team": "TIK TOK Team",
+      "internal_id": 132
     },
     "Iliin Eugeniy": {
       "user_name": "Iliin Eugeniy",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -853,11 +886,12 @@
       "telegram_username": "Iliin_Eugeniy",
       "team_lead": "Balyunov Valentin",
       "manager_telegram": "Balyunov_Valentin",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Head of Support Team",
       "manager_name": "Balyunov_Valentin",
-      "location": "Remote Ukraine"
+      "location": "Remote Ukraine",
+      "internal_id": 133
     },
     "Ivashchenko Denys": {
       "user_name": "Ivashchenko Denys",
@@ -881,8 +915,9 @@
       "department": "IOS Unit",
       "position": "Web Integrator",
       "manager_name": "Kurylionak_Aliaksandr",
-      "location": "Prague office",
-      "unit": "IOS Unit"
+      "location": "Prague Office",
+      "unit": "IOS Unit",
+      "internal_id": 134
     },
     "Kalchenko Bohdana": {
       "user_name": "Kalchenko Bohdana",
@@ -906,11 +941,12 @@
       "department": "Finance Direction",
       "position": "Financial manager",
       "manager_name": "Maksymchuk_Tetiana",
-      "location": "Remote Ukraine"
+      "location": "Remote Ukraine",
+      "internal_id": 135
     },
     "Kantemir Pavlo": {
       "user_name": "Kantemir Pavlo",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Analyst Team",
       "direction_id": 125488,
@@ -926,17 +962,24 @@
       "telegram_username": "Kantemir_Pavlo",
       "team_lead": "Vorozheykin Oleksii",
       "manager_telegram": "Vorozheykin_Oleksii",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Analyst Team",
       "position": "Data Analyst",
       "manager_name": "Vorozheykin_Oleksii",
-      "location": "Remote Ukraine"
+      "location": "Remote Ukraine",
+      "internal_id": 136,
+      "peopleforce_leave_status": "За свой счет",
+      "peopleforce_leave_amount": 1.0,
+      "peopleforce_leave_start": "2025-11-26",
+      "peopleforce_leave_end": "2025-11-26",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-26"
     },
     "Kastyrin Artem": {
       "user_name": "Kastyrin Artem",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -951,12 +994,13 @@
       "team_lead": "Markovskyi Mykyta",
       "manager_telegram": "Markovskyi_Mykyta",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Markovskyi_Mykyta",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 2"
+      "team": "MB Facebook Team 2",
+      "internal_id": 137
     },
     "Katsiaryna Yarosh": {
       "user_name": "Yarosh Katsiaryna",
@@ -980,8 +1024,9 @@
       "department": "Control & Compliance Direction",
       "position": "Team Lead KLN Control Team",
       "manager_name": "Kryvytska_Olena",
-      "location": "Remote other countries",
-      "unit": "Control Unit"
+      "location": "Remote Other Countries",
+      "unit": "Control Unit",
+      "internal_id": 138
     },
     "Kazmirchuk Roman": {
       "user_name": "Kazmirchuk Roman",
@@ -1005,8 +1050,9 @@
       "department": "IOS Team",
       "position": "Team Lead IOS Team",
       "manager_name": "Kurylionak_Aliaksandr",
-      "location": "Remote other countries",
-      "unit": "IOS Unit"
+      "location": "Remote Other Countries",
+      "unit": "IOS Unit",
+      "internal_id": 139
     },
     "Khan Anna": {
       "user_name": "Khan Hanna",
@@ -1031,17 +1077,18 @@
       "position": "Recruiter",
       "manager_name": "Zhara_Lilia",
       "location": "Remote Ukraine",
-      "unit": "Recruitment Unit"
+      "unit": "Recruitment Unit",
+      "internal_id": 140
     },
     "Khominskiy Alexey": {
       "user_name": "Khominskii Aleksei",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
       "unit_name": "Traffic Unit",
       "unit_id": null,
-      "team_name": "Traffic Bizdev Team",
+      "team_name": "Traffic BizDev Team",
       "team_id": 127886,
       "peopleforce_id": 512436,
       "email": "a.khominskiy@evadav.com",
@@ -1051,25 +1098,20 @@
       "telegram_username": "Khominskiy_Alexey",
       "team_lead": "Sarkisov Moses",
       "manager_telegram": "Sarkisov_Moses",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Sales manager",
       "manager_name": "Sarkisov_Moses",
-      "location": "Remote other countries",
-      "peopleforce_leave_status": "Отпуск",
-      "peopleforce_leave_amount": 1.0,
-      "peopleforce_leave_start": "2025-11-24",
-      "peopleforce_leave_end": "2025-11-26",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-24",
+      "location": "Remote Other Countries",
       "unit": "Traffic Unit",
-      "team": "Traffic Bizdev Team"
+      "team": "Traffic BizDev Team",
+      "internal_id": 141
     },
     "Klimchenya Valery": {
       "user_name": "Klimchenya Valeriy",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": 126393,
@@ -1084,24 +1126,25 @@
       "team_lead": "Sluchevskyi Gleb",
       "manager_telegram": "gleb7315",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Head of Facebook Media Buying Unit",
       "manager_name": "Sluchevskyi_Gleb",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "_manual_overrides": {
         "start_time": true
       },
-      "unit": "MB Facebook Unit"
+      "unit": "MB Facebook Unit",
+      "internal_id": 142
     },
     "Koba Bogdan": {
       "user_name": "Koba Bogdan",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
-      "team_name": "Tik Tok Team",
+      "team_name": "TIK TOK Team",
       "team_id": 128018,
       "peopleforce_id": 559312,
       "email": "b.koba@evadav.com",
@@ -1112,12 +1155,13 @@
       "team_lead": "Balaban Iryna",
       "manager_telegram": "Balaban_Iryna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Tik Tok",
       "manager_name": "Balaban_Iryna",
-      "location": "Remote other countries",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Tik Tok Team"
+      "location": "Remote Other Countries",
+      "unit": "MB Native & Tiktok Unit",
+      "team": "TIK TOK Team",
+      "internal_id": 143
     },
     "Komarova Darina": {
       "user_name": "Komarova Daryna",
@@ -1141,14 +1185,15 @@
       "department": "Control & Compliance Direction",
       "position": "Control manager",
       "manager_name": "Kryvytska_Olena",
-      "location": "Remote other countries",
-      "unit": "Control Unit"
+      "location": "Remote Other Countries",
+      "unit": "Control Unit",
+      "internal_id": 144
     },
     "Kondras Maksym": {
       "user_name": "Kondras Maksym",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -1163,18 +1208,19 @@
       "team_lead": "Markovskyi Mykyta",
       "manager_telegram": "Markovskyi_Mykyta",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Markovskyi_Mykyta",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 2"
+      "team": "MB Facebook Team 2",
+      "internal_id": 145
     },
     "Koreshkova Valeryia": {
       "user_name": "Karashkova Valeryia",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -1189,16 +1235,17 @@
       "team_lead": "Markovskyi Mykyta",
       "manager_telegram": "Markovskyi_Mykyta",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Markovskyi_Mykyta",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 2"
+      "team": "MB Facebook Team 2",
+      "internal_id": 146
     },
     "Korobkov Daniil": {
       "user_name": "Korobkov Daniil",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -1214,21 +1261,22 @@
       "telegram_username": "Korobkov_Daniil",
       "team_lead": "Sokolov Mikhail",
       "manager_telegram": "mihail_tl",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "BizDev Manager",
       "manager_name": "Sokolov_Mikhail",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "Traffic Unit",
-      "team": "Lead BizDev Team"
+      "team": "Lead BizDev Team",
+      "internal_id": 147
     },
     "Koshchei Dariia": {
       "user_name": "Koshchei Dariia",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -1241,17 +1289,18 @@
       "team_lead": "Popovych Anton",
       "manager_telegram": "Roshchyn_Hlib",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
-      "location": "Remote other countries",
-      "unit": "MB Native & TikTok Unit"
+      "location": "Remote Other Countries",
+      "unit": "MB Native & Tiktok Unit",
+      "internal_id": 148
     },
     "Kostina Dariia": {
       "user_name": "Kostina Dariia",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
-      "direction_name": "R&D Unit AdNetwork",
+      "direction_name": "R&d Unit Adnetwork",
       "direction_id": null,
       "unit_name": "Qa Team",
       "unit_id": 128016,
@@ -1265,15 +1314,16 @@
       "telegram_username": "Daria_Kostina_Evadav",
       "team_lead": "Morkin Serhii",
       "manager_telegram": "sergey_morkin",
-      "project": "AdNetwork",
-      "department": "R&D Unit AdNetwork",
+      "project": "Adnetwork",
+      "department": "R&d Unit Adnetwork",
       "position": "Team Lead QA Engineer",
       "manager_name": "Morkin_Serhii",
-      "location": "Remote Ukraine"
+      "location": "Remote Ukraine",
+      "internal_id": 149
     },
     "Kozinskii Maksim": {
       "user_name": "Kozinskii Maksim",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -1289,13 +1339,20 @@
       "telegram_username": "Maksim_mbCPA",
       "team_lead": "Tuzman Mykhailo",
       "manager_telegram": "Mykhailo_mb_RT_TL",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Media Buyer",
       "manager_name": "Tuzman_Mykhailo",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "CPA Unit",
-      "team": "CPA Team"
+      "team": "CPA Team",
+      "internal_id": 150,
+      "peopleforce_leave_status": "Отпуск",
+      "peopleforce_leave_amount": 1.0,
+      "peopleforce_leave_start": "2025-11-26",
+      "peopleforce_leave_end": "2025-11-28",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-26"
     },
     "Kramareva Anastasiia": {
       "user_name": "Kramareva Anastasiia",
@@ -1319,7 +1376,8 @@
       "department": "Finance Direction",
       "position": "Financial manager",
       "manager_name": "Maksymchuk_Tetiana",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 151
     },
     "Kryvytska Olena": {
       "user_name": "Kryvytska Olena",
@@ -1341,15 +1399,16 @@
       "manager_telegram": "",
       "project": "Consulting",
       "department": "Control & Compliance Direction",
-      "unit": "Control Unit"
+      "unit": "Control Unit",
+      "internal_id": 152
     },
     "Kucher Diana": {
       "user_name": "Kucher Diana",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -1362,18 +1421,19 @@
       "team_lead": "Roshchyn Hlib",
       "manager_telegram": "Roshchyn_Hlib",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
       "location": "Remote Ukraine",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Native Team"
+      "unit": "MB Native & Tiktok Unit",
+      "team": "Native Team",
+      "internal_id": 153
     },
     "Kucherenko Anastasia": {
       "user_name": "Kucherenko Anastasia",
       "division_name": "Consulting",
       "division_id": 54877,
-      "direction_name": "Office team",
+      "direction_name": "Office Team",
       "direction_id": null,
       "unit_name": "KLN Control Team",
       "unit_id": 125492,
@@ -1388,15 +1448,16 @@
       "team_lead": "Yarosh Katsiaryna",
       "manager_telegram": "Yarosh_Katsiaryna",
       "project": "Consulting",
-      "department": "Office team",
+      "department": "Office Team",
       "position": "Control manager",
       "manager_name": "Yarosh_Katsiaryna",
       "location": "Remote Ukraine",
-      "unit": "KLN Control Team"
+      "unit": "KLN Control Team",
+      "internal_id": 154
     },
     "Kucherenko Nikita": {
       "user_name": "Kucherenko Nikita",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -1412,17 +1473,18 @@
       "telegram_username": "Kucherenko_Nikita",
       "team_lead": "Balyunov Valentin",
       "manager_telegram": "Balyunov_Valentin",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Team Lead BizDev",
       "manager_name": "Balyunov_Valentin",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 155
     },
     "Kunkevich Igor": {
       "user_name": "Kunkevich Ihar",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
-      "direction_name": "R&D Unit AdNetwork",
+      "direction_name": "R&d Unit Adnetwork",
       "direction_id": 125672,
       "unit_name": "",
       "unit_id": null,
@@ -1436,11 +1498,12 @@
       "telegram_username": "Kunkevich_Ihar",
       "team_lead": "Morkin Serhii",
       "manager_telegram": "sergey_morkin",
-      "project": "AdNetwork",
-      "department": "R&D Unit AdNetwork",
+      "project": "Adnetwork",
+      "department": "R&d Unit Adnetwork",
       "position": "PHP developer",
       "manager_name": "Morkin_Serhii",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 156
     },
     "Kurbanov Sergey": {
       "user_name": "Kurbanau Siarhei",
@@ -1464,9 +1527,10 @@
       "department": "IOS Team",
       "position": "iOS Developer",
       "manager_name": "Kazmirchuk_Roman",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "IOS Unit",
-      "team": "IOS Team"
+      "team": "IOS Team",
+      "internal_id": 157
     },
     "Kurylionak Aliaksandr": {
       "user_name": "Kurylionak Aliaksandr",
@@ -1490,7 +1554,8 @@
       "department": "IOS Unit",
       "position": "Head of IOS Unit",
       "manager_name": "Sidorov_Boris",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 158
     },
     "Kutkovskyi Mykhailo": {
       "user_name": "Kutkovskyi Mykhailo",
@@ -1498,7 +1563,7 @@
       "division_id": 54877,
       "direction_name": "Human Resources Direction",
       "direction_id": null,
-      "unit_name": "System admin Team",
+      "unit_name": "System Admin Team",
       "unit_id": 128351,
       "team_name": "",
       "team_id": null,
@@ -1514,12 +1579,13 @@
       "department": "Human Resources Direction",
       "position": "System administrator",
       "manager_name": "Ziuzin_Oleksii",
-      "location": "Prague office",
-      "unit": "System admin Team"
+      "location": "Prague Office",
+      "unit": "System Admin Team",
+      "internal_id": 159
     },
     "Larina Olena": {
       "user_name": "Larina Olena",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -1535,16 +1601,17 @@
       "telegram_username": "Larina_Olena",
       "team_lead": "Shpak Andriy",
       "manager_telegram": "Shpak_Andriy",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Moderation manager",
       "manager_name": "Shpak_Andriy",
       "location": "Remote Ukraine",
-      "unit": "Moderation Team"
+      "unit": "Moderation Team",
+      "internal_id": 160
     },
     "Latypov Alexander": {
       "user_name": "Latypov Alexander",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -1560,17 +1627,18 @@
       "telegram_username": "Latypov_Alexander",
       "team_lead": "Tuzman Mykhailo",
       "manager_telegram": "Mykhailo_mb_RT_TL",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Media Buyer",
       "manager_name": "Tuzman_Mykhailo",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "CPA Unit",
-      "team": "CPA Team"
+      "team": "CPA Team",
+      "internal_id": 161
     },
     "Lazarenko Maksim": {
       "user_name": "Lazarenko Maksim",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -1586,12 +1654,13 @@
       "telegram_username": "max_ssp",
       "team_lead": "Оtdelnyi Andrey",
       "manager_telegram": "Otdelnyi_Andrey",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "DSP Manager",
       "manager_name": "Оtdelnyi_Andrey",
       "location": "Remote Ukraine",
-      "unit": "RTB Team"
+      "unit": "RTB Team",
+      "internal_id": 162
     },
     "Lebid Anastasiia": {
       "user_name": "Lebid Anastasiia",
@@ -1615,17 +1684,18 @@
       "department": "Human Resources Direction",
       "position": "Head of HR Administration Unit",
       "manager_name": "Harauskaya_Maryia",
-      "location": "Warsaw office"
+      "location": "Warsaw Office",
+      "internal_id": 163
     },
     "Likhobaba Daniil": {
       "user_name": "Likhobaba Daniil",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
       "unit_name": "Traffic Unit",
       "unit_id": null,
-      "team_name": "Traffic Bizdev Team",
+      "team_name": "Traffic BizDev Team",
       "team_id": 127886,
       "peopleforce_id": 507549,
       "email": "d.likhobaba@evadav.com",
@@ -1635,13 +1705,14 @@
       "telegram_username": "Likhobaba_Daniil",
       "team_lead": "Sarkisov Moses",
       "manager_telegram": "Sarkisov_Moses",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Sales manager",
       "manager_name": "Sarkisov_Moses",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "Traffic Unit",
-      "team": "Traffic Bizdev Team"
+      "team": "Traffic BizDev Team",
+      "internal_id": 164
     },
     "Lukashov Vasyl": {
       "user_name": "Lukashov Vasyl",
@@ -1665,7 +1736,8 @@
       "department": "Finance Direction",
       "position": "Financial manager",
       "manager_name": "Maksymchuk_Tetiana",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 165
     },
     "Lysenko Serhii": {
       "user_name": "Lysenko Serhii",
@@ -1690,7 +1762,8 @@
       "position": "Creative manager",
       "manager_name": "Romanovich_Alexey",
       "location": "Remote Ukraine",
-      "unit": "Creative Unit"
+      "unit": "Creative Unit",
+      "internal_id": 166
     },
     "Machula Yulia": {
       "user_name": "Machula Yuliia",
@@ -1714,8 +1787,9 @@
       "department": "Human Resources Direction",
       "position": "L&D Manager",
       "manager_name": "Polishchuk_Kateryna",
-      "location": "Remote other countries",
-      "unit": "L&D Unit"
+      "location": "Remote Other Countries",
+      "unit": "L&D Unit",
+      "internal_id": 167
     },
     "Maksymchuk Tatiana": {
       "user_name": "Maksymchuk Tetiana",
@@ -1740,13 +1814,14 @@
       "position": "Head of Management Accounting Division",
       "manager_name": "Sluchevskyi_Gleb",
       "location": "Remote Ukraine",
-      "unit": "Management Accounting Unit"
+      "unit": "Management Accounting Unit",
+      "internal_id": 168
     },
     "Markovskyi Mykyta": {
       "user_name": "Markovskyi Mykyta",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -1761,11 +1836,12 @@
       "team_lead": "Klimchenya Valeriy",
       "manager_telegram": "Klimchenya_Valeriy",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Team Lead Facebook 2",
       "manager_name": "Klimchenya_Valeriy",
-      "location": "Warsaw office",
-      "unit": "MB Facebook Unit"
+      "location": "Warsaw Office",
+      "unit": "MB Facebook Unit",
+      "internal_id": 169
     },
     "Marsheva Veronika": {
       "user_name": "Marsheva Veronika",
@@ -1789,13 +1865,14 @@
       "department": "Marketing Direction",
       "position": "Content Specialist",
       "manager_name": "Yukhno_Leonid",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 170
     },
     "Mastystyi Valerii": {
       "user_name": "Mastystyy Valeriy",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -1810,18 +1887,25 @@
       "team_lead": "Markovskyi Mykyta",
       "manager_telegram": "Markovskyi_Mykyta",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Markovskyi_Mykyta",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 2"
+      "team": "MB Facebook Team 2",
+      "internal_id": 171,
+      "peopleforce_leave_status": "Отпуск",
+      "peopleforce_leave_amount": 1.0,
+      "peopleforce_leave_start": "2025-11-25",
+      "peopleforce_leave_end": "2025-11-28",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-26"
     },
     "Melnychenko Oleh": {
       "user_name": "Melnychenko Oleh",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -1836,12 +1920,13 @@
       "team_lead": "Bratchenko Anna",
       "manager_telegram": "Bratchenko_Hanna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Bratchenko_Anna",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 1"
+      "team": "MB Facebook Team 1",
+      "internal_id": 172
     },
     "Melnyk Iryna": {
       "user_name": "Melnyk Iryna",
@@ -1865,11 +1950,12 @@
       "department": "Control & Compliance Direction",
       "position": "Control manager",
       "manager_name": "Tkachenko_Oleksandra",
-      "location": "Remote Ukraine"
+      "location": "Remote Ukraine",
+      "internal_id": 173
     },
     "Murygin Nikolai": {
       "user_name": "Murygin Nikolai",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -1885,15 +1971,16 @@
       "telegram_username": "Murygin_Nikolai",
       "team_lead": "Dupenko_Valeriia",
       "manager_telegram": "Dupenko_Valeriia",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
-      "unit": "Demand Unit"
+      "unit": "Demand Unit",
+      "internal_id": 174
     },
     "Mushnin Yevhen": {
       "user_name": "Mushnin Yevhen",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -1908,20 +1995,21 @@
       "team_lead": "Kaulko Maksym",
       "manager_telegram": "Bratchenko_Hanna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Bratchenko_Anna",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 1"
+      "team": "MB Facebook Team 1",
+      "internal_id": 175
     },
     "Novak Darya": {
       "user_name": "Novak Darya",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -1934,18 +2022,19 @@
       "team_lead": "Roshchyn Hlib",
       "manager_telegram": "Roshchyn_Hlib",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
-      "location": "Remote other countries",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Native Team"
+      "location": "Remote Other Countries",
+      "unit": "MB Native & Tiktok Unit",
+      "team": "Native Team",
+      "internal_id": 176
     },
     "Novak Kiryl": {
       "user_name": "Novak Kiryl",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -1960,12 +2049,13 @@
       "team_lead": "Markovskyi Mykyta",
       "manager_telegram": "Markovskyi_Mykyta",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Markovskyi_Mykyta",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 2"
+      "team": "MB Facebook Team 2",
+      "internal_id": 177
     },
     "Oliinyk Veronika": {
       "user_name": "Oliinyk Veronika",
@@ -1989,8 +2079,9 @@
       "department": "Control & Compliance Direction",
       "position": "Control manager",
       "manager_name": "Kryvytska_Olena",
-      "location": "Remote other countries",
-      "unit": "Control Unit"
+      "location": "Remote Other Countries",
+      "unit": "Control Unit",
+      "internal_id": 178
     },
     "Osadtsa Dmitro": {
       "user_name": "Osadtsa Dmytro",
@@ -2020,11 +2111,12 @@
       "peopleforce_leave_start": "2025-11-24",
       "peopleforce_leave_end": "2025-11-28",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-24"
+      "peopleforce_leave_updated_at": "2025-11-26",
+      "internal_id": 179
     },
     "Panasenko Natalya": {
       "user_name": "Panasenko Natalya",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_id": 125450,
       "unit_id": null,
@@ -2037,10 +2129,11 @@
       "telegram_username": "Panasenko_Natalya",
       "team_lead": "Sluchevskyi Gleb",
       "manager_telegram": "gleb7315",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "position": "Chief Operating Officer AdNetwork",
       "manager_name": "Sluchevskyi_Gleb",
-      "location": "Remote"
+      "location": "Remote",
+      "internal_id": 180
     },
     "Pitukh Daryna": {
       "user_name": "Pitukh Daryna",
@@ -2064,8 +2157,9 @@
       "department": "Human Resources Direction",
       "position": "Recruiter",
       "manager_name": "Zhara_Lilia",
-      "location": "Prague office",
-      "unit": "Recruitment Unit"
+      "location": "Prague Office",
+      "unit": "Recruitment Unit",
+      "internal_id": 181
     },
     "Polishchuk Kateryna": {
       "user_name": "Polishchuk Kateryna",
@@ -2089,7 +2183,8 @@
       "department": "Human Resources Direction",
       "position": "Head of L&D Unit",
       "manager_name": "Harauskaya_Maryia",
-      "location": "Warsaw office"
+      "location": "Warsaw Office",
+      "internal_id": 182
     },
     "Ponomarenko Yevhen": {
       "user_name": "Ponomarenko Yevhen",
@@ -2097,7 +2192,7 @@
       "division_id": 54878,
       "direction_name": "",
       "direction_id": null,
-      "unit_name": "Media buying Unit",
+      "unit_name": "Media Buying Unit",
       "unit_id": 125469,
       "team_name": "",
       "team_id": null,
@@ -2113,12 +2208,13 @@
       "department": "Media buying Unit",
       "position": "Media Buyer Apps",
       "manager_name": "Ovcharenko_German",
-      "location": "Remote other countries",
-      "unit": "Media buying Unit"
+      "location": "Remote Other Countries",
+      "unit": "Media Buying Unit",
+      "internal_id": 183
     },
     "Postnikov Iurii": {
       "user_name": "Postnikov Iurii",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2134,23 +2230,24 @@
       "telegram_username": "Postnikov_Iurii",
       "team_lead": "Kucherenko Nikita",
       "manager_telegram": "Kucherenko_Nikita",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "BizDev Manager",
       "manager_name": "Kucherenko_Nikita",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "peopleforce_leave_status": "Отпуск",
       "peopleforce_leave_amount": 1.0,
       "peopleforce_leave_start": "2025-11-24",
       "peopleforce_leave_end": "2025-11-28",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-24",
+      "peopleforce_leave_updated_at": "2025-11-26",
       "unit": "CPA Unit",
-      "team": "BizDev Team"
+      "team": "BizDev Team",
+      "internal_id": 184
     },
     "Pryimak Artur": {
       "user_name": "Pryimak Artur",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2166,17 +2263,18 @@
       "telegram_username": "Pryimak_Artur",
       "team_lead": "Sokolov Mikhail",
       "manager_telegram": "mihail_tl",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "BizDev Manager",
       "manager_name": "Sokolov_Mikhail",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "Traffic Unit",
-      "team": "Lead BizDev Team"
+      "team": "Lead BizDev Team",
+      "internal_id": 185
     },
     "Prymak Yuliia": {
       "user_name": "Prymak Yuliia",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2192,13 +2290,14 @@
       "telegram_username": "Prymak_Yuliia",
       "team_lead": "Tuzman Mykhailo",
       "manager_telegram": "Mykhailo_mb_RT_TL",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Media Buyer",
       "manager_name": "Tuzman_Mykhailo",
       "location": "Remote Ukraine",
       "unit": "CPA Unit",
-      "team": "CPA Team"
+      "team": "CPA Team",
+      "internal_id": 186
     },
     "Romanovich Alexey": {
       "user_name": "Romanovich Alexey",
@@ -2222,16 +2321,17 @@
       "department": "Creative Team 1",
       "position": "Team Lead Creative Team 1",
       "manager_name": "Sidielnikova_Diana",
-      "location": "Remote other countries",
-      "unit": "Creative Unit"
+      "location": "Remote Other Countries",
+      "unit": "Creative Unit",
+      "internal_id": 187
     },
     "Roshchyn Hlib": {
       "user_name": "Roshchyn Hlib",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -2244,13 +2344,14 @@
       "team_lead": "Popovych_Anton",
       "manager_telegram": "",
       "project": "Agency",
-      "department": "Media buying Direction",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Native Team"
+      "department": "Media Buying Direction",
+      "unit": "MB Native & Tiktok Unit",
+      "team": "Native Team",
+      "internal_id": 188
     },
     "Ruban Mykyta": {
       "user_name": "Ruban Mykyta",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2266,15 +2367,16 @@
       "telegram_username": "Nikita_Ruban_Marketing",
       "team_lead": "Balyunov Valentin",
       "manager_telegram": "Balyunov_Valentin",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Performance Marketing Specialist",
       "manager_name": "Balyunov_Valentin",
-      "location": "Prague office"
+      "location": "Prague Office",
+      "internal_id": 189
     },
     "Rudenko Bogdan": {
       "user_name": "Rudenko Bogdan",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2290,12 +2392,13 @@
       "telegram_username": "Bogdan_rudenko",
       "team_lead": "Dupenko Valeriia",
       "manager_telegram": "Dupenko_Valeriia",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Team Lead Demand Account Team",
       "manager_name": "Dupenko_Valeriia",
-      "location": "Remote other countries",
-      "unit": "Demand Unit"
+      "location": "Remote Other Countries",
+      "unit": "Demand Unit",
+      "internal_id": 190
     },
     "Sankov Yurii": {
       "user_name": "Sankov Yurii",
@@ -2303,7 +2406,7 @@
       "division_id": 54878,
       "direction_name": "",
       "direction_id": null,
-      "unit_name": "Media buying Unit",
+      "unit_name": "Media Buying Unit",
       "unit_id": 125469,
       "team_name": "",
       "team_id": null,
@@ -2320,11 +2423,12 @@
       "position": "Media Buyer Apps",
       "manager_name": "Ovcharenko_German",
       "location": "Remote Ukraine",
-      "unit": "Media buying Unit"
+      "unit": "Media Buying Unit",
+      "internal_id": 191
     },
     "Sarkisov Moses": {
       "user_name": "Sarkisov Moses",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2340,20 +2444,21 @@
       "telegram_username": "Sarkisov_Moses",
       "team_lead": "Gyrych Maria",
       "manager_telegram": "Gyrych_Maria",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Team Lead Traffic Bizdev Team",
       "manager_name": "Gyrych_Maria",
-      "location": "Remote other countries",
-      "unit": "Traffic Unit"
+      "location": "Remote Other Countries",
+      "unit": "Traffic Unit",
+      "internal_id": 192
     },
     "Semeniakina Nadzeya": {
       "user_name": "Semeniakina Nadzeya",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -2366,17 +2471,18 @@
       "team_lead": "Popovych Anton",
       "manager_telegram": "Roshchyn_Hlib",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
-      "location": "Remote other countries",
-      "unit": "MB Native & TikTok Unit"
+      "location": "Remote Other Countries",
+      "unit": "MB Native & Tiktok Unit",
+      "internal_id": 193
     },
     "Serdiuk Alina": {
       "user_name": "Serdiuk Alina",
       "division_name": "Consulting",
       "division_id": 54877,
-      "direction_name": "Office team",
+      "direction_name": "Office Team",
       "direction_id": null,
       "unit_name": "Analytics Control Team",
       "unit_id": 125493,
@@ -2391,11 +2497,12 @@
       "team_lead": "Shkurai Marianna",
       "manager_telegram": "Shkurai_Marianna",
       "project": "Consulting",
-      "department": "Office team",
+      "department": "Office Team",
       "position": "Control manager",
       "manager_name": "Shkurai_Marianna",
-      "location": "Remote other countries",
-      "unit": "Analytics Control Team"
+      "location": "Remote Other Countries",
+      "unit": "Analytics Control Team",
+      "internal_id": 194
     },
     "Shersheriia Heorhii": {
       "user_name": "Shersheriia Heorhii",
@@ -2420,11 +2527,12 @@
       "position": "Team Lead Creative Team 2",
       "manager_name": "Sidielnikova_Diana",
       "location": "Remote Ukraine",
-      "unit": "Creative Unit"
+      "unit": "Creative Unit",
+      "internal_id": 195
     },
     "Shevchenko Igor": {
       "user_name": "Shevchenko Igor",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2440,13 +2548,14 @@
       "telegram_username": "Shevchenko_Ig0r",
       "team_lead": "Kucherenko Nikita",
       "manager_telegram": "Kucherenko_Nikita",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "BizDev Manager",
       "manager_name": "Kucherenko_Nikita",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "CPA Unit",
-      "team": "BizDev Team"
+      "team": "BizDev Team",
+      "internal_id": 196
     },
     "Shinkus Aleksandr": {
       "user_name": "Shinkuns Aleksandr",
@@ -2470,7 +2579,8 @@
       "department": "Marketing Direction",
       "position": "Community manager",
       "manager_name": "Yukhno_Leonid",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 197
     },
     "Shkurai Marianna": {
       "user_name": "Shkurai Marianna",
@@ -2494,8 +2604,9 @@
       "department": "Control & Compliance Direction",
       "position": "Team Lead Analytics Control Team",
       "manager_name": "Kryvytska_Olena",
-      "location": "Remote other countries",
-      "unit": "Control Unit"
+      "location": "Remote Other Countries",
+      "unit": "Control Unit",
+      "internal_id": 198
     },
     "Shota Artyom": {
       "user_name": "Shota Artyom",
@@ -2503,7 +2614,7 @@
       "division_id": 54878,
       "direction_name": "",
       "direction_id": null,
-      "unit_name": "Media buying Unit",
+      "unit_name": "Media Buying Unit",
       "unit_id": 125469,
       "team_name": "",
       "team_id": null,
@@ -2519,12 +2630,13 @@
       "department": "Media buying Unit",
       "position": "Team Lead Media Buyer SCAd",
       "manager_name": "Ovcharenko_German",
-      "location": "Remote other countries",
-      "unit": "Media buying Unit"
+      "location": "Remote Other Countries",
+      "unit": "Media Buying Unit",
+      "internal_id": 199
     },
     "Shpak Andrew": {
       "user_name": "Shpak Andriy",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2540,11 +2652,12 @@
       "telegram_username": "Shpak_Andriy",
       "team_lead": "Balyunov Valentin",
       "manager_telegram": "Balyunov_Valentin",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Team lead moderation team",
       "manager_name": "Balyunov_Valentin",
-      "location": "Remote Ukraine"
+      "location": "Remote Ukraine",
+      "internal_id": 200
     },
     "Shubska Oleksandra": {
       "user_name": "Shubska Oleksandra",
@@ -2569,12 +2682,7 @@
       "position": "Financial manager",
       "manager_name": "Maksymchuk_Tetiana",
       "location": "Remote Ukraine",
-      "peopleforce_leave_status": "Отпуск",
-      "peopleforce_leave_amount": 1.0,
-      "peopleforce_leave_start": "2025-11-24",
-      "peopleforce_leave_end": "2025-11-25",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-24"
+      "internal_id": 201
     },
     "Shustal  Valeria": {
       "user_name": "Shustal Valeryia",
@@ -2593,22 +2701,23 @@
       "manager_telegram": "Gramovich_Ivan",
       "position": "iOS Designer",
       "manager_name": "Gramovich_Ivan",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "project": "Apps",
       "team": "Product Team",
       "division_name": "Apps",
       "team_name": "Product Team",
-      "unit": "IOS Unit"
+      "unit": "IOS Unit",
+      "internal_id": 202
     },
     "Shykula Artur": {
       "user_name": "Shykula Artur",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
-      "team_name": "Tik Tok Team",
+      "team_name": "TIK TOK Team",
       "team_id": 128018,
       "peopleforce_id": 411141,
       "email": "a.shykula@evadav.com",
@@ -2619,12 +2728,13 @@
       "team_lead": "Balaban Iryna",
       "manager_telegram": "Balaban_Iryna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Tik Tok",
       "manager_name": "Balaban_Iryna",
-      "location": "Prague office",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Tik Tok Team"
+      "location": "Prague Office",
+      "unit": "MB Native & Tiktok Unit",
+      "team": "TIK TOK Team",
+      "internal_id": 203
     },
     "Sidielnikova Diana": {
       "user_name": "Sidielnikova Diana",
@@ -2645,11 +2755,12 @@
       "team_lead": "Sluchevskyi_Gleb",
       "manager_telegram": "",
       "project": "Agency",
-      "unit": "Creative Unit"
+      "unit": "Creative Unit",
+      "internal_id": 204
     },
     "Smirnov Sergey": {
       "user_name": "Smirnov Serhii",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2665,17 +2776,18 @@
       "telegram_username": "Smirnov_Serhiy",
       "team_lead": "Sokolov Mikhail",
       "manager_telegram": "mihail_tl",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "BizDev Manager",
       "manager_name": "Sokolov_Mikhail",
       "location": "Remote Ukraine",
       "unit": "Traffic Unit",
-      "team": "Lead BizDev Team"
+      "team": "Lead BizDev Team",
+      "internal_id": 205
     },
     "Sokolov Mikhail": {
       "user_name": "Sokolov Mikhail",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2691,12 +2803,13 @@
       "telegram_username": "mihail_tl",
       "team_lead": "Gyrych Maria",
       "manager_telegram": "Gyrych_Maria",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Team Lead BizDev Team",
       "manager_name": "Gyrych_Maria",
-      "location": "Remote other countries",
-      "unit": "Traffic Unit"
+      "location": "Remote Other Countries",
+      "unit": "Traffic Unit",
+      "internal_id": 206
     },
     "Stepanov Oleksandr": {
       "user_name": "Stepanov Oleksandr",
@@ -2720,11 +2833,12 @@
       "department": "Human Resources Direction",
       "position": "Head of C&B Unit",
       "manager_name": "Harauskaya_Maryia",
-      "location": "Remote Ukraine"
+      "location": "Remote Ukraine",
+      "internal_id": 207
     },
     "Stopochkin Nykyta": {
       "user_name": "Stopochkin Nykyta",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2740,7 +2854,7 @@
       "telegram_username": "Stopochkin_Nykyta",
       "team_lead": "Shpak Andriy",
       "manager_telegram": "Shpak_Andriy",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Moderation manager",
       "manager_name": "Shpak_Andriy",
@@ -2750,12 +2864,13 @@
       "peopleforce_leave_start": "2025-11-23",
       "peopleforce_leave_end": "2025-11-26",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-24",
-      "unit": "Moderation Team"
+      "peopleforce_leave_updated_at": "2025-11-26",
+      "unit": "Moderation Team",
+      "internal_id": 208
     },
     "Sukhanov Vlad": {
       "user_name": "Suhanov Vladislav",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Product Team",
       "direction_id": 125474,
@@ -2771,11 +2886,12 @@
       "telegram_username": "Vlad_EvaPM",
       "team_lead": "Panasenko Natalya",
       "manager_telegram": "Panasenko_Natalya",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Product Team",
       "position": "Chief Product Officer",
       "manager_name": "Panasenko_Natalya",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 209
     },
     "Tarasenko Polina": {
       "user_name": "Tarasenko Polina",
@@ -2799,8 +2915,9 @@
       "department": "Human Resources Direction",
       "position": "Recruitment Team Lead",
       "manager_name": "Zhara_Lilia",
-      "location": "Prague office",
-      "unit": "Recruitment Unit"
+      "location": "Prague Office",
+      "unit": "Recruitment Unit",
+      "internal_id": 210
     },
     "Tatarchenko Oleksii": {
       "user_name": "Tatarchenko Oleksii",
@@ -2824,13 +2941,14 @@
       "department": "IOS Team",
       "position": "iOS Developer",
       "manager_name": "Kazmirchuk_Roman",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "IOS Unit",
-      "team": "IOS Team"
+      "team": "IOS Team",
+      "internal_id": 211
     },
     "Tenditnik Roman": {
       "user_name": "Tenditnik Roman",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -2846,18 +2964,13 @@
       "telegram_username": "adver_roma",
       "team_lead": "Dupenko Valeriia",
       "manager_telegram": "Dupenko_Valeriia",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Team Lead Hunter Team",
       "manager_name": "Dupenko_Valeriia",
       "location": "Remote Ukraine",
-      "peopleforce_leave_status": "Отпуск",
-      "peopleforce_leave_amount": 1.0,
-      "peopleforce_leave_start": "2025-11-20",
-      "peopleforce_leave_end": "2025-11-24",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-24",
-      "unit": "Demand Unit"
+      "unit": "Demand Unit",
+      "internal_id": 212
     },
     "Tereshchenko Kirill": {
       "user_name": "Tereshchenko Kirill",
@@ -2881,8 +2994,9 @@
       "department": "Product Operations Unit",
       "position": "Head of Product Operations Unit",
       "manager_name": "Sluchevskyi_Gleb",
-      "location": "Prague office",
-      "unit": "Product Operations Unit"
+      "location": "Prague Office",
+      "unit": "Product Operations Unit",
+      "internal_id": 213
     },
     "Terletskaya Daria": {
       "user_name": "Terletska Daria",
@@ -2907,7 +3021,8 @@
       "position": "Recruiter",
       "manager_name": "Tarasenko_Polina",
       "location": "Remote Ukraine",
-      "unit": "Recruitment Unit"
+      "unit": "Recruitment Unit",
+      "internal_id": 214
     },
     "Torianyk Haiana": {
       "user_name": "Torianyk Haiana",
@@ -2931,14 +3046,15 @@
       "department": "Human Resources Direction",
       "position": "Recruitment Team Lead",
       "manager_name": "Zhara_Lilia",
-      "location": "Prague office",
-      "unit": "Recruitment Unit"
+      "location": "Prague Office",
+      "unit": "Recruitment Unit",
+      "internal_id": 215
     },
     "Unkovska Anna": {
       "user_name": "Unkovska Anna",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
-      "direction_name": "R&D Unit AdNetwork",
+      "direction_name": "R&d Unit Adnetwork",
       "direction_id": null,
       "unit_name": "Qa Team",
       "unit_id": 128016,
@@ -2952,11 +3068,12 @@
       "telegram_username": "Anna_QAEvadav",
       "team_lead": "Morkin Serhii",
       "manager_telegram": "sergey_morkin",
-      "project": "AdNetwork",
-      "department": "R&D Unit AdNetwork",
+      "project": "Adnetwork",
+      "department": "R&d Unit Adnetwork",
       "position": "QA Engineer",
       "manager_name": "Morkin_Serhii",
-      "location": "Remote Ukraine"
+      "location": "Remote Ukraine",
+      "internal_id": 216
     },
     "Usenko Roman": {
       "user_name": "Usenko Roman",
@@ -2964,7 +3081,7 @@
       "division_id": 54878,
       "direction_name": "",
       "direction_id": null,
-      "unit_name": "Media buying Unit",
+      "unit_name": "Media Buying Unit",
       "unit_id": 125469,
       "team_name": "",
       "team_id": null,
@@ -2977,7 +3094,8 @@
       "team_lead": "Ovcharenko_German",
       "manager_telegram": "",
       "project": "Apps",
-      "unit": "Media buying Unit"
+      "unit": "Media Buying Unit",
+      "internal_id": 217
     },
     "Varnavska Yuliia": {
       "user_name": "Varnavska Yuliia",
@@ -2998,11 +3116,12 @@
       "team_lead": "Sluchevskyi_Gleb",
       "manager_telegram": "",
       "project": "Consulting",
-      "department": "Legal Unit"
+      "department": "Legal Unit",
+      "internal_id": 218
     },
     "Vasilev Nikolai": {
       "user_name": "Vasilev Nikolai",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3018,13 +3137,14 @@
       "telegram_username": "Vasilev_Nikolaj",
       "team_lead": "Tuzman Mykhailo",
       "manager_telegram": "Mykhailo_mb_RT_TL",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Media Buyer",
       "manager_name": "Tuzman_Mykhailo",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "CPA Unit",
-      "team": "CPA Team"
+      "team": "CPA Team",
+      "internal_id": 219
     },
     "Vcherashniaya Aliaksandra": {
       "user_name": "Vcherashniaya Aliaksandra",
@@ -3048,8 +3168,9 @@
       "department": "Control & Compliance Direction",
       "position": "Control manager",
       "manager_name": "Kryvytska_Olena",
-      "location": "Remote other countries",
-      "unit": "Control Unit"
+      "location": "Remote Other Countries",
+      "unit": "Control Unit",
+      "internal_id": 220
     },
     "Vinogradov Oleg": {
       "user_name": "Vinogradov Oleg",
@@ -3057,7 +3178,7 @@
       "division_id": 54878,
       "direction_name": "",
       "direction_id": null,
-      "unit_name": "Media buying Unit",
+      "unit_name": "Media Buying Unit",
       "unit_id": 125469,
       "team_name": "",
       "team_id": null,
@@ -3073,14 +3194,15 @@
       "department": "Media buying Unit",
       "position": "Media Buyer Apps",
       "manager_name": "Ovcharenko_German",
-      "location": "Remote other countries",
-      "unit": "Media buying Unit"
+      "location": "Remote Other Countries",
+      "unit": "Media Buying Unit",
+      "internal_id": 221
     },
     "Vladyslav Taranov": {
       "user_name": "Taranov Vladyslav",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
       "unit_name": "MB Facebook Unit",
       "unit_id": null,
@@ -3095,16 +3217,17 @@
       "team_lead": "Rossina Tamara",
       "manager_telegram": "Bratchenko_Hanna",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Facebook",
       "manager_name": "Bratchenko_Anna",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
-      "team": "MB Facebook Team 1"
+      "team": "MB Facebook Team 1",
+      "internal_id": 222
     },
     "Vorozheykin Oleksii": {
       "user_name": "Vorozheykin Oleksii",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Analyst Team",
       "direction_id": 125488,
@@ -3120,15 +3243,16 @@
       "telegram_username": "Vorozheykin_Oleksii",
       "team_lead": "Panasenko Natalya",
       "manager_telegram": "Panasenko_Natalya",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Analyst Team",
       "position": "Head of Analyst Team",
       "manager_name": "Panasenko_Natalya",
-      "location": "Remote Ukraine"
+      "location": "Remote Ukraine",
+      "internal_id": 223
     },
     "Vykhodtseva Mariia": {
       "user_name": "Vykhodtseva Mariia",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3144,13 +3268,14 @@
       "telegram_username": "Vykhodtseva_Mariia",
       "team_lead": "Tenditnik Roman",
       "manager_telegram": "adver_roma",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Hunter Cold Manager",
       "manager_name": "Tenditnik_Roman",
       "location": "Remote Ukraine",
       "unit": "Demand Unit",
-      "team": "Hunter Team"
+      "team": "Hunter Team",
+      "internal_id": 224
     },
     "Yekhlakov Viktor": {
       "user_name": "Yekhlakov Viktor",
@@ -3174,9 +3299,10 @@
       "department": "IOS Team",
       "position": "iOS Developer",
       "manager_name": "Kazmirchuk_Roman",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "IOS Unit",
-      "team": "IOS Team"
+      "team": "IOS Team",
+      "internal_id": 225
     },
     "Yevtushenko Kyrylo": {
       "user_name": "Yevtushenko Kyrylo",
@@ -3206,8 +3332,9 @@
       "peopleforce_leave_start": "2025-11-22",
       "peopleforce_leave_end": "2025-11-30",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-24",
-      "unit": "Product Operations Unit"
+      "peopleforce_leave_updated_at": "2025-11-26",
+      "unit": "Product Operations Unit",
+      "internal_id": 226
     },
     "Yukhno Leonid": {
       "user_name": "Yukhno Leonid",
@@ -3227,7 +3354,8 @@
       "telegram_username": "Yukhno_Leonid",
       "team_lead": "Sluchevskyi_Gleb",
       "manager_telegram": "",
-      "project": "Consulting"
+      "project": "Consulting",
+      "internal_id": 227
     },
     "Yushkov Pavel": {
       "user_name": "Yushkov Pavel",
@@ -3251,8 +3379,9 @@
       "department": "Data Team",
       "position": "Data Engineer",
       "manager_name": "Kurylionak_Aliaksandr",
-      "location": "Remote other countries",
-      "unit": "IOS Unit"
+      "location": "Remote Other Countries",
+      "unit": "IOS Unit",
+      "internal_id": 228
     },
     "Zaprudskiy Sergey": {
       "user_name": "Zaprudskyi Serhii",
@@ -3273,11 +3402,12 @@
       "team_lead": "Tereshchenko_Kirill",
       "manager_telegram": "Tereshchenko_Kirill",
       "project": "Agency",
-      "unit": "Product Operations Unit"
+      "unit": "Product Operations Unit",
+      "internal_id": 229
     },
     "Zbutevich Illia": {
       "user_name": "Zbutevych Illia",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3293,12 +3423,13 @@
       "telegram_username": "Zbutevych_Illia",
       "team_lead": "Shpak Andriy",
       "manager_telegram": "Shpak_Andriy",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Moderation manager",
       "manager_name": "Shpak_Andriy",
       "location": "Remote Ukraine",
-      "unit": "Moderation Team"
+      "unit": "Moderation Team",
+      "internal_id": 230
     },
     "Zdorovets Yuliia": {
       "user_name": "Zdorovets Yuliia",
@@ -3322,7 +3453,8 @@
       "department": "Finance Direction",
       "position": "Financial manager",
       "manager_name": "Maksymchuk_Tetiana",
-      "location": "Remote Ukraine"
+      "location": "Remote Ukraine",
+      "internal_id": 231
     },
     "Zhara Lilia": {
       "user_name": "Zhara Lilia",
@@ -3346,7 +3478,8 @@
       "department": "Human Resources Direction",
       "position": "Head of Recruitment Division",
       "manager_name": "Harauskaya_Maryia",
-      "location": "Prague office"
+      "location": "Prague Office",
+      "internal_id": 232
     },
     "Ziuzin Oleksii": {
       "user_name": "Ziuzin Oleksii",
@@ -3370,7 +3503,8 @@
       "department": "Human Resources Direction",
       "position": "System Administration Team Lead",
       "manager_name": "Harauskaya_Maryia",
-      "location": "Warsaw office"
+      "location": "Warsaw Office",
+      "internal_id": 233
     },
     "Veranika Masiuk": {
       "user_name": "Masiuk Veranika",
@@ -3394,17 +3528,18 @@
       "department": "Human Resources Direction",
       "position": "Head of Corporate Culture Unit",
       "manager_name": "Harauskaya_Maryia",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 234
     },
     "Danyl Kolos": {
       "user_name": "Kolos Daniil",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": null,
       "direction_name": "Sales Direction",
       "direction_id": null,
       "unit_name": "Traffic Unit",
       "unit_id": 127886,
-      "team_name": "Traffic Bizdev Team",
+      "team_name": "Traffic BizDev Team",
       "team_id": 127886,
       "peopleforce_id": "513158",
       "email": "d.kolos@evadav.com",
@@ -3414,13 +3549,14 @@
       "telegram_username": "Kolos_Danyl",
       "team_lead": "Sarkisov Moses",
       "manager_telegram": "Sarkisov_Moses",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Sales manager",
       "manager_name": "Sarkisov_Moses",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "Traffic Unit",
-      "team": "Traffic Bizdev Team"
+      "team": "Traffic BizDev Team",
+      "internal_id": 235
     },
     "Dankova Tetiana": {
       "user_name": "Dankova Tetiana",
@@ -3445,15 +3581,16 @@
       "position": "Payroll Specialist",
       "manager_name": "Stepanov_Oleksandr",
       "location": "Remote Ukraine",
-      "unit": "C&B Unit"
+      "unit": "C&B Unit",
+      "internal_id": 236
     },
     "Anton Popovych": {
       "user_name": "Popovych Anton",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": 126394,
       "team_name": "",
       "team_id": null,
@@ -3466,12 +3603,13 @@
       "team_lead": "Sluchevskyi_Gleb",
       "manager_telegram": "",
       "project": "Agency",
-      "department": "Media buying Direction",
-      "unit": "MB Native & TikTok Unit"
+      "department": "Media Buying Direction",
+      "unit": "MB Native & Tiktok Unit",
+      "internal_id": 237
     },
     "Alina Dobrorodnia": {
       "user_name": "Dobrorodnia Alina",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": null,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3487,12 +3625,13 @@
       "telegram_username": "Alina_BizDevEva",
       "team_lead": "Gyrych Maria",
       "manager_telegram": "Gyrych_Maria",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Account manager",
       "manager_name": "Gyrych_Maria",
       "location": "Remote Ukraine",
-      "unit": "Traffic Unit"
+      "unit": "Traffic Unit",
+      "internal_id": 238
     },
     "Kotliarenko Alina": {
       "user_name": "Kotliarenko Alina",
@@ -3516,12 +3655,13 @@
       "department": "IOS Unit",
       "position": "QA Engineer",
       "manager_name": "Kurylionak_Aliaksandr",
-      "location": "Prague office",
-      "unit": "IOS Unit"
+      "location": "Prague Office",
+      "unit": "IOS Unit",
+      "internal_id": 239
     },
     "Kondakov Alexander": {
       "user_name": "Kondakov Alexander",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3537,21 +3677,22 @@
       "telegram_username": "Kondakov_Alexander",
       "team_lead": "Rudenko Bogdan",
       "manager_telegram": "Bogdan_rudenko",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Account manager",
       "manager_name": "Rudenko_Bogdan",
-      "location": "Remote other countries",
+      "location": "Remote Other Countries",
       "unit": "Demand Unit",
-      "team": "Demand Account Team"
+      "team": "Demand Account Team",
+      "internal_id": 240
     },
     "Ivasyshyn Oleksandr": {
       "user_name": "Ivasyshyn Oleksandr",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -3564,12 +3705,13 @@
       "team_lead": "Roshchyn Hlib",
       "manager_telegram": "Roshchyn_Hlib",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
-      "location": "Remote other countries",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Native Team"
+      "location": "Remote Other Countries",
+      "unit": "MB Native & Tiktok Unit",
+      "team": "Native Team",
+      "internal_id": 241
     },
     "Nikolaichuk Tamara": {
       "user_name": "Nikolaichuk Tamara",
@@ -3593,8 +3735,9 @@
       "department": "Human Resources Direction",
       "position": "SMM Specialist",
       "manager_name": "Masiuk_Veranika",
-      "location": "Warsaw office",
-      "unit": "Corporate Culture Unit"
+      "location": "Warsaw Office",
+      "unit": "Corporate Culture Unit",
+      "internal_id": 242
     },
     "Korobiy Vladislav": {
       "user_name": "Korobiy Vladislav",
@@ -3620,15 +3763,16 @@
       "manager_name": "Shersheriia_Heorhii",
       "location": "Remote Ukraine",
       "unit": "Creative Unit",
-      "team": "Creative Team 2"
+      "team": "Creative Team 2",
+      "internal_id": 243
     },
     "Cherneha Kateryna": {
       "user_name": "Cherneha Kateryna",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -3641,20 +3785,21 @@
       "team_lead": "Kucher Diana",
       "manager_telegram": "Kucher_Diana_1",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Assistant Media buyer Native",
       "manager_name": "Kucher_Diana",
       "location": "Remote Ukraine",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Native Team"
+      "unit": "MB Native & Tiktok Unit",
+      "team": "Native Team",
+      "internal_id": 244
     },
     "Kravets Olena": {
       "user_name": "Kravets Olena",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -3667,20 +3812,21 @@
       "team_lead": "Kucher Diana",
       "manager_telegram": "Kucher_Diana_1",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Assistant Media buyer Native",
       "manager_name": "Kucher_Diana",
       "location": "Remote Ukraine",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Native Team"
+      "unit": "MB Native & Tiktok Unit",
+      "team": "Native Team",
+      "internal_id": 245
     },
     "Zakharychev Fedir": {
       "user_name": "Zakharychev Fedir",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -3693,20 +3839,21 @@
       "team_lead": "Kucher Diana",
       "manager_telegram": "Kucher_Diana_1",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Assistant Media buyer Native",
       "manager_name": "Kucher_Diana",
       "location": "Remote Ukraine",
-      "unit": "MB Native & TikTok Unit",
-      "team": "Native Team"
+      "unit": "MB Native & Tiktok Unit",
+      "team": "Native Team",
+      "internal_id": 246
     },
     "Amir Kasimov": {
       "user_name": "Kasimov Amir",
       "division_name": "Agency",
       "division_id": 54879,
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "direction_id": null,
-      "unit_name": "MB Native & TikTok Unit",
+      "unit_name": "MB Native & Tiktok Unit",
       "unit_id": null,
       "team_name": "Native Team",
       "team_id": 128050,
@@ -3718,7 +3865,7 @@
       "team_lead": "Popovych Anton",
       "manager_telegram": "Roshchyn_Hlib",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "position": "Media buyer Native",
       "manager_name": "Roshchyn_Hlib",
       "team": "Native Team",
@@ -3726,11 +3873,12 @@
       "_manual_overrides": {
         "start_time": true
       },
-      "unit": "MB Native & TikTok Unit"
+      "unit": "MB Native & Tiktok Unit",
+      "internal_id": 247
     },
     "Andriy Pankov": {
       "user_name": "Pankov Andriy",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3745,16 +3893,23 @@
       "telegram_username": "Pankov_Andrii",
       "team_lead": "Shpak Andriy",
       "manager_telegram": "Shpak_Andriy",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Moderation manager",
       "manager_name": "Shpak_Andriy",
       "location": "Remote Ukraine",
-      "unit": "Moderation Team"
+      "unit": "Moderation Team",
+      "internal_id": 248,
+      "peopleforce_leave_status": "Отпуск",
+      "peopleforce_leave_amount": 1.0,
+      "peopleforce_leave_start": "2025-11-26",
+      "peopleforce_leave_end": "2025-11-26",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-26"
     },
     "Evhen  Kiliovyi": {
       "user_name": "Kiliovyi Evhen",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": null,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3769,16 +3924,17 @@
       "telegram_username": "Kiliovyi_Evhen",
       "team_lead": "Shpak Andriy",
       "manager_telegram": "Shpak_Andriy",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Moderation manager",
       "manager_name": "Shpak_Andriy",
       "location": "Remote Ukraine",
-      "unit": "Moderation Team"
+      "unit": "Moderation Team",
+      "internal_id": 249
     },
     "Alexandr Pankov": {
       "user_name": "Pankov Oleksandr",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3793,15 +3949,16 @@
       "telegram_username": "Pankov_Oleksandr",
       "team_lead": "Shpak Andriy",
       "manager_telegram": "Shpak_Andriy",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Moderation manager",
       "manager_name": "Shpak_Andriy",
-      "unit": "Moderation Team"
+      "unit": "Moderation Team",
+      "internal_id": 250
     },
     "Viktor Demidov": {
       "user_name": "Demidov Viktor",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3816,16 +3973,17 @@
       "telegram_username": "Demidov_Viktor",
       "team_lead": "Iliin Eugeniy",
       "manager_telegram": "Iliin_Eugeniy",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Support manager",
       "manager_name": "Iliin_Eugeniy",
       "location": "Remote Ukraine",
-      "unit": "Support Team"
+      "unit": "Support Team",
+      "internal_id": 251
     },
     "Leonid Chernov": {
       "user_name": "Chernov Leonid",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": 54880,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3840,15 +3998,22 @@
       "telegram_username": "Chernov_Leonid",
       "team_lead": "Iliin Eugeniy",
       "manager_telegram": "Iliin_Eugeniy",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Support manager",
       "manager_name": "Iliin_Eugeniy",
-      "unit": "Support Team"
+      "unit": "Support Team",
+      "internal_id": 252,
+      "peopleforce_leave_status": "Отпуск",
+      "peopleforce_leave_amount": 1.0,
+      "peopleforce_leave_start": "2025-11-25",
+      "peopleforce_leave_end": "2025-11-26",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-26"
     },
     "Andrey Otdelnyi": {
       "user_name": "Оtdelnyi Andrey",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": null,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3863,11 +4028,12 @@
       "telegram_username": "Otdelnyi_Andrey",
       "team_lead": "Balyunov Valentin",
       "manager_telegram": "Balyunov_Valentin",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Head of RTB Team",
       "manager_name": "Balyunov_Valentin",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 253
     },
     "Arseni Tatsyn": {
       "user_name": "Tatsyn Arseni",
@@ -3886,16 +4052,17 @@
       "position": "Media buyer Facebook",
       "manager_name": "Klimchenya_Valeriy",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "location": "Remote",
       "division_name": "Agency",
-      "direction_name": "Media buying Direction",
+      "direction_name": "Media Buying Direction",
       "unit": "MB Facebook Unit",
-      "unit_name": "MB Facebook Unit"
+      "unit_name": "MB Facebook Unit",
+      "internal_id": 254
     },
     "Gyrych Maria": {
       "user_name": "Gyrych Maria",
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "division_id": null,
       "direction_name": "Sales Direction",
       "direction_id": null,
@@ -3911,11 +4078,12 @@
       "telegram_username": "Gyrych_Maria",
       "team_lead": "Balyunov Valentin",
       "manager_telegram": "Balyunov_Valentin",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "position": "Head of Traffic Unit",
       "manager_name": "Balyunov_Valentin",
-      "location": "Remote other countries"
+      "location": "Remote Other Countries",
+      "internal_id": 255
     },
     "Ustsilka Natallia": {
       "user_name": "Ustsilka Natallia",
@@ -3939,14 +4107,15 @@
       "department": "Human Resources Direction",
       "position": "Talent Researcher",
       "manager_name": "Zhara_Lilia",
-      "location": "Remote other countries",
-      "unit": "Recruitment Unit"
+      "location": "Remote Other Countries",
+      "unit": "Recruitment Unit",
+      "internal_id": 256
     },
     "Brizhak Denis": {
       "user_name": "Brizhak Denis",
       "division_name": "Consulting",
       "division_id": null,
-      "direction_name": "Office team",
+      "direction_name": "Office Team",
       "direction_id": null,
       "unit_name": "Academy Team",
       "unit_id": null,
@@ -3963,9 +4132,10 @@
       "project": "Consulting",
       "position": "Trainee Media Buyer Native",
       "manager_name": "Machula_Yuliia",
-      "department": "Office team",
-      "location": "Czech Republic remote",
-      "unit": "Academy Team"
+      "department": "Office Team",
+      "location": "Czech Republic Remote",
+      "unit": "Academy Team",
+      "internal_id": 257
     },
     "Mykyta Kapulier": {
       "user_name": "Mykyta Kapulier",
@@ -3989,14 +4159,15 @@
       "position": "Trainee Media Buyer Native",
       "manager_name": "Machula_Yuliia",
       "department": "Human Resources Direction",
-      "location": "Czech Republic remote",
-      "unit": "L&D Unit"
+      "location": "Czech Republic Remote",
+      "unit": "L&D Unit",
+      "internal_id": 258
     },
     "Surzhykov Oleksandr": {
       "user_name": "Surzhykov Oleksandr",
       "division_name": "Consulting",
       "division_id": null,
-      "direction_name": "Office team",
+      "direction_name": "Office Team",
       "direction_id": null,
       "unit_name": "Academy Team",
       "unit_id": null,
@@ -4013,15 +4184,16 @@
       "project": "Consulting",
       "position": "Trainee Media Buyer Native",
       "manager_name": "Machula_Yuliia",
-      "department": "Office team",
-      "location": "Czech Republic remote",
-      "unit": "Academy Team"
+      "department": "Office Team",
+      "location": "Czech Republic Remote",
+      "unit": "Academy Team",
+      "internal_id": 259
     },
     "Vladymyr Ovchar": {
       "user_name": "Vladymyr Ovchar",
       "division_name": "Consulting",
       "division_id": null,
-      "direction_name": "Office team",
+      "direction_name": "Office Team",
       "direction_id": null,
       "unit_name": "Academy Team",
       "unit_id": null,
@@ -4038,15 +4210,16 @@
       "project": "Consulting",
       "position": "Trainee Media Buyer Native",
       "manager_name": "Machula_Yuliia",
-      "department": "Office team",
-      "location": "Czech Republic remote",
-      "unit": "Academy Team"
+      "department": "Office Team",
+      "location": "Czech Republic Remote",
+      "unit": "Academy Team",
+      "internal_id": 260
     },
     "Yavorskiy Sergey": {
       "user_name": "Yavorskiy Sergey",
       "division_name": "Consulting",
       "division_id": null,
-      "direction_name": "Office team",
+      "direction_name": "Office Team",
       "direction_id": null,
       "unit_name": "Academy Team",
       "unit_id": null,
@@ -4063,9 +4236,10 @@
       "project": "Consulting",
       "position": "Trainee Media Buyer Native",
       "manager_name": "Machula_Yuliia",
-      "department": "Office team",
-      "location": "Czech Republic remote",
-      "unit": "Academy Team"
+      "department": "Office Team",
+      "location": "Czech Republic Remote",
+      "unit": "Academy Team",
+      "internal_id": 261
     },
     "Khliust Pavlo": {
       "email": "p.khliust@evadav.com",
@@ -4080,7 +4254,8 @@
       "start_time": "09:00",
       "control_manager": 2,
       "position": "Chief Operating Officer APPs",
-      "division_name": "Apps"
+      "division_name": "Apps",
+      "internal_id": 262
     },
     "Mishustin Kostiantyn": {
       "email": "k.mishustin@evadav.com",
@@ -4096,95 +4271,104 @@
       "control_manager": 2,
       "position": "Chief Financial Officer",
       "division_name": "Consulting",
-      "direction_name": "Finance Direction"
+      "direction_name": "Finance Direction",
+      "internal_id": 263
     },
     "Bilopolska Valentyna": {
       "peopleforce_id": "481896",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "project": "Consulting",
-      "department": "Office team",
+      "department": "Office Team",
       "ignored": true,
       "control_manager": 2,
       "division_name": "Consulting",
-      "direction_name": "Office team"
+      "direction_name": "Office Team",
+      "internal_id": 264
     },
     "Bochkovskyi Oleksandr": {
       "email": "bochkovskiy@evadav.com",
       "peopleforce_id": "297320",
       "location": "UA",
-      "project": "AdNetwork",
-      "department": "R&D Unit AdNetwork",
+      "project": "Adnetwork",
+      "department": "R&d Unit Adnetwork",
       "ignored": true,
       "control_manager": 2,
-      "division_name": "AdNetwork",
-      "direction_name": "R&D Unit AdNetwork"
+      "division_name": "Adnetwork",
+      "direction_name": "R&d Unit Adnetwork",
+      "internal_id": 265
     },
     "Dolhov Andrii": {
       "email": "a.dolgov@evadav.com",
       "peopleforce_id": "297324",
       "location": "UA",
-      "project": "AdNetwork",
-      "department": "R&D Unit AdNetwork",
+      "project": "Adnetwork",
+      "department": "R&d Unit Adnetwork",
       "ignored": true,
       "control_manager": 2,
       "position": "PHP developer",
-      "division_name": "AdNetwork",
-      "direction_name": "R&D Unit AdNetwork"
+      "division_name": "Adnetwork",
+      "direction_name": "R&d Unit Adnetwork",
+      "internal_id": 266
     },
     "Gorobinska Tetiana": {
       "peopleforce_id": "561556",
       "ignored": true,
-      "control_manager": 3
+      "control_manager": 3,
+      "internal_id": 267
     },
     "HR Evrius": {
       "email": "hr_cz@evrius.com",
       "peopleforce_id": "174945",
       "ignored": true,
-      "control_manager": 3
+      "control_manager": 3,
+      "internal_id": 268
     },
     "Hreben Katsiaryna": {
       "email": "administration@evadav.com",
       "peopleforce_id": "548545",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "project": "Consulting",
-      "department": "Office team",
+      "department": "Office Team",
       "ignored": true,
       "control_manager": 2,
       "division_name": "Consulting",
-      "direction_name": "Office team"
+      "direction_name": "Office Team",
+      "internal_id": 269
     },
     "Hrechka Oksana": {
       "email": "o.hrechka@evadav.com",
       "peopleforce_id": "481899",
-      "location": "Prague office",
+      "location": "Prague Office",
       "project": "Consulting",
       "department": "Human Resources Direction",
       "ignored": true,
       "control_manager": 2,
       "division_name": "Consulting",
       "direction_name": "Human Resources Direction",
-      "unit_name": "System admin Team",
-      "unit": "System admin Team"
+      "unit_name": "System Admin Team",
+      "unit": "System Admin Team",
+      "internal_id": 270
     },
     "Kliushyn Anton": {
       "email": "a.kliushyn@evadav.com",
       "peopleforce_id": "424999",
       "location": "UA",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "ignored": true,
       "control_manager": 2,
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "direction_name": "Sales Direction",
       "unit_name": "Performance Team",
-      "unit": "Performance Team"
+      "unit": "Performance Team",
+      "internal_id": 271
     },
     "Morkin Serhii": {
       "email": "ms@evadav.com",
       "peopleforce_id": "297319",
       "location": "UA",
-      "project": "AdNetwork",
-      "department": "R&D Unit AdNetwork",
+      "project": "Adnetwork",
+      "department": "R&d Unit Adnetwork",
       "ignored": true,
       "control_manager": 2,
       "peopleforce_leave_status": "Отпуск",
@@ -4192,14 +4376,15 @@
       "peopleforce_leave_start": "2025-11-24",
       "peopleforce_leave_end": "2025-11-28",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-24",
-      "division_name": "AdNetwork",
-      "direction_name": "R&D Unit AdNetwork"
+      "peopleforce_leave_updated_at": "2025-11-26",
+      "division_name": "Adnetwork",
+      "direction_name": "R&d Unit Adnetwork",
+      "internal_id": 272
     },
     "Ovcharenko German": {
       "email": "german@evadav.com",
       "peopleforce_id": "286559",
-      "location": "Prague office",
+      "location": "Prague Office",
       "_manual_overrides": {
         "department": true
       },
@@ -4208,41 +4393,45 @@
       "ignored": true,
       "control_manager": 2,
       "division_name": "Apps",
-      "unit_name": "Media buying Unit",
-      "unit": "Media buying Unit"
+      "unit_name": "Media Buying Unit",
+      "unit": "Media Buying Unit",
+      "internal_id": 273
     },
     "Poniatov Anton": {
       "email": "ponyatov.anton@gmail.com",
       "peopleforce_id": "297325",
       "location": "Remote",
-      "project": "AdNetwork",
-      "department": "R&D Unit AdNetwork",
+      "project": "Adnetwork",
+      "department": "R&d Unit Adnetwork",
       "ignored": true,
       "control_manager": 2,
-      "division_name": "AdNetwork",
-      "direction_name": "R&D Unit AdNetwork"
+      "division_name": "Adnetwork",
+      "direction_name": "R&d Unit Adnetwork",
+      "internal_id": 274
     },
     "Postoi Anton": {
       "peopleforce_id": "536662",
       "location": "Remote",
       "project": "Agency",
-      "department": "Media buying Direction",
+      "department": "Media Buying Direction",
       "ignored": true,
       "control_manager": 1,
       "division_name": "Agency",
-      "direction_name": "Media buying Direction"
+      "direction_name": "Media Buying Direction",
+      "internal_id": 275
     },
     "Perchatochnikov Maksim": {
       "peopleforce_id": "323527",
       "location": "UA",
-      "project": "AdNetwork",
+      "project": "Adnetwork",
       "department": "Sales Direction",
       "ignored": true,
       "control_manager": 2,
-      "division_name": "AdNetwork",
+      "division_name": "Adnetwork",
       "direction_name": "Sales Direction",
       "unit_name": "Performance Team",
-      "unit": "Performance Team"
+      "unit": "Performance Team",
+      "internal_id": 276
     },
     "Volodin Dmitriy": {
       "email": "d.volodin@evadav.com",
@@ -4257,7 +4446,8 @@
       "control_manager": 1,
       "division_name": "Agency",
       "unit_name": "Product Operations Unit",
-      "unit": "Product Operations Unit"
+      "unit": "Product Operations Unit",
+      "internal_id": 277
     },
     "Sidorov Boris": {
       "email": "boris@evadav.com",
@@ -4269,7 +4459,8 @@
       },
       "department": "CEO",
       "ignored": true,
-      "control_manager": 3
+      "control_manager": 3,
+      "internal_id": 278
     },
     "Sluchevskyi Gleb": {
       "email": "glebslu@gmail.com",
@@ -4281,13 +4472,21 @@
       },
       "department": "CEO",
       "ignored": true,
-      "control_manager": 3
+      "control_manager": 3,
+      "internal_id": 279
     },
     "Test Anna": {
       "email": "alenakriv91@gmail.com",
       "peopleforce_id": "279182",
       "ignored": true,
-      "control_manager": 3
+      "control_manager": 3,
+      "internal_id": 280,
+      "peopleforce_leave_status": "Командировка",
+      "peopleforce_leave_amount": 1.0,
+      "peopleforce_leave_start": "2025-11-25",
+      "peopleforce_leave_end": "2025-11-27",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-26"
     },
     "Raeva Kateryna": {
       "email": "kateadler17@gmail.com",
@@ -4298,22 +4497,24 @@
       "ignored": true,
       "control_manager": 2,
       "division_name": "Consulting",
-      "direction_name": "Marketing Direction"
+      "direction_name": "Marketing Direction",
+      "internal_id": 281
     },
     "Yerushchenko Oksana": {
       "peopleforce_id": "507484",
-      "location": "Warsaw office",
+      "location": "Warsaw Office",
       "project": "Consulting",
-      "department": "Office team",
+      "department": "Office Team",
       "ignored": true,
       "control_manager": 2,
       "division_name": "Consulting",
-      "direction_name": "Office team"
+      "direction_name": "Office Team",
+      "internal_id": 282
     },
     "Tkachenko Oleksandra": {
       "email": "a.tkachenko@evadav.com",
       "peopleforce_id": "273472",
-      "location": "Prague office",
+      "location": "Prague Office",
       "project": "Consulting",
       "department": "Control & Compliance Direction",
       "ignored": true,
@@ -4323,20 +4524,22 @@
       "peopleforce_leave_start": "2025-11-24",
       "peopleforce_leave_end": "2025-12-05",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-24",
+      "peopleforce_leave_updated_at": "2025-11-26",
       "division_name": "Consulting",
-      "direction_name": "Control & Compliance Direction"
+      "direction_name": "Control & Compliance Direction",
+      "internal_id": 283
     },
     "Tkachenko Ivan": {
       "email": "i.tkachenko@evadav.com",
       "peopleforce_id": "297321",
       "location": "UA",
-      "project": "AdNetwork",
-      "department": "R&D Unit AdNetwork",
+      "project": "Adnetwork",
+      "department": "R&d Unit Adnetwork",
       "ignored": true,
       "control_manager": 2,
-      "division_name": "AdNetwork",
-      "direction_name": "R&D Unit AdNetwork"
+      "division_name": "Adnetwork",
+      "direction_name": "R&d Unit Adnetwork",
+      "internal_id": 284
     },
     "Kudko Maksym": {
       "email": "m.kudko@evadav.com",
@@ -4349,10 +4552,11 @@
       "start_time": "09:00",
       "control_manager": 2,
       "position": "Operations Assistant",
-      "location": "Czech Republic remote",
+      "location": "Czech Republic Remote",
       "division_name": "Apps",
       "unit": "IOS Unit",
-      "unit_name": "IOS Unit"
+      "unit_name": "IOS Unit",
+      "internal_id": 285
     },
     "Munteanu Valeria": {
       "email": "v.munteanu@evadav.com",
@@ -4368,10 +4572,65 @@
       "position": "Account Farming Team Lead",
       "division_name": "Agency",
       "unit": "Product Operations Unit",
-      "unit_name": "Product Operations Unit"
+      "unit_name": "Product Operations Unit",
+      "internal_id": 286
+    },
+    "Kozhinova Anna": {
+      "email": "a.kozhinova@evadav.com",
+      "user_id": "7937934",
+      "peopleforce_id": "593089",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "start_time": true,
+        "control_manager": true
+      },
+      "project": "Adnetwork",
+      "department": "Sales Direction",
+      "start_time": "09:00",
+      "control_manager": 2,
+      "internal_id": 287
+    },
+    "Melnitsyn Stanislav": {
+      "email": "s.melnitsyn@evadav.com",
+      "user_id": "7937929",
+      "peopleforce_id": "593081",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "team": true,
+        "start_time": true,
+        "control_manager": true
+      },
+      "project": "Adnetwork",
+      "department": "Sales Direction",
+      "team": "CPA Team",
+      "start_time": "09:00",
+      "control_manager": 2,
+      "internal_id": 288
+    },
+    "Voitova Alesya": {
+      "email": "a.voitova@evadav.com",
+      "user_id": "7937926",
+      "peopleforce_id": "588582",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "start_time": true,
+        "control_manager": true
+      },
+      "project": "Agency",
+      "start_time": "09:00",
+      "control_manager": 1,
+      "internal_id": 289
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-24T02:03:38.665026"
+    "last_updated": "2025-11-26T10:20:22.682467"
   }
 }

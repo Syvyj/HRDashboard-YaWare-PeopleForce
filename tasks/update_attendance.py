@@ -231,6 +231,11 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
             user_name = entry.get('user', '').split(',')[0].strip()
             skipped_count += 1
             continue  # Пропускаємо - НЕ ДОДАЄМО в БД автоматично!
+        
+        # ❌ КРИТИЧНО: Якщо користувач в ignored - пропускаємо!
+        if hasattr(schedule, 'ignored') and schedule.ignored:
+            skipped_count += 1
+            continue  # Пропускаємо ignored користувачів
 
         schedule_raw = entry.get('schedule')
         yaware_schedule = schedule_raw if isinstance(schedule_raw, dict) else {}

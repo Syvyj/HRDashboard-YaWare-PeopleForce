@@ -15,7 +15,7 @@ class DashboardReportService:
     """Fetch lateness/absence information from the dashboard DB."""
 
     def __init__(self, database_url: Optional[str] = None):
-        self.database_url = database_url or os.getenv("DASHBOARD_DATABASE_URL", "sqlite:///dashboard.db")
+        self.database_url = database_url or os.getenv("DASHBOARD_DATABASE_URL", "sqlite:///instance/dashboard.db")
         url = make_url(self.database_url)
         engine_kwargs = {"future": True}
         if url.drivername.startswith("sqlite"):

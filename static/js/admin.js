@@ -39,6 +39,7 @@
   const syncUsersBtn = document.getElementById('sync-users-btn');
   const syncDateInput = document.getElementById('sync-date-input');
   const syncDateBtn = document.getElementById('sync-date-btn');
+  const syncPlanStartBtn = document.getElementById('sync-plan-start-btn');
   const refreshDiffBtn = document.getElementById('refresh-diff-btn');
   const diffSummaryEl = document.getElementById('diff-summary');
   const diffListsWrapper = document.getElementById('diff-lists');
@@ -1198,6 +1199,35 @@
   if (syncUsersBtn) {
     syncUsersBtn.addEventListener('click', () => {
       performUserSync().catch(() => {});
+    });
+  }
+
+  if (syncPlanStartBtn) {
+    syncPlanStartBtn.addEventListener('click', () => {
+      const dateVal = syncDateInput && syncDateInput.value ? syncDateInput.value : '';
+      setButtonLoading(syncPlanStartBtn, true);
+      fetch('/api/admin/sync/plan-start', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ date: dateVal }),
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            throw new Error(data.error || 'Не вдалося синхронізувати Plan start');
+          }
+          const updated = data.updated || 0;
+          const total = data.total_records || 0;
+          showAlert(`Plan start синхронізовано: оновлено ${updated} з ${total} записів за дату ${data.date}`, 'success', 8000);
+        })
+        .catch((error) => {
+          showAlert(error.message || 'Помилка синхронізації Plan start', 'danger');
+        })
+        .finally(() => {
+          setButtonLoading(syncPlanStartBtn, false);
+        });
     });
   }
 

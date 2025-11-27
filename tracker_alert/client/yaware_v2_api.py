@@ -228,6 +228,40 @@ class YaWareV2Client:
 
         logger.info(f"Успешно получена статистика для {len(results)} пользователей")
         return results
+
+    def get_begin_end_monitoring_by_employees(self, employee_ids: list[str]) -> list[dict]:
+        """
+        Новий ендпоінт: отримати час початку/кінця моніторингу за користувачами.
+
+        Args:
+            employee_ids: список YaWare user_id
+
+        Returns:
+            Список елементів виду:
+            [
+              {
+                "user_id": "123",
+                "data": [
+                  {"day": "1", "start_monitoring": "09:00:00", "end_monitoring": "18:00:00", "is_holiday": "0"},
+                  ...
+                ]
+              }, ...
+            ]
+        """
+        if not employee_ids:
+            return []
+        # API приймає коми, без пробілів
+        ids_param = ",".join(str(i).strip() for i in employee_ids if str(i).strip())
+        if not ids_param:
+            return []
+        try:
+            return self._request(
+                "getBeginEndMonitoringByEmployees",
+                {"employees": ids_param}
+            ) or []
+        except Exception as exc:
+            logger.warning("YaWare getBeginEndMonitoringByEmployees failed: %s", exc)
+            return []
     
     def get_lateness_report(self, date_from: str, date_to: str) -> dict:
         """

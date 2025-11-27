@@ -31,6 +31,7 @@ from tracker_alert.services.schedule_utils import (
 )
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.client.peopleforce_api import PeopleForceClient
+from tracker_alert.client.yaware_v2_api import YaWareV2Client
 from tracker_alert.services.control_manager import auto_assign_control_manager
 from .hierarchy_adapter import (
     load_level_grade_data,
@@ -293,6 +294,25 @@ def _parse_duration(value: str | None) -> int | None:
 def _normalize_user_key(user_key: str) -> str:
     return unquote(user_key).strip()
 
+def _normalize_plan_start(value: str | None) -> str:
+    if not value:
+        return ''
+    text = str(value).strip()
+    if not text:
+        return ''
+    parts = text.split(':')
+    try:
+        if len(parts) == 2:
+            hour = int(parts[0])
+            minute = int(parts[1])
+            return f"{hour:02d}:{minute:02d}"
+        if len(parts) >= 3:
+            hour = int(parts[0])
+            minute = int(parts[1])
+            return f"{hour:02d}:{minute:02d}"
+    except ValueError:
+        return ''
+    return text
 
 def _normalize_name(name: str) -> str:
     """Normalize name for matching: lowercase, single spaces, sorted words."""
@@ -1218,6 +1238,57 @@ def _apply_filters(query):
     return query
 
 
+def _sync_plan_start_for_date(target_date: date) -> tuple[int, int]:
+    """Update scheduled_start for a given date using YaWare monitoring endpoint."""
+    records = AttendanceRecord.query.filter_by(record_date=target_date).all()
+    if not records:
+        return 0, 0
+
+    user_ids = {str(rec.user_id).strip() for rec in records if rec.user_id}
+    user_ids = {uid for uid in user_ids if uid}
+    if not user_ids:
+        return 0, len(records)
+
+    client = YaWareV2Client()
+    try:
+        payload = client.get_begin_end_monitoring_by_employees(list(user_ids)) or []
+    except Exception as exc:
+        logger.error("Failed to sync plan start from YaWare for %s: %s", target_date, exc)
+        raise
+
+    day_index = target_date.weekday() + 1  # 1..7
+    start_by_id: dict[str, str] = {}
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        uid = str(item.get('user_id') or '').strip()
+        if not uid:
+            continue
+        for day_info in item.get('data') or []:
+            if str(day_info.get('day')) != str(day_index):
+                continue
+            start_val = _normalize_plan_start(day_info.get('start_monitoring'))
+            if start_val:
+                start_by_id[uid] = start_val
+            break
+
+    updated = 0
+    for rec in records:
+        if getattr(rec, 'manual_scheduled_start', False):
+            continue
+        new_start = start_by_id.get(str(rec.user_id).strip())
+        if not new_start:
+            continue
+        current = _normalize_plan_start(rec.scheduled_start)
+        if new_start != current:
+            rec.scheduled_start = new_start
+            updated += 1
+
+    if updated:
+        db.session.commit()
+    return updated, len(records)
+
+
 def _build_items(records):
     grouped = defaultdict(list)
     for record in records:
@@ -1743,6 +1814,41 @@ def admin_sync_attendance():
         'status': 'ok',
         'date': target_date.isoformat(),
         'include_absent': include_absent,
+    })
+
+
+@api_bp.route('/admin/sync/plan-start', methods=['POST'])
+@login_required
+def admin_sync_plan_start():
+    """Manual sync of Plan start (scheduled_start) from YaWare monitoring endpoint."""
+    _ensure_admin()
+    payload = request.get_json(silent=True) or {}
+    date_str = (payload.get('date') or request.args.get('date') or '').strip()
+    target_date = _parse_date(date_str)
+    if not target_date:
+        target_date = date.today() - timedelta(days=1)
+
+    try:
+        updated, total = _sync_plan_start_for_date(target_date)
+    except Exception as exc:
+        logger.error("Plan start sync failed for %s: %s", target_date, exc, exc_info=True)
+        return jsonify({'error': f'Plan start sync failed: {str(exc)}'}), 500
+
+    try:
+        _log_admin_action('sync_plan_start', {
+            'date': target_date.isoformat(),
+            'updated': updated,
+            'total_records': total
+        })
+        db.session.commit()
+    except Exception as exc:  # pragma: no cover
+        logger.warning("Failed to log plan start sync: %s", exc)
+
+    return jsonify({
+        'status': 'ok',
+        'date': target_date.isoformat(),
+        'updated': updated,
+        'total_records': total
     })
 
 

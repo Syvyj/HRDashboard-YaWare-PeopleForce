@@ -164,6 +164,30 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         print(f"[WARN] Не удалось получить данные YaWare за {target_date}: {e}")
         summary = []
 
+    # Допоміжно тягнемо старт моніторингу з нового ендпоінта
+    monitoring_start_by_id: dict[str, str] = {}
+    day_index = target_date.weekday() + 1  # 1..7
+    user_ids_for_monitoring: set[str] = set()
+    for entry in summary:
+        user_id_val = str(entry.get('user_id') or '').strip()
+        if user_id_val:
+            user_ids_for_monitoring.add(user_id_val)
+    if user_ids_for_monitoring:
+        monitoring_payload = yaware_client.get_begin_end_monitoring_by_employees(list(user_ids_for_monitoring)) or []
+        for item in monitoring_payload:
+            if not isinstance(item, dict):
+                continue
+            uid = str(item.get('user_id') or '').strip()
+            if not uid:
+                continue
+            for day_info in item.get('data') or []:
+                if str(day_info.get('day')) != str(day_index):
+                    continue
+                start_val = normalize_time(day_info.get('start_monitoring'))
+                if start_val:
+                    monitoring_start_by_id[uid] = start_val
+                break
+
     existing_records = AttendanceRecord.query.filter_by(record_date=target_date).all()
     manual_overrides: dict[str, dict] = {}
     manual_aliases: dict[str, str] = {}
@@ -242,10 +266,12 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
         schedule_start_yaware = normalize_time(yaware_schedule.get('start_time'))
         actual_start = normalize_time(entry.get('time_start'))
 
-        scheduled_start = schedule_start_yaware or (schedule.start_time if schedule else '')
+        # Пріоритет: новий ендпоінт моніторингу -> schedule з YaWare -> локальний графік
+        monitoring_start = monitoring_start_by_id.get(user_id)
+        scheduled_start = monitoring_start or schedule_start_yaware or (schedule.start_time if schedule else '')
         scheduled_start = normalize_time(scheduled_start)
 
-        if schedule and schedule_start_yaware:
+        if schedule and scheduled_start:
             schedule.start_time = scheduled_start
 
         # Використовуємо Fact Start з YaWare без коригувань

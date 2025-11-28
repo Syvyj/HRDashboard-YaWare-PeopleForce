@@ -94,7 +94,10 @@ class DashboardReportService:
         allowed_set = {int(mid) for mid in allowed_managers}
 
         def is_allowed(status: AttendanceStatus) -> bool:
-            return status.user.control_manager is not None and status.user.control_manager in allowed_set
+            # Якщо control_manager не заповнений — показуємо всім (щоб не втрачати проблемних)
+            if status.user.control_manager is None:
+                return True
+            return status.user.control_manager in allowed_set
 
         filtered_late = [status for status in report["late"] if is_allowed(status)]
         filtered_absent = [status for status in report["absent"] if is_allowed(status)]

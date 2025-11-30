@@ -51,6 +51,19 @@
   window.selectedFilters = selectedFilters;
   window.selectedEmployees = selectedEmployees;
 
+  let hideArchived = true;
+  const archiveFilterSwitch = document.getElementById('archive-filter-switch');
+  const modalArchiveSwitch = document.getElementById('modal-archive-switch');
+
+  function applyArchiveParam(params) {
+    if (!params || typeof params.set !== 'function') {
+      return;
+    }
+    params.set('include_archived', hideArchived ? '0' : '1');
+  }
+
+  window.getIncludeArchivedParam = () => (hideArchived ? '0' : '1');
+
   window.addEventListener('monthly-filter-options', (event) => {
     const options = event.detail || {};
     currentFilterOptions = {
@@ -150,6 +163,7 @@
     const dateTo = dateToInput ? dateToInput.value : '';
     const user = userInput ? userInput.value : '';
     const params = buildFilterParams(dateFrom, dateTo, user, selectedFilters, selectedEmployees);
+    applyArchiveParam(params);
     
     // Add week_offset if no date filters are set and we're navigating weeks
     if (!dateFrom && !dateTo && currentWeekOffset !== 0) {
@@ -372,6 +386,7 @@
     if (dateToInput && dateToInput.value) {
       params.set('date_to', dateToInput.value);
     }
+    applyArchiveParam(params);
     const query = params.toString();
     const response = await fetch(`/api/users/${encodeURIComponent(userKeyRaw)}${query ? `?${query}` : ''}`);
     if (!response.ok) {
@@ -1107,12 +1122,23 @@
   const deselectAllBtn = document.getElementById('deselect-all-employees');
   const applyMultiSelectBtn = document.getElementById('apply-multi-select');
   const selectedCountBadge = document.getElementById('selected-count');
+  const presetBadgesContainer = document.getElementById('preset-badges');
+  const showSavePresetBtn = document.getElementById('show-save-preset');
+  const savePresetForm = document.getElementById('save-preset-form');
+  const presetNameInput = document.getElementById('preset-name-input');
+  const confirmSavePresetBtn = document.getElementById('confirm-save-preset');
+  const cancelSavePresetBtn = document.getElementById('cancel-save-preset');
+  const presetError = document.getElementById('preset-error');
+  const canManagePresets = multiSelectModalEl?.dataset.canManagePresets === '1';
+  const canDeleteAnyPresets = multiSelectModalEl?.dataset.canDeleteAllPresets === '1';
 
   let allEmployees = [];
+  let employeePresets = [];
 
   async function loadAllEmployees() {
     try {
       const params = new URLSearchParams();
+      applyArchiveParam(params);
       
       // Use different endpoint for monthly page
       let endpoint = '/api/attendance';
@@ -1203,12 +1229,111 @@
     }
   }
 
+  async function fetchEmployeePresets() {
+    if (!canManagePresets) {
+      return;
+    }
+    try {
+      const response = await fetch('/api/presets');
+      if (!response.ok) {
+        throw new Error('Failed to load presets');
+      }
+      const data = await response.json();
+      employeePresets = data.presets || [];
+      renderPresetBadges();
+    } catch (error) {
+      console.error('Failed to load presets:', error);
+    }
+  }
+
+  function renderPresetBadges() {
+    if (!presetBadgesContainer) return;
+    if (!employeePresets.length) {
+      presetBadgesContainer.innerHTML =
+        '<span class="text-muted small">Немає пресетів</span>';
+      return;
+    }
+    const badges = employeePresets
+      .map((preset) => {
+        const canRemove = preset.is_owner || canDeleteAnyPresets;
+        return `
+          <span class="badge bg-secondary text-white d-inline-flex align-items-center gap-1 preset-badge" data-preset-id="${preset.id}">
+            <span>${escapeHtml(preset.name)}</span>
+            ${
+              canRemove
+                ? `<button type="button" class="btn-close btn-close-white btn-sm ms-1" data-delete-preset-id="${preset.id}" aria-label="Удалить пресет"></button>`
+                : ''
+            }
+          </span>
+        `;
+      })
+      .join('');
+    presetBadgesContainer.innerHTML = badges;
+  }
+
+  function applyPreset(presetId) {
+    const preset = employeePresets.find((item) => item.id === presetId);
+    if (!preset) {
+      return;
+    }
+    selectedEmployees.clear();
+    (preset.employee_keys || []).forEach((key) => selectedEmployees.add(key));
+    renderEmployeeList(multiSelectSearch?.value || '');
+    updateSelectedCount();
+  }
+
+  function togglePresetForm(show) {
+    if (!savePresetForm) return;
+    if (show) {
+      savePresetForm.classList.remove('d-none');
+      presetNameInput?.focus();
+    } else {
+      savePresetForm.classList.add('d-none');
+      if (presetNameInput) {
+        presetNameInput.value = '';
+      }
+    }
+    setPresetError('');
+  }
+
+  function setPresetError(message) {
+    if (!presetError) return;
+    if (message) {
+      presetError.textContent = message;
+      presetError.classList.remove('d-none');
+    } else {
+      presetError.textContent = '';
+      presetError.classList.add('d-none');
+    }
+  }
+
+  async function deletePreset(presetId) {
+    try {
+      const response = await fetch(`/api/presets/${presetId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete preset');
+      }
+      employeePresets = employeePresets.filter(
+        (preset) => preset.id !== presetId
+      );
+      renderPresetBadges();
+    } catch (error) {
+      console.error('Failed to delete preset:', error);
+      alert('Не вдалося видалити пресет');
+    }
+  }
+
   if (openMultiSelectBtn) {
     openMultiSelectBtn.addEventListener('click', async () => {
       if (allEmployees.length === 0) {
         await loadAllEmployees();
       }
       renderEmployeeList();
+      if (canManagePresets) {
+        await fetchEmployeePresets();
+      }
       multiSelectModal?.show();
     });
   }
@@ -1267,6 +1392,7 @@
       
       // Формуємо запит для вибраних співробітників
       const params = new URLSearchParams();
+      applyArchiveParam(params);
       if (dateFromInput.value) params.set('date_from', dateFromInput.value);
       if (dateToInput.value) params.set('date_to', dateToInput.value);
       
@@ -1286,6 +1412,115 @@
         alert('Ошибка загрузки данных');
       }
     });
+  }
+
+  if (showSavePresetBtn) {
+    showSavePresetBtn.addEventListener('click', () => {
+      if (selectedEmployees.size === 0) {
+        setPresetError('Спочатку виберіть співробітників');
+        return;
+      }
+      togglePresetForm(true);
+    });
+  }
+
+  if (cancelSavePresetBtn) {
+    cancelSavePresetBtn.addEventListener('click', () => {
+      togglePresetForm(false);
+    });
+  }
+
+  if (confirmSavePresetBtn) {
+    confirmSavePresetBtn.addEventListener('click', async () => {
+      if (!canManagePresets) return;
+      const name = (presetNameInput?.value || '').trim();
+      if (!name) {
+        setPresetError('Вкажіть назву пресету');
+        return;
+      }
+      if (selectedEmployees.size === 0) {
+        setPresetError('Спочатку виберіть співробітників');
+        return;
+      }
+      setPresetError('');
+      confirmSavePresetBtn.disabled = true;
+      try {
+        const response = await fetch('/api/presets', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name,
+            employee_keys: Array.from(selectedEmployees),
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          setPresetError(data.error || 'Не вдалося зберегти пресет');
+          return;
+        }
+        employeePresets = [data, ...employeePresets];
+        renderPresetBadges();
+        togglePresetForm(false);
+      } catch (error) {
+        console.error('Failed to save preset:', error);
+        setPresetError('Не вдалося зберегти пресет');
+      } finally {
+        confirmSavePresetBtn.disabled = false;
+      }
+    });
+  }
+
+  if (presetBadgesContainer) {
+    presetBadgesContainer.addEventListener('click', async (event) => {
+      const deleteBtn = event.target.closest('[data-delete-preset-id]');
+      if (deleteBtn) {
+        event.stopPropagation();
+        const presetId = Number(deleteBtn.dataset.deletePresetId);
+        if (Number.isNaN(presetId)) return;
+        if (confirm('Видалити пресет?')) {
+          await deletePreset(presetId);
+        }
+        return;
+      }
+      const badge = event.target.closest('[data-preset-id]');
+      if (!badge) return;
+      const presetId = Number(badge.dataset.presetId);
+      if (Number.isNaN(presetId)) return;
+      applyPreset(presetId);
+    });
+  }
+
+  function handleArchiveToggle(value, sourceElement) {
+    const normalized = Boolean(value);
+    if (hideArchived === normalized) {
+      if (sourceElement && sourceElement.checked !== hideArchived) {
+        sourceElement.checked = hideArchived;
+      }
+      return;
+    }
+    hideArchived = normalized;
+    if (archiveFilterSwitch && archiveFilterSwitch !== sourceElement) {
+      archiveFilterSwitch.checked = hideArchived;
+    }
+    if (modalArchiveSwitch && modalArchiveSwitch !== sourceElement) {
+      modalArchiveSwitch.checked = hideArchived;
+    }
+    allEmployees = [];
+    notifyFiltersUpdated();
+    if (multiSelectModalEl && multiSelectModalEl.classList.contains('show')) {
+      loadAllEmployees();
+    }
+  }
+
+  if (archiveFilterSwitch) {
+    archiveFilterSwitch.checked = hideArchived;
+    archiveFilterSwitch.addEventListener('change', () => handleArchiveToggle(archiveFilterSwitch.checked, archiveFilterSwitch));
+  }
+  if (modalArchiveSwitch) {
+    modalArchiveSwitch.checked = hideArchived;
+    modalArchiveSwitch.addEventListener('change', () => handleArchiveToggle(modalArchiveSwitch.checked, modalArchiveSwitch));
   }
   
   // Initialize week display on page load

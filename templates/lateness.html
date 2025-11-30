@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Архив опозданий</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('views.dashboard') }}">ControlBot Dashboard</a>
+        <div class="d-flex">
+          <span class="navbar-text me-3">{{ user_name }}</span>
+          <a class="btn btn-outline-light" href="/logout">Выйти</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container py-4">
+      <div class="dashboard-card shadow-sm">
+        <div class="dashboard-card__header align-items-center">
+          <div>
+            <div class="dashboard-card__hello">Архив опозданий</div>
+            <div class="text-muted">
+              Данные собираются так же, как у Telegram-бота. Фильтрация учитывает ваши права доступа.
+            </div>
+          </div>
+          <div>
+            <a href="{{ url_for('views.dashboard') }}" class="btn btn-outline-primary btn-sm">
+              ← Назад на дашборд
+            </a>
+          </div>
+        </div>
+        <div class="dashboard-card__divider"></div>
+
+        <div class="dashboard-card__body">
+          <form class="row g-3 align-items-end mb-4" id="lateness-form">
+            <div class="col-md-3">
+              <label class="form-label">Закончить на дату</label>
+              <input type="date" class="form-control" id="lateness-end-date" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Количество дней</label>
+              <select class="form-select" id="lateness-days">
+                <option value="5">5</option>
+                <option value="7" selected>7</option>
+                <option value="10">10</option>
+                <option value="14">14</option>
+                <option value="21">21</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <button type="submit" class="btn btn-primary w-100" id="lateness-refresh">
+                Обновить
+              </button>
+            </div>
+          </form>
+
+          {% if is_admin %}
+          <div class="alert alert-secondary" id="lateness-admin-panel">
+            <h6 class="mb-3">Административные действия</h6>
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label">Синхронизировать день</label>
+                <input type="date" class="form-control" id="sync-single-date" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Начало периода</label>
+                <input type="date" class="form-control" id="sync-range-start" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Конец периода</label>
+                <input type="date" class="form-control" id="sync-range-end" />
+              </div>
+              <div class="col-md-3 d-flex align-items-end gap-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="sync-skip-weekends" />
+                  <label class="form-check-label small" for="sync-skip-weekends">Пропускать выходные</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="sync-include-absent" checked />
+                  <label class="form-check-label small" for="sync-include-absent">Включать отсутствующих</label>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              <button type="button" class="btn btn-outline-primary" id="sync-single-btn">
+                Синхронизировать день
+              </button>
+              <button type="button" class="btn btn-outline-primary" id="sync-range-btn">
+                Синхронизировать период
+              </button>
+              <div id="sync-status" class="text-muted small ms-auto"></div>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="accordion" id="lateness-accordion">
+            <div class="text-center text-muted py-5">Загрузка данных...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      window.defaultLatenessDays = {{ default_days }};
+      window.isLatenessAdmin = {{ 1 if is_admin else 0 }};
+    </script>
+    <script src="{{ url_for('static', filename='js/lateness.js') }}"></script>
+  </body>
+</html>

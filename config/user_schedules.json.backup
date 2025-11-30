@@ -415,13 +415,7 @@
       "location": "Remote Other Countries",
       "unit": "MB Native & Tiktok Unit",
       "team": "TIK TOK Team",
-      "internal_id": 115,
-      "peopleforce_leave_status": "За свой счет",
-      "peopleforce_leave_amount": 1.0,
-      "peopleforce_leave_start": "2025-11-26",
-      "peopleforce_leave_end": "2025-11-26",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26"
+      "internal_id": 115
     },
     "Dmytrenko Anna": {
       "user_name": "Dmytrenko Anna",
@@ -734,6 +728,12 @@
       "position": "Chief Human Resources Officer",
       "manager_name": "Sluchevskyi_Gleb",
       "location": "Warsaw Office",
+      "peopleforce_leave_status": "Отпуск",
+      "peopleforce_leave_amount": 0.5,
+      "peopleforce_leave_start": "2025-11-24",
+      "peopleforce_leave_end": "2025-11-24",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-24",
       "control_manager": 2,
       "internal_id": 127
     },
@@ -967,13 +967,7 @@
       "position": "Data Analyst",
       "manager_name": "Vorozheykin_Oleksii",
       "location": "Remote Ukraine",
-      "internal_id": 136,
-      "peopleforce_leave_status": "За свой счет",
-      "peopleforce_leave_amount": 1.0,
-      "peopleforce_leave_start": "2025-11-26",
-      "peopleforce_leave_end": "2025-11-26",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26"
+      "internal_id": 136
     },
     "Kastyrin Artem": {
       "user_name": "Kastyrin Artem",
@@ -1103,6 +1097,12 @@
       "position": "Sales manager",
       "manager_name": "Sarkisov_Moses",
       "location": "Remote Other Countries",
+      "peopleforce_leave_status": "Отпуск",
+      "peopleforce_leave_amount": 1.0,
+      "peopleforce_leave_start": "2025-11-24",
+      "peopleforce_leave_end": "2025-11-26",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-24",
       "unit": "Traffic Unit",
       "team": "Traffic BizDev Team",
       "internal_id": 141
@@ -1346,13 +1346,7 @@
       "location": "Remote Other Countries",
       "unit": "CPA Unit",
       "team": "CPA Team",
-      "internal_id": 150,
-      "peopleforce_leave_status": "Отпуск",
-      "peopleforce_leave_amount": 1.0,
-      "peopleforce_leave_start": "2025-11-26",
-      "peopleforce_leave_end": "2025-11-28",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26"
+      "internal_id": 150
     },
     "Kramareva Anastasiia": {
       "user_name": "Kramareva Anastasiia",
@@ -1893,13 +1887,7 @@
       "location": "Warsaw Office",
       "unit": "MB Facebook Unit",
       "team": "MB Facebook Team 2",
-      "internal_id": 171,
-      "peopleforce_leave_status": "Отпуск",
-      "peopleforce_leave_amount": 1.0,
-      "peopleforce_leave_start": "2025-11-25",
-      "peopleforce_leave_end": "2025-11-28",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26"
+      "internal_id": 171
     },
     "Melnychenko Oleh": {
       "user_name": "Melnychenko Oleh",
@@ -2111,7 +2099,7 @@
       "peopleforce_leave_start": "2025-11-24",
       "peopleforce_leave_end": "2025-11-28",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26",
+      "peopleforce_leave_updated_at": "2025-11-24",
       "internal_id": 179
     },
     "Panasenko Natalya": {
@@ -2240,7 +2228,7 @@
       "peopleforce_leave_start": "2025-11-24",
       "peopleforce_leave_end": "2025-11-28",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26",
+      "peopleforce_leave_updated_at": "2025-11-24",
       "unit": "CPA Unit",
       "team": "BizDev Team",
       "internal_id": 184
@@ -2682,6 +2670,12 @@
       "position": "Financial manager",
       "manager_name": "Maksymchuk_Tetiana",
       "location": "Remote Ukraine",
+      "peopleforce_leave_status": "Отпуск",
+      "peopleforce_leave_amount": 1.0,
+      "peopleforce_leave_start": "2025-11-24",
+      "peopleforce_leave_end": "2025-11-25",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-24",
       "internal_id": 201
     },
     "Shustal  Valeria": {
@@ -2864,7 +2858,7 @@
       "peopleforce_leave_start": "2025-11-23",
       "peopleforce_leave_end": "2025-11-26",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26",
+      "peopleforce_leave_updated_at": "2025-11-24",
       "unit": "Moderation Team",
       "internal_id": 208
     },
@@ -2969,6 +2963,12 @@
       "position": "Team Lead Hunter Team",
       "manager_name": "Dupenko_Valeriia",
       "location": "Remote Ukraine",
+      "peopleforce_leave_status": "Отпуск",
+      "peopleforce_leave_amount": 1.0,
+      "peopleforce_leave_start": "2025-11-20",
+      "peopleforce_leave_end": "2025-11-24",
+      "peopleforce_leave_state": "approved",
+      "peopleforce_leave_updated_at": "2025-11-24",
       "unit": "Demand Unit",
       "internal_id": 212
     },
@@ -3332,7 +3332,7 @@
       "peopleforce_leave_start": "2025-11-22",
       "peopleforce_leave_end": "2025-11-30",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26",
+      "peopleforce_leave_updated_at": "2025-11-24",
       "unit": "Product Operations Unit",
       "internal_id": 226
     },
@@ -3899,13 +3899,7 @@
       "manager_name": "Shpak_Andriy",
       "location": "Remote Ukraine",
       "unit": "Moderation Team",
-      "internal_id": 248,
-      "peopleforce_leave_status": "Отпуск",
-      "peopleforce_leave_amount": 1.0,
-      "peopleforce_leave_start": "2025-11-26",
-      "peopleforce_leave_end": "2025-11-26",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26"
+      "internal_id": 248
     },
     "Evhen  Kiliovyi": {
       "user_name": "Kiliovyi Evhen",
@@ -4003,13 +3997,7 @@
       "position": "Support manager",
       "manager_name": "Iliin_Eugeniy",
       "unit": "Support Team",
-      "internal_id": 252,
-      "peopleforce_leave_status": "Отпуск",
-      "peopleforce_leave_amount": 1.0,
-      "peopleforce_leave_start": "2025-11-25",
-      "peopleforce_leave_end": "2025-11-26",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26"
+      "internal_id": 252
     },
     "Andrey Otdelnyi": {
       "user_name": "Оtdelnyi Andrey",
@@ -4376,7 +4364,7 @@
       "peopleforce_leave_start": "2025-11-24",
       "peopleforce_leave_end": "2025-11-28",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26",
+      "peopleforce_leave_updated_at": "2025-11-24",
       "division_name": "Adnetwork",
       "direction_name": "R&d Unit Adnetwork",
       "internal_id": 272
@@ -4480,13 +4468,7 @@
       "peopleforce_id": "279182",
       "ignored": true,
       "control_manager": 3,
-      "internal_id": 280,
-      "peopleforce_leave_status": "Командировка",
-      "peopleforce_leave_amount": 1.0,
-      "peopleforce_leave_start": "2025-11-25",
-      "peopleforce_leave_end": "2025-11-27",
-      "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26"
+      "internal_id": 280
     },
     "Raeva Kateryna": {
       "email": "kateadler17@gmail.com",
@@ -4524,7 +4506,7 @@
       "peopleforce_leave_start": "2025-11-24",
       "peopleforce_leave_end": "2025-12-05",
       "peopleforce_leave_state": "approved",
-      "peopleforce_leave_updated_at": "2025-11-26",
+      "peopleforce_leave_updated_at": "2025-11-24",
       "division_name": "Consulting",
       "direction_name": "Control & Compliance Direction",
       "internal_id": 283
@@ -4628,9 +4610,13 @@
       "start_time": "09:00",
       "control_manager": 1,
       "internal_id": 289
+    },
+    "Станислав Мельницын": {
+      "user_id": "7937956",
+      "ignored": true
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-26T10:20:22.682467"
+    "last_updated": "2025-11-25T09:35:53.314628"
   }
 }

@@ -109,6 +109,17 @@
             </div>
             <div class="col-lg-3">
               <div class="filter-section">
+                <div class="form-check form-switch mb-3">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="archive-filter-switch"
+                    checked
+                  />
+                  <label class="form-check-label" for="archive-filter-switch">
+                    Приховувати архівних співробітників
+                  </label>
+                </div>
                 <div class="input-group">
                   <input
                     type="text"
@@ -248,6 +259,8 @@
       tabindex="-1"
       aria-labelledby="multiSelectModalLabel"
       aria-hidden="true"
+      data-can-manage-presets="{{ 1 if can_manage_presets else 0 }}"
+      data-can-delete-all-presets="{{ 1 if can_delete_any_presets else 0 }}"
     >
       <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -271,7 +284,7 @@
                 placeholder="Поиск сотрудника..."
               />
             </div>
-            <div class="mb-2">
+            <div class="mb-2 d-flex align-items-center gap-2 flex-wrap">
               <button
                 type="button"
                 id="select-all-employees"
@@ -294,11 +307,51 @@
             >
               <!-- Employee list will be populated here -->
             </div>
-            <div class="mt-3">
+            <div class="d-flex align-items-center flex-wrap gap-2 mt-3">
               <span class="badge bg-primary" id="selected-count"
                 >Выбрано: 0</span
               >
+              {% if can_manage_presets %}
+              <div
+                class="d-flex align-items-center flex-wrap gap-2 flex-grow-1"
+                id="preset-badges"
+              ></div>
+              {% endif %}
             </div>
+            {% if can_manage_presets %}
+            <div class="mt-3" id="preset-controls">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-success"
+                id="show-save-preset"
+              >
+                Зберегти пресет
+              </button>
+              <div
+                class="input-group input-group-sm mt-2 d-none"
+                id="save-preset-form"
+              >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Назва пресету"
+                  id="preset-name-input"
+                  maxlength="128"
+                />
+                <button class="btn btn-primary" type="button" id="confirm-save-preset">
+                  Зберегти
+                </button>
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="cancel-save-preset"
+                >
+                  Скасувати
+                </button>
+              </div>
+              <div class="form-text text-danger d-none" id="preset-error"></div>
+            </div>
+            {% endif %}
           </div>
           <div class="modal-footer">
             <button

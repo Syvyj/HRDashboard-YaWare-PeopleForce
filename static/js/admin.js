@@ -30,6 +30,7 @@
   const employeeEditLocation = document.getElementById('employee-edit-location');
   const employeeEditPlanStart = document.getElementById('employee-edit-plan-start');
   const employeeEditManager = document.getElementById('employee-edit-manager');
+  const employeeEditArchived = document.getElementById('employee-edit-archived');
   const appUserForm = document.getElementById('app-user-form');
   const appUsersTable = document.getElementById('app-users-table');
   const appUserModalEl = document.getElementById('appUserModal');
@@ -41,6 +42,8 @@
   const syncDateBtn = document.getElementById('sync-date-btn');
   const syncPlanStartBtn = document.getElementById('sync-plan-start-btn');
   const refreshDiffBtn = document.getElementById('refresh-diff-btn');
+  const adminArchiveSwitch = document.getElementById('admin-archive-switch');
+  let adminHideArchived = adminArchiveSwitch ? adminArchiveSwitch.checked : true;
   const diffSummaryEl = document.getElementById('diff-summary');
   const diffListsWrapper = document.getElementById('diff-lists');
   const diffMissingYaWareList = document.getElementById('diff-missing-yaware-list');
@@ -590,6 +593,9 @@
 
       const nameCell = document.createElement('td');
       nameCell.innerHTML = `<strong>${item.name || '—'}</strong>`;
+      if (item.archived) {
+        nameCell.innerHTML += ' <span class="badge bg-dark text-light ms-2">Архив</span>';
+      }
       row.appendChild(nameCell);
 
       const contactCell = document.createElement('td');
@@ -661,6 +667,7 @@
     if (employeeSearch) {
       params.set('search', employeeSearch);
     }
+    params.set('include_archived', adminHideArchived ? '0' : '1');
     
     // Use shared filter builder for project/department/team filters
     const filterParams = buildFilterParams(null, null, null, selectedEmployeeFilters);
@@ -916,6 +923,9 @@
     employeeEditTeam.value = payload.team || '';
     employeeEditLocation.value = payload.location || '';
     employeeEditPlanStart.value = payload.plan_start || '';
+    if (employeeEditArchived) {
+      employeeEditArchived.checked = Boolean(payload.archived);
+    }
     renderManagerOptions(employeeEditManager, payload.control_manager != null ? payload.control_manager : '');
     employeeEditModal.show();
   }
@@ -1302,6 +1312,14 @@
     });
   }
 
+  if (adminArchiveSwitch) {
+    adminArchiveSwitch.addEventListener('change', () => {
+      adminHideArchived = adminArchiveSwitch.checked;
+      employeePage = 1;
+      fetchEmployees();
+    });
+  }
+
   if (prevBtn) {
     prevBtn.addEventListener('click', () => {
       if (employeePage > 1) {
@@ -1354,6 +1372,7 @@
         location: (employeeEditLocation.value || '').trim(),
         plan_start: (employeeEditPlanStart.value || '').trim(),
         control_manager: employeeEditManager.value,
+        archived: employeeEditArchived ? employeeEditArchived.checked : false,
       };
 
       fetch(`/api/admin/employees/${encodeURIComponent(key)}`, {
@@ -1378,13 +1397,45 @@
     });
   }
 
+  async function archiveEmployee(key) {
+    employeeDeleteBtn.disabled = true;
+    try {
+      const response = await fetch(`/api/admin/employees/${encodeURIComponent(key)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ archived: true }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Не вдалося архівувати користувача');
+      }
+      showAlert('Користувача переміщено в архів', 'success');
+      if (employeeEditModal) {
+        employeeEditModal.hide();
+      }
+      fetchEmployees();
+      fetchDiffState().catch(() => {});
+    } catch (error) {
+      showAlert(error.message);
+    } finally {
+      employeeDeleteBtn.disabled = false;
+    }
+  }
+
   if (employeeDeleteBtn && employeeEditModal) {
     employeeDeleteBtn.addEventListener('click', () => {
       const key = (employeeEditKey.value || '').trim();
       if (!key) {
         return;
       }
-      if (!window.confirm('Удалить пользователя и все записи attendance?')) {
+      const archiveChoice = window.confirm('Перенести користувача в архів? (ОК — архівувати, Cancel — інші дії)');
+      if (archiveChoice) {
+        archiveEmployee(key);
+        return;
+      }
+      if (!window.confirm('Остаточно видалити користувача і його дані?')) {
         return;
       }
       employeeDeleteBtn.disabled = true;

@@ -8,6 +8,29 @@ from urllib.parse import unquote
 views_bp = Blueprint('views', __name__)
 
 
+def _parse_manager_ids(manager_filter: str | None) -> list[int]:
+    if not manager_filter:
+        return []
+    result: list[int] = []
+    for value in manager_filter.split(','):
+        value = value.strip()
+        if not value:
+            continue
+        try:
+            result.append(int(value))
+        except ValueError:
+            continue
+    return result
+
+
+def _can_delete_any_presets(user) -> bool:
+    if getattr(user, 'is_admin', False):
+        return True
+    if not getattr(user, 'is_control_manager', False):
+        return False
+    return _parse_manager_ids(getattr(user, 'manager_filter', None)) == [3]
+
+
 @views_bp.route('/')
 @login_required
 def dashboard():
@@ -20,6 +43,8 @@ def dashboard():
         user_name=current_user.name,
         is_admin=getattr(current_user, 'is_admin', False),
         can_edit=can_edit,
+        can_manage_presets=can_edit,
+        can_delete_any_presets=_can_delete_any_presets(current_user),
         stats_date=yesterday.strftime('%d.%m.%Y'),
         current_time=now.strftime('%H:%M'),
         current_date=now.strftime('%d.%m.%Y')
@@ -112,10 +137,26 @@ def monthly_report():
         user_name=current_user.name,
         is_admin=getattr(current_user, 'is_admin', False),
         can_edit=can_edit,
+        can_manage_presets=can_edit,
+        can_delete_any_presets=_can_delete_any_presets(current_user),
         current_month=current_month,
         managers=managers,
         departments=departments,
         teams=teams,
         projects=projects,
         locations=locations
+    )
+
+
+@views_bp.route('/lateness')
+@login_required
+def lateness():
+    """Daily lateness archive view."""
+    can_edit = getattr(current_user, 'is_admin', False) or getattr(current_user, 'is_control_manager', False)
+    return render_template(
+        'lateness.html',
+        user_name=current_user.name,
+        is_admin=getattr(current_user, 'is_admin', False),
+        can_edit=can_edit,
+        default_days=7
     )

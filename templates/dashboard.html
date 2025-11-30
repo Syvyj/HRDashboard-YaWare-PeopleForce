@@ -62,10 +62,9 @@
         <div class="dashboard-card__body">
           
 
-          <form id="filters-form" class="row g-4 align-items-start">
-            <div class="col-lg-4 col-md-6">
-              <div class="filter-section">
-                <div class="filter-title"></div>
+          <form id="filters-form" class="row g-4 align-items-stretch">
+            <div class="col-lg-4 col-md-6 d-flex">
+              <div class="filter-section w-100 d-flex flex-column">
                 <div class="row g-2">
                   <div class="col">
                     <input
@@ -96,8 +95,8 @@
                 </div>
               </div>
             </div>
-            <div class="col-lg-5 col-md-6">
-              <div class="filter-section">
+            <div class="col-lg-4 col-md-6 d-flex">
+              <div class="filter-section w-100 d-flex flex-column">
                 <div class="d-flex gap-2">
                   <button
                     type="button"
@@ -119,19 +118,19 @@
                   id="selected-filters-display"
                   class="mt-2 small text-muted"
                 ></div>
-                <div>
-                <button
-                  type="button"
-                  id="report-generate-btn"
-                  class="btn btn-outline-primary w-100 mt-3"
-                >
-                  Сформировать отчет
-                </button>
-              </div>
+                <div class="mt-3">
+                  <button
+                    type="button"
+                    id="report-generate-btn"
+                    class="btn btn-outline-primary w-100"
+                  >
+                    Сформировать отчет
+                  </button>
+                </div>
               </div>
             </div>
-            <div class="col-lg-3">
-              <div class="filter-section">
+            <div class="col-lg-4 d-flex">
+              <div class="filter-section w-100 d-flex flex-column">
 
                 <div class="input-group">
                   <input
@@ -151,11 +150,22 @@
                 >
                   <i class="bi bi-people-fill"></i> Выбрать несколько сотрудников
                 </button>
+                <div class="form-check form-switch" style="margin-top: 0.5rem">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="archive-filter-switch"
+                    checked
+                  />
+                  <label class="form-check-label" for="archive-filter-switch">
+                    Приховувати архівних співробітників
+                  </label>
+                </div>
               </div>
             </div>
           </form>
           <!-- Week navigation -->
-          <div class="d-flex justify-content-start align-items-center gap-3" style="margin-top: 10px;">
+          <div class="d-flex justify-content-center align-items-center gap-3" style="margin-top: 10px;">
             <button type="button" id="prev-week-btn" class="btn btn-outline-primary">
               <i class="bi bi-chevron-left"></i> Прошлая неделя
             </button>
@@ -166,6 +176,11 @@
               Следующая неделя <i class="bi bi-chevron-right"></i>
             </button>
             <span id="week-display" class="ms-3 text-muted"></span>
+          </div>
+          <div class="d-flex justify-content-center mt-3">
+            <a href="{{ url_for('views.lateness') }}" class="btn btn-outline-secondary">
+              Опоздания
+            </a>
           </div>
         </div>
       </div>
@@ -526,6 +541,8 @@
       tabindex="-1"
       aria-labelledby="multiSelectModalLabel"
       aria-hidden="true"
+      data-can-manage-presets="{{ 1 if can_manage_presets else 0 }}"
+      data-can-delete-all-presets="{{ 1 if can_delete_any_presets else 0 }}"
     >
       <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -549,7 +566,7 @@
                 placeholder="Поиск по имени или email..."
               />
             </div>
-            <div class="mb-3">
+            <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
               <button
                 type="button"
                 id="select-all-employees"
@@ -568,9 +585,35 @@
             <div id="multi-select-list" class="list-group" style="max-height: 400px; overflow-y: auto;">
               <!-- Employee list will be populated here -->
             </div>
-            <div class="mt-3">
+            <div class="d-flex align-items-center flex-wrap gap-2 mt-3">
               <span class="badge bg-primary" id="selected-count">Выбрано: 0</span>
+              {% if can_manage_presets %}
+              <div class="d-flex align-items-center flex-wrap gap-2 flex-grow-1" id="preset-badges"></div>
+              {% endif %}
             </div>
+            {% if can_manage_presets %}
+            <div class="mt-3" id="preset-controls">
+              <button type="button" class="btn btn-sm btn-outline-success" id="show-save-preset">
+                Зберегти пресет
+              </button>
+              <div class="input-group input-group-sm mt-2 d-none" id="save-preset-form">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Назва пресету"
+                  id="preset-name-input"
+                  maxlength="128"
+                />
+                <button class="btn btn-primary" type="button" id="confirm-save-preset">
+                  Зберегти
+                </button>
+                <button class="btn btn-outline-secondary" type="button" id="cancel-save-preset">
+                  Скасувати
+                </button>
+              </div>
+              <div class="form-text text-danger d-none" id="preset-error"></div>
+            </div>
+            {% endif %}
           </div>
           <div class="modal-footer">
             <button

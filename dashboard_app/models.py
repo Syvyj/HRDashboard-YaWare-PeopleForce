@@ -2,7 +2,6 @@ from __future__ import annotations
 from datetime import datetime, date
 from typing import List, Optional
 from sqlalchemy import text, inspect
-from sqlalchemy import text
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from .extensions import db
@@ -149,6 +148,47 @@ class AdminAuditLog(db.Model):
     __table_args__ = (
         db.Index('idx_audit_user_action', 'user_id', 'action'),
         db.Index('idx_audit_created', 'created_at'),
+    )
+
+
+class EmployeePreset(db.Model):
+    __tablename__ = 'employee_presets'
+
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    name = db.Column(db.String(128), nullable=False)
+    employee_keys = db.Column(db.JSON, nullable=False, default=list)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    owner = db.relationship('User', backref=db.backref('employee_presets', lazy='dynamic'))
+
+    __table_args__ = (
+        db.UniqueConstraint('owner_id', 'name', name='uq_employee_preset_owner_name'),
+        db.Index('idx_employee_preset_created', 'created_at'),
+    )
+
+
+class LatenessRecord(db.Model):
+    __tablename__ = 'lateness_records'
+
+    id = db.Column(db.Integer, primary_key=True)
+    record_date = db.Column(db.Date, nullable=False, index=True)
+    user_name = db.Column(db.String(255), nullable=False, index=True)
+    user_email = db.Column(db.String(255), nullable=True, index=True)
+    user_id = db.Column(db.String(64), nullable=True, index=True)
+    project = db.Column(db.String(255), nullable=True)
+    department = db.Column(db.String(255), nullable=True)
+    team = db.Column(db.String(255), nullable=True)
+    location = db.Column(db.String(255), nullable=True)
+    scheduled_start = db.Column(db.String(16), nullable=True)
+    actual_start = db.Column(db.String(16), nullable=True)
+    minutes_late = db.Column(db.Integer, nullable=True)
+    status = db.Column(db.String(16), nullable=False)  # late / absent
+    control_manager = db.Column(db.Integer, nullable=True, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        db.Index('idx_lateness_date_status', 'record_date', 'status'),
     )
 
 

@@ -257,6 +257,17 @@
                         id="employee-selected-filters-display"
                         class="small text-muted mt-1"
                       ></div>
+                      <div class="form-check form-switch mt-2">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="admin-archive-switch"
+                          checked
+                        />
+                        <label class="form-check-label small" for="admin-archive-switch">
+                          Приховувати архів
+                        </label>
+                      </div>
                     </div>
                   </th>
                   <th>Control manager</th>
@@ -684,12 +695,25 @@
                   />
                 </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Control manager</label>
-                <select class="form-select" id="employee-edit-manager"></select>
+                <div class="mb-3">
+                  <label class="form-label">Control manager</label>
+                  <select class="form-select" id="employee-edit-manager"></select>
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="employee-edit-archived"
+                  />
+                  <label class="form-check-label" for="employee-edit-archived">
+                    Користувач в архіві
+                  </label>
+                  <div class="form-text">
+                    Архівовані співробітники не відображаються у звітах та статистиці.
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="modal-footer">
+              <div class="modal-footer">
               <div class="me-auto d-flex gap-2">
                 <button
                   type="button"

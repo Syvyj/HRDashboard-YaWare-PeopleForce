@@ -1056,9 +1056,8 @@
       "direction_id": null,
       "unit_name": "Recruitment Unit",
       "unit_id": 125495,
-      "team_name": "",
       "team_id": null,
-      "peopleforce_id": 562908,
+      "peopleforce_id": "562908",
       "email": "h.khan@evadav.com",
       "user_id": "7934329",
       "start_time": "10:00",
@@ -1070,9 +1069,13 @@
       "department": "Human Resources Direction",
       "position": "Recruiter",
       "manager_name": "Zhara_Lilia",
-      "location": "Remote Ukraine",
+      "location": "UA",
       "unit": "Recruitment Unit",
-      "internal_id": 140
+      "internal_id": 140,
+      "_manual_overrides": {
+        "location": true
+      },
+      "archived": true
     },
     "Khominskiy Alexey": {
       "user_name": "Khominskii Aleksei",
@@ -4617,6 +4620,6 @@
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-25T09:35:53.314628"
+    "last_updated": "2025-11-30T12:47:36.560200"
   }
 }

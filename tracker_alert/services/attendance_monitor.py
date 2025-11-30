@@ -48,6 +48,7 @@ class UserSchedule:
     internal_id: Optional[int] = None
     peopleforce_id: Optional[int] = None
     ignored: bool = False
+    archived: bool = False
 
 
 @dataclass
@@ -83,6 +84,7 @@ class AttendanceMonitor:
         for name, user_data in data.get('users', {}).items():
             start_time = user_data.get('start_time') or ''
             ignored = bool(user_data.get('ignored'))
+            archived = bool(user_data.get('archived'))
             
             control_manager = user_data.get('control_manager')
             if control_manager is not None:
@@ -119,11 +121,12 @@ class AttendanceMonitor:
                 note=user_data.get('note'),
                 internal_id=internal_id,
                 peopleforce_id=peopleforce_id,
-                ignored=ignored
+                ignored=ignored,
+                archived=archived
             )
             
-            # Фільтруємо виключених, ignore та нічні зміни
-            if schedule.ignored or schedule.exclude_from_reports or schedule.note == 'Нічна зміна':
+            # Фільтруємо виключених, ignore, архів та нічні зміни
+            if schedule.ignored or schedule.archived or schedule.exclude_from_reports or schedule.note == 'Нічна зміна':
                 continue
             
             schedules[schedule.user_id] = schedule

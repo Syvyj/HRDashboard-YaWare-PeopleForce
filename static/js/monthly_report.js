@@ -114,6 +114,10 @@
       });
     }
 
+    if (typeof window.getIncludeArchivedParam === 'function') {
+      params.set('include_archived', window.getIncludeArchivedParam());
+    }
+
     // Load notes first
     loadMonthlyNotes(filters.month).then(() => {
       fetch('/api/monthly-report?' + params.toString())
@@ -338,6 +342,9 @@
       Array.from(window.selectedEmployees).forEach(key => {
         params.append('user_key', key);
       });
+    }
+    if (typeof window.getIncludeArchivedParam === 'function') {
+      params.set('include_archived', window.getIncludeArchivedParam());
     }
     
     const url = format === 'pdf'

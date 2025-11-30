@@ -7,6 +7,7 @@ from typing import List, Optional
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine, make_url
+from sqlalchemy.exc import OperationalError
 
 from tracker_alert.services.attendance_monitor import UserSchedule, AttendanceStatus
 
@@ -43,9 +44,12 @@ class DashboardReportService:
             ORDER BY user_name
             """
         )
-        with self.engine.connect() as conn:
-            rows = conn.execute(query, {"target_date": target_date.isoformat()})
-            return [dict(row) for row in rows]
+        try:
+            with self.engine.connect() as conn:
+                rows = conn.execute(query, {"target_date": target_date.isoformat()})
+                return [dict(row) for row in rows]
+        except OperationalError:
+            return []
 
     def _build_statuses(self, target_date: date) -> List[AttendanceStatus]:
         rows = self._fetch_status_rows(target_date)

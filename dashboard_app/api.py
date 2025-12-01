@@ -4868,7 +4868,7 @@ def week_notes():
         schedule = get_user_schedule(user_key)
         peopleforce_id = None
         if schedule:
-            peopleforce_id = schedule.get('peopleforce_id')
+            peopleforce_id = getattr(schedule, 'peopleforce_id', None)
         if not peopleforce_id:
             peopleforce_id = _get_peopleforce_id_for_user(user_key)
         

@@ -4929,16 +4929,25 @@ def week_notes():
         
         # Find or create week_total record (only if we have records for this week)
         if first_record:
+            # Search by internal_user_id first (most reliable), then by user identifiers
             week_total_record = AttendanceRecord.query.filter(
                 AttendanceRecord.record_date == week_total_date,
-                AttendanceRecord.record_type == 'week_total'
-            ).filter(
-                or_(
-                    AttendanceRecord.user_email == user_key,
-                    AttendanceRecord.user_id == user_key,
-                    AttendanceRecord.user_name == user_key
-                )
+                AttendanceRecord.record_type == 'week_total',
+                AttendanceRecord.internal_user_id == first_record.internal_user_id
             ).first()
+            
+            # If not found by internal_user_id, try other identifiers
+            if not week_total_record:
+                week_total_record = AttendanceRecord.query.filter(
+                    AttendanceRecord.record_date == week_total_date,
+                    AttendanceRecord.record_type == 'week_total'
+                ).filter(
+                    or_(
+                        AttendanceRecord.user_email == user_key,
+                        AttendanceRecord.user_id == user_key,
+                        AttendanceRecord.user_name == user_key
+                    )
+                ).first()
             
             if week_total_record:
                 # Update existing

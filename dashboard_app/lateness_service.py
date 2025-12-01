@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import date
 from typing import Iterable
 
@@ -9,6 +10,8 @@ from dashboard_app.user_data import get_user_schedule
 from dashboard_app.constants import SEVEN_DAY_WORK_WEEK_IDS
 from tasks.update_attendance import update_for_date
 from tracker_alert.services.attendance_monitor import AttendanceMonitor
+
+logger = logging.getLogger(__name__)
 
 
 class LatenessCollectorError(Exception):
@@ -63,14 +66,19 @@ def _is_weekend_worker(record: AttendanceRecord) -> bool:
 
 
 def collect_lateness_for_date(target_date: date, *, include_absent: bool = True, skip_weekends: bool = False) -> int:
+    logger.info(f"Starting lateness collection for {target_date}, include_absent={include_absent}, skip_weekends={skip_weekends}")
     monitor = AttendanceMonitor()
     performed = _ensure_attendance_data(monitor, target_date, include_absent, skip_weekends)
     if not performed:
+        logger.info(f"Skipped {target_date} (weekend)")
         return 0
 
     try:
         records = _load_lateness_records(target_date)
-        LatenessRecord.query.filter_by(record_date=target_date).delete()
+        logger.info(f"Loaded {len(records)} lateness records from AttendanceRecord for {target_date}")
+        
+        deleted = LatenessRecord.query.filter_by(record_date=target_date).delete()
+        logger.info(f"Deleted {deleted} existing lateness records for {target_date}")
         inserted = 0
 
         is_weekend = target_date.weekday() >= 5
@@ -109,7 +117,9 @@ def collect_lateness_for_date(target_date: date, *, include_absent: bool = True,
             inserted += 1
 
         db.session.commit()
+        logger.info(f"Successfully saved {inserted} lateness records for {target_date}")
         return inserted
     except Exception as exc:
+        logger.error(f"Failed to collect lateness for {target_date}: {exc}", exc_info=True)
         db.session.rollback()
         raise LatenessCollectorError(str(exc)) from exc

@@ -1000,18 +1000,22 @@
         })
       });
       
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Failed to save week notes');
+        throw new Error(data.error || 'Failed to save week notes');
+      }
+      
+      // Close modal first before reload
+      if (weekNotesModal) {
+        weekNotesModal.hide();
       }
       
       // Reload data to show updated notes
       await loadData();
       
-      if (weekNotesModal) {
-        weekNotesModal.hide();
-      }
     } catch (error) {
-      console.error(error);
+      console.error('Error saving week notes:', error);
       alert('Не удалось сохранить комментарий: ' + error.message);
     } finally {
       if (weekNotesSaveBtn) {

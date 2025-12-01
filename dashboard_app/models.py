@@ -185,6 +185,7 @@ class LatenessRecord(db.Model):
     minutes_late = db.Column(db.Integer, nullable=True)
     status = db.Column(db.String(16), nullable=False)  # late / absent
     control_manager = db.Column(db.Integer, nullable=True, index=True)
+    leave_reason = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     __table_args__ = (
@@ -217,6 +218,11 @@ def ensure_schema() -> None:
             for column, ddl in manual_columns.items():
                 if column not in columns:
                     conn.execute(text(f"ALTER TABLE attendance_records ADD COLUMN {column} {ddl}"))
+
+            result = conn.execute(text("PRAGMA table_info(lateness_records)"))
+            lateness_columns = {row[1] for row in result}
+            if 'leave_reason' not in lateness_columns:
+                conn.execute(text("ALTER TABLE lateness_records ADD COLUMN leave_reason TEXT"))
     else:
         inspector = inspect(engine)
         column_names = {col['name'] for col in inspector.get_columns('attendance_records')}
@@ -224,3 +230,8 @@ def ensure_schema() -> None:
             for column, ddl in manual_columns.items():
                 if column not in column_names:
                     conn.execute(text(f"ALTER TABLE attendance_records ADD COLUMN {column} {ddl}"))
+
+        lateness_column_names = {col['name'] for col in inspector.get_columns('lateness_records')}
+        with engine.begin() as conn:
+            if 'leave_reason' not in lateness_column_names:
+                conn.execute(text("ALTER TABLE lateness_records ADD COLUMN leave_reason TEXT"))

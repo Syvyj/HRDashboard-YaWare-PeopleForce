@@ -5520,6 +5520,7 @@ def _serialize_lateness_record(record: LatenessRecord) -> dict:
         'minutes_late': record.minutes_late,
         'status': record.status,
         'control_manager': record.control_manager,
+        'leave_reason': record.leave_reason,
     }
 
 

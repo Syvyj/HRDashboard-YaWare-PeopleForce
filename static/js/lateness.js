@@ -32,6 +32,26 @@
     return `${hours}:${minutes}`;
   }
 
+  function statusLabel(row) {
+    if (row.status === 'late') {
+      return 'Опоздал';
+    }
+    const reason = (row.leave_reason || '').toLowerCase();
+    if (reason.includes('vacation') || reason.includes('отпуск') || reason.includes('відпуст')) {
+      return 'Отпуск';
+    }
+    if (reason.includes('sick') || reason.includes('больнич') || reason.includes('лікар')) {
+      return 'Больничный';
+    }
+    if (reason.includes('day off') || reason.includes('выходн') || reason.includes('вихідн') || reason.includes('без оплаты') || reason.includes('без сохранения') || reason.includes('за свой') || reason.includes('own cost')) {
+      return 'Отпуск за свой счёт';
+    }
+    if (reason.includes('matern') || reason.includes('декрет')) {
+      return 'Декрет';
+    }
+    return 'Отсутствует';
+  }
+
   function createTable(rows) {
     if (!rows.length) {
       return '<div class="text-muted small">Нет записей</div>';
@@ -52,7 +72,7 @@
     const body = rows
       .map((row) => {
         const minutes = formatMinutes(row.minutes_late);
-        const status = row.status === 'late' ? 'Опоздал' : 'Отсутствует';
+        const status = statusLabel(row);
         return `
           <tr>
             <td>

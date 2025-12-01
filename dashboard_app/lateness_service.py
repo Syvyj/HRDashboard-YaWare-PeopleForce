@@ -103,6 +103,7 @@ def collect_lateness_for_date(target_date: date, *, include_absent: bool = True,
                     minutes_late=record.minutes_late if record.minutes_late and record.minutes_late > 0 else 0,
                     status=record.status,
                     control_manager=record.control_manager,
+                    leave_reason=record.leave_reason,
                 )
             )
             inserted += 1

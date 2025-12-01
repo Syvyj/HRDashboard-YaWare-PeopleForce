@@ -13,3 +13,5 @@ SEVEN_DAY_WORK_WEEK_IDS = {
     406860,  # Zdorovets Yuliia
     372364,  # Shubska Oleksandra
 }
+
+WEEK_TOTAL_USER_ID_SUFFIX = '__week_total'

@@ -36,7 +36,7 @@ from tracker_alert.services.control_manager import auto_assign_control_manager
 from tracker_alert.services.dashboard_report import DashboardReportService
 from dashboard_app.lateness_service import collect_lateness_for_date, LatenessCollectorError
 from dashboard_app.models import LatenessRecord
-from dashboard_app.constants import SEVEN_DAY_WORK_WEEK_IDS
+from dashboard_app.constants import SEVEN_DAY_WORK_WEEK_IDS, WEEK_TOTAL_USER_ID_SUFFIX
 from .hierarchy_adapter import (
     load_level_grade_data,
     find_level_grade_match,
@@ -137,6 +137,42 @@ def _schedule_identity_sets() -> tuple[set[str], set[str], set[str]]:
             if user_id:
                 ids.add(user_id)
     return names, emails, ids
+
+
+def _build_week_total_user_id(value: str | None) -> str | None:
+    if not value:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    if text.endswith(WEEK_TOTAL_USER_ID_SUFFIX):
+        return text
+    return f"{text}{WEEK_TOTAL_USER_ID_SUFFIX}"
+
+
+def _strip_week_total_user_id(value: str | None) -> str | None:
+    if not value:
+        return value
+    text = str(value).strip()
+    if text.endswith(WEEK_TOTAL_USER_ID_SUFFIX):
+        return text[:-len(WEEK_TOTAL_USER_ID_SUFFIX)]
+    return text
+
+
+def _get_schedule_for_record(record) -> dict:
+    schedule = get_user_schedule(record.user_name)
+    if schedule:
+        return schedule
+    base_id = _strip_week_total_user_id(record.user_id)
+    if base_id:
+        schedule = get_user_schedule(base_id)
+        if schedule:
+            return schedule
+    if record.user_email:
+        schedule = get_user_schedule(record.user_email)
+        if schedule:
+            return schedule
+    return {}
 
 
 def _get_scheduler():
@@ -688,7 +724,7 @@ def _generate_user_diff(force_refresh: bool = False) -> dict:
 
 
 def _serialize_attendance_record(record: AttendanceRecord) -> dict:
-    user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
+    user_schedule = _get_schedule_for_record(record)
 
     scheduled_start = record.scheduled_start or ''
     actual_start = record.actual_start or ''
@@ -1042,7 +1078,7 @@ def _collect_employee_filters(records: list[AttendanceRecord]) -> dict[str, list
     units: set[str] = set()
     teams: set[str] = set()
     for record in records:
-        user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
+        user_schedule = _get_schedule_for_record(record)
         division_name = canonicalize_label(user_schedule.get('division_name'))
         direction_name = canonicalize_label(user_schedule.get('direction_name'))
         unit_name = canonicalize_label(user_schedule.get('unit_name'))
@@ -1072,7 +1108,7 @@ def _filter_employee_records(records: list[AttendanceRecord], attr: str, value: 
         return records
     filtered: list[AttendanceRecord] = []
     for record in records:
-        user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
+        user_schedule = _get_schedule_for_record(record)
         resolved_map = {
             'project': user_schedule.get('division_name'),
             'department': user_schedule.get('direction_name'),
@@ -1086,7 +1122,7 @@ def _filter_employee_records(records: list[AttendanceRecord], attr: str, value: 
 
 
 def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None = None) -> dict:
-    user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
+    user_schedule = _get_schedule_for_record(record)
     
     division_raw = user_schedule.get('division_name') or record.project or ''
     direction_raw = user_schedule.get('direction_name') or record.department or ''
@@ -1367,7 +1403,8 @@ def _sync_plan_start_for_date(target_date: date) -> tuple[int, int]:
 def _build_items(records):
     grouped = defaultdict(list)
     for record in records:
-        key = record.user_id or record.user_email or record.user_name
+        base_user_id = _strip_week_total_user_id(record.user_id)
+        key = base_user_id or record.user_email or record.user_name
         grouped[key].append(record)
 
     # Load week notes
@@ -1394,7 +1431,7 @@ def _build_items(records):
     for key, recs in grouped.items():
         recs.sort(key=lambda r: r.record_date)
         first = recs[0]
-        user_schedule_first = get_user_schedule(first.user_name) or get_user_schedule(first.user_id) or {}
+        user_schedule_first = _get_schedule_for_record(first)
         first_division = canonicalize_label(user_schedule_first.get('division_name') or first.project)
         first_direction = canonicalize_label(user_schedule_first.get('direction_name') or first.department)
         first_team = canonicalize_label(user_schedule_first.get('team_name') or first.team)
@@ -1454,7 +1491,7 @@ def _build_items(records):
             
             if rec.record_date.weekday() >= 5 and not include_weekends:
                 continue
-            rec_schedule = get_user_schedule(rec.user_name) or get_user_schedule(rec.user_id) or {}
+            rec_schedule = _get_schedule_for_record(rec)
             division_name = canonicalize_label(rec_schedule.get('division_name') or rec.project)
             direction_name = canonicalize_label(rec_schedule.get('direction_name') or rec.department)
             team_name = canonicalize_label(rec_schedule.get('team_name') or rec.team)
@@ -1712,7 +1749,8 @@ def _get_filtered_items():
             if user_key:
                 normalized = _normalize_user_key(user_key).lower()
                 for record in records:
-                    user_id_match = record.user_id and record.user_id.lower() == normalized
+                    record_user_id = _strip_week_total_user_id(record.user_id)
+                    user_id_match = record_user_id and record_user_id.lower() == normalized
                     email_match = record.user_email and record.user_email.lower() == normalized
                     name_match = record.user_name and record.user_name.lower() == normalized
                     if user_id_match or email_match or name_match:
@@ -2408,6 +2446,9 @@ def admin_update_employee(user_key: str):
     for record in records:
         if record.user_id:
             key_variants.add(record.user_id.lower())
+            stripped_id = _strip_week_total_user_id(record.user_id)
+            if stripped_id and stripped_id.lower() != record.user_id.lower():
+                key_variants.add(stripped_id.lower())
         if record.user_email:
             key_variants.add(record.user_email.lower())
         if record.user_name:
@@ -2419,7 +2460,7 @@ def admin_update_employee(user_key: str):
 
     # Отримуємо canonical hierarchy з user_schedules
     sample_record = records[0]
-    sample_schedule = get_user_schedule(sample_record.user_name) or get_user_schedule(sample_record.user_id) or {}
+    sample_schedule = _get_schedule_for_record(sample_record)
     canonical_division = sample_schedule.get('division_name')
     canonical_direction = sample_schedule.get('direction_name')
     canonical_team = sample_schedule.get('team_name')
@@ -4615,7 +4656,7 @@ def get_monthly_report():
             user_data[user_key]['user_name'] = record.user_name
             user_data[user_key]['user_email'] = record.user_email
 
-            schedule_info = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
+            schedule_info = _get_schedule_for_record(record)
             division_value = schedule_info.get('division_name') or record.project
             direction_value = schedule_info.get('direction_name') or record.department
             unit_value = schedule_info.get('unit_name') or record.team
@@ -4945,16 +4986,23 @@ def week_notes():
                 first_record.record_date.isoformat(),
             )
 
-            # Search by the UNIQUE constraint fields: record_date + user_id
-            existing_week_total = AttendanceRecord.query.filter(
-                AttendanceRecord.record_date == week_total_date,
-                AttendanceRecord.record_type == 'week_total',
-                AttendanceRecord.user_id == first_record.user_id
-            ).first()
+            base_identifier = first_record.user_id or first_record.user_email or first_record.user_name or str(first_record.internal_user_id) or f"week_total_{first_record.id or 'unknown'}"
+            storage_user_id = _build_week_total_user_id(base_identifier)
+            legacy_user_id = str(first_record.user_id).strip() if first_record.user_id else None
+            candidate_ids = [uid for uid in {storage_user_id, legacy_user_id} if uid]
+
+            existing_week_total = None
+            if candidate_ids:
+                existing_week_total = AttendanceRecord.query.filter(
+                    AttendanceRecord.record_date == week_total_date,
+                    AttendanceRecord.record_type == 'week_total',
+                    AttendanceRecord.user_id.in_(candidate_ids)
+                ).first()
 
             logger.info(
-                "week_notes week_total lookup user_id=%s date=%s exists=%s",
+                "week_notes week_total lookup base_user_id=%s storage_user_id=%s date=%s exists=%s",
                 first_record.user_id,
+                storage_user_id,
                 week_total_date.isoformat(),
                 bool(existing_week_total),
             )
@@ -4970,13 +5018,15 @@ def week_notes():
                 week_total_record.corrected_total_minutes = total_corrected if has_corrected else None
                 week_total_record.notes = notes
                 week_total_record.control_manager = current_user.id if getattr(current_user, 'is_control_manager', False) else None
+                if storage_user_id:
+                    week_total_record.user_id = storage_user_id
             else:
                 # Create new based on first record of the week
                 week_total_record = AttendanceRecord(
                     record_date=week_total_date,
                     record_type='week_total',
                     internal_user_id=first_record.internal_user_id,
-                    user_id=first_record.user_id,
+                    user_id=storage_user_id,
                     user_name=first_record.user_name,
                     user_email=first_record.user_email,
                     project=first_record.project,

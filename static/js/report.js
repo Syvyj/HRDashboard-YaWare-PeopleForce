@@ -1140,6 +1140,14 @@
       const params = new URLSearchParams();
       applyArchiveParam(params);
       
+      // Load employees from last 30 days to ensure we get the list
+      // даже если в текущем периоде нет данных
+      const today = new Date();
+      const lastMonth = new Date(today);
+      lastMonth.setDate(today.getDate() - 30);
+      params.set('date_from', lastMonth.toISOString().slice(0, 10));
+      params.set('date_to', today.toISOString().slice(0, 10));
+      
       // Use different endpoint for monthly page
       let endpoint = '/api/attendance';
       if (isMonthlyPage) {
@@ -1156,11 +1164,11 @@
       const items = data.items || data.employees || [];
       if (!items || items.length === 0) {
         console.error('No employees found:', data);
-        alert('Помилка: не знайдено співробітників');
+        alert('Ошибка: не найдены сотрудники за последний месяц');
         return;
       }
       
-      // Створюємо унікальний список співробітників
+      // Создаем уникальный список сотрудников
       const employeesMap = new Map();
       items.forEach(item => {
         const key = item.user_email || item.user_key || item.user_id || item.user_name;
@@ -1321,7 +1329,7 @@
       renderPresetBadges();
     } catch (error) {
       console.error('Failed to delete preset:', error);
-      alert('Не вдалося видалити пресет');
+      alert('Не удалось удалить пресет');
     }
   }
 

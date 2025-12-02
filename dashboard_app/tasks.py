@@ -37,6 +37,37 @@ LOCAL_TZ = pytz.timezone("Europe/Warsaw")
 SCHEDULER_LOG = deque(maxlen=200)
 
 
+def _backup_database(app):
+    """Створює бекап бази даних перед синхронізацією."""
+    try:
+        instance_path = app.instance_path
+        db_path = os.path.join(instance_path, 'dashboard.db')
+        if not os.path.exists(db_path):
+            logger.warning("[scheduler] Database file not found: %s", db_path)
+            return
+        
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup_path = os.path.join(instance_path, f'dashboard.db.auto_backup_{timestamp}')
+        
+        import shutil
+        shutil.copy2(db_path, backup_path)
+        logger.info("[scheduler] Database backup created: %s", backup_path)
+        
+        # Видаляємо старі автобекапи (залишаємо останні 7)
+        backup_files = sorted([
+            f for f in os.listdir(instance_path) 
+            if f.startswith('dashboard.db.auto_backup_')
+        ], reverse=True)
+        
+        for old_backup in backup_files[7:]:
+            old_path = os.path.join(instance_path, old_backup)
+            os.remove(old_path)
+            logger.info("[scheduler] Removed old backup: %s", old_backup)
+            
+    except Exception as e:
+        logger.error("[scheduler] Failed to backup database: %s", e, exc_info=True)
+
+
 def _with_app_context(app, func, *args, **kwargs):
     with app.app_context():
         return func(app, *args, **kwargs)
@@ -598,6 +629,10 @@ def register_tasks(app):
         return
 
     scheduler = BackgroundScheduler(timezone=LOCAL_TZ)
+    # 09:14 Warsaw - бекап БД перед синхронізацією
+    scheduler.add_job(lambda: _with_app_context(app, _backup_database), 
+                      CronTrigger(hour=9, minute=14, timezone=LOCAL_TZ),
+                      id='pre_sync_backup', replace_existing=True)
     # 09:15 Warsaw - синхронізація з YaWare за минулу добу (щодня)
     scheduler.add_job(lambda: _with_app_context(app, _run_daily_attendance), 
                       CronTrigger(hour=9, minute=15, timezone=LOCAL_TZ),
@@ -620,6 +655,7 @@ def register_tasks(app):
 
     logger.info(
         "[scheduler] Background scheduler started (timezone: Europe/Warsaw):\n"
+        "  - 09:14 Warsaw - Database backup before sync\n"
         "  - 09:15 Warsaw - YaWare attendance sync (Mon-Fri)\n"
         "  - 09:17 Warsaw - PeopleForce leave status sync (Mon-Fri)"
     )

@@ -1723,10 +1723,11 @@ def _get_schedule_filters(selected: dict[str, str] | None = None) -> dict[str, d
 
 
 def _get_filtered_items():
-    # Filter only daily records (exclude week_total)
+    # Include daily and week_total records for display
     query = _apply_filters(AttendanceRecord.query)
     query = query.filter(or_(
         AttendanceRecord.record_type == 'daily',
+        AttendanceRecord.record_type == 'week_total',
         AttendanceRecord.record_type.is_(None)  # для старих записів без record_type
     ))
     records = query.order_by(AttendanceRecord.user_name.asc(), AttendanceRecord.record_date.asc()).all()

@@ -4986,7 +4986,7 @@ def week_notes():
                 first_record.record_date.isoformat(),
             )
 
-            base_identifier = first_record.user_id or first_record.user_email or first_record.user_name or str(first_record.internal_user_id) or f"week_total_{first_record.id or 'unknown'}"
+            base_identifier = first_record.user_email or first_record.user_name or first_record.user_id or str(first_record.internal_user_id) or f"week_total_{first_record.id or 'unknown'}"
             storage_user_id = _build_week_total_user_id(base_identifier)
             legacy_user_id = str(first_record.user_id).strip() if first_record.user_id else None
             candidate_ids = [uid for uid in {storage_user_id, legacy_user_id} if uid]

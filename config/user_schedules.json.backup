@@ -1056,9 +1056,8 @@
       "direction_id": null,
       "unit_name": "Recruitment Unit",
       "unit_id": 125495,
-      "team_name": "",
       "team_id": null,
-      "peopleforce_id": 562908,
+      "peopleforce_id": "562908",
       "email": "h.khan@evadav.com",
       "user_id": "7934329",
       "start_time": "10:00",
@@ -1070,9 +1069,13 @@
       "department": "Human Resources Direction",
       "position": "Recruiter",
       "manager_name": "Zhara_Lilia",
-      "location": "Remote Ukraine",
+      "location": "UA",
       "unit": "Recruitment Unit",
-      "internal_id": 140
+      "internal_id": 140,
+      "_manual_overrides": {
+        "location": true
+      },
+      "archived": true
     },
     "Khominskiy Alexey": {
       "user_name": "Khominskii Aleksei",
@@ -4609,14 +4612,47 @@
       "project": "Agency",
       "start_time": "09:00",
       "control_manager": 1,
-      "internal_id": 289
+      "internal_id": 289,
+      "division_name": "Agency"
     },
     "Станислав Мельницын": {
       "user_id": "7937956",
       "ignored": true
+    },
+    "Kulik Illia": {
+      "email": "i.kulik@evadav.com",
+      "user_id": "7939663",
+      "peopleforce_id": "594190",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "start_time": true,
+        "control_manager": true
+      },
+      "project": "Agency",
+      "department": "Media Buying Direction",
+      "start_time": "09:00",
+      "control_manager": 1
+    },
+    "Voronkov Dmytro": {
+      "email": "d.voronkov@evadav.com",
+      "user_id": "7939671",
+      "peopleforce_id": "595266",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "start_time": true,
+        "control_manager": true
+      },
+      "project": "Agency",
+      "start_time": "09:00",
+      "control_manager": 1
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-25T09:35:53.314628"
+    "last_updated": "2025-12-02T09:39:53.372452"
   }
 }

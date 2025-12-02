@@ -1087,7 +1087,7 @@
       "unit_id": null,
       "team_name": "Traffic BizDev Team",
       "team_id": 127886,
-      "peopleforce_id": 512436,
+      "peopleforce_id": "512436",
       "email": "a.khominskiy@evadav.com",
       "user_id": "7928818",
       "start_time": "10:00",
@@ -1099,7 +1099,7 @@
       "department": "Sales Direction",
       "position": "Sales manager",
       "manager_name": "Sarkisov_Moses",
-      "location": "Remote Other Countries",
+      "location": "Remote",
       "peopleforce_leave_status": "Отпуск",
       "peopleforce_leave_amount": 1.0,
       "peopleforce_leave_start": "2025-11-24",
@@ -1108,7 +1108,10 @@
       "peopleforce_leave_updated_at": "2025-11-24",
       "unit": "Traffic Unit",
       "team": "Traffic BizDev Team",
-      "internal_id": 141
+      "internal_id": 141,
+      "_manual_overrides": {
+        "location": true
+      }
     },
     "Klimchenya Valery": {
       "user_name": "Klimchenya Valeriy",
@@ -4612,14 +4615,47 @@
       "project": "Agency",
       "start_time": "09:00",
       "control_manager": 1,
-      "internal_id": 289
+      "internal_id": 289,
+      "division_name": "Agency"
     },
     "Станислав Мельницын": {
       "user_id": "7937956",
       "ignored": true
+    },
+    "Kulik Illia": {
+      "email": "i.kulik@evadav.com",
+      "user_id": "7939663",
+      "peopleforce_id": "594190",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "department": true,
+        "start_time": true,
+        "control_manager": true
+      },
+      "project": "Agency",
+      "department": "Media Buying Direction",
+      "start_time": "09:00",
+      "control_manager": 1
+    },
+    "Voronkov Dmytro": {
+      "email": "d.voronkov@evadav.com",
+      "user_id": "7939671",
+      "peopleforce_id": "595266",
+      "location": "Remote",
+      "_manual_overrides": {
+        "location": true,
+        "project": true,
+        "start_time": true,
+        "control_manager": true
+      },
+      "project": "Agency",
+      "start_time": "09:00",
+      "control_manager": 1
     }
   },
   "_metadata": {
-    "last_updated": "2025-11-30T12:47:36.560200"
+    "last_updated": "2025-12-02T09:41:09.774298"
   }
 }

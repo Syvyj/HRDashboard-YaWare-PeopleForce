@@ -1585,7 +1585,7 @@ def _build_items(records):
                 'corrected_total_minutes': week_total_from_db.corrected_total_minutes,
                 'corrected_total_display': _minutes_to_str(week_total_from_db.corrected_total_minutes) if week_total_from_db.corrected_total_minutes is not None else '',
                 'corrected_total_hm': _minutes_to_hm(week_total_from_db.corrected_total_minutes) if week_total_from_db.corrected_total_minutes is not None else '',
-                'notes': week_total_from_db.notes or week_note,
+                'notes': week_note,  # Always use JSON file as source of truth
                 'from_db': True
             }
         else:

@@ -4979,88 +4979,54 @@ def week_notes():
         
         # Find or create week_total record (only if we have records for this week)
         if first_record:
-            logger.info(
-                "week_notes first_record user_id=%s internal_id=%s sample_date=%s",
-                first_record.user_id,
-                first_record.internal_user_id,
-                first_record.record_date.isoformat(),
-            )
-
             base_identifier = first_record.user_email or first_record.user_name or first_record.user_id or str(first_record.internal_user_id) or f"week_total_{first_record.id or 'unknown'}"
             storage_user_id = _build_week_total_user_id(base_identifier)
-            legacy_user_id = str(first_record.user_id).strip() if first_record.user_id else None
-            candidate_ids = [uid for uid in {storage_user_id, legacy_user_id} if uid]
-
-            existing_week_total = None
-            if candidate_ids:
-                existing_week_total = AttendanceRecord.query.filter(
-                    AttendanceRecord.record_date == week_total_date,
-                    AttendanceRecord.record_type == 'week_total',
-                    AttendanceRecord.user_id.in_(candidate_ids)
-                ).first()
-
-            logger.info(
-                "week_notes week_total lookup base_user_id=%s storage_user_id=%s date=%s exists=%s",
-                first_record.user_id,
-                storage_user_id,
-                week_total_date.isoformat(),
-                bool(existing_week_total),
-            )
-
-            if existing_week_total:
-                week_total_record = existing_week_total
-                # Update existing
-                week_total_record.minutes_late = total_minutes_late
-                week_total_record.non_productive_minutes = total_non_productive
-                week_total_record.not_categorized_minutes = total_not_categorized
-                week_total_record.productive_minutes = total_productive
-                week_total_record.total_minutes = total_minutes
-                week_total_record.corrected_total_minutes = total_corrected if has_corrected else None
-                week_total_record.notes = notes
-                week_total_record.control_manager = current_user.id if getattr(current_user, 'is_control_manager', False) else None
-                if storage_user_id:
-                    week_total_record.user_id = storage_user_id
-            else:
-                # Create new based on first record of the week
-                week_total_record = AttendanceRecord(
-                    record_date=week_total_date,
-                    record_type='week_total',
-                    internal_user_id=first_record.internal_user_id,
-                    user_id=storage_user_id,
-                    user_name=first_record.user_name,
-                    user_email=first_record.user_email,
-                    project=first_record.project,
-                    department=first_record.department,
-                    team=first_record.team,
-                    location=first_record.location,
-                    scheduled_start=None,
-                    actual_start=None,
-                    minutes_late=total_minutes_late,
-                    non_productive_minutes=total_non_productive,
-                    not_categorized_minutes=total_not_categorized,
-                    productive_minutes=total_productive,
-                    total_minutes=total_minutes,
-                    corrected_total_minutes=total_corrected if has_corrected else None,
-                    status='present',
-                    notes=notes,
-                    control_manager=current_user.id if getattr(current_user, 'is_control_manager', False) else None
+            
+            # Use raw SQL UPSERT to avoid race conditions and UNIQUE constraint errors
+            from sqlalchemy import text
+            upsert_sql = text("""
+                INSERT INTO attendance_records (
+                    record_date, record_type, internal_user_id, user_id, user_name, user_email,
+                    project, department, team, location, scheduled_start, actual_start,
+                    minutes_late, non_productive_minutes, not_categorized_minutes, productive_minutes,
+                    total_minutes, corrected_total_minutes, status, notes, control_manager, created_at
+                ) VALUES (
+                    :record_date, 'week_total', :internal_user_id, :user_id, :user_name, :user_email,
+                    :project, :department, :team, :location, NULL, NULL,
+                    :minutes_late, :non_productive_minutes, :not_categorized_minutes, :productive_minutes,
+                    :total_minutes, :corrected_total_minutes, 'present', :notes, :control_manager, datetime('now')
                 )
-                db.session.add(week_total_record)
-
+                ON CONFLICT(record_date, user_id) DO UPDATE SET
+                    minutes_late = :minutes_late,
+                    non_productive_minutes = :non_productive_minutes,
+                    not_categorized_minutes = :not_categorized_minutes,
+                    productive_minutes = :productive_minutes,
+                    total_minutes = :total_minutes,
+                    corrected_total_minutes = :corrected_total_minutes,
+                    notes = :notes,
+                    control_manager = :control_manager
+            """)
+            
+            db.session.execute(upsert_sql, {
+                'record_date': week_total_date.isoformat(),
+                'internal_user_id': first_record.internal_user_id,
+                'user_id': storage_user_id,
+                'user_name': first_record.user_name,
+                'user_email': first_record.user_email,
+                'project': first_record.project,
+                'department': first_record.department,
+                'team': first_record.team,
+                'location': first_record.location,
+                'minutes_late': total_minutes_late,
+                'non_productive_minutes': total_non_productive,
+                'not_categorized_minutes': total_not_categorized,
+                'productive_minutes': total_productive,
+                'total_minutes': total_minutes,
+                'corrected_total_minutes': total_corrected if has_corrected else None,
+                'notes': notes,
+                'control_manager': current_user.id if getattr(current_user, 'is_control_manager', False) else None,
+            })
             db.session.commit()
-            logger.info(
-                "week_notes saved user_id=%s week_total_date=%s existing=%s record_id=%s totals=(late=%s non_prod=%s not_cat=%s prod=%s total=%s corrected=%s)",
-                first_record.user_id,
-                week_total_date.isoformat(),
-                bool(existing_week_total),
-                getattr(week_total_record, 'id', None),
-                total_minutes_late,
-                total_non_productive,
-                total_not_categorized,
-                total_productive,
-                total_minutes,
-                total_corrected if has_corrected else None,
-            )
         else:
             logger.info(
                 "week_notes no attendance records for user_key=%s week_start=%s; skipping DB update",

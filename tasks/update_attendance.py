@@ -228,7 +228,14 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
             if alias and alias != canonical_key:
                 manual_aliases[alias] = canonical_key
 
-    AttendanceRecord.query.filter_by(record_date=target_date).delete()
+    # Delete only daily records, preserve week_total records with notes
+    AttendanceRecord.query.filter(
+        AttendanceRecord.record_date == target_date,
+        db.or_(
+            AttendanceRecord.record_type == 'daily',
+            AttendanceRecord.record_type.is_(None)
+        )
+    ).delete(synchronize_session=False)
 
     processed_ids = set()
     processed_emails = set()

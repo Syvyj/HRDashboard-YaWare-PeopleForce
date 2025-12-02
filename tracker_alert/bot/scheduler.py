@@ -109,21 +109,18 @@ class AttendanceScheduler:
         try:
             message = (
                 f"☀️ Доброе утро!\n\n"
-                f"📊 В нашу таблицу уже добавлена статистика за {exported_date.strftime('%d.%m.%Y')} ({exported_date.strftime('%A')}).\n\n"
-                f"🔍 Начинаю собирать статистику по утренним опозданиям..."
+                f"📊 Статистика за {exported_date.strftime('%d.%m.%Y')} уже собрана.\n\n"
+                f"Перейдите на сайт для просмотра отчетов."
             )
             
-            # Використовуємо inline keyboard з посиланням
             from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-            # Відправляємо в адмін чати
             if not self.bot.admin_chat_ids:
                 logger.warning("No admin chat IDs configured")
                 return
             
             for chat_id in self.bot.admin_chat_ids:
                 reply_markup = InlineKeyboardMarkup([
-                    [InlineKeyboardButton("🌐 Открыть сайт", url=DASHBOARD_URL)],
-                    [InlineKeyboardButton("📄 Сформировать отчет за сегодня", callback_data="report_today")]
+                    [InlineKeyboardButton("🌐 Открыть сайт", url=DASHBOARD_URL)]
                 ])
                 try:
                     await self.bot.application.bot.send_message(

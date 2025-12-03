@@ -83,7 +83,8 @@ class AttendanceRecord(db.Model):
     control_manager = db.Column(db.Integer, nullable=True, index=True)
     leave_reason = db.Column(db.String(255), nullable=True)
     half_day_amount = db.Column(db.Float, nullable=True)  # 0.5 for half-day leave, 1.0 for full day, None if not a leave
-    notes = db.Column(db.Text, nullable=True)
+    notes = db.Column(db.Text, nullable=True)  # Manager notes/comments
+    pf_status = db.Column(db.Text, nullable=True)  # PeopleForce status (vacation, sick leave, etc.)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     __table_args__ = (

@@ -320,7 +320,8 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
             control_manager=schedule.control_manager,
             leave_reason=leave_reason,
             half_day_amount=leave_amount,
-            notes=schedule.note
+            notes=schedule.note,
+            pf_status=leave_reason if leave_reason else None
         )
         
         # Якщо відпустка або за свій рахунок (не половина дня) - обнуляємо actual_start і productive час
@@ -375,7 +376,8 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
             control_manager=schedule.control_manager,
             leave_reason=reason,
             half_day_amount=leave_amount,
-            notes=schedule.note
+            notes=schedule.note,
+            pf_status=reason if reason else None
         )
         record_key = _record_key_from_values(record.user_id, record.user_email, record.user_name)
         _apply_manual_overrides(record, record_key, manual_overrides, manual_aliases)
@@ -412,7 +414,8 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
                 status='absent',
                 control_manager=schedule.control_manager,
                 leave_reason=None,
-                notes=schedule.note
+                notes=schedule.note,
+                pf_status=None
             )
             record_key = _record_key_from_values(record.user_id, record.user_email, record.user_name)
             _apply_manual_overrides(record, record_key, manual_overrides, manual_aliases)

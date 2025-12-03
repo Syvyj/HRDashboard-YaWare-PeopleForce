@@ -1537,6 +1537,7 @@ def _build_items(records):
                 'notes': (rec.notes or '').strip(),
                 'notes_display': (rec.notes or rec.leave_reason or '').strip(),
                 'leave_reason': (rec.leave_reason or '').strip(),
+                'pf_status': (rec.pf_status or '').strip(),
                 'manual_flags': manual_flags,
             })
             total_non += rec.non_productive_minutes or 0
@@ -4097,7 +4098,7 @@ def _build_excel_rows(items: list[dict]) -> list[dict[str, object]]:
         {'values': [''] * cols, 'role': 'divider'}
     ]
 
-    header_suffix = ['Plan Start', 'Date', 'Fact Start', 'Non Productive', 'Not Categorized', 'Prodactive', 'Total', 'Total Corrected', 'Notes']
+    header_suffix = ['Plan Start', 'Date', 'Fact Start', 'Non Productive', 'Not Categorized', 'Prodactive', 'Total', 'Total Corrected', 'Notes/Comments']
 
     for item_index, item in enumerate(items):
         user_name = (item.get('user_name') or '').strip()
@@ -4118,6 +4119,10 @@ def _build_excel_rows(items: list[dict]) -> list[dict[str, object]]:
                 first_cell = location_value
             else:
                 first_cell = ''
+            notes_value = (row.get('notes_display') or row.get('notes') or '').strip()
+            pf_status_value = (row.get('pf_status') or '').strip()
+            combined_notes = notes_value if notes_value else pf_status_value
+            
             values = [
                 first_cell,
                 row.get('scheduled_start_hm') or row.get('scheduled_start') or '',
@@ -4128,7 +4133,7 @@ def _build_excel_rows(items: list[dict]) -> list[dict[str, object]]:
                 row.get('productive_hm') or row.get('productive_display') or '',
                 row.get('total_hm') or row.get('total_display') or '',
                 row.get('corrected_total_hm') or row.get('corrected_total_display') or '',
-                (row.get('notes_display') or row.get('notes') or '').strip()
+                combined_notes
             ]
             rows.append({'values': values, 'role': 'data'})
 
@@ -4142,7 +4147,7 @@ def _build_excel_rows(items: list[dict]) -> list[dict[str, object]]:
                     wt.get('productive_hm') or wt['productive_display'],
                     wt.get('total_hm') or wt['total_display'],
                     wt.get('corrected_total_hm') or wt.get('corrected_total_display') or '',
-                    ''
+                    wt.get('notes', '')
                 ],
                 'role': 'week_total'
             })
@@ -4288,6 +4293,11 @@ def _build_pdf_document(items: list[dict]) -> BytesIO:
                 label = location_value
             else:
                 label = ''
+            
+            notes_value = (row.get('notes_display') or row.get('notes') or '').strip()
+            pf_status_value = (row.get('pf_status') or '').strip()
+            combined_notes = notes_value if notes_value else pf_status_value
+            
             table_data.append([
                 make_paragraph(label, cell_text_style),
                 row.get('scheduled_start_hm') or row.get('scheduled_start') or '',
@@ -4298,7 +4308,7 @@ def _build_pdf_document(items: list[dict]) -> BytesIO:
                 row.get('productive_hm') or row.get('productive_display') or '',
                 row.get('total_hm') or row.get('total_display') or '',
                 row.get('corrected_total_hm') or row.get('corrected_total_display') or '',
-                make_paragraph((row.get('notes_display') or row.get('notes') or '').strip(), cell_text_style)
+                make_paragraph(combined_notes, cell_text_style)
             ])
 
         if item.get('week_total'):
@@ -4311,7 +4321,7 @@ def _build_pdf_document(items: list[dict]) -> BytesIO:
                 wt.get('productive_hm') or wt['productive_display'],
                 wt.get('total_hm') or wt['total_display'],
                 wt.get('corrected_total_hm') or wt.get('corrected_total_display') or '',
-                make_paragraph('', cell_text_style)
+                make_paragraph(wt.get('notes', ''), cell_text_style)
             ])
             styles.extend([
                 ('SPAN', (0, week_total_idx), (1, week_total_idx)),
@@ -4674,11 +4684,12 @@ def get_monthly_report():
                     weekend_cache[user_key] = bool(pf_id and pf_id in SEVEN_DAY_WORK_WEEK_IDS)
                 include_weekends = weekend_cache[user_key]
                 user_data[user_key]['include_weekends'] = include_weekends
-            user_data[user_key]['records'].append(record)
-            
             # Skip weekend records for users without 7-day work week
+            # Must be checked BEFORE appending to records and calculating totals
             if not include_weekends and record.record_date.weekday() >= 5:
                 continue
+            
+            user_data[user_key]['records'].append(record)
             
             # Sum ALL tracked hours (Total from our database)
             user_data[user_key]['total_minutes'] += record.total_minutes or 0

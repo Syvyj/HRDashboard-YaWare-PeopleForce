@@ -54,16 +54,14 @@ class AttendanceScheduler:
                 logger.info("Daily report sent to default channel (no admins configured)")
                 return
 
+            # Simple message with link to dashboard
+            dashboard_url = "https://yaware.evadav.com"
+            message = (
+                f"📊 Отчет посещаемости за {today.strftime('%d.%m.%Y')}\n\n"
+                f"Данные собраны и доступны на дашборде:\n{dashboard_url}"
+            )
+            
             for chat_id in admin_ids:
-                allowed_managers = self.bot.get_allowed_managers(chat_id)
-                report = self.report_service.filter_report_by_managers(base_report, allowed_managers)
-                if report['late'] or report['absent']:
-                    message = format_attendance_report(report, today)
-                else:
-                    message = (
-                        f"✅ *Attendance Report - {today.strftime('%Y-%m-%d')}*\n\n"
-                        "🎉 All employees are on time! No issues to report."
-                    )
                 try:
                     await self.bot.send_message(chat_id, message)
                 except Exception as send_error:

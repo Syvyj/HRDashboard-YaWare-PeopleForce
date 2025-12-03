@@ -648,7 +648,7 @@
       table.className = 'table table-sm table-bordered report-table';
       const thead = document.createElement('thead');
       const headRow = document.createElement('tr');
-      const headLabels = ['Date', 'Fact Start', 'Non Productive', 'Not Categorized', 'Productive', 'Total', 'Total cor', 'Notes'];
+      const headLabels = ['Date', 'Fact Start', 'Non Productive', 'Not Categorized', 'Productive', 'Total', 'Total cor', 'Notes', 'PF Status'];
       headLabels.forEach((title) => {
         const th = document.createElement('th');
         th.textContent = title;
@@ -679,6 +679,7 @@
         tr.appendChild(createTotalCell(row)); // Використовуємо createTotalCell замість createCell
         tr.appendChild(createCell(row.corrected_total_display || ''));
         tr.appendChild(createNotesCell(row, canEdit, userKeyRaw));
+        tr.appendChild(createCell(row.pf_status || ''));
         tbody.appendChild(tr);
       });
 
@@ -695,6 +696,7 @@
         // Створюємо фейковий об'єкт з notes_display для Week total
         const weekTotalRow = { notes_display: item.week_total.notes || '' };
         totalRow.appendChild(createNotesCell(weekTotalRow, canEdit, userKeyRaw, true));
+        totalRow.appendChild(createCell('')); // PF Status пустий для Week total
         tbody.appendChild(totalRow);
       }
 

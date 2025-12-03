@@ -11,3 +11,9 @@ gcp-sa.json
 instance/dashboard.db
 
 backups/
+
+# Data files - NEVER commit these
+instance/week_notes.json
+instance/monthly_notes.json
+instance/*.db
+instance/*.db.*

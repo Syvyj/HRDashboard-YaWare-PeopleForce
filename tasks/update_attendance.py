@@ -14,6 +14,7 @@ def parse_args():
     parser.add_argument('--date', help='Дата в формате YYYY-MM-DD. По умолчанию вчера.')
     parser.add_argument('--start-date', help='Начальная дата для диапазона (YYYY-MM-DD)')
     parser.add_argument('--end-date', help='Конечная дата для диапазона (YYYY-MM-DD)')
+    parser.add_argument('--email', help='Email конкретного пользователя для синхронизации')
     parser.add_argument('--skip-absent', action='store_true', help='Не сохранять запись о отсутствующих.')
     return parser.parse_args()
 

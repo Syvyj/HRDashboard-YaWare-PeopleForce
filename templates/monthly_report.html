@@ -136,7 +136,8 @@
                   id="open-multi-select-modal"
                   class="btn btn-outline-primary w-100 mt-2"
                 >
-                  <i class="bi bi-people-fill"></i> Выбрать несколько сотрудников
+                  <i class="bi bi-people-fill"></i> Выбрать несколько
+                  сотрудников
                 </button>
               </div>
             </div>
@@ -338,7 +339,11 @@
                   id="preset-name-input"
                   maxlength="128"
                 />
-                <button class="btn btn-primary" type="button" id="confirm-save-preset">
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  id="confirm-save-preset"
+                >
                   Сохранить
                 </button>
                 <button
@@ -458,13 +463,194 @@
       </div>
     </div>
 
+    <!-- Modal for editing all monthly fields -->
+    <div
+      class="modal fade"
+      id="editFieldsModal"
+      tabindex="-1"
+      aria-labelledby="editFieldsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editFieldsModalLabel">
+              Редактировать данные за месяц
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="edit-internal-user-id" />
+            <input type="hidden" id="edit-month" />
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Plan Days</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="edit-plan-days"
+                  min="0"
+                  step="0.5"
+                  placeholder="20"
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Vacation Days</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="edit-vacation-days"
+                  min="0"
+                  step="0.5"
+                  placeholder="2.5"
+                />
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Day Off Days</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="edit-day-off-days"
+                  min="0"
+                  step="0.5"
+                  placeholder="0.5"
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Sick Days</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="edit-sick-days"
+                  min="0"
+                  step="0.5"
+                  placeholder="0"
+                />
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label"
+                  >Fact Days <small class="text-muted">(авто)</small></label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="edit-fact-days"
+                  min="0"
+                  step="0.5"
+                  readonly
+                  style="background-color: #f0f0f0"
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"
+                  >Minimum Hours
+                  <small class="text-muted"
+                    >(авто, формат: 144:00)</small
+                  ></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="edit-minimum-hours"
+                  placeholder="144:00"
+                  readonly
+                  style="background-color: #f0f0f0"
+                />
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Start Date in Month</label>
+                <input type="date" class="form-control" id="edit-start-date" />
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Delay Count</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="edit-delay-count"
+                  min="0"
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Tracked Hours (формат: 159:40)</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="edit-tracked-hours"
+                  placeholder="159:40"
+                />
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label"
+                  >Corrected Hours (формат: 160:00)
+                  <span class="text-warning" style="font-size: 0.9em">
+                    ⚠️ Внимание: это поле рассчитывается автоматически из базы
+                    данных. Изменение может привести к расхождению с
+                    фактическими данными.
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="edit-corrected-hours"
+                  placeholder="160:00"
+                />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Notes</label>
+              <textarea
+                class="form-control"
+                id="edit-notes"
+                rows="3"
+                placeholder="Заметки..."
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отмена
+            </button>
+            <button type="button" class="btn btn-primary" id="save-all-fields">
+              Сохранить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/common.js') }}?t={{ range(1, 1000000) | random }}"></script>
     <script>
       // Initialize report.js variables for monthly report page
       window.isMonthlyReportPage = true;
     </script>
-    <script src="{{ url_for('static', filename='js/report.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/monthly_report.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/report.js') }}?t={{ range(1, 1000000) | random }}"></script>
+    <script src="{{ url_for('static', filename='js/monthly_report.js') }}?t={{ range(1, 1000000) | random }}"></script>
   </body>
 </html>

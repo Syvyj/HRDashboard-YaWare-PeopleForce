@@ -1109,6 +1109,7 @@
         location: (diffAddLocation ? diffAddLocation.value : '').trim(),
         plan_start: (diffAddPlanStart ? diffAddPlanStart.value : '').trim(),
         control_manager: diffAddManager ? diffAddManager.value : '',
+        hire_date: (diffAddContext && diffAddContext.hire_date) ? diffAddContext.hire_date : '',
       };
       setButtonLoading(diffAddSubmit, true);
       fetch('/api/admin/employees', {

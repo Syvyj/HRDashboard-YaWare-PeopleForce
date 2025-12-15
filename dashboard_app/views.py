@@ -92,6 +92,7 @@ def monthly_report():
     """Monthly report page."""
     from dashboard_app.models import AttendanceRecord
     from sqlalchemy import func
+    from flask import make_response
     
     can_edit = getattr(current_user, 'is_admin', False) or getattr(current_user, 'is_control_manager', False)
     
@@ -132,7 +133,7 @@ def monthly_report():
         AttendanceRecord.location != ''
     ).distinct().order_by(AttendanceRecord.location).all()]
     
-    return render_template(
+    response = make_response(render_template(
         'monthly_report.html',
         user_name=current_user.name,
         is_admin=getattr(current_user, 'is_admin', False),
@@ -145,7 +146,11 @@ def monthly_report():
         teams=teams,
         projects=projects,
         locations=locations
-    )
+    ))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 
 @views_bp.route('/lateness')

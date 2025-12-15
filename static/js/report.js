@@ -1177,13 +1177,18 @@
       // Создаем уникальный список сотрудников
       const employeesMap = new Map();
       items.forEach(item => {
-        const key = item.user_email || item.user_key || item.user_id || item.user_name;
+        // Используем internal_user_id как ключ
+        const key = item.internal_user_id || item.user_id;
+        if (!key) {
+          return;
+        }
         if (!employeesMap.has(key)) {
           employeesMap.set(key, {
             key: key,
             name: item.user_name || '',
             email: item.user_email || '',
             user_id: item.user_id || '',
+            internal_user_id: item.internal_user_id || '',
             project: item.division || item.project || '',
             department: item.department || '',
             team: item.team || ''
@@ -1205,15 +1210,18 @@
   function renderEmployeeList(searchQuery = '') {
     if (!multiSelectList) return;
     
+    console.log('[renderEmployeeList] selectedEmployees:', Array.from(selectedEmployees).slice(0, 3), 'types:', Array.from(selectedEmployees).slice(0, 3).map(k => typeof k));
+    
     const query = searchQuery.toLowerCase();
     const filteredEmployees = allEmployees.filter(emp => {
       const searchStr = `${emp.name} ${emp.email} ${emp.project} ${emp.department}`.toLowerCase();
       return searchStr.includes(query);
     });
     
-    const html = filteredEmployees.map(emp => {
+    const html = filteredEmployees.slice(0, 5).map(emp => {
       const isSelected = selectedEmployees.has(emp.key);
-      const displayName = emp.name || emp.email || emp.user_id;
+      console.log(`[renderEmployeeList] emp.key=${emp.key} (${typeof emp.key}), isSelected=${isSelected}`);
+      const displayName = emp.name || emp.email || String(emp.user_id);
       const subtitle = emp.email && emp.name ? emp.email : '';
       const badge = emp.project ? `<span class="badge bg-secondary ms-2">${escapeHtml(emp.project)}</span>` : '';
       
@@ -1222,7 +1230,30 @@
           <input 
             type="checkbox" 
             class="form-check-input me-3" 
-            data-employee-key="${escapeHtml(emp.key)}"
+            data-employee-key="${escapeHtml(String(emp.key))}"
+            ${isSelected ? 'checked' : ''}
+          >
+          <div class="flex-grow-1">
+            <div class="fw-semibold">${escapeHtml(displayName)}${badge}</div>
+            ${subtitle ? `<small class="text-muted">${escapeHtml(subtitle)}</small>` : ''}
+          </div>
+        </label>
+      `;
+    });
+    
+    // Render rest without logging
+    const restHtml = filteredEmployees.slice(5).map(emp => {
+      const isSelected = selectedEmployees.has(emp.key);
+      const displayName = emp.name || emp.email || String(emp.user_id);
+      const subtitle = emp.email && emp.name ? emp.email : '';
+      const badge = emp.project ? `<span class="badge bg-secondary ms-2">${escapeHtml(emp.project)}</span>` : '';
+      
+      return `
+        <label class="list-group-item list-group-item-action d-flex align-items-center" style="cursor: pointer;">
+          <input 
+            type="checkbox" 
+            class="form-check-input me-3" 
+            data-employee-key="${escapeHtml(String(emp.key))}"
             ${isSelected ? 'checked' : ''}
           >
           <div class="flex-grow-1">
@@ -1233,7 +1264,7 @@
       `;
     }).join('');
     
-    multiSelectList.innerHTML = html || '<div class="text-center text-muted py-3">Нет результатов</div>';
+    multiSelectList.innerHTML = html.join('') + restHtml || '<div class="text-center text-muted py-3">Нет результатов</div>';
     updateSelectedCount();
   }
 
@@ -1294,6 +1325,9 @@
     (preset.employee_keys || []).forEach((key) => selectedEmployees.add(key));
     renderEmployeeList(multiSelectSearch?.value || '');
     updateSelectedCount();
+    
+    // Notify monthly report page about filter changes
+    notifyFiltersUpdated();
   }
 
   function togglePresetForm(show) {

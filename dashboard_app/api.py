@@ -1237,7 +1237,7 @@ def _serialize_app_user(user: User) -> dict:
 
 
 PDF_FONT_CANDIDATES = [
-    ('ArialUnicode', '/System/Library/Fonts/Supplemental/Arial Unicode.ttf', '/System/Library/Fonts/Supplemental/Arial Unicode Bold.ttf'),
+    ('ArialUnicode', '/System/Library/Fonts/Supplemental/Arial Unicode.ttf', '/System/Library/Fonts/Supplemental/Arial Unicode.ttf'),
     ('Arial', '/System/Library/Fonts/Supplemental/Arial.ttf', '/System/Library/Fonts/Supplemental/Arial Bold.ttf'),
     ('ArialMT', '/Library/Fonts/Arial.ttf', '/Library/Fonts/Arial Bold.ttf'),
     ('DejaVuSans', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'),
@@ -1535,7 +1535,7 @@ def _build_items(records):
                 'minutes_late_display': _minutes_to_str(rec.minutes_late),
                 'status': rec.status,
                 'notes': (rec.notes or '').strip(),
-                'notes_display': (rec.notes or rec.leave_reason or '').strip(),
+                'notes_display': (rec.notes or '').strip(),
                 'leave_reason': (rec.leave_reason or '').strip(),
                 'pf_status': (rec.pf_status or '').strip(),
                 'manual_flags': manual_flags,
@@ -1613,6 +1613,8 @@ def _build_items(records):
         items.append({
             'user_name': first.user_name,
             'user_id': first.user_id,
+            'user_email': first.user_email,
+            'internal_user_id': first.internal_user_id,
             'project': first_division,
             'department': first_direction,
             'team': first_team,
@@ -1749,6 +1751,17 @@ def _get_filtered_items():
         filtered_records = []
         for user_key in user_keys:
             if user_key:
+                # Спочатку перевіряємо чи це internal_user_id (число)
+                try:
+                    internal_id = int(user_key)
+                    for record in records:
+                        if record.internal_user_id == internal_id:
+                            filtered_records.append(record)
+                    continue
+                except (ValueError, TypeError):
+                    pass
+                
+                # Якщо не число - фільтруємо по email/name/user_id (legacy)
                 normalized = _normalize_user_key(user_key).lower()
                 for record in records:
                     record_user_id = _strip_week_total_user_id(record.user_id)
@@ -2069,6 +2082,11 @@ def admin_create_employee():
     if start_time:
         entry['start_time'] = start_time
         set_manual_override(entry, 'start_time')
+    
+    # Save hire_date if provided
+    hire_date = _clean(payload.get('hire_date'))
+    if hire_date:
+        entry['hire_date'] = hire_date
     
     # Handle ignored/archived flags
     ignored = payload.get('ignored', False)
@@ -3322,13 +3340,22 @@ def _collect_recent_records(records: list[AttendanceRecord], start: date | None,
     
     # Add week_total: COPY EXACT LOGIC FROM _build_items()
     if start and end and daily_records:
-        # Calculate totals from daily records
-        total_non = sum(rec.non_productive_minutes or 0 for rec in daily_records)
-        total_not = sum(rec.not_categorized_minutes or 0 for rec in daily_records)
-        total_prod = sum(rec.productive_minutes or 0 for rec in daily_records)
-        total_total = sum((rec.not_categorized_minutes or 0) + (rec.productive_minutes or 0) for rec in daily_records)
-        total_corrected = sum(rec.corrected_total_minutes or 0 for rec in daily_records if rec.corrected_total_minutes is not None)
-        has_corrected = any(rec.corrected_total_minutes is not None for rec in daily_records)
+        # Determine if user has 7-day work week
+        first_rec = daily_records[0]
+        user_key = first_rec.user_email or first_rec.user_id or first_rec.user_name
+        pf_id = _get_peopleforce_id_for_user(user_key)
+        include_weekends = bool(pf_id and pf_id in SEVEN_DAY_WORK_WEEK_IDS)
+        
+        # Filter weekends for users without 7-day work week before calculating totals
+        records_for_totals = daily_records if include_weekends else [rec for rec in daily_records if rec.record_date.weekday() < 5]
+        
+        # Calculate totals from filtered daily records
+        total_non = sum(rec.non_productive_minutes or 0 for rec in records_for_totals)
+        total_not = sum(rec.not_categorized_minutes or 0 for rec in records_for_totals)
+        total_prod = sum(rec.productive_minutes or 0 for rec in records_for_totals)
+        total_total = sum((rec.not_categorized_minutes or 0) + (rec.productive_minutes or 0) for rec in records_for_totals)
+        total_corrected = sum(rec.corrected_total_minutes or 0 for rec in records_for_totals if rec.corrected_total_minutes is not None)
+        has_corrected = any(rec.corrected_total_minutes is not None for rec in records_for_totals)
         
         # Get week notes - same as _build_items()
         week_notes_file = os.path.join(current_app.instance_path, 'week_notes.json')
@@ -4526,7 +4553,7 @@ def _get_peopleforce_id_for_user(user_key: str) -> int | None:
     return None
 
 
-def _count_work_days_in_month(year: int, month: int, include_weekends: bool = False) -> int:
+def _count_work_days_in_month(year: int, month: int, include_weekends: bool = False, start_date: str = None) -> int:
     """
     Count work days in a month.
     
@@ -4534,19 +4561,32 @@ def _count_work_days_in_month(year: int, month: int, include_weekends: bool = Fa
         year: Year
         month: Month (1-12)
         include_weekends: If True, count all days including Sat/Sun
+        start_date: Optional start date in format 'YYYY-MM-DD'. If provided, counts from this date to end of month.
     
     Returns:
         Number of work days
     """
     from calendar import monthrange
+    from datetime import datetime
     
     _, num_days = monthrange(year, month)
     
+    # Determine start day
+    start_day = 1
+    if start_date:
+        try:
+            dt = datetime.strptime(start_date, '%Y-%m-%d')
+            # Only use start_date if it's in the target month
+            if dt.year == year and dt.month == month:
+                start_day = dt.day
+        except:
+            pass
+    
     if include_weekends:
-        return num_days
+        return num_days - start_day + 1
     
     work_days = 0
-    for day in range(1, num_days + 1):
+    for day in range(start_day, num_days + 1):
         day_date = date(year, month, day)
         # 0 = Monday, 6 = Sunday
         if day_date.weekday() < 5:  # Monday to Friday
@@ -4614,12 +4654,28 @@ def get_monthly_report():
                 )
             )
         
-        selected_user_keys = [uk.strip().lower() for uk in request.args.getlist('user_key') if uk.strip()]
+        # Filter by selected user IDs (from presets or multi-select)
+        selected_user_ids = []
+        for uk in request.args.getlist('user_key'):
+            uk = uk.strip()
+            if uk:
+                try:
+                    selected_user_ids.append(int(uk))
+                except ValueError:
+                    pass  # Skip non-numeric values
+        
         legacy_selected = request.args.get('selected_users', '').strip()
         if legacy_selected:
-            selected_user_keys.extend(uk.strip().lower() for uk in legacy_selected.split(',') if uk.strip())
-        if selected_user_keys:
-            query = query.filter(db.func.lower(AttendanceRecord.user_email).in_(selected_user_keys))
+            for uk in legacy_selected.split(','):
+                uk = uk.strip()
+                if uk:
+                    try:
+                        selected_user_ids.append(int(uk))
+                    except ValueError:
+                        pass
+        
+        if selected_user_ids:
+            query = query.filter(AttendanceRecord.internal_user_id.in_(selected_user_ids))
         
         # Get all records for the month
         records = query.all()
@@ -4684,19 +4740,18 @@ def get_monthly_report():
                     weekend_cache[user_key] = bool(pf_id and pf_id in SEVEN_DAY_WORK_WEEK_IDS)
                 include_weekends = weekend_cache[user_key]
                 user_data[user_key]['include_weekends'] = include_weekends
+            user_data[user_key]['records'].append(record)
+            
             # Skip weekend records for users without 7-day work week
-            # Must be checked BEFORE appending to records and calculating totals
             if not include_weekends and record.record_date.weekday() >= 5:
                 continue
             
-            user_data[user_key]['records'].append(record)
-            
-            # Sum ALL tracked hours (Total from our database)
-            user_data[user_key]['total_minutes'] += record.total_minutes or 0
+            # Sum tracked hours (not_categorized + productive, excluding non_productive)
+            user_data[user_key]['total_minutes'] += (record.not_categorized_minutes or 0) + (record.productive_minutes or 0)
             
             # Sum corrected hours (Total cor.) - ONLY where corrected_total_minutes is NOT None
-            # Don't substitute with total_minutes if it's None
-            if record.corrected_total_minutes is not None:
+            # Skip week_total records to avoid double counting
+            if record.corrected_total_minutes is not None and record.record_type != 'week_total':
                 user_data[user_key]['corrected_total_minutes'] += record.corrected_total_minutes
             
             # Count delays > 10 minutes
@@ -4743,12 +4798,12 @@ def get_monthly_report():
                 
                 # Categorize by leave_reason from our database
                 leave_reason = (record.leave_reason or '').lower()
-                if 'vacation' in leave_reason or 'отпуск' in leave_reason or 'відпустка' in leave_reason:
-                    vacation_days += leave_amount
-                elif 'sick' in leave_reason or 'больничный' in leave_reason or 'лікарняний' in leave_reason:
+                if 'sick' in leave_reason or 'больничный' in leave_reason or 'лікарняний' in leave_reason:
                     sick_days += leave_amount
-                elif 'day off' in leave_reason or 'выходной' in leave_reason or 'вихідний' in leave_reason or 'за свій рахунок' in leave_reason:
+                elif 'свой счет' in leave_reason or 'свій рахунок' in leave_reason or 'day off' in leave_reason or 'выходной' in leave_reason or 'вихідний' in leave_reason:
                     day_off_days += leave_amount
+                elif 'vacation' in leave_reason or 'отпуск' in leave_reason or 'відпустка' in leave_reason:
+                    vacation_days += leave_amount
                 else:
                     # If no specific reason, count as vacation by default
                     vacation_days += leave_amount
@@ -4759,6 +4814,16 @@ def get_monthly_report():
                 'sick_days': sick_days,
             }
         
+        # Load monthly adjustments early to get start_date for plan_days calculation
+        adjustments_file = os.path.join('instance', 'monthly_adjustments.json')
+        adjustments_data = {}
+        if os.path.exists(adjustments_file):
+            try:
+                with open(adjustments_file, 'r', encoding='utf-8') as f:
+                    adjustments_data = json.load(f)
+            except Exception as e:
+                logger.exception('Error loading monthly adjustments')
+        
         # Build result
         employees = []
         for user_key, data in user_data.items():
@@ -4766,8 +4831,23 @@ def get_monthly_report():
             if not matches_filters(data):
                 continue
             
+            # Get internal_user_id early to check for start_date in adjustments
+            schedule = (
+                get_user_schedule(user_key)
+                or get_user_schedule(data['user_name'])
+                or {}
+            )
+            internal_user_id = schedule.get('internal_id')
+            
+            # Check if there's a start_date in adjustments
+            start_date = None
+            if internal_user_id:
+                key = f"{internal_user_id}_{month_str}"
+                if key in adjustments_data and 'start_date' in adjustments_data[key]:
+                    start_date = adjustments_data[key]['start_date']
+            
             include_weekends = data.get('include_weekends', False)
-            plan_days = _count_work_days_in_month(year, month, include_weekends)
+            plan_days = _count_work_days_in_month(year, month, include_weekends, start_date)
             
             leaves = leave_data.get(user_key, {})
             vacation_days = leaves.get('vacation_days', 0)
@@ -4821,7 +4901,57 @@ def get_monthly_report():
                 'delay_count': data['delay_count'],
                 'corrected_hours': format_hours(data['corrected_total_minutes']),
                 'notes': '',  # Will be loaded from separate storage
+                'start_date': start_date,  # Add start_date from adjustments
+                'internal_user_id': internal_user_id,  # Add internal_user_id for frontend
             })
+        
+        # Load monthly notes (old format: email_YYYY-MM)
+        notes_file = os.path.join('instance', 'monthly_notes.json')
+        monthly_notes = {}
+        if os.path.exists(notes_file):
+            try:
+                with open(notes_file, 'r', encoding='utf-8') as f:
+                    monthly_notes = json.load(f)
+            except Exception as e:
+                logger.exception('Error loading monthly notes')
+        
+        # Apply adjustments to employees (adjustments_data already loaded earlier)
+        for emp in employees:
+            
+            # Load old-style notes first (backward compatibility)
+            old_notes_key = f"{emp['user_email']}_{month_str}"
+            if old_notes_key in monthly_notes:
+                emp['notes'] = monthly_notes[old_notes_key]
+            
+            internal_user_id = emp.get('internal_user_id')
+            if internal_user_id:
+                key = f"{internal_user_id}_{month_str}"
+                if key in adjustments_data:
+                    adj = adjustments_data[key]
+                    # Override calculated values with adjusted values
+                    # start_date already applied in plan_days calculation
+                    if 'start_date' in adj:
+                        emp['start_date'] = adj['start_date']
+                    if 'plan_days' in adj:
+                        emp['plan_days'] = adj['plan_days']
+                    if 'vacation_days' in adj:
+                        emp['vacation_days'] = adj['vacation_days']
+                    if 'day_off_days' in adj:
+                        emp['day_off_days'] = adj['day_off_days']
+                    if 'sick_days' in adj:
+                        emp['sick_days'] = adj['sick_days']
+                    if 'fact_days' in adj:
+                        emp['fact_days'] = adj['fact_days']
+                    if 'minimum_hours' in adj:
+                        emp['minimum_hours'] = adj['minimum_hours']
+                    if 'delay_count' in adj:
+                        emp['delay_count'] = adj['delay_count']
+                    if 'tracked_hours' in adj:
+                        emp['tracked_hours'] = adj['tracked_hours']
+                    if 'corrected_hours' in adj:
+                        emp['corrected_hours'] = adj['corrected_hours']
+                    if 'notes' in adj:
+                        emp['notes'] = adj['notes']
         
         # Sort by user name
         employees.sort(key=lambda x: x['user_name'])
@@ -5127,6 +5257,72 @@ def monthly_notes():
             return jsonify({'error': str(e)}), 500
 
 
+@api_bp.route('/monthly-adjustments', methods=['GET', 'POST'])
+@login_required
+def monthly_adjustments():
+    """
+    GET: Load monthly adjustments for specific month (YYYY-MM)
+    POST: Save monthly adjustments for user+month
+    Only control managers and admins can edit.
+    """
+    if request.method == 'GET':
+        month = request.args.get('month', '')
+        adjustments_file = os.path.join('instance', 'monthly_adjustments.json')
+        
+        try:
+            if os.path.exists(adjustments_file):
+                with open(adjustments_file, 'r', encoding='utf-8') as f:
+                    all_adjustments = json.load(f)
+            else:
+                all_adjustments = {}
+            
+            # Return all adjustments for this month
+            month_adjustments = {k: v for k, v in all_adjustments.items() if k.endswith(f"_{month}")}
+            return jsonify(month_adjustments)
+            
+        except Exception as e:
+            logger.exception('Error loading monthly adjustments')
+            return jsonify({'error': str(e)}), 500
+    
+    else:  # POST
+        # Check permissions - only control managers and admins
+        if not current_user.is_control_manager and not current_user.is_admin:
+            return jsonify({'error': 'Permission denied'}), 403
+        
+        try:
+            data = request.get_json()
+            internal_user_id = data.get('internal_user_id')
+            month = data.get('month')  # YYYY-MM
+            adjustments = data.get('adjustments', {})
+            
+            if not internal_user_id or not month:
+                return jsonify({'error': 'Missing internal_user_id or month'}), 400
+            
+            adjustments_file = os.path.join('instance', 'monthly_adjustments.json')
+            
+            # Load existing
+            if os.path.exists(adjustments_file):
+                with open(adjustments_file, 'r', encoding='utf-8') as f:
+                    all_adjustments = json.load(f)
+            else:
+                all_adjustments = {}
+            
+            # Create key: internal_user_id_YYYY-MM
+            key = f"{internal_user_id}_{month}"
+            all_adjustments[key] = adjustments
+            
+            # Save back
+            os.makedirs(os.path.dirname(adjustments_file), exist_ok=True)
+            with open(adjustments_file, 'w', encoding='utf-8') as f:
+                json.dump(all_adjustments, f, ensure_ascii=False, indent=2)
+            
+            return jsonify({'success': True})
+            
+        except Exception as e:
+            logger.exception('Error saving monthly adjustments')
+            return jsonify({'error': str(e)}), 500
+
+
 @api_bp.route('/monthly-report/excel', methods=['GET'])
 @login_required
 def export_monthly_report_excel():
@@ -5291,6 +5487,9 @@ def export_monthly_report_pdf():
         doc = SimpleDocTemplate(output, pagesize=landscape(A4), rightMargin=20, leftMargin=20, topMargin=30, bottomMargin=20)
         elements = []
         
+        # Register fonts with Cyrillic support
+        regular_font, bold_font = _ensure_pdf_fonts()
+        
         # Styles
         from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
         from reportlab.lib.enums import TA_CENTER, TA_LEFT
@@ -5303,7 +5502,7 @@ def export_monthly_report_pdf():
             textColor=colors.HexColor('#1a1a1a'),
             spaceAfter=20,
             alignment=TA_CENTER,
-            fontName='Helvetica-Bold'
+            fontName=bold_font
         )
         
         user_name_style = ParagraphStyle(
@@ -5311,7 +5510,7 @@ def export_monthly_report_pdf():
             parent=styles['Normal'],
             fontSize=11,
             textColor=colors.HexColor('#1a1a1a'),
-            fontName='Helvetica-Bold',
+            fontName=bold_font,
             alignment=TA_LEFT
         )
         
@@ -5320,6 +5519,7 @@ def export_monthly_report_pdf():
             parent=styles['Normal'],
             fontSize=9,
             textColor=colors.HexColor('#666666'),
+            fontName=regular_font,
             alignment=TA_LEFT
         )
         
@@ -5328,6 +5528,7 @@ def export_monthly_report_pdf():
             parent=styles['Normal'],
             fontSize=8,
             textColor=colors.HexColor('#0d6efd'),
+            fontName=regular_font,
             alignment=TA_LEFT
         )
         
@@ -5337,7 +5538,7 @@ def export_monthly_report_pdf():
             fontSize=9,
             textColor=colors.HexColor('#666666'),
             alignment=TA_CENTER,
-            fontName='Helvetica'
+            fontName=regular_font
         )
         
         value_style = ParagraphStyle(
@@ -5346,7 +5547,7 @@ def export_monthly_report_pdf():
             fontSize=11,
             textColor=colors.HexColor('#1a1a1a'),
             alignment=TA_CENTER,
-            fontName='Helvetica-Bold'
+            fontName=bold_font
         )
         
         small_label_style = ParagraphStyle(
@@ -5354,7 +5555,8 @@ def export_monthly_report_pdf():
             parent=styles['Normal'],
             fontSize=8,
             textColor=colors.HexColor('#666666'),
-            alignment=TA_CENTER
+            alignment=TA_CENTER,
+            fontName=regular_font
         )
         
         small_value_style = ParagraphStyle(
@@ -5362,7 +5564,8 @@ def export_monthly_report_pdf():
             parent=styles['Normal'],
             fontSize=9,
             textColor=colors.HexColor('#1a1a1a'),
-            alignment=TA_CENTER
+            alignment=TA_CENTER,
+            fontName=regular_font
         )
         
         # Title

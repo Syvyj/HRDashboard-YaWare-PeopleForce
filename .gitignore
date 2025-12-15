@@ -15,5 +15,6 @@ backups/
 # Data files - NEVER commit these
 instance/week_notes.json
 instance/monthly_notes.json
+instance/monthly_adjustments.json
 instance/*.db
 instance/*.db.*

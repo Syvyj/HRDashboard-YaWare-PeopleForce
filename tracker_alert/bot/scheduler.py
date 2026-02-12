@@ -1,6 +1,6 @@
 """Scheduler for automated daily attendance reports."""
 import logging
-from datetime import datetime, time, timedelta
+from datetime import datetime, time
 from typing import Optional
 
 import asyncio
@@ -19,11 +19,18 @@ DASHBOARD_URL = "https://dbrd.ctrlbot.website/"
 
 
 class AttendanceScheduler:
-    """Scheduler for automated attendance reports."""
+    """Scheduler for automated attendance reports.
+    
+    Звіт «ОТЧЕТ ПО ОПОЗДАНИЯМ» — це звіт про запізнення **сьогодні** на роботу. О 10:00 на сайті
+    запускається лише синхронізація запізнень з YaWare (collect_lateness_for_date → lateness_records),
+    потім бот о 10:02 формує звіт з lateness_records і відправляє в чат. Якщо запізнень/відсутностей
+    немає — бот нічого не відправляє.
+    На сервері має бути ENABLE_SCHEDULER=1.
+    """
     
     REPORT_TIMEZONE = "Europe/Warsaw"
-    REPORT_TIME = time(10, 0)            # 10:00 Warsaw – основний звіт (після синків БД)
-    MORNING_MESSAGE_TIME = time(9, 20)   # 09:20 Warsaw – ранкове нагадування
+    REPORT_TIME_FULL = time(10, 2)  # 10:02 Warsaw – повний звіт «ОТЧЕТ ПО ОПОЗДАНИЯМ» (після синку сьогодні о 10:00)
+    REPORT_TIME_SHORT = time(9, 32)  # 09:32 Warsaw – коротке повідомлення з кнопкою на дашборд
     
     def __init__(self, bot):
         """Initialize scheduler.
@@ -35,42 +42,27 @@ class AttendanceScheduler:
         self.report_service = DashboardReportService()
         self.scheduler: Optional[BackgroundScheduler] = None
     
-    def _send_daily_report_sync(self) -> None:
-        """Wrapper to run async send_daily_report in sync context."""
+    def _send_full_report_sync(self) -> None:
+        """Wrapper to run async send_full_report in sync context."""
         try:
-            asyncio.run(self.send_daily_report())
+            asyncio.run(self.send_full_report())
         except Exception as e:
-            logger.error(f"Failed to run daily report: {e}")
+            logger.error(f"Failed to run full report: {e}")
     
-    async def send_daily_report(self) -> None:
-        """Generate and send daily attendance report to admins."""
+    async def send_full_report(self) -> None:
+        """Звіт про запізнення сьогодні на роботу. Дані з lateness_records (синк запізнень о 10:00 на сайті). Якщо немає запізнень/відсутностей — нічого не відправляємо."""
         today = datetime.now(pytz.timezone(self.REPORT_TIMEZONE)).date()
-        logger.info(f"Generating daily attendance report for {today}")
+        logger.info(f"Generating full attendance report for {today} (from lateness_records)")
         try:
-            base_report = self.report_service.get_daily_report(today)
-            admin_ids = list(self.bot.admin_chat_ids) if self.bot.admin_chat_ids else []
-            if not admin_ids:
-                await self.bot.send_message_to_admins(format_attendance_report(base_report, today))
-                logger.info("Daily report sent to default channel (no admins configured)")
+            base_report = self.report_service.get_daily_report(today, from_lateness=True)
+            if base_report.get("total_issues", 0) == 0:
+                logger.info("No late/absent today — skipping full report")
                 return
-
-            # Simple message with link to dashboard
-            dashboard_url = "https://yaware.evadav.com"
-            message = (
-                f"📊 Отчет посещаемости за {today.strftime('%d.%m.%Y')}\n\n"
-                f"Данные собраны и доступны на дашборде:\n{dashboard_url}"
-            )
-            
-            for chat_id in admin_ids:
-                try:
-                    await self.bot.send_message(chat_id, message)
-                except Exception as send_error:
-                    logger.error(f"Failed to send daily report to chat {chat_id}: {send_error}")
-
-            logger.info(f"Daily report sent to {len(admin_ids)} admin chats")
-
+            message = format_attendance_report(base_report, today)
+            await self.bot.send_message_to_admins(message, parse_mode="Markdown")
+            logger.info("Full report sent to admin chats")
         except Exception as e:
-            logger.error(f"Failed to send daily report: {e}")
+            logger.error(f"Failed to send full report: {e}")
             error_message = (
                 "⚠️ *Daily Report Failed*\n\n"
                 f"Error generating attendance report: {str(e)}"
@@ -81,57 +73,36 @@ class AttendanceScheduler:
                 except Exception as send_error:
                     logger.error(f"Failed to notify chat {chat_id} about error: {send_error}")
     
-    def _send_morning_message_sync(self) -> None:
-        """Wrapper для ранкового повідомлення."""
+    def _send_short_report_sync(self) -> None:
+        """Wrapper to run async send_short_report in sync context."""
         try:
-            asyncio.run(self.send_morning_message())
+            asyncio.run(self.send_short_report())
         except Exception as e:
-            logger.error(f"Failed to send morning message: {e}", exc_info=True)
+            logger.error(f"Failed to run short report: {e}")
     
-    async def send_morning_message(self) -> None:
-        """Відправити ранкове повідомлення о 9:00."""
+    async def send_short_report(self) -> None:
+        """Надіслати коротке повідомлення з кнопкою на дашборд (09:32). Без посилання в тексті."""
         today = datetime.now(pytz.timezone(self.REPORT_TIMEZONE)).date()
-        weekday = today.weekday()
-        
-        # Субота та неділя - не відправляємо
-        if weekday in [5, 6]:
-            logger.info(f"⏭️  Skipping morning message on weekend: {today}")
+        if not self.bot.admin_chat_ids:
+            logger.warning("No admin chat IDs configured for short report")
             return
-        
-        # Визначаємо яку дату експортували
-        if weekday == 0:  # Monday
-            exported_date = today - timedelta(days=3)  # Friday
-        else:
-            exported_date = today - timedelta(days=1)  # Yesterday
-        
-        try:
-            message = (
-                f"☀️ Доброе утро!\n\n"
-                f"📊 Статистика за {exported_date.strftime('%d.%m.%Y')} уже собрана.\n\n"
-                f"Перейдите на сайт для просмотра отчетов."
-            )
-            
-            from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-            if not self.bot.admin_chat_ids:
-                logger.warning("No admin chat IDs configured")
-                return
-            
-            for chat_id in self.bot.admin_chat_ids:
-                reply_markup = InlineKeyboardMarkup([
-                    [InlineKeyboardButton("🌐 Открыть сайт", url=DASHBOARD_URL)]
-                ])
-                try:
-                    await self.bot.application.bot.send_message(
-                        chat_id=chat_id,
-                        text=message,
-                        reply_markup=reply_markup
-                    )
-                    logger.info(f"Morning message sent to chat {chat_id}")
-                except Exception as e:
-                    logger.error(f"Failed to send morning message to chat {chat_id}: {e}")
-                    
-        except Exception as e:
-            logger.error(f"Failed to send morning message: {e}", exc_info=True)
+        message = (
+            f"📊 Отчет посещаемости за {today.strftime('%d.%m.%Y')}\n\n"
+            "Данные собраны и доступны на дашборде."
+        )
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🌐 Открыть дашборд", url=DASHBOARD_URL)]
+        ])
+        for chat_id in self.bot.admin_chat_ids:
+            try:
+                await self.bot.application.bot.send_message(
+                    chat_id=chat_id,
+                    text=message,
+                    reply_markup=reply_markup
+                )
+            except Exception as e:
+                logger.error(f"Failed to send short report to chat {chat_id}: {e}")
+        logger.info("Short report (with dashboard button) sent to admin chats")
     
     def start(self) -> None:
         """Start the scheduler."""
@@ -141,39 +112,39 @@ class AttendanceScheduler:
         
         self.scheduler = BackgroundScheduler(timezone=self.REPORT_TIMEZONE)
         
-        # Schedule daily Telegram report (Mon-Fri only)
+        # 10:02 Warsaw – повний звіт «ОТЧЕТ ПО ОПОЗДАНИЯМ» (Mon–Fri), тільки якщо є запізнення/відсутні
         self.scheduler.add_job(
-            self._send_daily_report_sync,
+            self._send_full_report_sync,
             trigger=CronTrigger(
-                hour=self.REPORT_TIME.hour,
-                minute=self.REPORT_TIME.minute,
-                day_of_week='mon-fri',  # Тільки робочі дні
+                hour=self.REPORT_TIME_FULL.hour,
+                minute=self.REPORT_TIME_FULL.minute,
+                day_of_week='mon-fri',
                 timezone=pytz.timezone(self.REPORT_TIMEZONE)
             ),
-            id='daily_attendance_report',
-            name='Daily Attendance Report',
+            id='daily_full_report',
+            name='Full attendance report (ОТЧЕТ ПО ОПОЗДАНИЯМ)',
             replace_existing=True
         )
         
-        # Schedule morning message at 09:00 Warsaw time (Mon-Fri)
+        # 09:32 Warsaw – коротке повідомлення з кнопкою на дашборд (Mon–Fri)
         self.scheduler.add_job(
-            self._send_morning_message_sync,
+            self._send_short_report_sync,
             trigger=CronTrigger(
-                hour=self.MORNING_MESSAGE_TIME.hour,
-                minute=self.MORNING_MESSAGE_TIME.minute,
-                day_of_week='mon-fri',  # Тільки робочі дні
+                hour=self.REPORT_TIME_SHORT.hour,
+                minute=self.REPORT_TIME_SHORT.minute,
+                day_of_week='mon-fri',
                 timezone=pytz.timezone(self.REPORT_TIMEZONE)
             ),
-            id='morning_message',
-            name='Morning Message',
+            id='daily_short_report',
+            name='Short report with dashboard button',
             replace_existing=True
         )
         
         self.scheduler.start()
         logger.info(
             f"Scheduler started (timezone: {self.REPORT_TIMEZONE}):\n"
-            f"  - {self.REPORT_TIME} - Telegram reports (Mon-Fri)\n"
-            f"  - {self.MORNING_MESSAGE_TIME} - Morning reminder (Mon-Fri)"
+            f"  - {self.REPORT_TIME_FULL} - Full report ОТЧЕТ ПО ОПОЗДАНИЯМ (Mon-Fri)\n"
+            f"  - {self.REPORT_TIME_SHORT} - Short report + dashboard button (Mon-Fri)"
         )
     
     def stop(self) -> None:

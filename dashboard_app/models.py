@@ -80,7 +80,7 @@ class AttendanceRecord(db.Model):
     manual_notes = db.Column(db.Boolean, nullable=False, default=False)
     manual_leave_reason = db.Column(db.Boolean, nullable=False, default=False)
     status = db.Column(db.String(16), nullable=False)  # late / absent / present / leave
-    control_manager = db.Column(db.Integer, nullable=True, index=True)
+    control_manager = db.Column(db.Text, nullable=True, index=True)  # Can store comma-separated IDs like "1,4"
     leave_reason = db.Column(db.String(255), nullable=True)
     half_day_amount = db.Column(db.Float, nullable=True)  # 0.5 for half-day leave, 1.0 for full day, None if not a leave
     notes = db.Column(db.Text, nullable=True)  # Manager notes/comments

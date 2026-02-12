@@ -1,20 +1,63 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
 .venv/
-instance/*.db
+
+# Environment and secrets
 .env
 .env.*
 gcp-sa.json
-.DS_Store
-.vscode/
-.idea/
-instance/dashboard.db
 
-backups/
+# Database files
+instance/*.db
+instance/*.db.*
+instance/dashboard.db
 
 # Data files - NEVER commit these
 instance/week_notes.json
 instance/monthly_notes.json
 instance/monthly_adjustments.json
-instance/*.db
-instance/*.db.*
+
+# Sensitive config files
+config/user_schedules.json
+config/work_schedules.json
+config/*.backup
+config/*.server
+
+# Server-specific files
+*.server
+*.server_new
+*.backup
+*.backup_*
+
+# Systemd service files (may contain server-specific paths)
+*.service
+!*.service.example
+
+# Archive and temp data
+archive/temp_data/*.json
+archive/temp_data/*.xlsx
+archive/configs/*.env*
+All_Backup/
+
+# Backups
+backups/
+
+# Logs
+logs/*.log
+
+# IDE
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride

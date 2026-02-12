@@ -7,7 +7,7 @@ from datetime import date
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes, CallbackQueryHandler
 
-from tracker_alert.services.report_formatter import format_attendance_report
+from tracker_alert.services.report_formatter import format_attendance_report, split_message
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,9 @@ async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.effective_message.reply_text("⛔ Доступ заборонено.")
         return
 
-    await update.effective_message.reply_text("✅ Бот працює. Ранкове повідомлення о 09:20, щоденний звіт о 10:00 (Warsaw).")
+    await update.effective_message.reply_text(
+        "✅ Бот працює. Повний звіт о 10:02, коротке повідомлення з кнопкою о 09:32 (Warsaw, Пн–Пт)."
+    )
 
 
 async def report_today_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -80,7 +82,7 @@ async def report_today_command(update: Update, context: ContextTypes.DEFAULT_TYP
 
     try:
         await update.effective_message.reply_text("⏳ Генерую звіт ...")
-        report = service.get_daily_report(target_date)
+        report = service.get_daily_report(target_date, from_lateness=True)
         allowed = bot.get_allowed_managers(chat_id)
         report = service.filter_report_by_managers(report, allowed)
         if report['late'] or report['absent']:
@@ -90,10 +92,16 @@ async def report_today_command(update: Update, context: ContextTypes.DEFAULT_TYP
                 f"✅ *Attendance Report - {target_date.strftime('%Y-%m-%d')}*\n\n"
                 "🎉 Всі співробітники вчасно!"
             )
-        await update.effective_message.reply_text(message, parse_mode="Markdown")
+        for part in split_message(message):
+            await update.effective_message.reply_text(part, parse_mode="Markdown")
     except Exception as exc:
         logger.error("Manual report failed: %s", exc, exc_info=True)
-        await update.effective_message.reply_text("⚠️ Не вдалося згенерувати звіт. Перевірте логи.")
+        await update.effective_message.reply_text(
+            "⚠️ Не вдалося згенерувати звіт.\n"
+            f"Помилка: `{str(exc)}`\n"
+            "Перевірте налаштування та логи сервера.",
+            parse_mode="Markdown",
+        )
 
 
 async def report_today_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -111,7 +119,7 @@ async def report_today_callback(update: Update, context: ContextTypes.DEFAULT_TY
     target_date = date.today()
     try:
         await query.edit_message_text("⏳ Генерую звіт ...")
-        report = service.get_daily_report(target_date)
+        report = service.get_daily_report(target_date, from_lateness=True)
         allowed = bot.get_allowed_managers(chat_id)
         report = service.filter_report_by_managers(report, allowed)
         if report['late'] or report['absent']:
@@ -121,7 +129,16 @@ async def report_today_callback(update: Update, context: ContextTypes.DEFAULT_TY
                 f"✅ *Attendance Report - {target_date.strftime('%Y-%m-%d')}*\n\n"
                 "🎉 Всі співробітники вчасно!"
             )
-        await query.edit_message_text(message, parse_mode="Markdown")
+        parts = split_message(message)
+        # Перше повідомлення редагуємо, решту — нові
+        await query.edit_message_text(parts[0], parse_mode="Markdown")
+        for extra in parts[1:]:
+            await query.message.reply_text(extra, parse_mode="Markdown")
     except Exception as exc:
         logger.error("Manual report callback failed: %s", exc, exc_info=True)
-        await query.edit_message_text("⚠️ Не вдалося згенерувати звіт. Перевірте логи.")
+        await query.edit_message_text(
+            "⚠️ Не вдалося згенерувати звіт.\n"
+            f"Помилка: `{str(exc)}`\n"
+            "Перевірте налаштування та логи сервера.",
+            parse_mode="Markdown",
+        )

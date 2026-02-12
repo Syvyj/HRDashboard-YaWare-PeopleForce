@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
   <head>
     <meta charset="UTF-8" />
@@ -209,25 +209,25 @@
                                 ${
                                   item.user_email
                                     ? `<br><small class="text-muted">${escapeHtml(
-                                        item.user_email
+                                        item.user_email,
                                       )}</small>`
                                     : ""
                                 }
                             </td>
                             <td><span class="audit-action">${escapeHtml(
-                              item.action
+                              item.action,
                             )}</span></td>
                             <td>
                                 <div class="audit-details">
                                     <pre>${JSON.stringify(
                                       item.details,
                                       null,
-                                      2
+                                      2,
                                     )}</pre>
                                 </div>
                             </td>
                         </tr>
-                    `
+                    `,
               )
               .join("");
           }
@@ -244,7 +244,7 @@
         } catch (error) {
           console.error("Failed to load audit logs:", error);
           document.getElementById("auditTableBody").innerHTML =
-            '<tr><td colspan="4" class="text-center text-danger">Помилка завантаження даних</td></tr>';
+            '<tr><td colspan="4" class="text-center text-danger">Ошибка загрузки данных</td></tr>';
         }
       }
 

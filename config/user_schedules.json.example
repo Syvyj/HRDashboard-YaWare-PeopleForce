@@ -1,0 +1,34 @@
+{
+  "users": {
+    "Example User": {
+      "user_name": "Example User",
+      "division_name": "Apps",
+      "division_id": 12345,
+      "direction_name": "Product Direction",
+      "direction_id": null,
+      "unit_name": "Development Unit",
+      "unit_id": 67890,
+      "team_name": "Backend Team",
+      "team_id": 11111,
+      "peopleforce_id": 222222,
+      "email": "user@example.com",
+      "user_id": "1234567",
+      "start_time": "09:00",
+      "control_manager": [1],
+      "telegram_username": "example_user",
+      "team_lead": "Manager Name",
+      "manager_telegram": "manager_telegram",
+      "project": "Apps",
+      "department": "Product Direction",
+      "position": "Software Engineer",
+      "manager_name": "manager_name",
+      "location": "Remote",
+      "unit": "Development Unit",
+      "internal_id": 100
+    }
+  },
+  "_metadata": {
+    "last_updated": "2025-01-01T00:00:00",
+    "version": "1.0"
+  }
+}

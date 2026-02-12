@@ -495,7 +495,7 @@
     }
   }
 
-  function fillStatusOptions(currentStatus) {
+  function fillStatusOptions(currentStatusOrLeaveReason) {
     formStatus.innerHTML = '';
     const emptyOption = document.createElement('option');
     emptyOption.value = '';
@@ -507,13 +507,13 @@
       option.textContent = STATUS_LABELS[status] || status;
       formStatus.appendChild(option);
     });
-    formStatus.value = currentStatus || '';
-    const hint = currentStatus ? STATUS_LABELS[currentStatus] : '';
+    formStatus.value = currentStatusOrLeaveReason || '';
+    const hint = currentStatusOrLeaveReason ? STATUS_LABELS[currentStatusOrLeaveReason] : '';
     formStatus.setAttribute(
       'title',
       hint
-        ? `${currentStatus}: ${hint}`
-        : 'Статус дня: present — присутствовал, late — опоздал, absent — отсутствовал, leave — отпуск'
+        ? `${currentStatusOrLeaveReason}: ${hint}`
+        : 'Day status: present, late, absent, leave (vacation / sick / day off)'
     );
   }
 
@@ -533,6 +533,8 @@
     formTotalCorrected.value = record.corrected_total_display || '';
     formNotes.value = record.notes || '';
     formLeaveReason.value = record.leave_reason || '';
+    var statusSelectValue = (record.status === 'leave' && record.leave_reason) ? record.leave_reason : (record.status || '');
+    fillStatusOptions(statusSelectValue);
     recordModal.show();
   }
 

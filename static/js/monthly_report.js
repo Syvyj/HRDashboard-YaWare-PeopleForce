@@ -401,8 +401,9 @@
     const factDays = Math.max(0, planDays - vacationDays - dayOffDays - sickDays);
     setValue('edit-fact-days', factDays);
     
-    // 3. Рахуємо Minimum Hours = Fact Days × 7 hours
-    const minHoursPerDay = 7.0;
+    // 3. Рахуємо Minimum Hours = Fact Days × hours per day (from selector)
+    const hoursPerDayElem = document.getElementById('edit-hours-per-day');
+    const minHoursPerDay = hoursPerDayElem ? parseFloat(hoursPerDayElem.value) : 7.0;
     const totalMinutes = factDays * minHoursPerDay * 60;
     const hours = Math.floor(totalMinutes / 60);
     const mins = Math.floor(totalMinutes % 60);
@@ -434,11 +435,25 @@
     setInputValue('edit-corrected-hours', data.correctedHours);
     setInputValue('edit-notes', data.notes);
     
+    // Set hours per day selector based on current minimum hours and fact days
+    const hoursPerDayElem = document.getElementById('edit-hours-per-day');
+    if (hoursPerDayElem && data.factDays && data.minimumHours) {
+      const [hours, mins] = data.minimumHours.split(':').map(Number);
+      const totalMinutes = hours * 60 + (mins || 0);
+      const calculatedHoursPerDay = totalMinutes / (data.factDays * 60);
+      // Round to nearest 0.5 and set selector
+      if (calculatedHoursPerDay <= 6.75) {
+        hoursPerDayElem.value = '6.5';
+      } else {
+        hoursPerDayElem.value = '7';
+      }
+    }
+    
     document.getElementById('editFieldsModalLabel').textContent = 
       `Редактировать данные за месяц: ${data.userName}`;
     
     // Add event listeners for auto-calculation (with null check)
-    ['edit-start-date', 'edit-plan-days', 'edit-vacation-days', 'edit-day-off-days', 'edit-sick-days'].forEach(id => {
+    ['edit-start-date', 'edit-plan-days', 'edit-vacation-days', 'edit-day-off-days', 'edit-sick-days', 'edit-hours-per-day'].forEach(id => {
       const elem = document.getElementById(id);
       if (elem) elem.addEventListener('input', recalculateAutoFields);
     });
@@ -459,6 +474,7 @@
       sick_days: parseFloat(document.getElementById('edit-sick-days').value) || 0,
       fact_days: parseFloat(document.getElementById('edit-fact-days').value) || 0,
       minimum_hours: document.getElementById('edit-minimum-hours').value || '',
+      hours_per_day: parseFloat(document.getElementById('edit-hours-per-day').value) || 7.0,
       delay_count: parseInt(document.getElementById('edit-delay-count').value) || 0,
       tracked_hours: document.getElementById('edit-tracked-hours').value || '',
       corrected_hours: document.getElementById('edit-corrected-hours').value || '',

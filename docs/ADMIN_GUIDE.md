@@ -40,7 +40,7 @@ URL: `http://your-server:5000/admin`
 
 1. Нажать кнопку "➕ Добавить пользователя"
 2. Ввести **полное имя** (например: `Ivanov Ivan`)
-3. Ввести **email** (например: `ivanov@evadav.com`)
+3. Ввести **email** (например: `user@example.com`)
 4. Ввести **ID** пользователя YaWare (например: `7684922`)
 5. Ввести **локацию** (например: `Ukraine`, `Philippines`, `India`)
 6. Ввести **время начала работы** в формате HH:MM (например: `10:00`)
@@ -241,7 +241,7 @@ URL: `http://your-server:5000/admin`
   "users": {
     "Ivanov Ivan": {
       "user_name": "Ivanov Ivan",
-      "email": "ivanov@evadav.com",
+      "email": "user@example.com",
       "user_id": "7684922",
       "peopleforce_id": 123456,
       "start_time": "10:00",
@@ -291,7 +291,7 @@ URL: `http://your-server:5000/admin`
     "Direction": "-",
     "Unit": "IOS Unit",
     "Team": "Product Team",
-    "Manager": "Gramovich Ivan",
+    "Manager": "Example Manager",
     "FIELD6": ""
   }
 ]
@@ -322,7 +322,7 @@ URL: `http://your-server:5000/admin`
 ```
 /admin → Добавить пользователя
 Имя: Kumar Raj
-Email: raj@evadav.com
+Email: user@example.com
 ID: 7999888
 Локация: India
 Время: 09:30

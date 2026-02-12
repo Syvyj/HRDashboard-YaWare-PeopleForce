@@ -21,8 +21,10 @@ from openpyxl.styles import Alignment, PatternFill, Font, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.cell.cell import MergedCell
 from .extensions import db
-from .models import AttendanceRecord, User, AdminAuditLog, EmployeePreset
+from .models import AttendanceRecord, User, AdminAuditLog, LatenessRecord, EmployeePreset
+from .constants import SEVEN_DAY_WORK_WEEK_IDS
 from .user_data import get_user_schedule, load_user_schedules, clear_user_schedule_cache
+from .lateness_service import collect_lateness_for_date, LatenessCollectorError
 from tracker_alert.services import user_manager as schedule_user_manager
 from tracker_alert.services.schedule_utils import (
     set_manual_override,
@@ -33,10 +35,6 @@ from tracker_alert.services.attendance_monitor import AttendanceMonitor
 from tracker_alert.client.peopleforce_api import PeopleForceClient
 from tracker_alert.client.yaware_v2_api import YaWareV2Client
 from tracker_alert.services.control_manager import auto_assign_control_manager
-from tracker_alert.services.dashboard_report import DashboardReportService
-from dashboard_app.lateness_service import collect_lateness_for_date, LatenessCollectorError
-from dashboard_app.models import LatenessRecord
-from dashboard_app.constants import SEVEN_DAY_WORK_WEEK_IDS, WEEK_TOTAL_USER_ID_SUFFIX
 from .hierarchy_adapter import (
     load_level_grade_data,
     find_level_grade_match,
@@ -48,7 +46,6 @@ from .hierarchy_adapter import (
 
 logger = logging.getLogger(__name__)
 from tracker_alert.client.yaware_v2_api import YaWareV2Client
-from tasks.update_attendance import update_for_date
 
 try:
     from reportlab.lib import colors  # type: ignore[import]
@@ -77,6 +74,58 @@ def _password_matches_default(hash_value: str | None) -> bool:
         return check_password_hash(hash_value, DEFAULT_SYNC_PASSWORD)
     except Exception:  # pragma: no cover
         return False
+
+
+def _manager_has_access(record_manager, allowed_managers) -> bool:
+    """Перевірка доступу контрол-менеджера до запису.
+    
+    Підтримує як одиночне значення (int), так і список менеджерів (list[int]).
+    """
+    if not allowed_managers:
+        return True
+    if record_manager is None:
+        return True
+    
+    # Якщо record_manager - список, перевіряємо чи є перетин
+    if isinstance(record_manager, list):
+        return any(cm in allowed_managers for cm in record_manager)
+    
+    # Якщо одиночне значення
+    return record_manager in allowed_managers
+
+
+def _normalize_control_manager(cm_value):
+    """Нормалізує control_manager для збереження в БД (Integer поле).
+    
+    Якщо список - повертає перше значення, якщо int - повертає як є.
+    """
+    if isinstance(cm_value, list):
+        return cm_value[0] if cm_value else None
+    return cm_value
+
+
+def _build_week_total_user_id(value: str | None) -> str | None:
+    """Додає суфікс __week_total до user_id для week_total записів."""
+    from dashboard_app.constants import WEEK_TOTAL_USER_ID_SUFFIX
+    if not value:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    if text.endswith(WEEK_TOTAL_USER_ID_SUFFIX):
+        return text
+    return f"{text}{WEEK_TOTAL_USER_ID_SUFFIX}"
+
+
+def _strip_week_total_user_id(value: str | None) -> str | None:
+    """Видаляє суфікс __week_total з user_id."""
+    from dashboard_app.constants import WEEK_TOTAL_USER_ID_SUFFIX
+    if not value:
+        return value
+    text = str(value).strip()
+    if text.endswith(WEEK_TOTAL_USER_ID_SUFFIX):
+        return text[:-len(WEEK_TOTAL_USER_ID_SUFFIX)]
+    return text
 
 
 _LOCATION_REPLACEMENTS: dict[str, str] = {
@@ -139,42 +188,6 @@ def _schedule_identity_sets() -> tuple[set[str], set[str], set[str]]:
     return names, emails, ids
 
 
-def _build_week_total_user_id(value: str | None) -> str | None:
-    if not value:
-        return None
-    text = str(value).strip()
-    if not text:
-        return None
-    if text.endswith(WEEK_TOTAL_USER_ID_SUFFIX):
-        return text
-    return f"{text}{WEEK_TOTAL_USER_ID_SUFFIX}"
-
-
-def _strip_week_total_user_id(value: str | None) -> str | None:
-    if not value:
-        return value
-    text = str(value).strip()
-    if text.endswith(WEEK_TOTAL_USER_ID_SUFFIX):
-        return text[:-len(WEEK_TOTAL_USER_ID_SUFFIX)]
-    return text
-
-
-def _get_schedule_for_record(record) -> dict:
-    schedule = get_user_schedule(record.user_name)
-    if schedule:
-        return schedule
-    base_id = _strip_week_total_user_id(record.user_id)
-    if base_id:
-        schedule = get_user_schedule(base_id)
-        if schedule:
-            return schedule
-    if record.user_email:
-        schedule = get_user_schedule(record.user_email)
-        if schedule:
-            return schedule
-    return {}
-
-
 def _get_scheduler():
     """Дістати активний APScheduler."""
     try:
@@ -230,69 +243,6 @@ def _job_to_dict(job):
         'pending': getattr(job, 'pending', False),
         'paused': getattr(job, 'paused', False),
     }
-
-
-def _parse_manager_ids(manager_filter: str | None) -> list[int]:
-    if not manager_filter:
-        return []
-    result: list[int] = []
-    for value in manager_filter.split(','):
-        value = value.strip()
-        if not value:
-            continue
-        try:
-            result.append(int(value))
-        except ValueError:
-            continue
-    return result
-
-
-def _can_manage_presets(user: User) -> bool:
-    return bool(getattr(user, 'is_admin', False) or getattr(user, 'is_control_manager', False))
-
-
-def _can_view_all_presets(user: User) -> bool:
-    if getattr(user, 'is_admin', False):
-        return True
-    if not getattr(user, 'is_control_manager', False):
-        return False
-    return _parse_manager_ids(getattr(user, 'manager_filter', None)) == [3]
-
-
-def _include_archived_requested(default: bool = False) -> bool:
-    value = (request.args.get('include_archived') or '').strip().lower()
-    if not value:
-        return default
-    return value in {'1', 'true', 'yes', 'on'}
-
-
-_dashboard_report_service: DashboardReportService | None = None
-
-
-def _get_dashboard_report_service() -> DashboardReportService:
-    global _dashboard_report_service
-    if _dashboard_report_service is None:
-        db_url = current_app.config.get('SQLALCHEMY_DATABASE_URI')
-        _dashboard_report_service = DashboardReportService(db_url)
-    return _dashboard_report_service
-
-
-def _serialize_attendance_status(status) -> dict:
-    user = status.user
-    return {
-        'name': user.name,
-        'email': user.email,
-        'project': user.project,
-        'department': user.department,
-        'team': user.team,
-        'location': user.location,
-        'scheduled_start': status.expected_time,
-        'actual_start': status.actual_time,
-        'minutes_late': status.minutes_late,
-        'status': status.status,
-        'control_manager': user.control_manager,
-    }
-
 
 MANUAL_FLAG_MAP = {
     'scheduled_start': 'manual_scheduled_start',
@@ -464,7 +414,7 @@ def _load_schedule_entries() -> list[dict]:
         email = str(raw.get('email') or '').strip()
         user_id = str(raw.get('user_id') or '').strip()
         peopleforce_id = str(raw.get('peopleforce_id') or '').strip()
-        if _is_ignored_person(name, email) or _is_archived_person(name, email):
+        if _is_ignored_person(name, email):
             continue
         keys = _diff_key_candidates(name, email, user_id, peopleforce_id)
         entries.append({
@@ -495,7 +445,7 @@ def _extract_yaware_entries() -> tuple[list[dict], str | None]:
             full_name = str(item.get('user') or '').split(',')[0].strip()
         email = str(item.get('email') or item.get('user_email') or '').strip().lower()
         user_id = str(item.get('id') or item.get('user_id') or '').strip()
-        if _is_ignored_person(full_name, email) or _is_archived_person(full_name, email):
+        if _is_ignored_person(full_name, email):
             continue
         keys = _diff_key_candidates(full_name, email, user_id)
         entries.append({
@@ -548,7 +498,7 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
             full_name = ' '.join(part for part in (first, last) if part).strip()
         email = str(item.get('email') or '').strip().lower()
         employee_id = str(item.get('id') or item.get('employee_id') or '').strip()
-        if _is_ignored_person(full_name, email) or _is_archived_person(full_name, email):
+        if _is_ignored_person(full_name, email):
             continue
         hire_raw = item.get('hired_on') or item.get('hire_date')
         if hire_raw:
@@ -593,7 +543,7 @@ def _extract_peopleforce_entries(force_refresh: bool = False) -> tuple[list[dict
             team_lead_name = (schedule_info.get('team_lead') or '').strip()
             yaware_user_id = str(schedule_info.get('user_id') or '').strip()
             unit_name = (schedule_info.get('unit') or schedule_info.get('unit_name') or '').strip()
-            control_manager_id = schedule_info.get('control_manager')
+            control_manager_id = _normalize_control_manager(schedule_info.get('control_manager'))
         
         # If not in schedule, try to match with YaWare by email first, then by normalized name
         if not yaware_user_id:
@@ -661,6 +611,12 @@ def _generate_user_diff(force_refresh: bool = False) -> dict:
     missing_yaware: list[str] = []
     missing_peopleforce: list[str] = []
     for entry in schedule_entries:
+        # Skip ignored and archived users
+        if _is_ignored_person(entry['name'], entry['email'], entry.get('user_id')):
+            continue
+        if _is_archived_person(entry['name'], entry['email'], entry.get('user_id')):
+            continue
+            
         payload = {
             'name': entry['name'],
             'email': entry['email'],
@@ -669,9 +625,9 @@ def _generate_user_diff(force_refresh: bool = False) -> dict:
             'in_yaware': entry['in_yaware'],
             'in_peopleforce': entry['in_peopleforce'],
         }
-        if yaware_error is None and not entry['in_yaware'] and not _is_ignored_person(entry['name'], entry['email']) and not _is_archived_person(entry['name'], entry['email']):
+        if yaware_error is None and not entry['in_yaware']:
             missing_yaware.append(_humanize_entry(entry['name'], entry['email'], entry['user_id']))
-        if peopleforce_error is None and not entry['in_peopleforce'] and not _is_ignored_person(entry['name'], entry['email']) and not _is_archived_person(entry['name'], entry['email']):
+        if peopleforce_error is None and not entry['in_peopleforce']:
             missing_peopleforce.append(_humanize_entry(entry['name'], entry['email'], entry['user_id']))
         for key in entry['keys']:
             local_presence[key] = payload
@@ -724,7 +680,7 @@ def _generate_user_diff(force_refresh: bool = False) -> dict:
 
 
 def _serialize_attendance_record(record: AttendanceRecord) -> dict:
-    user_schedule = _get_schedule_for_record(record)
+    user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
 
     scheduled_start = record.scheduled_start or ''
     actual_start = record.actual_start or ''
@@ -794,6 +750,9 @@ def _apply_user_key_filter(query, user_key: str):
         conditions.append(db.func.lower(AttendanceRecord.user_email) == lowered)
     conditions.append(db.func.lower(AttendanceRecord.user_id) == lowered)
     conditions.append(db.func.lower(AttendanceRecord.user_name) == lowered)
+    # Додаємо перевірку по internal_user_id
+    if normalized.isdigit():
+        conditions.append(AttendanceRecord.internal_user_id == int(normalized))
     return query.filter(or_(*conditions)), normalized
 
 
@@ -1000,7 +959,6 @@ def _serialize_schedule_user_entry(name: str, info: dict) -> dict:
         'telegram': (info.get('telegram_username') or '').strip(),
         'team_lead': (info.get('team_lead') or '').strip(),
         'ignored': bool(info.get('ignored')),
-        'archived': bool(info.get('archived')),
         'last_date': '',
     }
 
@@ -1018,11 +976,12 @@ def _gather_schedule_users(search: str | None, ignored_only: bool = False, inclu
             continue
         ignored = bool(info.get('ignored'))
         archived = bool(info.get('archived'))
+        
         if ignored_only and not ignored:
             continue
         if not ignored_only and ignored:
             continue
-        if not ignored_only and not include_archived and archived:
+        if not include_archived and archived:
             continue
 
         entry = _serialize_schedule_user_entry(name, info)
@@ -1078,7 +1037,7 @@ def _collect_employee_filters(records: list[AttendanceRecord]) -> dict[str, list
     units: set[str] = set()
     teams: set[str] = set()
     for record in records:
-        user_schedule = _get_schedule_for_record(record)
+        user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
         division_name = canonicalize_label(user_schedule.get('division_name'))
         direction_name = canonicalize_label(user_schedule.get('direction_name'))
         unit_name = canonicalize_label(user_schedule.get('unit_name'))
@@ -1108,7 +1067,7 @@ def _filter_employee_records(records: list[AttendanceRecord], attr: str, value: 
         return records
     filtered: list[AttendanceRecord] = []
     for record in records:
-        user_schedule = _get_schedule_for_record(record)
+        user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
         resolved_map = {
             'project': user_schedule.get('division_name'),
             'department': user_schedule.get('direction_name'),
@@ -1122,7 +1081,7 @@ def _filter_employee_records(records: list[AttendanceRecord], attr: str, value: 
 
 
 def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None = None) -> dict:
-    user_schedule = _get_schedule_for_record(record)
+    user_schedule = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
     
     division_raw = user_schedule.get('division_name') or record.project or ''
     direction_raw = user_schedule.get('direction_name') or record.department or ''
@@ -1165,15 +1124,12 @@ def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None =
     
     location_value = _normalize_location_label(record.location)
     
-    # Get ignored/archived status from user_schedule or schedule parameter
+    # Get ignored status from user_schedule or schedule parameter
     ignored_status = False
-    archived_status = False
     if schedule and isinstance(schedule, dict):
         ignored_status = schedule.get('ignored', False)
-        archived_status = schedule.get('archived', False)
     else:
         ignored_status = user_schedule.get('ignored', False)
-        archived_status = user_schedule.get('archived', False)
     
     return {
         'user_key': record.user_id or record.user_email or record.user_name,
@@ -1193,7 +1149,6 @@ def _serialize_employee_record(record: AttendanceRecord, schedule: dict | None =
         'peopleforce_id': peopleforce_id,
         'last_date': record.record_date.strftime('%Y-%m-%d'),
         'ignored': ignored_status,
-        'archived': archived_status,
     }
 
 
@@ -1237,7 +1192,7 @@ def _serialize_app_user(user: User) -> dict:
 
 
 PDF_FONT_CANDIDATES = [
-    ('ArialUnicode', '/System/Library/Fonts/Supplemental/Arial Unicode.ttf', '/System/Library/Fonts/Supplemental/Arial Unicode.ttf'),
+    ('ArialUnicode', '/System/Library/Fonts/Supplemental/Arial Unicode.ttf', '/System/Library/Fonts/Supplemental/Arial Unicode Bold.ttf'),
     ('Arial', '/System/Library/Fonts/Supplemental/Arial.ttf', '/System/Library/Fonts/Supplemental/Arial Bold.ttf'),
     ('ArialMT', '/Library/Fonts/Arial.ttf', '/Library/Fonts/Arial Bold.ttf'),
     ('DejaVuSans', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'),
@@ -1342,9 +1297,11 @@ def _apply_filters(query):
     if status:
         query = query.filter(AttendanceRecord.status == status)
 
-    allowed_managers = current_user.allowed_managers
-    if allowed_managers:
-        query = query.filter(AttendanceRecord.control_manager.in_(allowed_managers))
+    # NOTE: Control manager filtering is done after SQL query using _user_accessible()
+    # because control_manager can be a list in user_schedules.json but stored as single int in DB
+    # allowed_managers = current_user.allowed_managers
+    # if allowed_managers:
+    #     query = query.filter(AttendanceRecord.control_manager.in_(allowed_managers))
 
     return query
 
@@ -1403,8 +1360,7 @@ def _sync_plan_start_for_date(target_date: date) -> tuple[int, int]:
 def _build_items(records):
     grouped = defaultdict(list)
     for record in records:
-        base_user_id = _strip_week_total_user_id(record.user_id)
-        key = base_user_id or record.user_email or record.user_name
+        key = record.user_id or record.user_email or record.user_name
         grouped[key].append(record)
 
     # Load week notes
@@ -1431,7 +1387,7 @@ def _build_items(records):
     for key, recs in grouped.items():
         recs.sort(key=lambda r: r.record_date)
         first = recs[0]
-        user_schedule_first = _get_schedule_for_record(first)
+        user_schedule_first = get_user_schedule(first.user_name) or get_user_schedule(first.user_id) or {}
         first_division = canonicalize_label(user_schedule_first.get('division_name') or first.project)
         first_direction = canonicalize_label(user_schedule_first.get('direction_name') or first.department)
         first_team = canonicalize_label(user_schedule_first.get('team_name') or first.team)
@@ -1491,7 +1447,7 @@ def _build_items(records):
             
             if rec.record_date.weekday() >= 5 and not include_weekends:
                 continue
-            rec_schedule = _get_schedule_for_record(rec)
+            rec_schedule = get_user_schedule(rec.user_name) or get_user_schedule(rec.user_id) or {}
             division_name = canonicalize_label(rec_schedule.get('division_name') or rec.project)
             direction_name = canonicalize_label(rec_schedule.get('direction_name') or rec.department)
             team_name = canonicalize_label(rec_schedule.get('team_name') or rec.team)
@@ -1535,7 +1491,7 @@ def _build_items(records):
                 'minutes_late_display': _minutes_to_str(rec.minutes_late),
                 'status': rec.status,
                 'notes': (rec.notes or '').strip(),
-                'notes_display': (rec.notes or '').strip(),
+                'notes_display': (rec.notes or rec.leave_reason or '').strip(),
                 'leave_reason': (rec.leave_reason or '').strip(),
                 'pf_status': (rec.pf_status or '').strip(),
                 'manual_flags': manual_flags,
@@ -1586,7 +1542,7 @@ def _build_items(records):
                 'corrected_total_minutes': week_total_from_db.corrected_total_minutes,
                 'corrected_total_display': _minutes_to_str(week_total_from_db.corrected_total_minutes) if week_total_from_db.corrected_total_minutes is not None else '',
                 'corrected_total_hm': _minutes_to_hm(week_total_from_db.corrected_total_minutes) if week_total_from_db.corrected_total_minutes is not None else '',
-                'notes': week_note,  # Always use JSON file as source of truth
+                'notes': week_total_from_db.notes or week_note,
                 'from_db': True
             }
         else:
@@ -1614,7 +1570,7 @@ def _build_items(records):
             'user_name': first.user_name,
             'user_id': first.user_id,
             'user_email': first.user_email,
-            'internal_user_id': first.internal_user_id,
+            'internal_user_id': user_schedule_first.get('internal_id'),
             'project': first_division,
             'department': first_direction,
             'team': first_team,
@@ -1637,10 +1593,13 @@ def _apply_schedule_overrides(items: list[dict]) -> list[dict]:
     for item in items:
         schedule = get_user_schedule(item['user_name']) or {}
         if schedule:
-            if not item.get('plan_start'):
-                plan_start_value = schedule.get('start_time')
-                if plan_start_value:
-                    item['plan_start'] = plan_start_value
+            # Завжди використовуємо plan_start з user_schedules.json якщо він там є
+            plan_start_value = schedule.get('start_time')
+            if plan_start_value:
+                item['plan_start'] = plan_start_value
+            elif not item.get('plan_start'):
+                # Якщо в schedule немає, залишаємо з БД
+                pass
             schedule_location = schedule.get('location')
             normalized_schedule_location = _normalize_location_label(schedule_location)
             if schedule_location not in (None, ''):
@@ -1726,24 +1685,34 @@ def _get_schedule_filters(selected: dict[str, str] | None = None) -> dict[str, d
 
 
 def _get_filtered_items():
-    # Include daily and week_total records for display
+    # Filter only daily records (exclude week_total)
     query = _apply_filters(AttendanceRecord.query)
     query = query.filter(or_(
         AttendanceRecord.record_type == 'daily',
-        AttendanceRecord.record_type == 'week_total',
         AttendanceRecord.record_type.is_(None)  # для старих записів без record_type
     ))
     records = query.order_by(AttendanceRecord.user_name.asc(), AttendanceRecord.record_date.asc()).all()
     
+    # Skip ignored and archived users (from user_schedules.json)
     include_archived = _include_archived_requested(False)
-    filtered_by_status: list[AttendanceRecord] = []
+    filtered_records = []
     for rec in records:
         if _is_ignored_person(rec.user_name, rec.user_email, rec.user_id):
             continue
         if not include_archived and _is_archived_person(rec.user_name, rec.user_email, rec.user_id):
             continue
-        filtered_by_status.append(rec)
-    records = filtered_by_status
+        filtered_records.append(rec)
+    records = filtered_records
+    
+    # Apply control manager filter using _user_accessible() to support list-based managers
+    if current_user.allowed_managers:
+        filtered_records = []
+        for rec in records:
+            # Get user schedule to check control_manager list
+            schedule = get_user_schedule(rec.user_email or rec.user_id or rec.user_name)
+            if _user_accessible(schedule):
+                filtered_records.append(rec)
+        records = filtered_records
     
     # Фільтрація по user_key (для множинного вибору співробітників)
     user_keys = request.args.getlist('user_key')
@@ -1751,24 +1720,13 @@ def _get_filtered_items():
         filtered_records = []
         for user_key in user_keys:
             if user_key:
-                # Спочатку перевіряємо чи це internal_user_id (число)
-                try:
-                    internal_id = int(user_key)
-                    for record in records:
-                        if record.internal_user_id == internal_id:
-                            filtered_records.append(record)
-                    continue
-                except (ValueError, TypeError):
-                    pass
-                
-                # Якщо не число - фільтруємо по email/name/user_id (legacy)
                 normalized = _normalize_user_key(user_key).lower()
                 for record in records:
-                    record_user_id = _strip_week_total_user_id(record.user_id)
-                    user_id_match = record_user_id and record_user_id.lower() == normalized
+                    user_id_match = record.user_id and record.user_id.lower() == normalized
                     email_match = record.user_email and record.user_email.lower() == normalized
                     name_match = record.user_name and record.user_name.lower() == normalized
-                    if user_id_match or email_match or name_match:
+                    internal_id_match = record.internal_user_id and str(record.internal_user_id) == normalized
+                    if user_id_match or email_match or name_match or internal_id_match:
                         filtered_records.append(record)
         # Видаляємо дублікати
         records = list({record.id: record for record in filtered_records}.values())
@@ -1861,6 +1819,17 @@ def admin_users_diff():
     return jsonify(diff_payload)
 
 
+@api_bp.route('/admin/debug/env')
+@login_required
+def admin_debug_env():
+    _ensure_admin()
+    import os
+    return jsonify({
+        'YAWARE_ACCESS_KEY': os.getenv('YAWARE_ACCESS_KEY', 'NOT SET')[:20] + '...' if os.getenv('YAWARE_ACCESS_KEY') else 'NOT SET',
+        'PEOPLEFORCE_TOKEN': 'SET' if os.getenv('PEOPLEFORCE_TOKEN') else 'NOT SET',
+    })
+
+
 @api_bp.route('/admin/sync/users', methods=['POST'])
 @login_required
 def admin_sync_users():
@@ -1915,6 +1884,8 @@ def admin_sync_users():
 @api_bp.route('/admin/sync/attendance', methods=['POST'])
 @login_required
 def admin_sync_attendance():
+    from tasks.update_attendance import update_for_date  # import here to avoid circular dependency
+    
     _ensure_admin()
     payload = request.get_json(silent=True) or {}
     target_str = (payload.get('date') or '').strip()
@@ -1952,6 +1923,81 @@ def admin_sync_attendance():
         'status': 'ok',
         'date': target_date.isoformat(),
         'include_absent': include_absent,
+    })
+
+
+@api_bp.route('/admin/sync/attendance-period', methods=['POST'])
+@login_required
+def admin_sync_attendance_period():
+    """Sync attendance records and lateness for a date range."""
+    from tasks.update_attendance import update_for_date
+    
+    _ensure_admin()
+    payload = request.get_json(silent=True) or {}
+    
+    start_str = (payload.get('start_date') or '').strip()
+    end_str = (payload.get('end_date') or '').strip()
+    
+    start_date = _parse_date(start_str)
+    end_date = _parse_date(end_str)
+    
+    if not start_date or not end_date:
+        return jsonify({'error': 'Некоректні дати. Використовуйте формат YYYY-MM-DD'}), 400
+    
+    if end_date < start_date:
+        start_date, end_date = end_date, start_date
+    
+    diff = (end_date - start_date).days
+    if diff > 60:
+        return jsonify({'error': 'Період надто великий (макс 60 днів)'}), 400
+    
+    skip_weekends = bool(payload.get('skip_weekends', False))
+    include_absent = bool(payload.get('include_absent', True))
+    
+    monitor = AttendanceMonitor()
+    synced_count = 0
+    skipped = []
+    lateness_count = 0
+    errors = []
+    
+    current_date = start_date
+    while current_date <= end_date:
+        try:
+            if skip_weekends and current_date.weekday() >= 5:
+                skipped.append(current_date.isoformat())
+            else:
+                # 1. Синхронізуємо attendance records з YaWare
+                update_for_date(monitor, current_date, include_absent=include_absent)
+                synced_count += 1
+                
+                # 2. Збираємо lateness records
+                inserted = collect_lateness_for_date(
+                    current_date,
+                    include_absent=include_absent,
+                    skip_weekends=False
+                )
+                lateness_count += inserted
+        except Exception as exc:
+            errors.append({'date': current_date.isoformat(), 'error': str(exc)})
+        
+        current_date += timedelta(days=1)
+    
+    _log_admin_action('manual_sync_attendance_period', {
+        'start_date': start_date.isoformat(),
+        'end_date': end_date.isoformat(),
+        'days_synced': synced_count,
+        'lateness_records': lateness_count,
+        'include_absent': include_absent,
+        'skip_weekends': skip_weekends,
+    })
+    db.session.commit()
+    
+    return jsonify({
+        'status': 'ok' if not errors else 'partial',
+        'days_synced': synced_count,
+        'lateness_records': lateness_count,
+        'skipped': skipped,
+        'errors': errors,
     })
 
 
@@ -1999,7 +2045,7 @@ def admin_create_employee():
     email_raw = (payload.get('email') or '').strip()
     email = email_raw.lower()
     
-    logger.info(f"Creating employee: name='{name}', email='{email}', ignored={payload.get('ignored')}, archived={payload.get('archived')}")
+    logger.info(f"Creating employee: name='{name}', email='{email}', ignored={payload.get('ignored')}")
     
     if not name:
         logger.warning(f"Missing name: name='{name}'")
@@ -2047,11 +2093,19 @@ def admin_create_employee():
     control_manager = payload.get('control_manager')
     if control_manager in (None, '', 'null'):
         control_manager_value = None
+    elif isinstance(control_manager, list):
+        # Масив контрол-менеджерів
+        try:
+            control_manager_value = [int(x) for x in control_manager if x not in (None, '', 'null')]
+            if not control_manager_value:
+                control_manager_value = None
+        except (TypeError, ValueError):
+            return jsonify({'error': 'control_manager must be integer, array of integers, or empty'}), 400
     else:
         try:
             control_manager_value = int(control_manager)
         except (TypeError, ValueError):
-            return jsonify({'error': 'control_manager must be integer or empty'}), 400
+            return jsonify({'error': 'control_manager must be integer, array of integers, or empty'}), 400
 
     entry: dict[str, object] = {}
     if email:
@@ -2083,17 +2137,10 @@ def admin_create_employee():
         entry['start_time'] = start_time
         set_manual_override(entry, 'start_time')
     
-    # Save hire_date if provided
-    hire_date = _clean(payload.get('hire_date'))
-    if hire_date:
-        entry['hire_date'] = hire_date
-    
-    # Handle ignored/archived flags
+    # Handle ignored flag
     ignored = payload.get('ignored', False)
     if ignored:
         entry['ignored'] = True
-    if payload.get('archived'):
-        entry['archived'] = True
     
     # Автопризначення control_manager якщо не вказано вручну
     if control_manager_value is not None:
@@ -2109,7 +2156,7 @@ def admin_create_employee():
 
     users[name] = entry
     if not schedule_user_manager.save_users(schedules):
-        return jsonify({'error': 'Не вдалося зберегти користувача'}), 500
+        return jsonify({'error': 'Не удалось сохранить пользователя'}), 500
 
     clear_user_schedule_cache()
     _schedule_identity_sets.cache_clear()
@@ -2136,7 +2183,7 @@ def admin_employees():
     per_page = max(min(int(request.args.get('per_page', 25) or 25), 100), 1)
 
     if ignored_only:
-        records = _gather_schedule_users(search, ignored_only=True, include_archived=True)
+        records = _gather_schedule_users(search, ignored_only=True, include_archived=include_archived)
         filter_options = {}
     else:
         records = _gather_schedule_users(search, ignored_only=False, include_archived=include_archived)
@@ -2189,15 +2236,33 @@ def admin_update_employee_manager():
     manager_value = payload.get('control_manager')
     if manager_value in (None, ''):
         manager_value = None
+    elif isinstance(manager_value, list):
+        # Масив контрол-менеджерів
+        try:
+            manager_value = [int(x) for x in manager_value if x not in (None, '', 'null')]
+            if not manager_value:
+                manager_value = None
+        except (TypeError, ValueError):
+            return jsonify({'error': 'control_manager must be integer, array of integers, or null'}), 400
     else:
         try:
             manager_value = int(manager_value)
         except (TypeError, ValueError):
-            return jsonify({'error': 'control_manager must be integer or null'}), 400
+            return jsonify({'error': 'control_manager must be integer, array of integers, or null'}), 400
 
     normalized_keys = {_normalize_user_key(key).lower() for key in user_keys if key}
     if not normalized_keys:
         return jsonify({'error': 'user_keys must contain valid identifiers'}), 400
+
+    # Конвертуємо manager_value в формат для БД (comma-separated string або int)
+    db_manager_value = None
+    if manager_value is not None:
+        if isinstance(manager_value, list):
+            # Зберігаємо як comma-separated string "1,4"
+            db_manager_value = ','.join(map(str, manager_value))
+        else:
+            # Зберігаємо як string одного числа "1"
+            db_manager_value = str(manager_value)
 
     total_updated = 0
     for key in normalized_keys:
@@ -2206,7 +2271,7 @@ def admin_update_employee_manager():
             db.func.lower(AttendanceRecord.user_email) == key,
             db.func.lower(AttendanceRecord.user_name) == key,
         ]
-        updated = AttendanceRecord.query.filter(or_(*filters)).update({'control_manager': manager_value}, synchronize_session=False)
+        updated = AttendanceRecord.query.filter(or_(*filters)).update({'control_manager': db_manager_value}, synchronize_session=False)
         total_updated += updated or 0
 
     schedule_updated = _update_schedule_manager_assignment(normalized_keys, manager_value)
@@ -2260,6 +2325,7 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
         'plan_start': 'start_time',
         'peopleforce_id': 'peopleforce_id',
         'control_manager': 'control_manager',
+        'ignored': 'ignored',
         'archived': 'archived',
     }
 
@@ -2324,6 +2390,20 @@ def _update_schedule_entry(keys: set[str], updates: dict[str, object]) -> dict[s
             normalized_location = _normalize_location_label(value)
             value = normalized_location if normalized_location is not None else value
 
+        # Handle boolean fields (ignored, archived)
+        if dest in ('ignored', 'archived'):
+            if isinstance(value, bool):
+                if target_info.get(dest) != value:
+                    if value:
+                        target_info[dest] = value
+                        changed = True
+                    else:
+                        # Remove the key if False (to keep JSON clean)
+                        if dest in target_info:
+                            target_info.pop(dest, None)
+                            changed = True
+                continue
+        
         if value in (None, ''):
             if dest in target_info:
                 previous = target_info.pop(dest, None)
@@ -2432,8 +2512,18 @@ def admin_update_employee(user_key: str):
         pf_raw = (payload.get('peopleforce_id') or '').strip()
         schedule_updates['peopleforce_id'] = pf_raw or None
 
+    # Handle ignored and archived status
+    if 'ignored' in payload:
+        ignored_value = payload.get('ignored')
+        if isinstance(ignored_value, str):
+            ignored_value = ignored_value.lower() in {'1', 'true', 'yes', 'on'}
+        schedule_updates['ignored'] = bool(ignored_value)
+
     if 'archived' in payload:
-        schedule_updates['archived'] = bool(payload.get('archived'))
+        archived_value = payload.get('archived')
+        if isinstance(archived_value, str):
+            archived_value = archived_value.lower() in {'1', 'true', 'yes', 'on'}
+        schedule_updates['archived'] = bool(archived_value)
 
     for field in ('project', 'department', 'unit', 'team', 'location', 'plan_start'):
         if field in payload:
@@ -2449,13 +2539,30 @@ def admin_update_employee(user_key: str):
         manager_value = payload.get('control_manager')
         if manager_value in (None, '', 'null'):
             control_manager = None
+        elif isinstance(manager_value, list):
+            # Масив контрол-менеджерів
+            try:
+                control_manager = [int(x) for x in manager_value if x not in (None, '', 'null')]
+                if not control_manager:
+                    control_manager = None
+            except (TypeError, ValueError):
+                return jsonify({'error': 'control_manager must be integer, array of integers, or empty'}), 400
         else:
             try:
                 control_manager = int(manager_value)
             except (TypeError, ValueError):
-                return jsonify({'error': 'control_manager must be integer or empty'}), 400
-        updates['control_manager'] = control_manager
-        schedule_updates['control_manager'] = control_manager
+                return jsonify({'error': 'control_manager must be integer, array of integers, or empty'}), 400
+        
+        # Конвертуємо control_manager для БД (comma-separated string)
+        db_control_manager = None
+        if control_manager is not None:
+            if isinstance(control_manager, list):
+                db_control_manager = ','.join(map(str, control_manager))
+            else:
+                db_control_manager = str(control_manager)
+        
+        updates['control_manager'] = db_control_manager
+        schedule_updates['control_manager'] = control_manager  # В schedule зберігаємо як масив
         # Встановлюємо manual override, бо це явне призначення адміном
         schedule_updates['_set_control_manager_override'] = True
 
@@ -2466,9 +2573,6 @@ def admin_update_employee(user_key: str):
     for record in records:
         if record.user_id:
             key_variants.add(record.user_id.lower())
-            stripped_id = _strip_week_total_user_id(record.user_id)
-            if stripped_id and stripped_id.lower() != record.user_id.lower():
-                key_variants.add(stripped_id.lower())
         if record.user_email:
             key_variants.add(record.user_email.lower())
         if record.user_name:
@@ -2480,7 +2584,7 @@ def admin_update_employee(user_key: str):
 
     # Отримуємо canonical hierarchy з user_schedules
     sample_record = records[0]
-    sample_schedule = _get_schedule_for_record(sample_record)
+    sample_schedule = get_user_schedule(sample_record.user_name) or get_user_schedule(sample_record.user_id) or {}
     canonical_division = sample_schedule.get('division_name')
     canonical_direction = sample_schedule.get('direction_name')
     canonical_team = sample_schedule.get('team_name')
@@ -2853,7 +2957,7 @@ def admin_adapt_employee(key: str):
         users[user_name] = user_info
         if updated_fields:
             if not schedule_user_manager.save_users(schedules):
-                return jsonify({'error': 'Не вдалося зберегти оновлені дані'}), 500
+                return jsonify({'error': 'Не удалось сохранить обновлённые данные'}), 500
             clear_user_schedule_cache()
         
         _log_admin_action('adapt_employee', {
@@ -3070,6 +3174,397 @@ def admin_unignore_employee(user_key: str):
         return jsonify({'error': str(exc)}), 500
 
 
+@api_bp.route('/admin/bulk-assign-control-manager', methods=['POST'])
+@login_required
+def admin_bulk_assign_control_manager():
+    """Масове призначення control manager для користувачів по фільтрам."""
+    _ensure_admin()
+    
+    payload = request.get_json(silent=True) or {}
+    teams = payload.get('teams', [])
+    departments = payload.get('departments', [])
+    projects = payload.get('projects', [])
+    units = payload.get('units', [])
+    control_manager_id = payload.get('control_manager_id')
+    
+    if not control_manager_id:
+        return jsonify({'error': 'control_manager_id обов\'язковий'}), 400
+    
+    try:
+        control_manager_id = int(control_manager_id)
+    except (ValueError, TypeError):
+        return jsonify({'error': 'control_manager_id має бути числом'}), 400
+    
+    if not teams and not departments and not projects and not units:
+        return jsonify({'error': 'Выберите хотя бы один фильтр (teams/departments/projects/units)'}), 400
+    
+    try:
+        data = schedule_user_manager.load_users()
+        users = data.get('users', {}) if isinstance(data, dict) else {}
+        
+        updated_count = 0
+        updated_users = []
+        
+        for user_name, user_info in users.items():
+            if not isinstance(user_info, dict):
+                continue
+            
+            # Перевіряємо чи user відповідає хоча б одному фільтру
+            match = False
+            
+            if teams:
+                user_team = (user_info.get('team') or '').strip()
+                if user_team in teams:
+                    match = True
+            
+            if departments:
+                user_dept = (user_info.get('department') or '').strip()
+                if user_dept in departments:
+                    match = True
+            
+            if projects:
+                user_project = (user_info.get('project') or '').strip()
+                if user_project in projects:
+                    match = True
+            
+            if units:
+                user_unit = (user_info.get('unit') or '').strip()
+                if user_unit in units:
+                    match = True
+            
+            if match:
+                user_info['control_manager'] = control_manager_id
+                updated_count += 1
+                # Return only name for display
+                updated_users.append(user_name)
+        
+        if updated_count > 0:
+            schedule_user_manager.save_users(data)
+            clear_user_schedule_cache()
+            
+            # Автоматична синхронізація в базу даних
+            synced_records = 0
+            for user_name in updated_users:
+                user_info = users.get(user_name)
+                if not isinstance(user_info, dict):
+                    continue
+                
+                email = (user_info.get('email') or '').strip().lower()
+                user_id = user_info.get('user_id')
+                
+                # Update AttendanceRecord
+                filters = []
+                if email:
+                    filters.append(db.func.lower(AttendanceRecord.user_email) == email)
+                if user_name:
+                    filters.append(db.func.lower(AttendanceRecord.user_name) == user_name.lower())
+                if user_id:
+                    filters.append(AttendanceRecord.user_id == str(user_id))
+                
+                if filters:
+                    updated = AttendanceRecord.query.filter(or_(*filters)).update(
+                        {'control_manager': control_manager_id},
+                        synchronize_session=False
+                    )
+                    synced_records += updated or 0
+                
+                # Update LatenessRecord
+                filters = []
+                if email:
+                    filters.append(db.func.lower(LatenessRecord.user_email) == email)
+                if user_name:
+                    filters.append(db.func.lower(LatenessRecord.user_name) == user_name.lower())
+                
+                if filters:
+                    LatenessRecord.query.filter(or_(*filters)).update(
+                        {'control_manager': control_manager_id},
+                        synchronize_session=False
+                    )
+            
+            _log_admin_action('bulk_assign_control_manager', {
+                'control_manager_id': control_manager_id,
+                'teams': teams,
+                'departments': departments,
+                'projects': projects,
+                'units': units,
+                'updated_count': updated_count,
+                'synced_records': synced_records,
+            })
+            db.session.commit()
+        
+        return jsonify({
+            'status': 'ok',
+            'updated_count': updated_count,
+            'updated_users': updated_users[:10],  # Перші 10 для preview
+        })
+        
+    except Exception as exc:
+        logger.error(f"Error bulk assigning control manager: {exc}", exc_info=True)
+        return jsonify({'error': str(exc)}), 500
+
+
+@api_bp.route('/admin/filter-options', methods=['GET'])
+@login_required
+def admin_get_filter_options():
+    """Отримати унікальні значення teams/departments/projects для фільтрів."""
+    _ensure_admin()
+    
+    try:
+        data = schedule_user_manager.load_users()
+        users = data.get('users', {}) if isinstance(data, dict) else {}
+        
+        teams = set()
+        departments = set()
+        projects = set()
+        units = set()
+        
+        for user_info in users.values():
+            if not isinstance(user_info, dict):
+                continue
+            
+            team = (user_info.get('team') or '').strip()
+            if team:
+                teams.add(team)
+            
+            dept = (user_info.get('department') or '').strip()
+            if dept:
+                departments.add(dept)
+            
+            project = (user_info.get('project') or '').strip()
+            if project:
+                projects.add(project)
+            
+            unit = (user_info.get('unit') or '').strip()
+            if unit:
+                units.add(unit)
+        
+        return jsonify({
+            'teams': sorted(list(teams)),
+            'departments': sorted(list(departments)),
+            'projects': sorted(list(projects)),
+            'units': sorted(list(units)),
+        })
+        
+    except Exception as exc:
+        logger.error(f"Error getting filter options: {exc}", exc_info=True)
+        return jsonify({'error': str(exc)}), 500
+
+
+@api_bp.route('/admin/control-manager/<int:cm_id>/access', methods=['GET'])
+@login_required
+def admin_get_control_manager_access(cm_id: int):
+    """Отримати список команд/департаментів/проектів, які має контрол-менеджер."""
+    _ensure_admin()
+    
+    try:
+        users = load_user_schedules()
+        
+        access = {
+            'teams': set(),
+            'departments': set(),
+            'projects': set(),
+            'units': set(),
+        }
+        
+        for user_info in users.values():
+            if not isinstance(user_info, dict):
+                continue
+            
+            # control_manager може бути масивом [1,2] або одним числом
+            cm_value = user_info.get('control_manager')
+            has_access = False
+            
+            if isinstance(cm_value, list):
+                has_access = cm_id in cm_value
+            elif isinstance(cm_value, int):
+                has_access = cm_value == cm_id
+            
+            if has_access:
+                team = (user_info.get('team') or '').strip()
+                if team:
+                    access['teams'].add(team)
+                
+                dept = (user_info.get('department') or '').strip()
+                if dept:
+                    access['departments'].add(dept)
+                
+                project = (user_info.get('project') or '').strip()
+                if project:
+                    access['projects'].add(project)
+                
+                unit = (user_info.get('unit') or '').strip()
+                if unit:
+                    access['units'].add(unit)
+        
+        return jsonify({
+            'control_manager_id': cm_id,
+            'teams': sorted(list(access['teams'])),
+            'departments': sorted(list(access['departments'])),
+            'projects': sorted(list(access['projects'])),
+            'units': sorted(list(access['units'])),
+        })
+        
+    except Exception as exc:
+        logger.error(f"Error getting CM access: {exc}", exc_info=True)
+        return jsonify({'error': str(exc)}), 500
+
+
+@api_bp.route('/admin/control-manager/<int:cm_id>/access', methods=['PUT'])
+@login_required
+def admin_update_control_manager_access(cm_id: int):
+    """Оновити доступи контрол-менеджера (додати або прибрати команди/департаменти)."""
+    _ensure_admin()
+    
+    payload = request.get_json(silent=True) or {}
+    action = payload.get('action')  # 'add' or 'remove'
+    teams = payload.get('teams', [])
+    departments = payload.get('departments', [])
+    projects = payload.get('projects', [])
+    units = payload.get('units', [])
+    
+    if action not in ['add', 'remove']:
+        return jsonify({'error': 'action має бути "add" або "remove"'}), 400
+    
+    if not teams and not departments and not projects and not units:
+        return jsonify({'error': 'Выберите хотя бы один фильтр'}), 400
+    
+    try:
+        data = schedule_user_manager.load_users()
+        users = data.get('users', {}) if isinstance(data, dict) else {}
+        
+        updated_count = 0
+        updated_users = []
+        
+        for user_name, user_info in users.items():
+            if not isinstance(user_info, dict):
+                continue
+            
+            match = False
+            
+            if teams:
+                user_team = (user_info.get('team') or '').strip()
+                if user_team in teams:
+                    match = True
+            
+            if departments:
+                user_dept = (user_info.get('department') or '').strip()
+                if user_dept in departments:
+                    match = True
+            
+            if projects:
+                user_project = (user_info.get('project') or '').strip()
+                if user_project in projects:
+                    match = True
+            
+            if units:
+                user_unit = (user_info.get('unit') or '').strip()
+                if user_unit in units:
+                    match = True
+            
+            if match:
+                current_cm = user_info.get('control_manager')
+                if action == 'add':
+                    # Підтримка списку менеджерів
+                    if current_cm is None:
+                        user_info['control_manager'] = [cm_id]
+                        updated_count += 1
+                        updated_users.append(user_name)
+                    elif isinstance(current_cm, list):
+                        if cm_id not in current_cm:
+                            current_cm.append(cm_id)
+                            updated_count += 1
+                            updated_users.append(user_name)
+                    elif isinstance(current_cm, int):
+                        if current_cm != cm_id:
+                            user_info['control_manager'] = [current_cm, cm_id]
+                            updated_count += 1
+                            updated_users.append(user_name)
+                elif action == 'remove':
+                    # Видаляємо менеджера зі списку
+                    if isinstance(current_cm, list):
+                        if cm_id in current_cm:
+                            current_cm.remove(cm_id)
+                            if not current_cm:
+                                user_info['control_manager'] = None
+                            updated_count += 1
+                            updated_users.append(user_name)
+                    elif current_cm == cm_id:
+                        user_info['control_manager'] = None
+                        updated_count += 1
+                        updated_users.append(user_name)
+        
+        if updated_count > 0:
+            schedule_user_manager.save_users(data)
+            clear_user_schedule_cache()
+            
+            # Автоматична синхронізація в базу
+            synced_records = 0
+            for user_name in updated_users:
+                user_info = users.get(user_name)
+                if not isinstance(user_info, dict):
+                    continue
+                
+                email = (user_info.get('email') or '').strip().lower()
+                user_id = user_info.get('user_id')
+                new_cm_value = user_info.get('control_manager')
+                
+                # Якщо це список - беремо першого менеджера для БД (Integer поле)
+                if isinstance(new_cm_value, list):
+                    new_cm_value = new_cm_value[0] if new_cm_value else None
+                
+                # Update AttendanceRecord
+                filters = []
+                if email:
+                    filters.append(db.func.lower(AttendanceRecord.user_email) == email)
+                if user_name:
+                    filters.append(db.func.lower(AttendanceRecord.user_name) == user_name.lower())
+                if user_id:
+                    filters.append(AttendanceRecord.user_id == str(user_id))
+                
+                if filters:
+                    updated = AttendanceRecord.query.filter(or_(*filters)).update(
+                        {'control_manager': new_cm_value},
+                        synchronize_session=False
+                    )
+                    synced_records += updated or 0
+                
+                # Update LatenessRecord
+                filters = []
+                if email:
+                    filters.append(db.func.lower(LatenessRecord.user_email) == email)
+                if user_name:
+                    filters.append(db.func.lower(LatenessRecord.user_name) == user_name.lower())
+                
+                if filters:
+                    LatenessRecord.query.filter(or_(*filters)).update(
+                        {'control_manager': new_cm_value},
+                        synchronize_session=False
+                    )
+            
+            _log_admin_action('update_control_manager_access', {
+                'control_manager_id': cm_id,
+                'action': action,
+                'teams': teams,
+                'departments': departments,
+                'projects': projects,
+                'units': units,
+                'updated_count': updated_count,
+                'synced_records': synced_records,
+            })
+            db.session.commit()
+        
+        return jsonify({
+            'status': 'ok',
+            'action': action,
+            'updated_count': updated_count,
+            'updated_users': updated_users[:10],
+        })
+        
+    except Exception as exc:
+        logger.error(f"Error updating CM access: {exc}", exc_info=True)
+        return jsonify({'error': str(exc)}), 500
+
+
 def _is_synced_employee(user: User) -> bool:
     """Перевіряє чи користувач є синхронізованим співробітником з PeopleForce."""
     names, emails, ids = _schedule_identity_sets()
@@ -3266,36 +3761,57 @@ def admin_delete_attendance_by_date(date_str: str):
 
 
 def _available_control_managers() -> list[int]:
+    """Повертає список унікальних ID контрол-менеджерів з user_schedules.json"""
     schedules = load_user_schedules()
-    values = {
-       
-        info.get('control_manager')
-        for info in schedules.values()
-        if isinstance(info, dict) and info.get('control_manager') not in (None, '')
-    }
     result: set[int] = set()
-    for value in values:
-        try:
-            result.add(int(str(value).strip()))
-        except (TypeError, ValueError):
+    
+    for info in schedules.values():
+        if not isinstance(info, dict):
             continue
+        
+        cm = info.get('control_manager')
+        if cm is None or cm == '':
+            continue
+        
+        # Підтримка списку менеджерів
+        if isinstance(cm, list):
+            for manager_id in cm:
+                try:
+                    result.add(int(manager_id))
+                except (TypeError, ValueError):
+                    continue
+        else:
+            # Одиночне значення
+            try:
+                result.add(int(cm))
+            except (TypeError, ValueError):
+                continue
+    
     return sorted(result)
 
 
 def _user_accessible(schedule: dict | None) -> bool:
+    """Перевіряє чи поточний контрол-менеджер має доступ до співробітника"""
     allowed = current_user.allowed_managers
     if not allowed:
         return True
     if not schedule:
         return False
+    
     manager = schedule.get('control_manager')
     if manager is None or manager == '':
         return False
+    
+    # Підтримка списку менеджерів
+    if isinstance(manager, list):
+        return any(int(m) in allowed for m in manager if isinstance(m, (int, str)))
+    
+    # Одиночне значення
     try:
         manager_id = int(manager)
+        return manager_id in allowed
     except (TypeError, ValueError):
         return False
-    return manager_id in allowed
 
 
 def _load_user_schedule_variants(identifier: str, records: list[AttendanceRecord]) -> dict | None:
@@ -3340,22 +3856,13 @@ def _collect_recent_records(records: list[AttendanceRecord], start: date | None,
     
     # Add week_total: COPY EXACT LOGIC FROM _build_items()
     if start and end and daily_records:
-        # Determine if user has 7-day work week
-        first_rec = daily_records[0]
-        user_key = first_rec.user_email or first_rec.user_id or first_rec.user_name
-        pf_id = _get_peopleforce_id_for_user(user_key)
-        include_weekends = bool(pf_id and pf_id in SEVEN_DAY_WORK_WEEK_IDS)
-        
-        # Filter weekends for users without 7-day work week before calculating totals
-        records_for_totals = daily_records if include_weekends else [rec for rec in daily_records if rec.record_date.weekday() < 5]
-        
-        # Calculate totals from filtered daily records
-        total_non = sum(rec.non_productive_minutes or 0 for rec in records_for_totals)
-        total_not = sum(rec.not_categorized_minutes or 0 for rec in records_for_totals)
-        total_prod = sum(rec.productive_minutes or 0 for rec in records_for_totals)
-        total_total = sum((rec.not_categorized_minutes or 0) + (rec.productive_minutes or 0) for rec in records_for_totals)
-        total_corrected = sum(rec.corrected_total_minutes or 0 for rec in records_for_totals if rec.corrected_total_minutes is not None)
-        has_corrected = any(rec.corrected_total_minutes is not None for rec in records_for_totals)
+        # Calculate totals from daily records
+        total_non = sum(rec.non_productive_minutes or 0 for rec in daily_records)
+        total_not = sum(rec.not_categorized_minutes or 0 for rec in daily_records)
+        total_prod = sum(rec.productive_minutes or 0 for rec in daily_records)
+        total_total = sum((rec.not_categorized_minutes or 0) + (rec.productive_minutes or 0) for rec in daily_records)
+        total_corrected = sum(rec.corrected_total_minutes or 0 for rec in daily_records if rec.corrected_total_minutes is not None)
+        has_corrected = any(rec.corrected_total_minutes is not None for rec in daily_records)
         
         # Get week notes - same as _build_items()
         week_notes_file = os.path.join(current_app.instance_path, 'week_notes.json')
@@ -3533,8 +4040,16 @@ def api_user_detail(user_key: str):
     recent_records = _collect_recent_records(records, date_from, date_to)
     lateness = _build_week_lateness(records)
     
-    # Фіксований список статусів
-    status_options = ['присутствовал', 'отпуск', 'больничный', 'за свой счет']
+    # Absence status options (English). Used as leave_reason when status is leave.
+    status_options = [
+        'present',
+        'vacation',
+        'sick leave',
+        'day off',
+        'day off 0.5',
+        'additional vacation',
+        'sick without certificate',
+    ]
 
     is_admin = bool(getattr(current_user, 'is_admin', False))
     is_control_manager = bool(getattr(current_user, 'is_control_manager', False))
@@ -3583,9 +4098,18 @@ def api_update_user_record(user_key: str, record_id: int):
     if not _record_belongs_to_user(record, user_key):
         return jsonify({'error': 'Record does not belong to user'}), 400
 
-    allowed = current_user.allowed_managers
-    if allowed and (record.control_manager not in allowed):
-        return jsonify({'error': 'Forbidden'}), 403
+    # Check access using schedule's control_manager list, not DB value
+    schedule = _load_user_schedule_variants(user_key, [])
+    if schedule:
+        schedule_cm = schedule.get('control_manager')
+        allowed = current_user.allowed_managers
+        if not _manager_has_access(schedule_cm, allowed):
+            return jsonify({'error': 'Forbidden'}), 403
+    else:
+        # Fallback to DB value if schedule not found
+        allowed = current_user.allowed_managers
+        if not _manager_has_access(record.control_manager, allowed):
+            return jsonify({'error': 'Forbidden'}), 403
 
     payload = request.get_json(silent=True) or {}
 
@@ -3643,18 +4167,30 @@ def api_update_user_record(user_key: str, record_id: int):
     update_duration('corrected_total_minutes', 'corrected_total_minutes')
 
     if 'status' in payload:
-        status = str(payload.get('status') or '').strip().lower()
-        if status:
-            record.status = status
-            # Якщо статус "отпуск" або "за свой счет" - обнуляємо actual_start і продуктивний час
-            if status in ('отпуск', 'за свой счет'):
+        status = str(payload.get('status') or '').strip()
+        status_lower = status.lower()
+        if not status or status_lower in ('present', 'присутствовал'):
+            record.status = 'present'
+            record.leave_reason = None
+            record.half_day_amount = None
+        else:
+            record.status = 'leave'
+            record.leave_reason = status if status else None
+            if status_lower == 'day off 0.5':
+                record.half_day_amount = 0.5
+            else:
+                record.half_day_amount = 1.0 if status_lower in (
+                    'vacation', 'sick leave', 'day off', 'additional vacation', 'sick without certificate'
+                ) else record.half_day_amount
+            # Leave types: zero actual_start and productive time (legacy Russian keys kept for backward compat)
+            if status_lower in (
+                'отпуск', 'за свой счет', 'vacation', 'sick leave', 'day off',
+                'day off 0.5', 'additional vacation', 'sick without certificate'
+            ):
                 record.actual_start = None
                 record.productive_minutes = 0
                 record.not_categorized_minutes = 0
                 record.non_productive_minutes = 0
-                # total_minutes залишаємо, бо може бути скоригований вручну
-        else:
-            record.status = ''
         set_manual_flag('status')
 
     if 'notes' in payload:
@@ -3681,11 +4217,19 @@ def api_update_user_manager(user_key: str):
     value = payload.get('control_manager')
     if value in (None, ''):
         manager_value = None
+    elif isinstance(value, list):
+        # Масив контрол-менеджерів
+        try:
+            manager_value = [int(x) for x in value if x not in (None, '', 'null')]
+            if not manager_value:
+                manager_value = None
+        except (TypeError, ValueError):
+            return jsonify({'error': 'control_manager must be integer, array of integers, or null'}), 400
     else:
         try:
             manager_value = int(value)
         except (TypeError, ValueError):
-            return jsonify({'error': 'control_manager must be integer or null'}), 400
+            return jsonify({'error': 'control_manager must be integer, array of integers, or null'}), 400
 
     base_query = _apply_filters(AttendanceRecord.query)
     query, _ = _apply_user_key_filter(base_query, user_key)
@@ -3693,8 +4237,13 @@ def api_update_user_manager(user_key: str):
     if not records:
         return jsonify({'error': 'User not found or no access'}), 404
 
+    # Конвертуємо масив в перший елемент для збереження в Integer поле
+    db_value = manager_value
+    if isinstance(manager_value, list):
+        db_value = manager_value[0] if manager_value else None
+
     for record in records:
-        record.control_manager = manager_value
+        record.control_manager = db_value
 
     db.session.commit()
 
@@ -3866,7 +4415,18 @@ def api_user_monthly_category_stats(user_key: str):
     # Застосовуємо фільтр за manager (якщо не адмін)
     allowed_managers = current_user.allowed_managers
     if allowed_managers:
-        base_query = base_query.filter(AttendanceRecord.control_manager.in_(allowed_managers))
+        # control_manager тепер може бути comma-separated string "1,4"
+        # Потрібно перевіряти чи є наш ID в цьому списку
+        manager_filters = []
+        for mgr_id in allowed_managers:
+            # Шукаємо: "1", "1,4", "4,1", "2,1,4" і т.д.
+            manager_filters.append(or_(
+                AttendanceRecord.control_manager == str(mgr_id),  # точна відповідність "1"
+                AttendanceRecord.control_manager.like(f'{mgr_id},%'),  # початок "1,..."
+                AttendanceRecord.control_manager.like(f'%,{mgr_id}'),  # кінець "...,1"
+                AttendanceRecord.control_manager.like(f'%,{mgr_id},%')  # середина "...,1,..."
+            ))
+        base_query = base_query.filter(or_(*manager_filters))
     
     # Застосовуємо фільтр за користувачем
     query, normalized_key = _apply_user_key_filter(base_query, user_key)
@@ -3931,9 +4491,19 @@ def api_user_monthly_category_stats(user_key: str):
 def update_attendance_notes(record_id: int):
     record = AttendanceRecord.query.get_or_404(record_id)
 
-    allowed_managers = current_user.allowed_managers
-    if allowed_managers and record.control_manager not in allowed_managers:
-        return jsonify({'error': 'Forbidden'}), 403
+    # Check access using schedule's control_manager list, not DB value
+    user_key = record.user_email or record.user_name or str(record.user_id)
+    schedule = _load_user_schedule_variants(user_key, [])
+    if schedule:
+        schedule_cm = schedule.get('control_manager')
+        allowed_managers = current_user.allowed_managers
+        if not _manager_has_access(schedule_cm, allowed_managers):
+            return jsonify({'error': 'Forbidden'}), 403
+    else:
+        # Fallback to DB value if schedule not found
+        allowed_managers = current_user.allowed_managers
+        if not _manager_has_access(record.control_manager, allowed_managers):
+            return jsonify({'error': 'Forbidden'}), 403
 
     payload = request.get_json(silent=True) or {}
     notes = payload.get('notes', '')
@@ -4245,8 +4815,10 @@ def _build_pdf_document(items: list[dict]) -> BytesIO:
         alignment=2,
     )
 
-    def make_paragraph(value: str | None, style: ParagraphStyle) -> Paragraph:
+    def make_paragraph(value: str | None, style, max_length: int = 500):  # type: ignore[no-untyped-def]
         text = escape(value or '').replace('\n', '<br/>')
+        if len(text) > max_length:
+            text = text[:max_length] + '...'
         if not text:
             text = '&nbsp;'
         return Paragraph(text, style)
@@ -4497,8 +5069,6 @@ def export_pdf():
         download_name=filename,
         mimetype='application/pdf'
     )
-
-
 def _get_schedule_entry(name: str | None, email: str | None, user_id: str | None = None) -> dict | None:
     """Return user_schedules entry by matching name/email/user_id."""
     schedules = load_user_schedules()
@@ -4532,11 +5102,35 @@ def _is_ignored_person(name: str | None, email: str | None, user_id: str | None 
 
 
 def _is_archived_person(name: str | None, email: str | None, user_id: str | None = None) -> bool:
+    """Check if person is archived."""
     entry = _get_schedule_entry(name, email, user_id)
     return bool(entry and entry.get('archived'))
 
 
-# List of PeopleForce IDs for employees with 7-day work week (including weekends)
+def _can_manage_presets(user: User) -> bool:
+    """Check if user can manage employee presets."""
+    return bool(getattr(user, 'is_admin', False) or getattr(user, 'is_control_manager', False))
+
+
+def _can_view_all_presets(user: User) -> bool:
+    """Check if user can view all presets (not just their own)."""
+    if getattr(user, 'is_admin', False):
+        return True
+    if not getattr(user, 'is_control_manager', False):
+        return False
+    # Control managers with manager_filter='3' can view all presets
+    manager_filter = getattr(user, 'manager_filter', None)
+    return manager_filter == '3' or manager_filter == 3
+
+
+def _include_archived_requested(default: bool = False) -> bool:
+    """Check if include_archived query parameter is set."""
+    value = (request.args.get('include_archived') or '').strip().lower()
+    if not value:
+        return default
+    return value in {'1', 'true', 'yes', 'on'}
+
+
 def _get_peopleforce_id_for_user(user_key: str) -> int | None:
     """Get PeopleForce ID for a user from user_schedules.json"""
     schedules = load_user_schedules()
@@ -4553,9 +5147,38 @@ def _get_peopleforce_id_for_user(user_key: str) -> int | None:
     return None
 
 
+def _load_work_holidays() -> set[str]:
+    """Load work holidays (non-working days) from config file."""
+    holidays_file = os.path.join('config', 'work_holidays.json')
+    if not os.path.exists(holidays_file):
+        return set()
+    try:
+        with open(holidays_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            holidays = data.get('holidays', [])
+            return set(holidays) if isinstance(holidays, list) else set()
+    except Exception as e:
+        logger.exception(f'Error loading work holidays: {e}')
+        return set()
+
+
+def _save_work_holidays(holidays: list[str]) -> bool:
+    """Save work holidays to config file."""
+    holidays_file = os.path.join('config', 'work_holidays.json')
+    try:
+        os.makedirs(os.path.dirname(holidays_file), exist_ok=True)
+        data = {'holidays': sorted(holidays)}
+        with open(holidays_file, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        logger.exception(f'Error saving work holidays: {e}')
+        return False
+
+
 def _count_work_days_in_month(year: int, month: int, include_weekends: bool = False, start_date: str = None) -> int:
     """
-    Count work days in a month.
+    Count work days in a month (Mon–Fri, excluding fixed holidays like Jan 1 and custom work holidays).
     
     Args:
         year: Year
@@ -4568,31 +5191,118 @@ def _count_work_days_in_month(year: int, month: int, include_weekends: bool = Fa
     """
     from calendar import monthrange
     from datetime import datetime
-    
+    from dashboard_app.constants import FIXED_HOLIDAYS_MD
+
     _, num_days = monthrange(year, month)
     
+    # Load custom work holidays
+    work_holidays = _load_work_holidays()
+
     # Determine start day
     start_day = 1
     if start_date:
         try:
             dt = datetime.strptime(start_date, '%Y-%m-%d')
-            # Only use start_date if it's in the target month
             if dt.year == year and dt.month == month:
                 start_day = dt.day
-        except:
+        except Exception:
             pass
-    
+
     if include_weekends:
-        return num_days - start_day + 1
-    
+        n = num_days - start_day + 1
+        for day in range(start_day, num_days + 1):
+            if (month, day) in FIXED_HOLIDAYS_MD:
+                n -= 1
+            # Check custom work holidays
+            day_str = f"{year}-{month:02d}-{day:02d}"
+            if day_str in work_holidays:
+                n -= 1
+        return n
+
     work_days = 0
     for day in range(start_day, num_days + 1):
         day_date = date(year, month, day)
-        # 0 = Monday, 6 = Sunday
+        # Skip fixed holidays
+        if (month, day) in FIXED_HOLIDAYS_MD:
+            continue
+        # Skip custom work holidays
+        day_str = f"{year}-{month:02d}-{day:02d}"
+        if day_str in work_holidays:
+            continue
         if day_date.weekday() < 5:  # Monday to Friday
             work_days += 1
-    
     return work_days
+
+
+@api_bp.route('/admin/work-holidays', methods=['GET'])
+@login_required
+def get_work_holidays():
+    """Get list of work holidays (non-working days)."""
+    _ensure_admin()
+    holidays = sorted(_load_work_holidays())
+    return jsonify({'holidays': holidays})
+
+
+@api_bp.route('/admin/work-holidays', methods=['POST'])
+@login_required
+def add_work_holiday():
+    """Add a work holiday (non-working day)."""
+    _ensure_admin()
+    try:
+        data = request.get_json(silent=True) or {}
+        holiday_date = (data.get('date') or '').strip()
+        
+        if not holiday_date:
+            return jsonify({'error': 'Date is required'}), 400
+        
+        # Validate date format YYYY-MM-DD
+        try:
+            datetime.strptime(holiday_date, '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+        
+        holidays = list(_load_work_holidays())
+        if holiday_date not in holidays:
+            holidays.append(holiday_date)
+            if _save_work_holidays(holidays):
+                _log_admin_action('add_work_holiday', {'date': holiday_date})
+                return jsonify({'success': True, 'holidays': sorted(holidays)})
+            else:
+                return jsonify({'error': 'Failed to save holidays'}), 500
+        else:
+            return jsonify({'success': True, 'holidays': sorted(holidays), 'message': 'Date already exists'})
+            
+    except Exception as e:
+        logger.exception('Error adding work holiday')
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/admin/work-holidays/<date>', methods=['DELETE'])
+@login_required
+def delete_work_holiday(date: str):
+    """Delete a work holiday."""
+    _ensure_admin()
+    try:
+        # Validate date format
+        try:
+            datetime.strptime(date, '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+        
+        holidays = list(_load_work_holidays())
+        if date in holidays:
+            holidays.remove(date)
+            if _save_work_holidays(holidays):
+                _log_admin_action('delete_work_holiday', {'date': date})
+                return jsonify({'success': True, 'holidays': sorted(holidays)})
+            else:
+                return jsonify({'error': 'Failed to save holidays'}), 500
+        else:
+            return jsonify({'error': 'Date not found'}), 404
+            
+    except Exception as e:
+        logger.exception('Error deleting work holiday')
+        return jsonify({'error': str(e)}), 500
 
 
 @api_bp.route('/monthly-report', methods=['GET'])
@@ -4623,18 +5333,28 @@ def get_monthly_report():
         except (ValueError, AttributeError):
             return jsonify({'error': 'Invalid month format'}), 400
         
-        include_archived = _include_archived_requested(False)
-
         # Build base query (don't use _apply_filters - it adds its own date filters)
         query = AttendanceRecord.query.filter(
             AttendanceRecord.record_date >= first_day,
             AttendanceRecord.record_date <= last_day
         )
         
+        # NOTE: Control manager filtering is done after SQL query using _user_accessible()
+        # because control_manager can be a list in user_schedules.json but stored as single int in DB
+        # allowed_managers = current_user.allowed_managers
+        # if allowed_managers:
+        #     query = query.filter(AttendanceRecord.control_manager.in_(allowed_managers))
+        
         # Apply filters
         manager_id = request.args.get('manager')
         if manager_id:
-            query = query.filter(AttendanceRecord.control_manager == int(manager_id))
+            # control_manager тепер може бути comma-separated string "1,4"
+            query = query.filter(or_(
+                AttendanceRecord.control_manager == manager_id,
+                AttendanceRecord.control_manager.like(f'{manager_id},%'),
+                AttendanceRecord.control_manager.like(f'%,{manager_id}'),
+                AttendanceRecord.control_manager.like(f'%,{manager_id},%')
+            ))
         
         project_filters = {canonicalize_label(p).lower() for p in request.args.getlist('project') if p}
         department_filters = {canonicalize_label(d).lower() for d in request.args.getlist('department') if d}
@@ -4654,33 +5374,36 @@ def get_monthly_report():
                 )
             )
         
-        # Filter by selected user IDs (from presets or multi-select)
-        selected_user_ids = []
-        for uk in request.args.getlist('user_key'):
-            uk = uk.strip()
-            if uk:
-                try:
-                    selected_user_ids.append(int(uk))
-                except ValueError:
-                    pass  # Skip non-numeric values
-        
+        selected_user_keys = [uk.strip().lower() for uk in request.args.getlist('user_key') if uk.strip()]
         legacy_selected = request.args.get('selected_users', '').strip()
         if legacy_selected:
-            for uk in legacy_selected.split(','):
-                uk = uk.strip()
-                if uk:
-                    try:
-                        selected_user_ids.append(int(uk))
-                    except ValueError:
-                        pass
-        
-        if selected_user_ids:
-            query = query.filter(AttendanceRecord.internal_user_id.in_(selected_user_ids))
+            selected_user_keys.extend(uk.strip().lower() for uk in legacy_selected.split(',') if uk.strip())
+        if selected_user_keys:
+            # Фільтруємо по user_email, user_id, user_name або internal_user_id
+            user_conditions = []
+            for uk in selected_user_keys:
+                user_conditions.append(db.func.lower(AttendanceRecord.user_email) == uk)
+                user_conditions.append(db.func.lower(AttendanceRecord.user_id) == uk)
+                user_conditions.append(db.func.lower(AttendanceRecord.user_name) == uk)
+                if uk.isdigit():
+                    user_conditions.append(AttendanceRecord.internal_user_id == int(uk))
+            query = query.filter(or_(*user_conditions))
         
         # Get all records for the month
         records = query.all()
+        
+        # Apply control manager filter using _user_accessible() to support list-based managers
+        if current_user.allowed_managers:
+            filtered_records = []
+            for rec in records:
+                # Get user schedule to check control_manager list
+                schedule = get_user_schedule(rec.user_email or rec.user_id or rec.user_name)
+                if _user_accessible(schedule):
+                    filtered_records.append(rec)
+            records = filtered_records
 
         # Limit records to users that exist in user_schedules.json (не показуємо автоматично імпортованих з YaWare)
+        include_archived = _include_archived_requested(False)
         schedule_entries = _gather_schedule_users(search=None, ignored_only=False, include_archived=include_archived)
         allowed_names = { (entry.get('name') or '').strip().lower() for entry in schedule_entries if entry.get('name') }
         allowed_emails = { (entry.get('email') or '').strip().lower() for entry in schedule_entries if entry.get('email') }
@@ -4723,7 +5446,7 @@ def get_monthly_report():
             user_data[user_key]['user_name'] = record.user_name
             user_data[user_key]['user_email'] = record.user_email
 
-            schedule_info = _get_schedule_for_record(record)
+            schedule_info = get_user_schedule(record.user_name) or get_user_schedule(record.user_id) or {}
             division_value = schedule_info.get('division_name') or record.project
             direction_value = schedule_info.get('direction_name') or record.department
             unit_value = schedule_info.get('unit_name') or record.team
@@ -4785,7 +5508,8 @@ def get_monthly_report():
             has_seven_day_week = data.get('include_weekends', False)
             
             for record in data['records']:
-                if record.status != 'leave':
+                # Count leave, absent, and late records
+                if record.status not in ('leave', 'absent', 'late'):
                     continue
                 
                 # Skip weekend days for users without 7-day work week
@@ -4796,17 +5520,27 @@ def get_monthly_report():
                 # Get leave amount (1.0 for full day, 0.5 for half day)
                 leave_amount = record.half_day_amount if record.half_day_amount else 1.0
                 
-                # Categorize by leave_reason from our database
-                leave_reason = (record.leave_reason or '').lower()
-                if 'sick' in leave_reason or 'больничный' in leave_reason or 'лікарняний' in leave_reason:
-                    sick_days += leave_amount
-                elif 'свой счет' in leave_reason or 'свій рахунок' in leave_reason or 'day off' in leave_reason or 'выходной' in leave_reason or 'вихідний' in leave_reason:
+                # Absent and late records are counted as day off
+                if record.status in ('absent', 'late'):
                     day_off_days += leave_amount
-                elif 'vacation' in leave_reason or 'отпуск' in leave_reason or 'відпустка' in leave_reason:
-                    vacation_days += leave_amount
                 else:
-                    # If no specific reason, count as vacation by default
-                    vacation_days += leave_amount
+                    # Categorize by leave_reason from our database (English + legacy RU/UK)
+                    leave_reason = (record.leave_reason or '').lower()
+                    if any(kw in leave_reason for kw in [
+                        'sick', 'больничный', 'лікарняний', 'sick without certificate', 'без довідки'
+                    ]):
+                        sick_days += leave_amount
+                    elif any(kw in leave_reason for kw in [
+                        'свой счет', 'свій рахунок', 'day off', 'выходной', 'вихідний', '0.5'
+                    ]):
+                        day_off_days += leave_amount
+                    elif any(kw in leave_reason for kw in [
+                        'vacation', 'отпуск', 'відпустка', 'additional vacation', 'додаткова'
+                    ]):
+                        vacation_days += leave_amount
+                    else:
+                        # If no specific reason, count as vacation by default
+                        vacation_days += leave_amount
             
             leave_data[user_key] = {
                 'vacation_days': vacation_days,
@@ -4856,7 +5590,7 @@ def get_monthly_report():
             
             fact_days = plan_days - vacation_days - day_off_days - sick_days
             
-            # Calculate minimum hours based on project
+            # Calculate minimum hours based on project (can be overridden by adjustments)
             project = data['project'] or ''
             if 'agency' in project.lower() or 'apps' in project.lower():
                 min_hours_per_day = 6.5
@@ -4864,6 +5598,12 @@ def get_monthly_report():
                 min_hours_per_day = 7.0
             else:
                 min_hours_per_day = 7.0  # Default
+            
+            # Check if there's a saved hours_per_day in adjustments
+            if internal_user_id:
+                key = f"{internal_user_id}_{month_str}"
+                if key in adjustments_data and 'hours_per_day' in adjustments_data[key]:
+                    min_hours_per_day = adjustments_data[key]['hours_per_day']
             
             minimum_hours = fact_days * min_hours_per_day
 
@@ -4915,21 +5655,20 @@ def get_monthly_report():
             except Exception as e:
                 logger.exception('Error loading monthly notes')
         
-        # Apply adjustments to employees (adjustments_data already loaded earlier)
+        # Apply monthly notes and adjustments to employees
         for emp in employees:
-            
-            # Load old-style notes first (backward compatibility)
+            # Load old-style notes (backward compatibility)
             old_notes_key = f"{emp['user_email']}_{month_str}"
             if old_notes_key in monthly_notes:
                 emp['notes'] = monthly_notes[old_notes_key]
             
+            # Apply other adjustments if available
             internal_user_id = emp.get('internal_user_id')
             if internal_user_id:
                 key = f"{internal_user_id}_{month_str}"
                 if key in adjustments_data:
                     adj = adjustments_data[key]
                     # Override calculated values with adjusted values
-                    # start_date already applied in plan_days calculation
                     if 'start_date' in adj:
                         emp['start_date'] = adj['start_date']
                     if 'plan_days' in adj:
@@ -4948,10 +5687,6 @@ def get_monthly_report():
                         emp['delay_count'] = adj['delay_count']
                     if 'tracked_hours' in adj:
                         emp['tracked_hours'] = adj['tracked_hours']
-                    if 'corrected_hours' in adj:
-                        emp['corrected_hours'] = adj['corrected_hours']
-                    if 'notes' in adj:
-                        emp['notes'] = adj['notes']
         
         # Sort by user name
         employees.sort(key=lambda x: x['user_name'])
@@ -5051,7 +5786,7 @@ def week_notes():
         schedule = get_user_schedule(user_key)
         peopleforce_id = None
         if schedule:
-            peopleforce_id = getattr(schedule, 'peopleforce_id', None)
+            peopleforce_id = schedule.get('peopleforce_id')
         if not peopleforce_id:
             peopleforce_id = _get_peopleforce_id_for_user(user_key)
         
@@ -5081,15 +5816,6 @@ def week_notes():
                 AttendanceRecord.user_name == user_key
             )
         ).all()
-        week_record_count = len(week_records)
-        logger.info(
-            "week_notes save start user_key=%s week_start=%s include_weekends=%s records=%d note_len=%d",
-            user_key,
-            week_start_str,
-            include_weekends,
-            week_record_count,
-            len(notes),
-        )
         
         # Calculate totals
         total_minutes_late = 0
@@ -5169,17 +5895,10 @@ def week_notes():
                 'control_manager': current_user.id if getattr(current_user, 'is_control_manager', False) else None,
             })
             db.session.commit()
-        else:
-            logger.info(
-                "week_notes no attendance records for user_key=%s week_start=%s; skipping DB update",
-                user_key,
-                week_start_str,
-            )
         
         return jsonify({'success': True, 'notes': notes})
         
     except Exception as e:
-        db.session.rollback()
         logger.exception('Error saving week notes')
         return jsonify({'error': str(e)}), 500
 
@@ -5487,8 +6206,8 @@ def export_monthly_report_pdf():
         doc = SimpleDocTemplate(output, pagesize=landscape(A4), rightMargin=20, leftMargin=20, topMargin=30, bottomMargin=20)
         elements = []
         
-        # Register fonts with Cyrillic support
-        regular_font, bold_font = _ensure_pdf_fonts()
+        # Get Cyrillic fonts
+        font_regular, font_bold = _ensure_pdf_fonts()
         
         # Styles
         from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -5502,7 +6221,7 @@ def export_monthly_report_pdf():
             textColor=colors.HexColor('#1a1a1a'),
             spaceAfter=20,
             alignment=TA_CENTER,
-            fontName=bold_font
+            fontName=font_bold
         )
         
         user_name_style = ParagraphStyle(
@@ -5510,7 +6229,7 @@ def export_monthly_report_pdf():
             parent=styles['Normal'],
             fontSize=11,
             textColor=colors.HexColor('#1a1a1a'),
-            fontName=bold_font,
+            fontName=font_bold,
             alignment=TA_LEFT
         )
         
@@ -5519,7 +6238,7 @@ def export_monthly_report_pdf():
             parent=styles['Normal'],
             fontSize=9,
             textColor=colors.HexColor('#666666'),
-            fontName=regular_font,
+            fontName=font_regular,
             alignment=TA_LEFT
         )
         
@@ -5528,7 +6247,7 @@ def export_monthly_report_pdf():
             parent=styles['Normal'],
             fontSize=8,
             textColor=colors.HexColor('#0d6efd'),
-            fontName=regular_font,
+            fontName=font_regular,
             alignment=TA_LEFT
         )
         
@@ -5538,7 +6257,7 @@ def export_monthly_report_pdf():
             fontSize=9,
             textColor=colors.HexColor('#666666'),
             alignment=TA_CENTER,
-            fontName=regular_font
+            fontName=font_regular
         )
         
         value_style = ParagraphStyle(
@@ -5547,7 +6266,7 @@ def export_monthly_report_pdf():
             fontSize=11,
             textColor=colors.HexColor('#1a1a1a'),
             alignment=TA_CENTER,
-            fontName=bold_font
+            fontName=font_bold
         )
         
         small_label_style = ParagraphStyle(
@@ -5556,7 +6275,7 @@ def export_monthly_report_pdf():
             fontSize=8,
             textColor=colors.HexColor('#666666'),
             alignment=TA_CENTER,
-            fontName=regular_font
+            fontName=font_regular
         )
         
         small_value_style = ParagraphStyle(
@@ -5565,7 +6284,16 @@ def export_monthly_report_pdf():
             fontSize=9,
             textColor=colors.HexColor('#1a1a1a'),
             alignment=TA_CENTER,
-            fontName=regular_font
+            fontName=font_regular
+        )
+        
+        notes_style = ParagraphStyle(
+            'Notes',
+            parent=styles['Normal'],
+            fontSize=9,
+            textColor=colors.HexColor('#1a1a1a'),
+            alignment=TA_CENTER,
+            fontName=font_regular
         )
         
         # Title
@@ -5628,7 +6356,7 @@ def export_monthly_report_pdf():
                 Paragraph(str(emp['day_off_days']), value_style),
                 Paragraph(str(emp['sick_days']), value_style),
                 Paragraph(str(emp['fact_days']), value_style),
-                Paragraph(notes_text, value_style)
+                Paragraph(notes_text, notes_style)
             ]]
             
             # Data table - sub-labels row
@@ -5689,110 +6417,6 @@ def export_monthly_report_pdf():
     except Exception as e:
         logger.exception('Error exporting monthly report to PDF')
         return jsonify({'error': str(e)}), 500
-
-
-@api_bp.route('/presets', methods=['GET', 'POST'])
-@login_required
-def manage_presets():
-    if request.method == 'GET':
-        if not _can_manage_presets(current_user):
-            return jsonify({'presets': []})
-
-        query = EmployeePreset.query
-        if not _can_view_all_presets(current_user):
-            query = query.filter(EmployeePreset.owner_id == current_user.id)
-        presets = query.order_by(EmployeePreset.created_at.desc()).all()
-        return jsonify({
-            'presets': [
-                {
-                    'id': preset.id,
-                    'name': preset.name,
-                    'owner_id': preset.owner_id,
-                    'owner_name': preset.owner.name if preset.owner else '',
-                    'employee_keys': preset.employee_keys or [],
-                    'is_owner': preset.owner_id == current_user.id,
-                }
-                for preset in presets
-            ]
-        })
-
-    # POST
-    if not _can_manage_presets(current_user):
-        abort(403)
-    data = request.get_json(silent=True) or {}
-    name = (data.get('name') or '').strip()
-    employee_keys = data.get('employee_keys') or []
-
-    if not name:
-        return jsonify({'error': 'Назва пресету не може бути порожньою'}), 400
-    if len(name) > 128:
-        return jsonify({'error': 'Назва пресету занадто довга'}), 400
-    if not isinstance(employee_keys, list) or not employee_keys:
-        return jsonify({'error': 'Список співробітників порожній'}), 400
-
-    existing = EmployeePreset.query.filter_by(owner_id=current_user.id, name=name).first()
-    if existing:
-        return jsonify({'error': 'Пресет з такою назвою вже існує'}), 400
-
-    preset = EmployeePreset(
-        owner_id=current_user.id,
-        name=name,
-        employee_keys=employee_keys,
-    )
-    db.session.add(preset)
-    db.session.commit()
-    return jsonify({
-        'id': preset.id,
-        'name': preset.name,
-        'owner_id': preset.owner_id,
-        'owner_name': preset.owner.name if preset.owner else '',
-        'employee_keys': preset.employee_keys or [],
-        'is_owner': True,
-    }), 201
-
-
-@api_bp.route('/presets/<int:preset_id>', methods=['DELETE'])
-@login_required
-def delete_preset(preset_id: int):
-    preset = EmployeePreset.query.get_or_404(preset_id)
-    if not _can_manage_presets(current_user):
-        abort(403)
-
-    can_edit_all = _can_view_all_presets(current_user)
-    if preset.owner_id != current_user.id and not can_edit_all:
-        abort(403)
-
-    db.session.delete(preset)
-    db.session.commit()
-    return jsonify({'status': 'deleted'})
-
-
-def _filter_lateness_records(records, allowed_managers):
-    if not allowed_managers:
-        return records
-    allowed_set = {int(mid) for mid in allowed_managers}
-    filtered = []
-    for record in records:
-        if record.control_manager is None or record.control_manager in allowed_set:
-            filtered.append(record)
-    return filtered
-
-
-def _serialize_lateness_record(record: LatenessRecord) -> dict:
-    return {
-        'name': record.user_name,
-        'email': record.user_email,
-        'project': record.project,
-        'department': record.department,
-        'team': record.team,
-        'location': record.location,
-        'scheduled_start': record.scheduled_start,
-        'actual_start': record.actual_start,
-        'minutes_late': record.minutes_late,
-        'status': record.status,
-        'control_manager': record.control_manager,
-        'leave_reason': record.leave_reason,
-    }
 
 
 @api_bp.route('/lateness', methods=['GET'])
@@ -5894,3 +6518,111 @@ def sync_lateness():
         'skipped': skipped,
         'errors': errors,
     })
+
+
+def _filter_lateness_records(records, allowed_managers):
+    """Filter lateness records by allowed managers."""
+    if not allowed_managers:
+        return records
+    allowed_set = {int(mid) for mid in allowed_managers}
+    filtered = []
+    for record in records:
+        if _manager_has_access(record.control_manager, allowed_set):
+            filtered.append(record)
+    return filtered
+
+
+def _serialize_lateness_record(record: LatenessRecord) -> dict:
+    """Serialize a LatenessRecord to dict."""
+    return {
+        'name': record.user_name,
+        'email': record.user_email,
+        'project': record.project,
+        'department': record.department,
+        'team': record.team,
+        'location': record.location,
+        'scheduled_start': record.scheduled_start,
+        'actual_start': record.actual_start,
+        'minutes_late': record.minutes_late,
+        'status': record.status,
+        'control_manager': record.control_manager,
+        'leave_reason': record.leave_reason,
+    }
+
+
+@api_bp.route('/presets', methods=['GET', 'POST'])
+@login_required
+def manage_presets():
+    """Manage employee selection presets."""
+    if request.method == 'GET':
+        if not _can_manage_presets(current_user):
+            return jsonify({'presets': []})
+
+        query = EmployeePreset.query
+        if not _can_view_all_presets(current_user):
+            query = query.filter(EmployeePreset.owner_id == current_user.id)
+        presets = query.order_by(EmployeePreset.created_at.desc()).all()
+        return jsonify({
+            'presets': [
+                {
+                    'id': preset.id,
+                    'name': preset.name,
+                    'owner_id': preset.owner_id,
+                    'owner_name': preset.owner.name if preset.owner else '',
+                    'employee_keys': preset.employee_keys or [],
+                    'is_owner': preset.owner_id == current_user.id,
+                }
+                for preset in presets
+            ]
+        })
+
+    # POST - create new preset
+    if not _can_manage_presets(current_user):
+        abort(403)
+    data = request.get_json(silent=True) or {}
+    name = (data.get('name') or '').strip()
+    employee_keys = data.get('employee_keys') or []
+
+    if not name:
+        return jsonify({'error': 'Назва пресету не може бути порожньою'}), 400
+    if len(name) > 128:
+        return jsonify({'error': 'Назва пресету занадто довга'}), 400
+    if not isinstance(employee_keys, list) or not employee_keys:
+        return jsonify({'error': 'Список сотрудников пуст'}), 400
+
+    existing = EmployeePreset.query.filter_by(owner_id=current_user.id, name=name).first()
+    if existing:
+        return jsonify({'error': 'Пресет з такою назвою вже існує'}), 400
+
+    preset = EmployeePreset(
+        owner_id=current_user.id,
+        name=name,
+        employee_keys=employee_keys,
+    )
+    db.session.add(preset)
+    db.session.commit()
+    return jsonify({
+        'id': preset.id,
+        'name': preset.name,
+        'owner_id': preset.owner_id,
+        'owner_name': preset.owner.name if preset.owner else '',
+        'employee_keys': preset.employee_keys or [],
+        'is_owner': True,
+    }), 201
+
+
+@api_bp.route('/presets/<int:preset_id>', methods=['DELETE'])
+@login_required
+def delete_preset(preset_id: int):
+    """Delete a preset."""
+    preset = EmployeePreset.query.get_or_404(preset_id)
+    if not _can_manage_presets(current_user):
+        abort(403)
+
+    can_edit_all = _can_view_all_presets(current_user)
+    if preset.owner_id != current_user.id and not can_edit_all:
+        abort(403)
+
+    db.session.delete(preset)
+    db.session.commit()
+    return jsonify({'status': 'deleted'})

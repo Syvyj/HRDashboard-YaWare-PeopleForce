@@ -73,6 +73,8 @@
       .map((row) => {
         const minutes = formatMinutes(row.minutes_late);
         const status = statusLabel(row);
+        const leaveReasonText = (row.leave_reason || '').trim();
+        const statusDisplay = leaveReasonText ? `${status}<div class="text-muted small">${leaveReasonText}</div>` : status;
         return `
           <tr>
             <td>
@@ -84,7 +86,7 @@
             <td>${row.scheduled_start || '—'}</td>
             <td>${row.actual_start || '—'}</td>
             <td>${minutes}</td>
-            <td>${status}</td>
+            <td>${statusDisplay}</td>
           </tr>
         `;
       })
@@ -295,7 +297,7 @@
           skip_weekends: syncSkipWeekends ? syncSkipWeekends.checked : false,
           include_absent: syncIncludeAbsent ? syncIncludeAbsent.checked : true,
         });
-        setStatus('Период синхронизирован', 'success');
+        setStatus(`Синхронизовано ${dates.length} дней`, 'success');
         loadReports();
       } catch (error) {
         setStatus(error.message || 'Ошибка синхронизации', 'error');

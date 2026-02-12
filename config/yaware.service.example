@@ -1,0 +1,23 @@
+[Unit]
+Description=Gunicorn instance to serve YaWare_Bot Dashboard
+After=network.target
+
+[Service]
+User=your_user
+Group=your_group
+WorkingDirectory=/path/to/YaWare_Bot
+Environment="PATH=/path/to/YaWare_Bot/.venv/bin"
+EnvironmentFile=/path/to/YaWare_Bot/.env
+ExecStart=/path/to/YaWare_Bot/.venv/bin/gunicorn \
+    --workers 4 \
+    --bind 127.0.0.1:8000 \
+    --access-logfile /path/to/YaWare_Bot/logs/gunicorn_access.log \
+    --error-logfile /path/to/YaWare_Bot/logs/gunicorn.log \
+    web_dashboard:app
+
+Restart=always
+KillSignal=SIGQUIT
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

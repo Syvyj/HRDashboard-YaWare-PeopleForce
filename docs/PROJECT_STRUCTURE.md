@@ -181,7 +181,7 @@ YaWare_Bot/
   "users": {
     "Employee Name": {
       "user_name": "Employee Name",
-      "email": "email@evadav.com",
+      "email": "user@example.com",
       "user_id": "7933838",
       "peopleforce_id": 554820,
       "start_time": "10:00",

@@ -229,12 +229,20 @@ def update_for_date(monitor: AttendanceMonitor, target_date: date, include_absen
             if alias and alias != canonical_key:
                 manual_aliases[alias] = canonical_key
 
-    # Delete only daily records, preserve week_total records with notes
+    # Delete daily records and week_total records WITHOUT notes
+    # Зберігаємо тільки week_total записи з нотатками
     AttendanceRecord.query.filter(
         AttendanceRecord.record_date == target_date,
         db.or_(
             AttendanceRecord.record_type == 'daily',
-            AttendanceRecord.record_type.is_(None)
+            AttendanceRecord.record_type.is_(None),
+            db.and_(
+                AttendanceRecord.record_type == 'week_total',
+                db.or_(
+                    AttendanceRecord.notes.is_(None),
+                    AttendanceRecord.notes == ''
+                )
+            )
         )
     ).delete(synchronize_session=False)
 

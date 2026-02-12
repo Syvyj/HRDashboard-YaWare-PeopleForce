@@ -112,8 +112,6 @@ def format_attendance_report(report: dict, report_date: Optional[Union[str, date
             for status in sorted(grouped_late[key], key=lambda s: s.user.name):
                 lines.append(f"🔹 **{status.user.name}**")
                 lines.append(f"   • {header}")
-                if status.user.location:
-                    lines.append(f"     📍 {status.user.location}")
                 lines.append(
                     f"     ⏰ График: {status.expected_time} | Пришел: {status.actual_time}"
                 )
@@ -168,8 +166,6 @@ def format_attendance_report(report: dict, report_date: Optional[Union[str, date
             for status in sorted(grouped_absent[key], key=lambda s: s.user.name):
                 lines.append(f"🔹 **{status.user.name}**")
                 lines.append(f"   • {header}")
-                if status.user.location:
-                    lines.append(f"     📍 {status.user.location}")
                 if status.expected_time:
                     lines.append(f"     ⏰ График: {status.expected_time}")
             lines.append("")

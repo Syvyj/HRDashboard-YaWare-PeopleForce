@@ -16,6 +16,7 @@ from flask import current_app
 
 from dashboard_app.extensions import db
 from dashboard_app.models import AttendanceRecord
+from dashboard_app.lateness_service import collect_lateness_for_date
 from tasks.update_attendance import update_for_date
 from tracker_alert.client.peopleforce_api import PeopleForceClient
 from tracker_alert.client.yaware_v2_api import client as yaware_client
@@ -38,34 +39,59 @@ SCHEDULER_LOG = deque(maxlen=200)
 
 
 def _backup_database(app):
-    """Створює бекап бази даних перед синхронізацією."""
+    """Бекап перед синхронізацією: БД, week/monthly notes, user_schedules (як у scripts/sync_from_server.sh). Залишаємо останні 7 бекапів."""
+    import shutil
     try:
         instance_path = app.instance_path
-        db_path = os.path.join(instance_path, 'dashboard.db')
-        if not os.path.exists(db_path):
+        base_dir = app.config.get("BASE_DIR") or os.path.dirname(instance_path)
+        config_dir = os.path.join(base_dir, "config")
+        backups_root = os.path.join(base_dir, "backups")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_dir = os.path.join(backups_root, f"auto_backup_{timestamp}")
+        backup_instance = os.path.join(backup_dir, "instance")
+        backup_config = os.path.join(backup_dir, "config")
+        os.makedirs(backup_instance, exist_ok=True)
+        os.makedirs(backup_config, exist_ok=True)
+
+        # instance/dashboard.db
+        db_path = os.path.join(instance_path, "dashboard.db")
+        if os.path.exists(db_path):
+            shutil.copy2(db_path, os.path.join(backup_instance, "dashboard.db"))
+            logger.info("[scheduler] Backup: dashboard.db")
+        else:
             logger.warning("[scheduler] Database file not found: %s", db_path)
-            return
-        
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        backup_path = os.path.join(instance_path, f'dashboard.db.auto_backup_{timestamp}')
-        
-        import shutil
-        shutil.copy2(db_path, backup_path)
-        logger.info("[scheduler] Database backup created: %s", backup_path)
-        
+
+        # instance/week_notes.json, monthly_notes.json
+        for name in ("week_notes.json", "monthly_notes.json"):
+            src = os.path.join(instance_path, name)
+            if os.path.exists(src):
+                shutil.copy2(src, os.path.join(backup_instance, name))
+                logger.info("[scheduler] Backup: %s", name)
+
+        # config/user_schedules.json
+        user_schedules_path = os.path.join(config_dir, "user_schedules.json")
+        if os.path.exists(user_schedules_path):
+            shutil.copy2(user_schedules_path, os.path.join(backup_config, "user_schedules.json"))
+            logger.info("[scheduler] Backup: user_schedules.json")
+        else:
+            logger.warning("[scheduler] user_schedules.json not found: %s", user_schedules_path)
+
+        logger.info("[scheduler] Full backup created: %s", backup_dir)
+
         # Видаляємо старі автобекапи (залишаємо останні 7)
-        backup_files = sorted([
-            f for f in os.listdir(instance_path) 
-            if f.startswith('dashboard.db.auto_backup_')
-        ], reverse=True)
-        
-        for old_backup in backup_files[7:]:
-            old_path = os.path.join(instance_path, old_backup)
-            os.remove(old_path)
-            logger.info("[scheduler] Removed old backup: %s", old_backup)
-            
+        if not os.path.isdir(backups_root):
+            return
+        backup_dirs = sorted(
+            [d for d in os.listdir(backups_root) if d.startswith("auto_backup_") and os.path.isdir(os.path.join(backups_root, d))],
+            reverse=True,
+        )
+        for old_name in backup_dirs[7:]:
+            old_path = os.path.join(backups_root, old_name)
+            shutil.rmtree(old_path, ignore_errors=True)
+            logger.info("[scheduler] Removed old backup: %s", old_name)
+
     except Exception as e:
-        logger.error("[scheduler] Failed to backup database: %s", e, exc_info=True)
+        logger.error("[scheduler] Failed to create backup: %s", e, exc_info=True)
 
 
 def _with_app_context(app, func, *args, **kwargs):
@@ -74,11 +100,36 @@ def _with_app_context(app, func, *args, **kwargs):
 
 
 def _run_daily_attendance(app):
+    """Синхронізація вчорашнього дня з YaWare (та сама логіка, що кнопка «Синхрон даты» на сайті)."""
     target = date.today() - timedelta(days=1)
     logger.info("[scheduler] Running daily attendance sync for %s", target)
     monitor = AttendanceMonitor()
     update_for_date(monitor, target, include_absent=True)
     logger.info("[scheduler] Attendance sync completed for %s", target)
+
+
+def _run_today_lateness_sync(app):
+    """Синхронізація запізнень за сьогодні з YaWare (лише lateness_records, не attendance_records). Та сама логіка, що кнопка «Синхронізувати день» на сторінці Опоздания. О 10:00, щоб до 10:02 бот міг сформувати звіт."""
+    target = date.today()
+    logger.info("[scheduler] Running today lateness sync for %s (lateness only)", target)
+    collect_lateness_for_date(target, include_absent=True, skip_weekends=False)
+    logger.info("[scheduler] Today lateness sync completed for %s", target)
+
+
+def _run_weekly_attendance_backfill(app):
+    """
+    Пересинхронізація за останні 7 днів, щоб підтягнути відпустки/лікарняні,
+    оформлені заднім числом у PeopleForce.
+    """
+    monitor = AttendanceMonitor()
+    end = date.today() - timedelta(days=1)
+    start = end - timedelta(days=6)
+    logger.info("[scheduler] Running weekly attendance backfill for %s .. %s", start, end)
+    current = start
+    while current <= end:
+        update_for_date(monitor, current, include_absent=True)
+        current += timedelta(days=1)
+    logger.info("[scheduler] Weekly attendance backfill completed")
 
 
 def _cleanup_old_records(app):
@@ -629,20 +680,22 @@ def register_tasks(app):
         return
 
     scheduler = BackgroundScheduler(timezone=LOCAL_TZ)
-    # 09:14 Warsaw - бекап БД перед синхронізацією
+    # 09:14 Warsaw - повний бекап (БД, week/monthly notes, user_schedules) перед синком
     scheduler.add_job(lambda: _with_app_context(app, _backup_database), 
                       CronTrigger(hour=9, minute=14, timezone=LOCAL_TZ),
                       id='pre_sync_backup', replace_existing=True)
-    # 09:15 Warsaw - синхронізація з YaWare за минулу добу (щодня)
+    # 10:00 Warsaw - синхронізація запізнень за сьогодні (lateness_records; для звіту о 10:02)
+    scheduler.add_job(lambda: _with_app_context(app, _run_today_lateness_sync), 
+                      CronTrigger(hour=10, minute=0, day_of_week='mon-fri', timezone=LOCAL_TZ),
+                      id='today_lateness_sync', replace_existing=True)
+    # 09:30 Warsaw - синхронізація вчорашнього дня з YaWare (щодня)
     scheduler.add_job(lambda: _with_app_context(app, _run_daily_attendance), 
-                      CronTrigger(hour=9, minute=15, timezone=LOCAL_TZ),
+                      CronTrigger(hour=9, minute=30, timezone=LOCAL_TZ),
                       id='daily_attendance_sync', replace_existing=True)
-    # 09:17 Warsaw - PeopleForce leave statuses (щодня)
-    def sync_peopleforce_with_hierarchy():
-        _sync_peopleforce_metadata(app)
-    scheduler.add_job(lambda: _with_app_context(app, sync_peopleforce_with_hierarchy), 
-                      CronTrigger(hour=9, minute=17, timezone=LOCAL_TZ),
-                      id='peopleforce_metadata_sync', replace_existing=True)
+    # Неділя 10:00 Warsaw - пересинк за останні 7 днів (відпустки/лікарняні заднім числом)
+    scheduler.add_job(lambda: _with_app_context(app, _run_weekly_attendance_backfill),
+                      CronTrigger(day_of_week='sun', hour=10, minute=0, timezone=LOCAL_TZ),
+                      id='weekly_attendance_backfill', replace_existing=True)
     scheduler.add_listener(_scheduler_event_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
     scheduler.start()
 
@@ -655,7 +708,8 @@ def register_tasks(app):
 
     logger.info(
         "[scheduler] Background scheduler started (timezone: Europe/Warsaw):\n"
-        "  - 09:14 Warsaw - Database backup before sync\n"
-        "  - 09:15 Warsaw - YaWare attendance sync (Mon-Fri)\n"
-        "  - 09:17 Warsaw - PeopleForce leave status sync (Mon-Fri)"
+        "  - 09:14 Warsaw - Full backup (DB, notes, user_schedules) before sync\n"
+        "  - 10:00 Warsaw (Mon-Fri) - Lateness sync today (lateness_records only, for report at 10:02)\n"
+        "  - 09:30 Warsaw - YaWare sync yesterday\n"
+        "  - Sun 10:00 Warsaw - Weekly backfill (last 7 days, backdated leave)"
     )

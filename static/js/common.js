@@ -1,9 +1,20 @@
 // Общие утилиты для работы с attendance
 const STATUS_LABELS = {
-  present: 'Присутствовал',
-  late: 'Опоздал',
-  absent: 'Отсутствовал',
-  leave: 'Отпуск / отсутствие',
+  present: 'Present',
+  late: 'Late',
+  absent: 'Absent',
+  leave: 'Leave',
+  vacation: 'Vacation',
+  'sick leave': 'Sick leave',
+  'day off': 'Day off',
+  'day off 0.5': 'Day off 0.5',
+  'additional vacation': 'Additional vacation',
+  'sick without certificate': 'Sick without certificate',
+  // Legacy (display only for old records)
+  'присутствовал': 'Present',
+  'отпуск': 'Vacation',
+  'больничный': 'Sick leave',
+  'за свой счет': 'Day off',
 };
 
 function escapeHtml(str) {

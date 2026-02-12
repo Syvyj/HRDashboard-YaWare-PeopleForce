@@ -321,7 +321,7 @@
       'title',
       hint
         ? `${currentValue}: ${hint}`
-        : 'Статус дня: present — присутствовал, late — опоздал, absent — отсутствовал, leave — отпуск'
+        : 'Day status: present, late, absent, leave (vacation / sick / day off)'
     );
   }
 
@@ -442,8 +442,9 @@
     if (recordEditNotes) {
       recordEditNotes.value = row.notes || '';
     }
-    if (recordEditStatus && (!statusOptionsCache.has(recordEditContext.userKey) || !(statusOptionsCache.get(recordEditContext.userKey) || []).length)) {
-      recordEditStatus.value = row.status || '';
+    if (recordEditStatus) {
+      var statusValue = (row.status === 'leave' && row.leave_reason) ? row.leave_reason : (row.status || '');
+      recordEditStatus.value = statusValue;
     }
   }
 
@@ -453,7 +454,8 @@
     }
     const options = statusOptionsCache.get(recordEditContext.userKey) || [];
     const row = recordEditContext.rows[recordEditContext.index] || {};
-    fillStatusOptions(recordEditStatus, options, row.status);
+    var statusValue = (row.status === 'leave' && row.leave_reason) ? row.leave_reason : (row.status || '');
+    fillStatusOptions(recordEditStatus, options, statusValue);
   }
 
   function calculateWeekStart(rows) {
@@ -1175,30 +1177,53 @@
       }
       
       // Создаем уникальный список сотрудников
+      // Используем Map для хранения по обоим ключам (user_id и internal_user_id)
       const employeesMap = new Map();
+      const employeesList = [];
+      
       items.forEach(item => {
-        // Используем internal_user_id как ключ
-        const key = item.internal_user_id || item.user_id;
-        if (!key) {
+        const userId = String(item.user_id || '');
+        const internalId = String(item.internal_user_id || '');
+        
+        // Используем user_id как основной ключ
+        const primaryKey = userId || internalId;
+        if (!primaryKey) {
           return;
         }
-        if (!employeesMap.has(key)) {
-          employeesMap.set(key, {
-            key: key,
-            name: item.user_name || '',
-            email: item.user_email || '',
-            user_id: item.user_id || '',
-            internal_user_id: item.internal_user_id || '',
-            project: item.division || item.project || '',
-            department: item.department || '',
-            team: item.team || ''
-          });
+        
+        // Проверяем не добавили ли уже этого сотрудника
+        if (employeesMap.has(primaryKey)) {
+          return;
         }
+        
+        const employee = {
+          key: primaryKey,
+          name: item.user_name || '',
+          email: item.user_email || '',
+          user_id: userId,
+          internal_user_id: internalId,
+          project: item.division || item.project || '',
+          department: item.department || '',
+          team: item.team || ''
+        };
+        
+        // Сохраняем по обоим ключам для быстрого поиска
+        if (userId) employeesMap.set(userId, employee);
+        if (internalId && internalId !== userId) employeesMap.set(internalId, employee);
+        
+        employeesList.push(employee);
       });
       
-      allEmployees = Array.from(employeesMap.values()).sort((a, b) => 
+      allEmployees = employeesList;
+      
+      allEmployees = employeesList;
+      
+      allEmployees.sort((a, b) => 
         (a.name || a.email).localeCompare(b.name || b.email)
       );
+      
+      // Сохраняем Map для быстрого поиска при применении пресетов
+      window.employeesLookup = employeesMap;
       
       renderEmployeeList();
     } catch (error) {
@@ -1219,8 +1244,11 @@
     });
     
     const html = filteredEmployees.slice(0, 5).map(emp => {
-      const isSelected = selectedEmployees.has(emp.key);
-      console.log(`[renderEmployeeList] emp.key=${emp.key} (${typeof emp.key}), isSelected=${isSelected}`);
+      // Проверяем по обоим ключам для совместимости со старыми пресетами
+      const isSelected = selectedEmployees.has(emp.key) || 
+                        selectedEmployees.has(emp.user_id) || 
+                        selectedEmployees.has(emp.internal_user_id);
+      console.log(`[renderEmployeeList] emp.key=${emp.key} (${typeof emp.key}), user_id=${emp.user_id}, internal_id=${emp.internal_user_id}, isSelected=${isSelected}`);
       const displayName = emp.name || emp.email || String(emp.user_id);
       const subtitle = emp.email && emp.name ? emp.email : '';
       const badge = emp.project ? `<span class="badge bg-secondary ms-2">${escapeHtml(emp.project)}</span>` : '';
@@ -1243,7 +1271,9 @@
     
     // Render rest without logging
     const restHtml = filteredEmployees.slice(5).map(emp => {
-      const isSelected = selectedEmployees.has(emp.key);
+      const isSelected = selectedEmployees.has(emp.key) || 
+                        selectedEmployees.has(emp.user_id) || 
+                        selectedEmployees.has(emp.internal_user_id);
       const displayName = emp.name || emp.email || String(emp.user_id);
       const subtitle = emp.email && emp.name ? emp.email : '';
       const badge = emp.project ? `<span class="badge bg-secondary ms-2">${escapeHtml(emp.project)}</span>` : '';
@@ -1319,10 +1349,19 @@
   function applyPreset(presetId) {
     const preset = employeePresets.find((item) => item.id === presetId);
     if (!preset) {
+      console.error('[applyPreset] Preset not found:', presetId);
       return;
     }
+    console.log('[applyPreset] Applying preset:', preset.name, 'with keys:', preset.employee_keys);
+    console.log('[applyPreset] Available employees sample:', allEmployees.slice(0, 3).map(e => ({ key: e.key, name: e.name })));
+    
     selectedEmployees.clear();
-    (preset.employee_keys || []).forEach((key) => selectedEmployees.add(key));
+    (preset.employee_keys || []).forEach((key) => {
+      console.log('[applyPreset] Adding key to selectedEmployees:', key, typeof key);
+      selectedEmployees.add(key);
+    });
+    
+    console.log('[applyPreset] selectedEmployees after apply:', Array.from(selectedEmployees));
     renderEmployeeList(multiSelectSearch?.value || '');
     updateSelectedCount();
     
@@ -1427,18 +1466,13 @@
 
   if (applyMultiSelectBtn) {
     applyMultiSelectBtn.addEventListener('click', async () => {
-      if (selectedEmployees.size === 0) {
-        alert('Выберите хотя бы одного сотрудника');
-        return;
-      }
-      
       multiSelectModal?.hide();
       if (isMonthlyPage) {
         window.dispatchEvent(new CustomEvent('monthly-filters-updated'));
         return;
       }
       
-      // Формуємо запит для вибраних співробітників
+      // Формуємо запит для вибраних співробітників (якщо немає вибраних - показуємо всіх)
       const params = new URLSearchParams();
       applyArchiveParam(params);
       if (dateFromInput.value) params.set('date_from', dateFromInput.value);
@@ -1465,7 +1499,7 @@
   if (showSavePresetBtn) {
     showSavePresetBtn.addEventListener('click', () => {
       if (selectedEmployees.size === 0) {
-        setPresetError('Спочатку виберіть співробітників');
+        setPresetError('Сначала выберите сотрудников');
         return;
       }
       togglePresetForm(true);
@@ -1487,7 +1521,7 @@
         return;
       }
       if (selectedEmployees.size === 0) {
-        setPresetError('Спочатку виберіть співробітників');
+        setPresetError('Сначала выберите сотрудников');
         return;
       }
       setPresetError('');
@@ -1505,7 +1539,7 @@
         });
         const data = await response.json();
         if (!response.ok) {
-          setPresetError(data.error || 'Не вдалося зберегти пресет');
+          setPresetError(data.error || 'Не удалось сохранить пресет');
           return;
         }
         employeePresets = [data, ...employeePresets];
@@ -1513,7 +1547,7 @@
         togglePresetForm(false);
       } catch (error) {
         console.error('Failed to save preset:', error);
-        setPresetError('Не вдалося зберегти пресет');
+        setPresetError('Не удалось сохранить пресет');
       } finally {
         confirmSavePresetBtn.disabled = false;
       }

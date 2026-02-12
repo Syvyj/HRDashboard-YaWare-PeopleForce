@@ -24,6 +24,7 @@ class DashboardReportService:
         self.engine: Engine = create_engine(self.database_url, **engine_kwargs)
 
     def _fetch_status_rows(self, target_date: date) -> List[dict]:
+        """Дані з attendance_records (повний синк за дату)."""
         query = text(
             """
             SELECT user_name,
@@ -47,12 +48,41 @@ class DashboardReportService:
         try:
             with self.engine.connect() as conn:
                 rows = conn.execute(query, {"target_date": target_date.isoformat()})
-                return [dict(row) for row in rows]
+                return [dict(row._mapping) for row in rows]
         except OperationalError:
             return []
 
-    def _build_statuses(self, target_date: date) -> List[AttendanceStatus]:
-        rows = self._fetch_status_rows(target_date)
+    def _fetch_status_rows_from_lateness(self, target_date: date) -> List[dict]:
+        """Дані з lateness_records (лише синк запізнень з YaWare, сторінка Опоздания / кнопка «Синхронізувати день»)."""
+        query = text(
+            """
+            SELECT user_name,
+                   COALESCE(user_email, '') AS user_email,
+                   user_id,
+                   COALESCE(project, '') AS project,
+                   COALESCE(department, '') AS department,
+                   COALESCE(team, '') AS team,
+                   COALESCE(location, '') AS location,
+                   COALESCE(scheduled_start, '') AS scheduled_start,
+                   COALESCE(actual_start, '') AS actual_start,
+                   COALESCE(minutes_late, 0) AS minutes_late,
+                   status,
+                   control_manager
+            FROM lateness_records
+            WHERE record_date = :target_date
+              AND status IN ('late', 'absent')
+            ORDER BY user_name
+            """
+        )
+        try:
+            with self.engine.connect() as conn:
+                rows = conn.execute(query, {"target_date": target_date.isoformat()})
+                return [dict(row._mapping) for row in rows]
+        except OperationalError:
+            return []
+
+    def _build_statuses(self, target_date: date, from_lateness: bool = False) -> List[AttendanceStatus]:
+        rows = self._fetch_status_rows_from_lateness(target_date) if from_lateness else self._fetch_status_rows(target_date)
         statuses: List[AttendanceStatus] = []
         for row in rows:
             schedule = UserSchedule(
@@ -79,8 +109,9 @@ class DashboardReportService:
             )
         return statuses
 
-    def get_daily_report(self, target_date: date) -> dict:
-        statuses = self._build_statuses(target_date)
+    def get_daily_report(self, target_date: date, from_lateness: bool = False) -> dict:
+        """from_lateness=True: читати з lateness_records (синк запізнень з YaWare, сторінка Опоздания)."""
+        statuses = self._build_statuses(target_date, from_lateness=from_lateness)
         late = [s for s in statuses if s.status == "late"]
         absent = [s for s in statuses if s.status == "absent"]
         return {

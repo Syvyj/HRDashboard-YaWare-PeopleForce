@@ -91,78 +91,110 @@
             </div>
           </div>
 
-          <div
-            class="gap-4 mb-2"
-            style="
+          <div class="gap-4 mb-2" style="
               display: flex;
-              flex-wrap: nowrap;
+              flex-wrap: wrap;
               align-items: center;
               flex-direction: row;
               align-content: center;
               justify-content: center;
-            "
-          >
-            <button
-              type="button"
-              class="btn btn-outline-success"
-              id="sync-users-btn"
-              data-loading-class="btn-success text-white"
-            >
-              Синхрон пользователей с PeopleForce и YaWare
+            ">
+          <!-- Sync Users Button -->
+          <div class="mb-4">
+            <button type="button" class="btn btn-outline-success" id="sync-users-btn" data-loading-class="btn-success text-white">
+              <i class="bi bi-people"></i> Синхрон пользователей с PeopleForce и YaWare
             </button>
-            <div class="input-group sync-date-group" style="max-width: 500px">
-              <input type="date" class="form-control" id="sync-date-input" />
-              <button
-                type="button"
-                class="btn btn-outline-primary"
-                id="sync-date-btn"
-                data-loading-class="btn-primary text-white"
-              >
-                Синхрон даты с YaWare
-              </button>
-              <div class="d-flex align-items-center gap-2">
-                <button
-                  type="button"
-                  class="btn btn-outline-danger"
-                  id="delete-date-btn"
-                  data-loading-class="btn-danger text-white"
-                  title="Видалити всі записи за вибрану дату"
-                >
-                  <i class="bi bi-trash"></i> Видалити дату
-                </button>
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="exclude-247-checkbox">
-                  <label class="form-check-label small" for="exclude-247-checkbox">
-                    Окрім 24/7
-                  </label>
+          </div>
+
+          <!-- Other Actions --><div class="d-flex flex-wrap gap-2 mb-4">
+            <button type="button" class="btn btn-outline-secondary" id="refresh-diff-btn" data-loading-class="btn-secondary text-white">
+              <i class="bi bi-arrow-clockwise"></i> Обновить сравнение
+            </button>
+            <button type="button" class="btn btn-warning" id="bulk-adapt-btn" data-loading-class="btn-warning text-white">
+              <i class="bi bi-magic"></i> Перезаписати ієрархію
+            </button>
+          </div><!-- Date Operations Section -->
+          <div class="card border-0 shadow-sm mb-4" style="
+    display: flex;
+    flex-direction: row;
+">
+            <div class="card-body">
+              <h6 class="card-title mb-3 fw-bold">
+                <i class="bi bi-calendar3"></i> Операції з датою
+              </h6>
+              
+              <div class="row g-3" style="
+">
+                <div class="col-12 col-md-6 col-lg-4" style="
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+">
+                  <label for="sync-date-input" class="form-label small fw-semibold mb-1">Дата</label>
+                  <input type="date" class="form-control" id="sync-date-input">
+                <div class="col-12">
+                  <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="exclude-247-checkbox">
+                    <label class="form-check-label small" for="exclude-247-checkbox">
+                      Окрім 24/7
+                    </label>
+                  </div>
+                </div></div>
+                <div class="col-12">
+                  <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-outline-primary" id="sync-date-btn" data-loading-class="btn-primary text-white">
+                      <i class="bi bi-download"></i> Синхрон
+                    </button>
+                    <button type="button" class="btn btn-outline-info" id="sync-plan-start-btn" data-loading-class="btn-info text-white" title="Оновити Plan start у записах за вибрану дату згідно YaWare">
+                      <i class="bi bi-clock-history"></i> Plan start
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" id="delete-date-btn" data-loading-class="btn-danger text-white" title="Видалити всі записи за вибрану дату">
+                      <i class="bi bi-trash"></i> Видалити
+                    </button>
+                    <button type="button" class="btn btn-outline-warning" id="mark-holiday-btn" data-loading-class="btn-warning text-white" title="Відмітити вибрану дату як вихідний день для всіх">
+                      <i class="bi bi-calendar-x"></i> Вихідний
+                    </button>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          <!-- Period Sync Section --><div class="card border-0 mb-4">
+            <div class="card-body">
+              <h6 class="card-title mb-3 fw-bold">
+                <i class="bi bi-calendar-range"></i> Синхронізація за період
+              </h6>
+              
+              <div class="row g-3 align-items-end">
+                <div class="col-md-6 col-lg-3">
+                  <label for="sync-period-from" class="form-label small fw-semibold mb-1">Дата від</label>
+                  <input type="date" class="form-control" id="sync-period-from">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <label for="sync-period-to" class="form-label small fw-semibold mb-1">Дата до</label>
+                  <input type="date" class="form-control" id="sync-period-to">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <button type="button" class="btn btn-outline-primary w-100" id="sync-period-btn" data-loading-class="btn-primary text-white" title="Пересинхронізувати відвідуваність за вибраний період">
+                    <i class="bi bi-arrow-repeat"></i> Синк за період
+                  </button>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <button type="button" class="btn btn-outline-secondary w-100" id="sync-week-quick-btn" data-loading-class="btn-secondary text-white" title="Швидкий синк за останні 7 днів">
+                    <i class="bi bi-lightning-fill"></i> Останні 7 днів
+                  </button>
                 </div>
               </div>
             </div>
-            <button
-              type="button"
-              class="btn btn-outline-info"
-              id="sync-plan-start-btn"
-              data-loading-class="btn-info text-white"
-              title="Оновити Plan start у записах за вибрану дату згідно YaWare"
-            >
-              <i class="bi bi-clock-history"></i> Синхронізувати Plan start
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              id="refresh-diff-btn"
-              data-loading-class="btn-secondary text-white"
-            >
-              Обновить сравнение базы с YaWare и PeopleForce
-            </button>
-            <button
-              type="button"
-              class="btn btn-warning"
-              id="bulk-adapt-btn"
-              data-loading-class="btn-warning text-white"
-            >
-              <i class="bi bi-magic"></i> Перезаписати ієрархію
-            </button>
+          </div></div>
+
+          
+          
+
+          
+          
           </div>
           <!-- Diff legend removed -->
           <div class="row g-3 mb-4" id="diff-lists" hidden>
@@ -265,7 +297,7 @@
                           checked
                         />
                         <label class="form-check-label small" for="admin-archive-switch">
-                          Приховувати архів
+                          Скрывать архив
                         </label>
                       </div>
                     </div>
@@ -384,6 +416,9 @@
             </div>
             <div class="col-12 text-end">
               <button type="submit" class="btn btn-primary">Создать</button>
+              <button type="button" class="btn btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#bulkAssignModal">
+                👥 Масове призначення CM
+              </button>
             </div>
           </form>
 
@@ -421,7 +456,7 @@
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
               <h5 class="card-title mb-0">🚫 Ignored Users</h5>
-              <small class="text-muted">Користувачі виключені зі звітів та diff-порівнянь</small>
+              <small class="text-muted">Пользователи исключены из отчётов и diff-сравнений</small>
             </div>
             <span class="badge bg-secondary" id="ignored-count">0</span>
           </div>
@@ -430,7 +465,7 @@
             <table class="table table-sm table-bordered align-middle" id="ignored-users-table">
               <thead class="table-light">
                 <tr>
-                  <th>Ім'я</th>
+                  <th>Имя</th>
                   <th>Email</th>
                   <th>Проект</th>
                   <th>Департамент</th>
@@ -552,8 +587,14 @@
                 </div>
               </div>
               <div class="mb-3">
-                <label class="form-label">Control manager</label>
-                <select class="form-select" id="diff-add-manager"></select>
+                <label class="form-label">Control managers</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="diff-add-manager"
+                  placeholder="1,2,4"
+                />
+                <small class="text-muted">Введите ID контрол-менеджеров через запятую (например: 1,2,4)</small>
               </div>
               <div class="form-text" id="diff-add-hire-info"></div>
             </div>
@@ -678,15 +719,18 @@
               </div>
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                  <label class="form-label">Локация</label>
+                  <label class="form-label"><small class="badge bg-secondary">Тільки читання</small> Локація (PeopleForce)</label>
                   <input
                     type="text"
-                    class="form-control"
+                    class="form-control bg-light"
                     id="employee-edit-location"
+                    disabled
+                    readonly
                   />
+                  <small class="text-muted d-block mt-1">🔒 Синхронізується автоматично з PeopleForce</small>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Плановый старт</label>
+                  <label class="form-label">Плановий старт</label>
                   <input
                     type="text"
                     class="form-control"
@@ -696,8 +740,14 @@
                 </div>
               </div>
                 <div class="mb-3">
-                  <label class="form-label">Control manager</label>
-                  <select class="form-select" id="employee-edit-manager"></select>
+                  <label class="form-label">Control managers</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="employee-edit-manager"
+                    placeholder="1,2,4"
+                  />
+                  <small class="text-muted">Введите ID контрол-менеджеров через запятую (например: 1,2,4)</small>
                 </div>
                 <div class="form-check form-switch mb-3">
                   <input
@@ -706,10 +756,10 @@
                     id="employee-edit-archived"
                   />
                   <label class="form-check-label" for="employee-edit-archived">
-                    Користувач в архіві
+                    Пользователь в архиве
                   </label>
                   <div class="form-text">
-                    Архівовані співробітники не відображаються у звітах та статистиці.
+                    Архивные сотрудники не отображаются в отчётах и статистике.
                   </div>
                 </div>
               </div>
@@ -788,12 +838,24 @@
               </div>
               <div class="mb-3">
                 <label class="form-label">Control managers</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="app-user-edit-managers"
-                  placeholder="1,2"
-                />
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="app-user-edit-managers"
+                    placeholder="1,2"
+                  />
+                  <button
+                    class="btn btn-outline-primary"
+                    type="button"
+                    id="app-user-edit-access-btn"
+                    title="Редагувати доступи"
+                    style="display: none;"
+                  >
+                    <i class="bi bi-gear"></i> Доступи
+                  </button>
+                </div>
+                <small class="text-muted">Введите ID контрол-менеджеров через запятую (1,2) или нажмите «Доступы» для редактирования</small>
               </div>
               <div class="mb-3">
                 <label class="form-label">Новый пароль (опционально)</label>
@@ -947,6 +1009,269 @@
                 Применить
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for bulk assign control manager -->
+    <div
+      class="modal fade"
+      id="bulkAssignModal"
+      tabindex="-1"
+      aria-labelledby="bulkAssignModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="bulkAssignModalLabel">
+              👥 Масове призначення Control Manager
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Control Manager ID</label>
+              <input
+                type="number"
+                class="form-control"
+                id="bulk-control-manager-input"
+                placeholder="4"
+                min="1"
+                required
+              />
+              <small class="text-muted">Введите ID контрол-менеджера, которого нужно назначить</small>
+            </div>
+            <hr />
+            <div class="mb-2">
+              <strong>Выберите пользователей по фильтрам:</strong>
+              <small class="text-muted d-block">Можно выбрать несколько команд/департаментов/проектов</small>
+            </div>
+            <div class="row">
+              <div class="col-md-3">
+                <h6 class="mb-3">Проекти (Division)</h6>
+                <div
+                  id="bulk-assign-projects-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h6 class="mb-3">Департаменти (Direction)</h6>
+                <div
+                  id="bulk-assign-departments-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h6 class="mb-3">Підрозділи (Unit)</h6>
+                <div
+                  id="bulk-assign-units-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h6 class="mb-3">Команди (Team)</h6>
+                <div
+                  id="bulk-assign-teams-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="bulk-assign-result" class="mt-3" style="display: none;"></div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-bs-dismiss="modal"
+            >
+              Відмінити
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="bulk-assign-btn"
+            >
+              Призначити
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Work Holidays Section -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h4 class="card-title mb-3">Вихідні дні</h4>
+          <p class="text-muted small mb-3">
+            Дні, які вважаються вихідними для всіх (виключаються з Plan Days у місячному звіті).
+            Використовуйте для тимчасових вихідних днів, оголошених компанією.
+          </p>
+          
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label for="work-holiday-date" class="form-label">Дата (YYYY-MM-DD)</label>
+              <input
+                type="date"
+                class="form-control"
+                id="work-holiday-date"
+                required
+              />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="add-work-holiday-btn"
+              >
+                <i class="bi bi-plus-circle"></i> Додати
+              </button>
+            </div>
+          </div>
+
+          <div id="work-holidays-alert"></div>
+
+          <div class="table-responsive">
+            <table class="table table-sm table-hover">
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th>День тижня</th>
+                  <th>Дії</th>
+                </tr>
+              </thead>
+              <tbody id="work-holidays-table">
+                <tr>
+                  <td colspan="3" class="text-center text-muted">Завантаження...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модалка редагування доступів контрол-менеджера -->
+    <div class="modal fade" id="editAccessModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-gear"></i> Редагування доступів контрол-менеджера
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="edit-access-cm-id" />
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle"></i>
+              <strong>Поточні доступи:</strong> Відмічені чекбокси показують команди/департаменти, які зараз має контрол-менеджер.
+              Додайте нові чекбокси щоб надати доступ, зніміть щоб прибрати.
+            </div>
+            
+            <div class="row">
+              <div class="col-md-3">
+                <h6 class="mb-3">Проекти (Division)</h6>
+                <div
+                  id="edit-access-projects-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h6 class="mb-3">Департаменти (Direction)</h6>
+                <div
+                  id="edit-access-departments-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h6 class="mb-3">Підрозділи (Unit)</h6>
+                <div
+                  id="edit-access-units-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <h6 class="mb-3">Команди (Team)</h6>
+                <div
+                  id="edit-access-teams-list"
+                  class="filter-checkboxes-container"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="edit-access-result" class="mt-3" style="display: none;"></div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-bs-dismiss="modal"
+            >
+              Закрити
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              id="edit-access-add-btn"
+            >
+              <i class="bi bi-plus-circle"></i> Додати доступи
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              id="edit-access-remove-btn"
+            >
+              <i class="bi bi-dash-circle"></i> Прибрати доступи
+            </button>
           </div>
         </div>
       </div>

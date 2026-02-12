@@ -40,6 +40,12 @@
   const syncUsersBtn = document.getElementById('sync-users-btn');
   const syncDateInput = document.getElementById('sync-date-input');
   const syncDateBtn = document.getElementById('sync-date-btn');
+  const syncWeekBtn = document.getElementById('sync-week-btn');
+  const syncPeriodBtn = document.getElementById('sync-period-btn');
+  const syncWeekQuickBtn = document.getElementById('sync-week-quick-btn');
+  const syncPeriodFrom = document.getElementById('sync-period-from');
+  const syncPeriodTo = document.getElementById('sync-period-to');
+  const markHolidayBtn = document.getElementById('mark-holiday-btn');
   const syncPlanStartBtn = document.getElementById('sync-plan-start-btn');
   const refreshDiffBtn = document.getElementById('refresh-diff-btn');
   const adminArchiveSwitch = document.getElementById('admin-archive-switch');
@@ -152,6 +158,17 @@
     if (!selectEl) {
       return;
     }
+    // Якщо це input (а не select), просто встановлюємо значення
+    if (selectEl.tagName === 'INPUT') {
+      // currentValue може бути масивом або строкою
+      if (Array.isArray(currentValue)) {
+        selectEl.value = currentValue.join(',');
+      } else {
+        selectEl.value = currentValue != null && currentValue !== '' ? String(currentValue) : '';
+      }
+      return;
+    }
+    // Старий код для select елементів
     selectEl.innerHTML = '<option value="">—</option>';
     managerOptions.forEach((value) => {
       const option = document.createElement('option');
@@ -332,7 +349,7 @@
         ignoreBtn.type = 'button';
         ignoreBtn.className = 'btn btn-sm btn-outline-warning diff-ignore-btn';
         ignoreBtn.innerHTML = '<i class="bi bi-eye-slash"></i> Ignore';
-        ignoreBtn.title = 'Додати в ignore (виключити зі звітів)';
+        ignoreBtn.title = 'Добавить в ignore (исключить из отчётов)';
         ignoreBtn.dataset.entry = JSON.stringify(item);
         btnContainer.appendChild(ignoreBtn);
         
@@ -444,7 +461,7 @@
       return;
     }
     
-    if (!confirm(`Додати "${userName}" в ignore?\n\nКористувач буде виключений зі звітів та diff-порівнянь.`)) {
+    if (!confirm(`Добавить "${userName}" в ignore?\n\nПользователь будет исключён из отчётов и diff-сравнений.`)) {
       return;
     }
     
@@ -484,7 +501,7 @@
         });
       })
       .then(() => {
-        showAlert('success', `Користувача "${userName}" додано в ignore. Оновлюємо списки...`);
+        showAlert('success', `Пользователя "${userName}" добавлено в ignore. Обновляем списки...`);
         // Refresh diff and employee list
         fetchDiffState();
         fetchEmployees();
@@ -634,7 +651,7 @@
       const ignoreBtn = document.createElement('button');
       ignoreBtn.type = 'button';
       ignoreBtn.dataset.userKey = item.user_key;
-      ignoreBtn.title = item.ignored ? 'Повернути в звіти' : 'Виключити зі звітів';
+      ignoreBtn.title = item.ignored ? 'Вернуть в отчёты' : 'Исключить из отчётов';
       
       if (item.ignored) {
         ignoreBtn.className = 'btn btn-sm btn-outline-success employee-unignore-btn';
@@ -790,6 +807,79 @@
       });
   }
 
+  function performPeriodSync(startDate, endDate, button) {
+    if (!startDate || !endDate) {
+      showAlert('Виберіть дату від і дату до', 'warning');
+      return;
+    }
+    if (new Date(startDate) > new Date(endDate)) {
+      showAlert('Дата від не може бути пізніше дати до', 'warning');
+      return;
+    }
+    setButtonLoading(button, true);
+    fetch('/api/admin/sync/attendance-period', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        start_date: startDate,
+        end_date: endDate,
+        include_absent: true,
+        skip_weekends: false,
+      }),
+    })
+      .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          throw new Error(data.error || 'Не вдалося синхронізувати період');
+        }
+        const msg = data.errors && data.errors.length
+          ? `Синхронізовано ${data.days_synced} днів. Помилки: ${data.errors.length}`
+          : `Синхронізовано ${data.days_synced} днів за ${startDate} — ${endDate}`;
+        showAlert(msg, data.errors && data.errors.length ? 'warning' : 'success');
+        fetchEmployees();
+      })
+      .catch((error) => showAlert(error.message, 'danger'))
+      .finally(() => setButtonLoading(button, false));
+  }
+
+  function performWeekSync() {
+    const today = new Date();
+    const end = new Date(today);
+    end.setDate(today.getDate() - 1);
+    const start = new Date(today);
+    start.setDate(today.getDate() - 7);
+    const fmt = (d) => d.toISOString().slice(0, 10);
+    performPeriodSync(fmt(start), fmt(end), syncWeekQuickBtn);
+  }
+
+  async function markAsHoliday() {
+    const date = syncDateInput.value;
+    if (!date) {
+      showAlert('Виберіть дату', 'warning');
+      return;
+    }
+    if (!confirm(`Відмітити ${date} як вихідний день для всіх?`)) {
+      return;
+    }
+    setButtonLoading(markHolidayBtn, true);
+    try {
+      const response = await fetch('/api/admin/work-holidays', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Не вдалося додати вихідний день');
+      }
+      showAlert(`Дата ${date} відмічена як вихідний день`, 'success');
+    } catch (error) {
+      showAlert(error.message, 'danger');
+    } finally {
+      setButtonLoading(markHolidayBtn, false);
+    }
+  }
+
   function performDateDelete() {
     const deleteDateBtn = document.getElementById('delete-date-btn');
     if (!deleteDateBtn) {
@@ -797,7 +887,7 @@
     }
     const targetDate = (syncDateInput && syncDateInput.value ? syncDateInput.value : '').trim();
     if (!targetDate) {
-      showAlert('Виберіть дату для видалення', 'warning');
+      showAlert('Выберите дату для удаления', 'warning');
       return;
     }
     
@@ -1037,7 +1127,7 @@
           unignoreBtn.type = 'button';
           unignoreBtn.className = 'btn btn-sm btn-success';
           unignoreBtn.innerHTML = '<i class="bi bi-eye"></i> Unignore';
-          unignoreBtn.title = 'Повернути в звіти';
+          unignoreBtn.title = 'Вернуть в отчёты';
           unignoreBtn.dataset.userKey = user.user_key;
           unignoreBtn.addEventListener('click', () => {
             handleUnignore(user.user_key, unignoreBtn);
@@ -1051,13 +1141,13 @@
         tbody.appendChild(fragment);
       })
       .catch((error) => {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Помилка завантаження</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Ошибка загрузки</td></tr>';
         showAlert(error.message);
       });
   }
   
   function handleUnignore(userKey, button) {
-    if (!confirm(`Повернути користувача в звіти?`)) {
+    if (!confirm(`Вернуть пользователя в отчёты?`)) {
       return;
     }
     
@@ -1071,9 +1161,9 @@
       .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
       .then(({ ok, data }) => {
         if (!ok) {
-          throw new Error(data.error || 'Помилка');
+          throw new Error(data.error || 'Ошибка');
         }
-        showAlert('Користувача повернено в звіти', 'success');
+        showAlert('Пользователя возвращено в отчёты', 'success');
         fetchIgnoredUsers();
         fetchEmployees();
       })
@@ -1097,6 +1187,24 @@
         showAlert('Заполните имя и email для нового пользователя', 'warning');
         return;
       }
+      // Парсимо control_manager як масив
+      let controlManagerValue = diffAddManager ? diffAddManager.value : '';
+      if (typeof controlManagerValue === 'string') {
+        const trimmed = controlManagerValue.trim();
+        if (trimmed === '') {
+          controlManagerValue = [];
+        } else if (trimmed.includes(',')) {
+          controlManagerValue = trimmed.split(',')
+            .map(s => s.trim())
+            .filter(s => s !== '')
+            .map(s => parseInt(s, 10))
+            .filter(n => !isNaN(n));
+        } else {
+          const num = parseInt(trimmed, 10);
+          controlManagerValue = isNaN(num) ? [] : [num];
+        }
+      }
+      
       const payload = {
         name,
         email,
@@ -1108,7 +1216,7 @@
         team: (diffAddTeam ? diffAddTeam.value : '').trim(),
         location: (diffAddLocation ? diffAddLocation.value : '').trim(),
         plan_start: (diffAddPlanStart ? diffAddPlanStart.value : '').trim(),
-        control_manager: diffAddManager ? diffAddManager.value : '',
+        control_manager: controlManagerValue,
         hire_date: (diffAddContext && diffAddContext.hire_date) ? diffAddContext.hire_date : '',
       };
       setButtonLoading(diffAddSubmit, true);
@@ -1189,7 +1297,12 @@
           if (adapted.team !== undefined) diffAddTeam.value = adapted.team || '';
           if (adapted.location !== undefined) diffAddLocation.value = adapted.location || '';
           if (adapted.control_manager !== undefined && adapted.control_manager !== null) {
-            diffAddManager.value = String(adapted.control_manager);
+            // Встановлюємо значення control_manager
+            if (Array.isArray(adapted.control_manager)) {
+              diffAddManager.value = adapted.control_manager.join(',');
+            } else {
+              diffAddManager.value = String(adapted.control_manager);
+            }
           }
 
           const updatedFields = data.updated_fields || [];
@@ -1234,7 +1347,7 @@
           showAlert(`Plan start синхронізовано: оновлено ${updated} з ${total} записів за дату ${data.date}`, 'success', 8000);
         })
         .catch((error) => {
-          showAlert(error.message || 'Помилка синхронізації Plan start', 'danger');
+          showAlert(error.message || 'Ошибка синхронизации Plan start', 'danger');
         })
         .finally(() => {
           setButtonLoading(syncPlanStartBtn, false);
@@ -1287,6 +1400,23 @@
 
   if (syncDateBtn) {
     syncDateBtn.addEventListener('click', performDateSync);
+  }
+  // Period sync handlers
+  if (syncPeriodBtn) {
+    syncPeriodBtn.addEventListener('click', () => {
+      const from = syncPeriodFrom?.value;
+      const to = syncPeriodTo?.value;
+      performPeriodSync(from, to, syncPeriodBtn);
+    });
+  }
+
+  if (syncWeekQuickBtn) {
+    syncWeekQuickBtn.addEventListener('click', performWeekSync);
+  }
+
+  // Mark as holiday handler
+  if (markHolidayBtn) {
+    markHolidayBtn.addEventListener('click', markAsHoliday);
   }
 
   const deleteDateBtn = document.getElementById('delete-date-btn');
@@ -1361,6 +1491,27 @@
       if (!key) {
         return;
       }
+      
+      // Парсимо control_manager як масив якщо це текстове поле
+      let controlManagerValue = employeeEditManager.value;
+      if (typeof controlManagerValue === 'string') {
+        // Якщо це строка з комами, конвертуємо в масив чисел
+        const trimmed = controlManagerValue.trim();
+        if (trimmed === '') {
+          controlManagerValue = [];
+        } else if (trimmed.includes(',')) {
+          controlManagerValue = trimmed.split(',')
+            .map(s => s.trim())
+            .filter(s => s !== '')
+            .map(s => parseInt(s, 10))
+            .filter(n => !isNaN(n));
+        } else {
+          // Одне значення
+          const num = parseInt(trimmed, 10);
+          controlManagerValue = isNaN(num) ? [] : [num];
+        }
+      }
+      
       const payload = {
         name: (employeeEditName.value || '').trim(),
         email: (employeeEditEmail.value || '').trim(),
@@ -1370,9 +1521,8 @@
         department: (employeeEditDepartment.value || '').trim(),
         unit: (employeeEditUnit.value || '').trim(),
         team: (employeeEditTeam.value || '').trim(),
-        location: (employeeEditLocation.value || '').trim(),
         plan_start: (employeeEditPlanStart.value || '').trim(),
-        control_manager: employeeEditManager.value,
+        control_manager: controlManagerValue,
         archived: employeeEditArchived ? employeeEditArchived.checked : false,
       };
 
@@ -1412,7 +1562,7 @@
       if (!response.ok) {
         throw new Error(data.error || 'Не вдалося архівувати користувача');
       }
-      showAlert('Користувача переміщено в архів', 'success');
+      showAlert('Пользователя перемещено в архив', 'success');
       if (employeeEditModal) {
         employeeEditModal.hide();
       }
@@ -1467,7 +1617,7 @@
     employeeSyncBtn.addEventListener('click', () => {
       const key = (employeeEditKey.value || '').trim();
       if (!key) {
-        showAlert('Користувача не вибрано', 'warning');
+        showAlert('Пользователь не выбран', 'warning');
         return;
       }
       
@@ -1625,6 +1775,21 @@
       document.getElementById('app-user-edit-password').value = '';
       document.getElementById('app-user-edit-admin').checked = Boolean(data.is_admin);
       document.getElementById('app-user-edit-control-manager').checked = Boolean(data.is_control_manager);
+      
+      // Show/hide "Доступи" button for control managers
+      if (appUserEditAccessBtn) {
+        const cmId = (data.manager_filter || '').split(',')[0]?.trim();
+        if (data.is_control_manager && cmId) {
+          appUserEditAccessBtn.style.display = 'inline-block';
+          appUserEditAccessBtn.onclick = () => {
+            appUserModal?.hide();
+            loadAccessModal(cmId);
+          };
+        } else {
+          appUserEditAccessBtn.style.display = 'none';
+        }
+      }
+      
       appUserModal.show();
     });
   }
@@ -1754,7 +1919,7 @@
         const userKey = ignoreBtn.dataset.userKey;
         if (!userKey) return;
         
-        if (!confirm('Виключити користувача зі звітів та diff? Користувач більше не буде відображатися в порівняннях.')) {
+        if (!confirm('Исключить пользователя из отчётов и diff? Пользователь больше не будет отображаться в сравнениях.')) {
           return;
         }
         
@@ -1768,13 +1933,13 @@
             return response.json();
           })
           .then((data) => {
-            showAlert('success', `Користувача "${data.user_name}" виключено зі звітів`);
+            showAlert('success', `Пользователя "${data.user_name}" исключено из отчётов`);
             fetchEmployees();
             fetchDiffState();
           })
           .catch((error) => {
             console.error('Error ignoring employee:', error);
-            showAlert('danger', 'Помилка виключення користувача');
+            showAlert('danger', 'Ошибка исключения пользователя');
             ignoreBtn.disabled = false;
           });
       }
@@ -1783,7 +1948,7 @@
         const userKey = unignoreBtn.dataset.userKey;
         if (!userKey) return;
         
-        if (!confirm('Повернути користувача в звіти та diff?')) {
+        if (!confirm('Вернуть пользователя в отчёты и diff?')) {
           return;
         }
         
@@ -1797,15 +1962,577 @@
             return response.json();
           })
           .then((data) => {
-            showAlert('success', `Користувача "${data.user_name}" повернуто в звіти`);
+            showAlert('success', `Пользователя "${data.user_name}" возвращено в отчёты`);
             fetchEmployees();
             fetchDiffState();
           })
           .catch((error) => {
             console.error('Error unignoring employee:', error);
-            showAlert('danger', 'Помилка повернення користувача');
+            showAlert('danger', 'Ошибка возврата пользователя');
             unignoreBtn.disabled = false;
           });
+      }
+    });
+  }
+
+  // ========== BULK CONTROL MANAGER ASSIGNMENT ==========
+  const bulkAssignProjectsList = document.getElementById('bulk-assign-projects-list');
+  const bulkAssignDepartmentsList = document.getElementById('bulk-assign-departments-list');
+  const bulkAssignUnitsList = document.getElementById('bulk-assign-units-list');
+  const bulkAssignTeamsList = document.getElementById('bulk-assign-teams-list');
+  const bulkControlManagerInput = document.getElementById('bulk-control-manager-input');
+  const bulkAssignBtn = document.getElementById('bulk-assign-btn');
+  const bulkAssignResult = document.getElementById('bulk-assign-result');
+  const bulkAssignModal = document.getElementById('bulkAssignModal');
+
+  const selectedBulkFilters = {
+    projects: new Set(),
+    departments: new Set(),
+    units: new Set(),
+    teams: new Set(),
+  };
+
+  async function loadBulkAssignFilterOptions() {
+    try {
+      const response = await fetch('/api/admin/filter-options');
+      if (!response.ok) throw new Error('Failed to load filter options');
+      const data = await response.json();
+
+      // Populate projects checkboxes
+      if (bulkAssignProjectsList && data.projects) {
+        bulkAssignProjectsList.innerHTML = data.projects.map(project => `
+          <div class="form-check">
+            <input class="form-check-input bulk-filter-project" type="checkbox" value="${project}" id="bulk-project-${project.replace(/\s+/g, '-')}">
+            <label class="form-check-label" for="bulk-project-${project.replace(/\s+/g, '-')}">${project}</label>
+          </div>
+        `).join('');
+
+        // Add event listeners
+        bulkAssignProjectsList.querySelectorAll('.bulk-filter-project').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              selectedBulkFilters.projects.add(e.target.value);
+            } else {
+              selectedBulkFilters.projects.delete(e.target.value);
+            }
+          });
+        });
+      }
+
+      // Populate departments checkboxes
+      if (bulkAssignDepartmentsList && data.departments) {
+        bulkAssignDepartmentsList.innerHTML = data.departments.map(dept => `
+          <div class="form-check">
+            <input class="form-check-input bulk-filter-department" type="checkbox" value="${dept}" id="bulk-dept-${dept.replace(/\s+/g, '-')}">
+            <label class="form-check-label" for="bulk-dept-${dept.replace(/\s+/g, '-')}">${dept}</label>
+          </div>
+        `).join('');
+
+        bulkAssignDepartmentsList.querySelectorAll('.bulk-filter-department').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              selectedBulkFilters.departments.add(e.target.value);
+            } else {
+              selectedBulkFilters.departments.delete(e.target.value);
+            }
+          });
+        });
+      }
+
+      // Populate units checkboxes
+      if (bulkAssignUnitsList && data.units) {
+        bulkAssignUnitsList.innerHTML = data.units.map(unit => `
+          <div class="form-check">
+            <input class="form-check-input bulk-filter-unit" type="checkbox" value="${unit}" id="bulk-unit-${unit.replace(/\s+/g, '-')}">
+            <label class="form-check-label" for="bulk-unit-${unit.replace(/\s+/g, '-')}">${unit}</label>
+          </div>
+        `).join('');
+
+        bulkAssignUnitsList.querySelectorAll('.bulk-filter-unit').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              selectedBulkFilters.units.add(e.target.value);
+            } else {
+              selectedBulkFilters.units.delete(e.target.value);
+            }
+          });
+        });
+      }
+
+      // Populate teams checkboxes
+      if (bulkAssignTeamsList && data.teams) {
+        bulkAssignTeamsList.innerHTML = data.teams.map(team => `
+          <div class="form-check">
+            <input class="form-check-input bulk-filter-team" type="checkbox" value="${team}" id="bulk-team-${team.replace(/\s+/g, '-')}">
+            <label class="form-check-label" for="bulk-team-${team.replace(/\s+/g, '-')}">${team}</label>
+          </div>
+        `).join('');
+
+        bulkAssignTeamsList.querySelectorAll('.bulk-filter-team').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              selectedBulkFilters.teams.add(e.target.value);
+            } else {
+              selectedBulkFilters.teams.delete(e.target.value);
+            }
+          });
+        });
+      }
+    } catch (error) {
+      console.error('Error loading bulk filter options:', error);
+      if (bulkAssignProjectsList) bulkAssignProjectsList.innerHTML = '<div class="text-danger">Ошибка загрузки</div>';
+    }
+  }
+
+  async function handleBulkAssign() {
+    if (!bulkControlManagerInput || !bulkControlManagerInput.value.trim()) {
+      if (bulkAssignResult) {
+        bulkAssignResult.className = 'alert alert-warning';
+        bulkAssignResult.textContent = 'Будь ласка, введіть Control Manager ID';
+        bulkAssignResult.style.display = 'block';
+      }
+      return;
+    }
+
+    const teams = Array.from(selectedBulkFilters.teams);
+    const departments = Array.from(selectedBulkFilters.departments);
+    const projects = Array.from(selectedBulkFilters.projects);
+    const units = Array.from(selectedBulkFilters.units);
+
+    if (teams.length === 0 && departments.length === 0 && projects.length === 0 && units.length === 0) {
+      if (bulkAssignResult) {
+        bulkAssignResult.className = 'alert alert-warning';
+        bulkAssignResult.textContent = 'Выберите хотя бы один фильтр (команду, департамент, проект или подразделение)';
+        bulkAssignResult.style.display = 'block';
+      }
+      return;
+    }
+
+    if (bulkAssignBtn) bulkAssignBtn.disabled = true;
+    if (bulkAssignResult) bulkAssignResult.style.display = 'none';
+
+    try {
+      const response = await fetch('/api/admin/bulk-assign-control-manager', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teams,
+          departments,
+          projects,
+          units,
+          control_manager_id: bulkControlManagerInput.value.trim()
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to assign control manager');
+      }
+
+      if (bulkAssignResult) {
+        bulkAssignResult.className = 'alert alert-success';
+        let message = `✅ Успішно оновлено ${data.updated_count} користувачів`;
+        if (data.updated_users && data.updated_users.length > 0) {
+          message += '\n\nПриклад оновлених користувачів:\n';
+          message += data.updated_users.slice(0, 10).map(u => `• ${u}`).join('\n');
+        }
+        bulkAssignResult.textContent = message;
+        bulkAssignResult.style.display = 'block';
+        bulkAssignResult.style.whiteSpace = 'pre-line';
+      }
+
+      // Refresh employee list
+      fetchEmployees();
+    } catch (error) {
+      console.error('Error bulk assigning control manager:', error);
+      if (bulkAssignResult) {
+        bulkAssignResult.className = 'alert alert-danger';
+        bulkAssignResult.textContent = `❌ Помилка: ${error.message}`;
+        bulkAssignResult.style.display = 'block';
+      }
+    } finally {
+      if (bulkAssignBtn) bulkAssignBtn.disabled = false;
+    }
+  }
+
+  // Reset modal when opened
+  if (bulkAssignModal) {
+    bulkAssignModal.addEventListener('show.bs.modal', () => {
+      // Clear previous selections
+      selectedBulkFilters.projects.clear();
+      selectedBulkFilters.departments.clear();
+      selectedBulkFilters.units.clear();
+      selectedBulkFilters.teams.clear();
+      
+      // Uncheck all checkboxes
+      document.querySelectorAll('.bulk-filter-project, .bulk-filter-department, .bulk-filter-unit, .bulk-filter-team').forEach(cb => {
+        cb.checked = false;
+      });
+      
+      // Clear CM input
+      if (bulkControlManagerInput) bulkControlManagerInput.value = '';
+      
+      // Hide result
+      if (bulkAssignResult) bulkAssignResult.style.display = 'none';
+      
+      // Load options if not loaded yet
+      if (bulkAssignProjectsList && bulkAssignProjectsList.querySelector('.spinner-border')) {
+        loadBulkAssignFilterOptions();
+      }
+    });
+  }
+
+  if (bulkAssignBtn) {
+    bulkAssignBtn.addEventListener('click', handleBulkAssign);
+  }
+
+// ========== EDIT ACCESS MODAL ==========
+  const editAccessModalEl = document.getElementById('editAccessModal');
+  const editAccessModal = editAccessModalEl ? new bootstrap.Modal(editAccessModalEl) : null;
+  const editAccessCmId = document.getElementById('edit-access-cm-id');
+  const editAccessProjectsList = document.getElementById('edit-access-projects-list');
+  const editAccessDepartmentsList = document.getElementById('edit-access-departments-list');
+  const editAccessUnitsList = document.getElementById('edit-access-units-list');
+  const editAccessTeamsList = document.getElementById('edit-access-teams-list');
+  const editAccessAddBtn = document.getElementById('edit-access-add-btn');
+  const editAccessRemoveBtn = document.getElementById('edit-access-remove-btn');
+  const editAccessResult = document.getElementById('edit-access-result');
+  const appUserEditAccessBtn = document.getElementById('app-user-edit-access-btn');
+
+  let editAccessFilters = { projects: new Set(), departments: new Set(), units: new Set(), teams: new Set() };
+  let currentAccessData = { projects: [], departments: [], projects: [], units: [], teams: [] };
+
+  async function loadAccessModal(cmId) {
+    if (!editAccessModal) return;
+    
+    editAccessCmId.value = cmId;
+    editAccessResult.style.display = 'none';
+    
+    try {
+      // Load all filter options
+      const optionsResponse = await fetch('/api/admin/filter-options');
+      if (!optionsResponse.ok) throw new Error('Failed to load options');
+      const allOptions = await optionsResponse.json();
+      
+      // Load current access for this CM
+      const accessResponse = await fetch(`/api/admin/control-manager/${cmId}/access`);
+      if (!accessResponse.ok) throw new Error('Failed to load CM access');
+      const currentAccess = await accessResponse.json();
+      
+      // Clear previous selections
+      editAccessFilters.projects.clear();
+      editAccessFilters.departments.clear();
+      editAccessFilters.units.clear();
+      editAccessFilters.teams.clear();
+      
+      // Populate projects
+      if (editAccessProjectsList && allOptions.projects) {
+        editAccessProjectsList.innerHTML = allOptions.projects.map(proj => {
+          const isChecked = currentAccess.projects.includes(proj);
+          if (isChecked) editAccessFilters.projects.add(proj);
+          return `
+            <div class="form-check">
+              <input class="form-check-input edit-access-project" type="checkbox" value="${proj}" 
+                     id="edit-proj-${proj.replace(/\s+/g, '-')}" ${isChecked ? 'checked' : ''}>
+              <label class="form-check-label" for="edit-proj-${proj.replace(/\s+/g, '-')}">${proj}</label>
+            </div>
+          `;
+        }).join('');
+        
+        editAccessProjectsList.querySelectorAll('.edit-access-project').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              editAccessFilters.projects.add(e.target.value);
+            } else {
+              editAccessFilters.projects.delete(e.target.value);
+            }
+          });
+        });
+      }
+      
+      // Populate departments
+      if (editAccessDepartmentsList && allOptions.departments) {
+        editAccessDepartmentsList.innerHTML = allOptions.departments.map(dept => {
+          const isChecked = currentAccess.departments.includes(dept);
+          if (isChecked) editAccessFilters.departments.add(dept);
+          return `
+            <div class="form-check">
+              <input class="form-check-input edit-access-department" type="checkbox" value="${dept}" 
+                     id="edit-dept-${dept.replace(/\s+/g, '-')}" ${isChecked ? 'checked' : ''}>
+              <label class="form-check-label" for="edit-dept-${dept.replace(/\s+/g, '-')}">${dept}</label>
+            </div>
+          `;
+        }).join('');
+        
+        editAccessDepartmentsList.querySelectorAll('.edit-access-department').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              editAccessFilters.departments.add(e.target.value);
+            } else {
+              editAccessFilters.departments.delete(e.target.value);
+            }
+          });
+        });
+      }
+      
+      // Populate units
+      if (editAccessUnitsList && allOptions.units) {
+        editAccessUnitsList.innerHTML = allOptions.units.map(unit => {
+          const isChecked = currentAccess.units.includes(unit);
+          if (isChecked) editAccessFilters.units.add(unit);
+          return `
+            <div class="form-check">
+              <input class="form-check-input edit-access-unit" type="checkbox" value="${unit}" 
+                     id="edit-unit-${unit.replace(/\s+/g, '-')}" ${isChecked ? 'checked' : ''}>
+              <label class="form-check-label" for="edit-unit-${unit.replace(/\s+/g, '-')}">${unit}</label>
+            </div>
+          `;
+        }).join('');
+        
+        editAccessUnitsList.querySelectorAll('.edit-access-unit').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              editAccessFilters.units.add(e.target.value);
+            } else {
+              editAccessFilters.units.delete(e.target.value);
+            }
+          });
+        });
+      }
+      
+      // Populate teams
+      if (editAccessTeamsList && allOptions.teams) {
+        editAccessTeamsList.innerHTML = allOptions.teams.map(team => {
+          const isChecked = currentAccess.teams.includes(team);
+          if (isChecked) editAccessFilters.teams.add(team);
+          return `
+            <div class="form-check">
+              <input class="form-check-input edit-access-team" type="checkbox" value="${team}" 
+                     id="edit-team-${team.replace(/\s+/g, '-')}" ${isChecked ? 'checked' : ''}>
+              <label class="form-check-label" for="edit-team-${team.replace(/\s+/g, '-')}">${team}</label>
+            </div>
+          `;
+        }).join('');
+        
+        editAccessTeamsList.querySelectorAll('.edit-access-team').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              editAccessFilters.teams.add(e.target.value);
+            } else {
+              editAccessFilters.teams.delete(e.target.value);
+            }
+          });
+        });
+      }
+      
+      editAccessModal.show();
+    } catch (error) {
+      console.error('Error loading access modal:', error);
+      showAlert('danger', `Ошибка загрузки доступов: ${error.message}`);
+    }
+  }
+
+  async function handleAccessUpdate(action) {
+    const cmId = editAccessCmId.value;
+    if (!cmId) return;
+    
+    const selectedProjects = Array.from(editAccessFilters.projects);
+    const selectedDepartments = Array.from(editAccessFilters.departments);
+    const selectedUnits = Array.from(editAccessFilters.units);
+    const selectedTeams = Array.from(editAccessFilters.teams);
+    
+    if (selectedProjects.length === 0 && selectedDepartments.length === 0 && 
+        selectedUnits.length === 0 && selectedTeams.length === 0) {
+      if (editAccessResult) {
+        editAccessResult.className = 'alert alert-warning mt-3';
+        editAccessResult.textContent = 'Выберите хотя бы одну команду/департамент/проект';
+        editAccessResult.style.display = 'block';
+      }
+      return;
+    }
+    
+    if (editAccessAddBtn) editAccessAddBtn.disabled = true;
+    if (editAccessRemoveBtn) editAccessRemoveBtn.disabled = true;
+    if (editAccessResult) editAccessResult.style.display = 'none';
+    
+    try {
+      const response = await fetch(`/api/admin/control-manager/${cmId}/access`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action,
+          projects: selectedProjects,
+          departments: selectedDepartments,
+          units: selectedUnits,
+          teams: selectedTeams
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update access');
+      }
+      
+      if (editAccessResult) {
+        const actionText = action === 'add' ? 'додано доступ до' : 'прибрано доступ з';
+        editAccessResult.className = 'alert alert-success mt-3';
+        let message = `✅ Успішно ${actionText} ${data.updated_count} користувачів`;
+        if (data.updated_users && data.updated_users.length > 0) {
+          message += '\n\nПриклад оновлених:\n';
+          message += data.updated_users.map(name => `• ${name}`).join('\n');
+        }
+        editAccessResult.textContent = message;
+        editAccessResult.style.display = 'block';
+        editAccessResult.style.whiteSpace = 'pre-line';
+      }
+      
+      // Refresh data
+      setTimeout(() => {
+        loadAccessModal(cmId);
+        fetchAppUsers();
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Error updating access:', error);
+      if (editAccessResult) {
+        editAccessResult.className = 'alert alert-danger mt-3';
+        editAccessResult.textContent = `❌ Помилка: ${error.message}`;
+        editAccessResult.style.display = 'block';
+      }
+    } finally {
+      if (editAccessAddBtn) editAccessAddBtn.disabled = false;
+      if (editAccessRemoveBtn) editAccessRemoveBtn.disabled = false;
+    }
+  }
+
+  if (editAccessAddBtn) {
+    editAccessAddBtn.addEventListener('click', () => handleAccessUpdate('add'));
+  }
+  
+  if (editAccessRemoveBtn) {
+    editAccessRemoveBtn.addEventListener('click', () => handleAccessUpdate('remove'));
+  }
+
+  // Work Holidays Management
+  const workHolidayDateInput = document.getElementById('work-holiday-date');
+  const addWorkHolidayBtn = document.getElementById('add-work-holiday-btn');
+  const workHolidaysTable = document.getElementById('work-holidays-table');
+  const workHolidaysAlert = document.getElementById('work-holidays-alert');
+
+  function showWorkHolidaysAlert(message, type = 'success') {
+    workHolidaysAlert.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>`;
+  }
+
+  function formatDate(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00');
+    const days = ['Неділя', 'Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П\'ятниця', 'Субота'];
+    return days[date.getDay()];
+  }
+
+  function formatDateDisplay(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00');
+    return date.toLocaleDateString('uk-UA', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  }
+
+  async function fetchWorkHolidays() {
+    try {
+      const response = await fetch('/api/admin/work-holidays');
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to load holidays');
+      }
+      renderWorkHolidaysTable(data.holidays || []);
+    } catch (error) {
+      workHolidaysTable.innerHTML = `<tr><td colspan="3" class="text-center text-danger">Помилка: ${error.message}</td></tr>`;
+    }
+  }
+
+  function renderWorkHolidaysTable(holidays) {
+    if (holidays.length === 0) {
+      workHolidaysTable.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Немає вихідних днів</td></tr>';
+      return;
+    }
+
+    // Sort by date (newest first)
+    const sorted = [...holidays].sort((a, b) => b.localeCompare(a));
+    
+    workHolidaysTable.innerHTML = sorted.map(date => `
+      <tr>
+        <td>${formatDateDisplay(date)}</td>
+        <td>${formatDate(date)}</td>
+        <td>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger delete-holiday-btn"
+            data-date="${date}"
+            title="Видалити"
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    // Attach delete handlers
+    document.querySelectorAll('.delete-holiday-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const date = btn.dataset.date;
+        if (!confirm(`Видалити вихідний день ${formatDateDisplay(date)}?`)) {
+          return;
+        }
+        btn.disabled = true;
+        try {
+          const response = await fetch(`/api/admin/work-holidays/${date}`, {
+            method: 'DELETE',
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to delete holiday');
+          }
+          showWorkHolidaysAlert('Вихідний день видалено', 'success');
+          await fetchWorkHolidays();
+        } catch (error) {
+          showWorkHolidaysAlert(`Помилка: ${error.message}`, 'danger');
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  if (addWorkHolidayBtn) {
+    addWorkHolidayBtn.addEventListener('click', async () => {
+      const date = workHolidayDateInput.value;
+      if (!date) {
+        showWorkHolidaysAlert('Виберіть дату', 'warning');
+        return;
+      }
+
+      addWorkHolidayBtn.disabled = true;
+      try {
+        const response = await fetch('/api/admin/work-holidays', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ date }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to add holiday');
+        }
+        showWorkHolidaysAlert('Вихідний день додано', 'success');
+        workHolidayDateInput.value = '';
+        await fetchWorkHolidays();
+      } catch (error) {
+        showWorkHolidaysAlert(`Помилка: ${error.message}`, 'danger');
+      } finally {
+        addWorkHolidayBtn.disabled = false;
       }
     });
   }
@@ -1815,4 +2542,16 @@
   fetchAppUsers();
   fetchIgnoredUsers();
   fetchDiffState().catch(() => {});
+  
+  // Load work holidays if section exists
+  if (workHolidaysTable && addWorkHolidayBtn && workHolidayDateInput) {
+    console.log('Work holidays section found, loading...');
+    fetchWorkHolidays();
+  } else {
+    console.log('Work holidays section not found. Elements:', {
+      table: !!workHolidaysTable,
+      button: !!addWorkHolidayBtn,
+      input: !!workHolidayDateInput
+    });
+  }
 })();

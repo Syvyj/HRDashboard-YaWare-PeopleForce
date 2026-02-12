@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
@@ -117,7 +117,7 @@
                     checked
                   />
                   <label class="form-check-label" for="archive-filter-switch">
-                    Приховувати архівних співробітників
+                    Скрывать архивных сотрудников
                   </label>
                 </div>
                 <div class="input-group">
@@ -149,7 +149,7 @@
         </div>
         <div id="loading-spinner" class="text-center py-5">
           <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Загрузка...</span>
+            <span class="visually-hidden">Loading...</span>
           </div>
         </div>
       </div>
@@ -553,6 +553,23 @@
                   style="background-color: #f0f0f0"
                 />
               </div>
+              <div class="col-md-6">
+                <label class="form-label"
+                  >Часов в день
+                  <small class="text-muted"
+                    >(Agency/Apps=6.5, Adnet/Cons=7)</small
+                  ></label
+                >
+                <select class="form-select" id="edit-hours-per-day">
+                  <option value="6.5">6.5 часов/день (Agency, Apps)</option>
+                  <option value="7">
+                    7 часов/день (Adnetwork, Consulting)
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
               <div class="col-md-6">
                 <label class="form-label"
                   >Minimum Hours

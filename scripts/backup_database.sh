@@ -1,9 +1,11 @@
 #!/bin/bash
 # Daily database backup script
+# Set PROJECT_DIR on the server, e.g. export PROJECT_DIR=/home/deploy/www/YaWare_Bot
 
 # Configuration
-BACKUP_DIR="/home/deploy/YaWare_Bot/backups"
-DB_PATH="/home/deploy/YaWare_Bot/instance/dashboard.db"
+PROJECT_DIR="${PROJECT_DIR:-/path/to/project}"
+BACKUP_DIR="${BACKUP_DIR:-$PROJECT_DIR/backups}"
+DB_PATH="${DB_PATH:-$PROJECT_DIR/instance/dashboard.db}"
 RETENTION_DAYS=30
 
 # Create backup directory if it doesn't exist

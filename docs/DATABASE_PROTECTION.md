@@ -14,34 +14,31 @@ These files are in `.gitignore` and will **NEVER** be committed to git.
 
 ### Daily Backups
 
-- **Time**: 3:00 AM daily
-- **Location**: `/home/deploy/YaWare_Bot/backups/`
+- **Time**: 3:00 AM daily (configure via cron)
+- **Location**: `$PROJECT_DIR/backups/` (set `PROJECT_DIR` on the server)
 - **Retention**: 30 days
 - **Format**: `dashboard_YYYYMMDD_HHMMSS.db.gz`
 
 ### Manual Backup
 
 ```bash
-/home/deploy/YaWare_Bot/scripts/backup_database.sh
+# On the server, set PROJECT_DIR or BACKUP_DIR/DB_PATH if needed
+./scripts/backup_database.sh
 ```
 
 ## 🔧 Server Setup (One-time)
 
-Run on the server:
-
-```bash
-bash /home/deploy/YaWare_Bot/scripts/setup_protection.sh
-```
+On the server, configure cron for daily backups and optionally install git hooks. Adjust paths to your deployment directory.
 
 ## 🔄 Restore from Backup
 
 ```bash
 # 1. List available backups
-ls -lh /home/deploy/YaWare_Bot/backups/
+ls -lh $PROJECT_DIR/backups/
 
 # 2. Restore specific backup
-cd /home/deploy/YaWare_Bot
-gunzip -c backups/dashboard_20251110_030000.db.gz > instance/dashboard.db
+cd $PROJECT_DIR
+gunzip -c backups/dashboard_YYYYMMDD_HHMMSS.db.gz > instance/dashboard.db
 
 # 3. Restart application
 sudo systemctl restart yaware-bot
@@ -53,10 +50,10 @@ If data was lost after deployment:
 
 ```bash
 # 1. Find latest backup
-LATEST_BACKUP=$(ls -t /home/deploy/YaWare_Bot/backups/dashboard_*.db.gz | head -1)
+LATEST_BACKUP=$(ls -t $PROJECT_DIR/backups/dashboard_*.db.gz | head -1)
 
 # 2. Restore it
-cd /home/deploy/YaWare_Bot
+cd $PROJECT_DIR
 gunzip -c "$LATEST_BACKUP" > instance/dashboard.db
 
 # 3. Restart
@@ -85,7 +82,7 @@ git check-ignore config/user_schedules.json
 crontab -l | grep backup
 
 # Check latest backup
-ls -lh /home/deploy/YaWare_Bot/backups/ | tail -5
+ls -lh $PROJECT_DIR/backups/ | tail -5
 ```
 
 ## 📝 Backup Logs
@@ -93,5 +90,5 @@ ls -lh /home/deploy/YaWare_Bot/backups/ | tail -5
 View backup history:
 
 ```bash
-tail -50 /home/deploy/YaWare_Bot/logs/backup.log
+tail -50 $PROJECT_DIR/logs/backup.log
 ```

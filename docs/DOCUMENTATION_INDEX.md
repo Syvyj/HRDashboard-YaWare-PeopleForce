@@ -41,7 +41,6 @@
 - **[DATABASE_PROTECTION.md](DATABASE_PROTECTION.md)** - Захист та бекапи бази даних
 - **[AVAILABLE_DATA.md](AVAILABLE_DATA.md)** - Опис доступних даних з YaWare API
 - **[MIGRATION_CHECKLIST.md](MIGRATION_CHECKLIST.md)** - Чеклист міграції на новий сервер
-- **[PUBLICATION.md](PUBLICATION.md)** - Підготовка проекту до публікації на GitHub
 
 ## 📋 За темою
 

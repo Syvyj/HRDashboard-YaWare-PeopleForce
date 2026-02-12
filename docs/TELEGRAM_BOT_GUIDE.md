@@ -104,7 +104,7 @@ scripts/
 👤 Late (3):
 • Ivanov Ivan - Arrived at 09:20 (20 min late)
 • Petrov Petr - Arrived at 09:45 (45 min late)
-• Sidorov Sidor - Arrived at 10:30 (90 min late)
+• Example User - Arrived at 10:30 (90 min late)
 
 ❌ Absent (1):
 • Kuznetsov Igor - No check-in data

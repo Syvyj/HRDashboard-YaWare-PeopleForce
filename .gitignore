@@ -61,3 +61,12 @@ logs/*.log
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# Internal docs (not part of public project)
+PUBLISH_TO_GITHUB.md
+docs/GITHUB_PUBLICATION.md
+docs/PUBLICATION.md
+docs/PUBLICATION_CHECKLIST.md
+docs/FILES_CLEANUP_ANALYSIS.md
+docs/FILES_CLEANUP_SUMMARY.md
+docs/FILE_OPTIMIZATION_PROPOSAL.md

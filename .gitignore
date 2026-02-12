@@ -47,13 +47,14 @@ backups/
 # Logs
 logs/*.log
 
-# IDE
+# IDE and editor files
 *.swp
 *.swo
 *~
 .idea/
 .vscode/
 *.code-workspace
+.agent/
 
 # macOS
 .DS_Store

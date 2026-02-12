@@ -21,9 +21,10 @@ instance/week_notes.json
 instance/monthly_notes.json
 instance/monthly_adjustments.json
 
-# Sensitive config files
+# Sensitive config files - NEVER commit these!
 config/user_schedules.json
 config/work_schedules.json
+config/Level_Grade.json
 config/*.backup
 config/*.server
 

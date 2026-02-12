@@ -37,10 +37,8 @@ config/*.server
 *.service
 !*.service.example
 
-# Archive and temp data
-archive/temp_data/*.json
-archive/temp_data/*.xlsx
-archive/configs/*.env*
+# Archive and temp data - exclude entire archive folder
+archive/
 All_Backup/
 
 # Backups
